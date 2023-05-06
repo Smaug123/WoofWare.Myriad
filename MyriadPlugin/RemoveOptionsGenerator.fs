@@ -2,6 +2,7 @@ namespace MyriadPlugin
 
 open System
 open FSharp.Compiler.Syntax
+open FSharp.Compiler.SyntaxTrivia
 open FSharp.Compiler.Xml
 open Myriad.Core
 
@@ -20,8 +21,11 @@ module internal Create =
         // TODO: consider Microsoft.FSharp.Option or whatever it is
         | _ -> false
 
-    let (|OptionIdent|_|) (ident : SynLongIdent) =
-        if isOptionIdent ident then Some () else None
+    let (|OptionType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when isOptionIdent ident ->
+            Some innerType
+        | _ -> None
 
     let private removeOption (s : SynField) : SynField =
         let (SynField.SynField (synAttributeLists,
@@ -36,7 +40,7 @@ module internal Create =
 
         let newType =
             match fieldType with
-            | SynType.App (SynType.LongIdent OptionIdent, _, [ innerType ], _, _, _, _) -> innerType
+            | OptionType innerType -> innerType
             | _ -> fieldType
 
         SynField.SynField (
@@ -80,7 +84,7 @@ module internal Create =
 
         let body =
             fields
-            |> List.map (fun (SynField (_, _, id, _, _, _, _, _)) ->
+            |> List.map (fun (SynField (_, _, id, fieldType, _, _, _, _)) ->
                 let id =
                     match id with
                     | None -> failwith "Expected record field to have an identifying name"
@@ -94,7 +98,29 @@ module internal Create =
                         range0
                     )
 
-                (SynLongIdent.CreateFromLongIdent [ id ], true), Some accessor
+                let body =
+                    match fieldType with
+                    | OptionType _ ->
+                        SynExpr.CreateApp (
+                            SynExpr.CreateAppInfix (
+                                SynExpr.LongIdent (false, SynLongIdent.SynLongIdent (
+                                    [Ident.Create "op_PipeRight"], [], [Some (IdentTrivia.OriginalNotation "|>")]
+                                ), None, range0),
+                                accessor
+                            ),
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "Option.defaultValue"),
+                                SynExpr.CreateParen (
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (withoutOptionsType @ [Ident.Create (sprintf "Default%s" id.idText)])),
+                                    SynExpr.CreateUnit
+                                )
+                                )
+                            )
+                        )
+                    | _ -> accessor
+
+                (SynLongIdent.CreateFromLongIdent [ id ], true), Some body
             )
             |> SynExpr.CreateRecord
 
