@@ -23,8 +23,7 @@ module internal Create =
 
     let (|OptionType|_|) (fieldType : SynType) =
         match fieldType with
-        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when isOptionIdent ident ->
-            Some innerType
+        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when isOptionIdent ident -> Some innerType
         | _ -> None
 
     let private removeOption (s : SynField) : SynField =
@@ -103,18 +102,29 @@ module internal Create =
                     | OptionType _ ->
                         SynExpr.CreateApp (
                             SynExpr.CreateAppInfix (
-                                SynExpr.LongIdent (false, SynLongIdent.SynLongIdent (
-                                    [Ident.Create "op_PipeRight"], [], [Some (IdentTrivia.OriginalNotation "|>")]
-                                ), None, range0),
+                                SynExpr.LongIdent (
+                                    false,
+                                    SynLongIdent.SynLongIdent (
+                                        [ Ident.Create "op_PipeRight" ],
+                                        [],
+                                        [ Some (IdentTrivia.OriginalNotation "|>") ]
+                                    ),
+                                    None,
+                                    range0
+                                ),
                                 accessor
                             ),
                             SynExpr.CreateApp (
                                 SynExpr.CreateLongIdent (SynLongIdent.CreateString "Option.defaultValue"),
                                 SynExpr.CreateParen (
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (withoutOptionsType @ [Ident.Create (sprintf "Default%s" id.idText)])),
-                                    SynExpr.CreateUnit
-                                )
+                                    SynExpr.CreateApp (
+                                        SynExpr.CreateLongIdent (
+                                            SynLongIdent.CreateFromLongIdent (
+                                                withoutOptionsType @ [ Ident.Create (sprintf "Default%s" id.idText) ]
+                                            )
+                                        ),
+                                        SynExpr.CreateUnit
+                                    )
                                 )
                             )
                         )
