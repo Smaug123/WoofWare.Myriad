@@ -1,0 +1,98 @@
+name: .NET
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  NUGET_XMLDOC_MODE: ''
+  DOTNET_MULTILEVEL_LOOKUP: 0
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        config:
+          - Release
+          - Debug
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # so that NerdBank.GitVersioning has access to history
+    - name: Install Nix
+      uses: cachix/install-nix-action@v20
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+    - name: Restore dependencies
+      run: nix develop --command dotnet restore
+    - name: Build
+      run: nix develop --command dotnet build --no-restore --configuration ${{matrix.config}}
+    - name: Test
+      run: nix develop --command dotnet test --no-build --verbosity normal --configuration ${{matrix.config}}
+
+  build-nix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Nix
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Build
+        run: nix build
+
+  check-dotnet-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Nix
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Run Fantomas
+        run: nix run .#fantomas -- --check .
+
+  check-nix-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Nix
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Run Alejandra
+        run: nix develop --command alejandra --check .
+
+  linkcheck:
+    name: Check links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Nix
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Run link checker
+        run: nix develop --command markdown-link-check README.md
+
+  all-required-checks-complete:
+    needs: [check-dotnet-format, check-nix-format, build, build-nix, linkcheck]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All required checks complete."

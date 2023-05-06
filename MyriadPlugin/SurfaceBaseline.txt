@@ -1,0 +1,4 @@
+MyriadPlugin.RemoveOptionsAttribute inherit System.Attribute
+MyriadPlugin.RemoveOptionsAttribute..ctor [constructor]: unit
+MyriadPlugin.RemoveOptionsGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
+MyriadPlugin.RemoveOptionsGenerator..ctor [constructor]: unit

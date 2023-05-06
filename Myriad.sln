@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "UsePlugin", "UsePlugin\UsePlugin.fsproj", "{0D174482-9CB2-448A-8BA8-846FAEC65579}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyriadPlugin", "MyriadPlugin\MyriadPlugin.fsproj", "{DB86C53B-4090-4791-884B-024C5759855F}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyriadPlugin.Test", "MyriadPlugin.Test\MyriadPlugin.Test.fsproj", "{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D174482-9CB2-448A-8BA8-846FAEC65579}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D174482-9CB2-448A-8BA8-846FAEC65579}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D174482-9CB2-448A-8BA8-846FAEC65579}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D174482-9CB2-448A-8BA8-846FAEC65579}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB86C53B-4090-4791-884B-024C5759855F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB86C53B-4090-4791-884B-024C5759855F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB86C53B-4090-4791-884B-024C5759855F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB86C53B-4090-4791-884B-024C5759855F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

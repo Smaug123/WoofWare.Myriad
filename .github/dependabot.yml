@@ -1,0 +1,17 @@
+version: 2
+updates:
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "nuget"
+    directory: "/ApiSurface"
+    schedule:
+      interval: "weekly"
+    ignore:
+      # Target the lowest version of FSharp.Core, for max compat
+      - dependency-name: "FSharp.Core"
+      # Target the lowest compatible version of System.Text.Json
+      - dependency-name: "System.Text.Json"

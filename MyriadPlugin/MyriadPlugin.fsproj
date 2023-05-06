@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Myriad.Core" Version="0.8.2" />
+    <PackageReference Update="FSharp.Core" Version="6.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="RemoveOptionsGenerator.fs" />
+    <None Include="version.json" />
+    <EmbeddedResource Include="SurfaceBaseline.txt" />
+  </ItemGroup>
+
+</Project>

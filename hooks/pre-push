@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if ! dotnet tool run fantomas --check . ; then
+  echo "Formatting incomplete. Consider running 'dotnet tool run fantomas .'"
+  exit 1
+fi

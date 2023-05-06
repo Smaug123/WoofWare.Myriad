@@ -1,0 +1,5 @@
+* eol=auto
+*.sh text eol=lf
+*.yaml text
+*.nix text eol=lf
+hooks/pre-push text eol=lf
