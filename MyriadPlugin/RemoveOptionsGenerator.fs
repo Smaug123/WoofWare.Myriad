@@ -50,7 +50,8 @@ module internal Create =
             range
         )
 
-    let createCreate (xmlDoc : PreXmlDoc option) (fields : SynField list) =
+    // TODO: this option seems a bit odd
+    let createType (xmlDoc : PreXmlDoc option) (fields : SynField list) =
         let fields : SynField list = fields |> List.map removeOption
         let name = Ident.Create "Short"
 
@@ -60,6 +61,70 @@ module internal Create =
             | Some xmlDoc -> SynTypeDefn.CreateRecord (name, fields, xmldoc = xmlDoc)
 
         SynModuleDecl.Types ([ typeDecl ], range0)
+
+    let createMaker (withOptionsType : LongIdent) (withoutOptionsType : LongIdent) (fields : SynField list) =
+        let xmlDoc = PreXmlDoc.Create " Remove the optional members of the input."
+
+        let returnInfo =
+            SynBindingReturnInfo.Create (SynType.LongIdent (SynLongIdent.CreateFromLongIdent withOptionsType))
+
+        let inputArg = Ident.Create "input"
+        let functionName = Ident.Create "shorten"
+
+        let inputVal =
+            SynValData.SynValData (
+                None,
+                SynValInfo.SynValInfo ([ [ SynArgInfo.CreateId functionName ] ], SynArgInfo.Empty),
+                Some inputArg
+            )
+
+        let body =
+            fields
+            |> List.map (fun (SynField (_, _, id, _, _, _, _, _)) ->
+                let id =
+                    match id with
+                    | None -> failwith "Expected record field to have an identifying name"
+                    | Some id -> id
+
+                let accessor =
+                    SynExpr.DotGet (
+                        SynExpr.CreateIdent inputArg,
+                        range0,
+                        SynLongIdent.CreateFromLongIdent [ id ],
+                        range0
+                    )
+
+                (SynLongIdent.CreateFromLongIdent [ id ], true), Some accessor
+            )
+            |> SynExpr.CreateRecord
+
+        let pattern =
+            SynPat.LongIdent (
+                SynLongIdent.CreateFromLongIdent [ functionName ],
+                None,
+                None,
+                SynArgPats.Pats
+                    [
+                        SynPat.CreateTyped (
+                            SynPat.CreateNamed inputArg,
+                            SynType.LongIdent (SynLongIdent.CreateFromLongIdent withoutOptionsType)
+                        )
+                        |> SynPat.CreateParen
+                    ],
+                None,
+                range0
+            )
+
+        let binding =
+            SynBinding.Let (
+                xmldoc = xmlDoc,
+                returnInfo = returnInfo,
+                expr = body,
+                valData = inputVal,
+                pattern = pattern
+            )
+
+        SynModuleDecl.CreateLet [ binding ]
 
     let createRecordModule (namespaceId : LongIdent) (typeDefn : SynTypeDefn) =
         let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
@@ -71,9 +136,11 @@ module internal Create =
         match synTypeDefnRepr with
         | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, recordFields, _recordRange), _) ->
 
-            let create = createCreate (Some doc) recordFields
-
-            let decls = [ yield create ]
+            let decls =
+                [
+                    createType (Some doc) recordFields
+                    createMaker [ Ident.Create "Short" ] recordId recordFields
+                ]
 
             let compilationRepresentation : SynAttribute =
                 {
