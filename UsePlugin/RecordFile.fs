@@ -11,3 +11,5 @@ type RecordType =
         /// Yet another thing!
         C : float list
     }
+
+    static member DefaultA () : int = 3
