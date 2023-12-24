@@ -118,16 +118,7 @@ module internal Create =
                     | Some id -> id
 
                 let accessor =
-                    SynExpr.LongIdent (
-                        false,
-                        SynLongIdent ([ inputArg ; id ], [ range0 ], []),
-                        None,
-                        range0
-                    //SynExpr.CreateIdent inputArg,
-                    //range0,
-                    //SynLongIdent.CreateFromLongIdent [ id ],
-                    //range0
-                    )
+                    SynExpr.LongIdent (false, SynLongIdent ([ inputArg ; id ], [ range0 ], []), None, range0)
 
                 let body =
                     match fieldType with
