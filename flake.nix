@@ -14,9 +14,9 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      pname = "dotnet-cipher-suite";
-      dotnet-sdk = pkgs.dotnet-sdk_7;
-      dotnet-runtime = pkgs.dotnetCorePackages.runtime_7_0;
+      pname = "fsharp-arguments";
+      dotnet-sdk = pkgs.dotnet-sdk_8;
+      dotnet-runtime = pkgs.dotnetCorePackages.runtime_8_0;
       version = "0.1";
       dotnetTool = toolName: toolVersion: sha256:
         pkgs.stdenvNoCC.mkDerivation rec {
@@ -39,7 +39,7 @@
         };
     in {
       packages = {
-        fantomas = dotnetTool "fantomas" "6.0.1" "sha256-TNAkurZ0NYI2Tkr99ms9MdAMLLKCQzemx5zHo/hDOTo=";
+        fantomas = dotnetTool "fantomas" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fantomas.version "sha256-TNAkurZ0NYI2Tkr99ms9MdAMLLKCQzemx5zHo/hDOTo=";
         fetchDeps = let
           flags = [];
           runtimeIds = ["win-x64"] ++ map (system: pkgs.dotnetCorePackages.systemToDotnetRid system) dotnet-sdk.meta.platforms;
@@ -74,7 +74,7 @@
         buildInputs = with pkgs; [
           (with dotnetCorePackages;
             combinePackages [
-              dotnet-sdk_7
+              dotnet-sdk_8
               dotnetPackages.Nuget
             ])
         ];
