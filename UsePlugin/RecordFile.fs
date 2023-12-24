@@ -1,5 +1,11 @@
 namespace UsePlugin
 
+open System
+
+type ParseState =
+    | AwaitingKey
+    | AwaitingValue of string
+
 /// My whatnot
 [<MyriadPlugin.RemoveOptions>]
 type RecordType =
