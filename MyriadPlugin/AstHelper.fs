@@ -1,0 +1,86 @@
+namespace MyriadPlugin
+
+open Fantomas.FCS.Syntax
+open Fantomas.FCS.SyntaxTrivia
+open Fantomas.FCS.Text.Range
+open Fantomas.FCS.Xml
+open Myriad.Core.AstExtensions
+
+[<RequireQualifiedAccess>]
+module internal AstHelper =
+
+    let constructRecord (fields : (RecordFieldName * SynExpr option) list) : SynExpr =
+        let fields =
+            fields
+            |> List.map (fun (rfn, synExpr) -> SynExprRecordField (rfn, Some range0, synExpr, None))
+
+        SynExpr.Record (None, None, fields, range0)
+
+    let private createRecordType
+        (
+            name : Ident,
+            repr : SynTypeDefnRepr,
+            members : SynMemberDefns,
+            xmldoc : PreXmlDoc
+        )
+        : SynTypeDefn
+        =
+        let name = SynComponentInfo.Create ([ name ], xmldoc = xmldoc)
+
+        let trivia : SynTypeDefnTrivia =
+            {
+                LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
+                EqualsRange = Some range0
+                WithKeyword = Some range0
+            }
+
+        SynTypeDefn (name, repr, members, None, range0, trivia)
+
+    let defineRecordType
+        (
+            name : Ident,
+            fields : SynField seq,
+            members : SynMemberDefns option,
+            xmldoc : PreXmlDoc option
+        )
+        : SynTypeDefn
+        =
+        let repr =
+            SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (None, Seq.toList fields, range0), range0)
+
+        createRecordType (name, repr, defaultArg members SynMemberDefns.Empty, defaultArg xmldoc PreXmlDoc.Empty)
+
+    let isOptionIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent with
+        | [ i ] when System.String.Equals (i.idText, "option", System.StringComparison.OrdinalIgnoreCase) -> true
+        // TODO: consider Microsoft.FSharp.Option or whatever it is
+        | _ -> false
+
+    let isListIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent with
+        | [ i ] when System.String.Equals (i.idText, "list", System.StringComparison.OrdinalIgnoreCase) -> true
+        // TODO: consider FSharpList or whatever it is
+        | _ -> false
+
+[<AutoOpen>]
+module SynTypePatterns =
+    let (|OptionType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isOptionIdent ident ->
+            Some innerType
+        | _ -> None
+
+    let (|ListType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isListIdent ident ->
+            Some innerType
+        | _ -> None
+
+    /// Returns the string name of the type.
+    let (|PrimitiveType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.LongIdent ident ->
+            match ident.LongIdent with
+            | [ i ] -> [ "string" ; "float" ; "int" ] |> List.tryFind (fun s -> s = i.idText)
+            | _ -> None
+        | _ -> None

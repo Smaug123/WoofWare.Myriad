@@ -1,7 +1,5 @@
 namespace UsePlugin
 
-open System
-
 type ParseState =
     | AwaitingKey
     | AwaitingValue of string

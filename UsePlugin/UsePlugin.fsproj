@@ -10,10 +10,15 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="myriad.toml" />
         <Compile Include="RecordFile.fs" />
-        <Compile Include="Generated.fs"> <!--1-->
+        <Compile Include="GeneratedRecord.fs"> <!--1-->
           <MyriadFile>RecordFile.fs</MyriadFile> <!--2-->
         </Compile>
+      <Compile Include="JsonRecord.fs" />
+      <Compile Include="GeneratedJson.fs"> <!--1-->
+        <MyriadFile>JsonRecord.fs</MyriadFile> <!--2-->
+      </Compile>
         <Compile Include="Program.fs" />
         <None Include="..\runmyriad.sh">
           <Link>runmyriad.sh</Link>

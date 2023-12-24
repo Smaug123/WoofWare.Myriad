@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="AstHelper.fs" />
     <Compile Include="RemoveOptionsGenerator.fs" />
+    <Compile Include="JsonParseGenerator.fs" />
     <None Include="version.json" />
     <EmbeddedResource Include="SurfaceBaseline.txt" />
   </ItemGroup>
