@@ -1,9 +1,9 @@
 namespace MyriadPlugin
 
 open System
-open FSharp.Compiler.Syntax
-open FSharp.Compiler.SyntaxTrivia
-open FSharp.Compiler.Xml
+open Fantomas.FCS.Syntax
+open Fantomas.FCS.SyntaxTrivia
+open Fantomas.FCS.Xml
 open Myriad.Core
 
 /// Attribute indicating a record type to which the "Remove Options" Myriad
@@ -12,8 +12,34 @@ type RemoveOptionsAttribute () =
     inherit Attribute ()
 
 module internal Create =
-    open FSharp.Compiler.Text.Range
+    open Fantomas.FCS.Text.Range
     open Myriad.Core.Ast
+
+    let createRecordMyriad fields =
+        // TODO: this first equals-None requires a range
+        let fields =
+            fields
+            |> List.map (fun (rfn, synExpr) -> SynExprRecordField (rfn, Some range0, synExpr, None))
+
+        SynExpr.Record (None, None, fields, range0)
+
+    let createFromRepr (name : Ident, repr : SynTypeDefnRepr, members : SynMemberDefns, xmldoc : PreXmlDoc) =
+        let name = SynComponentInfo.Create ([ name ], xmldoc = xmldoc)
+
+        let trivia : SynTypeDefnTrivia =
+            {
+                LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
+                EqualsRange = Some range0
+                WithKeyword = Some range0
+            }
+
+        SynTypeDefn (name, repr, members, None, range0, trivia)
+
+    let createRecord (name : Ident, fields : SynField seq, members : SynMemberDefns option, xmldoc : PreXmlDoc option) =
+        let repr =
+            SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (None, Seq.toList fields, range0), range0)
+
+        createFromRepr (name, repr, defaultArg members SynMemberDefns.Empty, defaultArg xmldoc PreXmlDoc.Empty)
 
     let isOptionIdent (ident : SynLongIdent) : bool =
         match ident.LongIdent with
@@ -34,7 +60,8 @@ module internal Create =
                                 isMutable,
                                 preXmlDoc,
                                 synAccessOption,
-                                range)) =
+                                range,
+                                trivia)) =
             s
 
         let newType =
@@ -50,7 +77,8 @@ module internal Create =
             isMutable,
             preXmlDoc,
             synAccessOption,
-            range
+            range,
+            trivia
         )
 
     // TODO: this option seems a bit odd
@@ -60,8 +88,8 @@ module internal Create =
 
         let typeDecl : SynTypeDefn =
             match xmlDoc with
-            | None -> SynTypeDefn.CreateRecord (name, fields)
-            | Some xmlDoc -> SynTypeDefn.CreateRecord (name, fields, xmldoc = xmlDoc)
+            | None -> createRecord (name, fields, None, None)
+            | Some xmlDoc -> createRecord (name, fields, None, Some xmlDoc)
 
         SynModuleDecl.Types ([ typeDecl ], range0)
 
@@ -83,19 +111,14 @@ module internal Create =
 
         let body =
             fields
-            |> List.map (fun (SynField (_, _, id, fieldType, _, _, _, _)) ->
+            |> List.map (fun (SynField (_, _, id, fieldType, _, _, _, _, _)) ->
                 let id =
                     match id with
                     | None -> failwith "Expected record field to have an identifying name"
                     | Some id -> id
 
                 let accessor =
-                    SynExpr.DotGet (
-                        SynExpr.CreateIdent inputArg,
-                        range0,
-                        SynLongIdent.CreateFromLongIdent [ id ],
-                        range0
-                    )
+                    SynExpr.LongIdent (false, SynLongIdent ([ inputArg ; id ], [ range0 ], []), None, range0)
 
                 let body =
                     match fieldType with
@@ -115,15 +138,10 @@ module internal Create =
                                 accessor
                             ),
                             SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "Option.defaultValue"),
-                                SynExpr.CreateParen (
-                                    SynExpr.CreateApp (
-                                        SynExpr.CreateLongIdent (
-                                            SynLongIdent.CreateFromLongIdent (
-                                                withoutOptionsType @ [ Ident.Create (sprintf "Default%s" id.idText) ]
-                                            )
-                                        ),
-                                        SynExpr.CreateUnit
+                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "Option.defaultWith"),
+                                SynExpr.CreateLongIdent (
+                                    SynLongIdent.CreateFromLongIdent (
+                                        withoutOptionsType @ [ Ident.Create (sprintf "Default%s" id.idText) ]
                                     )
                                 )
                             )
@@ -132,7 +150,7 @@ module internal Create =
 
                 (SynLongIdent.CreateFromLongIdent [ id ], true), Some body
             )
-            |> SynExpr.CreateRecord
+            |> createRecordMyriad
 
         let pattern =
             SynPat.LongIdent (
@@ -153,6 +171,8 @@ module internal Create =
 
         let binding =
             SynBinding.Let (
+                isInline = false,
+                isMutable = false,
                 xmldoc = xmlDoc,
                 returnInfo = returnInfo,
                 expr = body,

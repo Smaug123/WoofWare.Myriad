@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Myriad.Core" Version="0.8.2" />
+    <PackageReference Include="Myriad.Core" Version="0.8.3" />
     <PackageReference Update="FSharp.Core" Version="6.0.6" />
   </ItemGroup>
 

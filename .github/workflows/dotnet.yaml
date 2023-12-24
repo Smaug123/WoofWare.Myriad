@@ -91,8 +91,21 @@ jobs:
       - name: Run link checker
         run: nix develop --command markdown-link-check README.md
 
+  flake-check:
+    name: Check flake
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Nix
+        uses: cachix/install-nix-action@v20
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Flake check
+        run: nix flake check
+
   all-required-checks-complete:
-    needs: [check-dotnet-format, check-nix-format, build, build-nix, linkcheck]
+    needs: [check-dotnet-format, check-nix-format, build, build-nix, linkcheck, flake-check]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All required checks complete."

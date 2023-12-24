@@ -22,7 +22,7 @@ module RecordType =
     /// Remove the optional members of the input.
     let shorten (input : RecordType) : Short =
         {
-            A = input.A |> Option.defaultValue (RecordType.DefaultA ())
+            A = input.A |> Option.defaultWith RecordType.DefaultA
             B = input.B
             C = input.C
         }
