@@ -147,16 +147,10 @@ module internal Create =
                                 accessor
                             ),
                             SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "Option.defaultWith"),
-                                SynExpr.CreateParen (
-                                    SynExpr.CreateApp (
-                                        SynExpr.CreateLongIdent (
-                                            SynLongIdent.CreateFromLongIdent (
-                                                withoutOptionsType @ [ Ident.Create (sprintf "Default%s" id.idText) ]
-                                            )
-                                        ),
-                                        SynExpr.CreateUnit
-                                    )
+                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "Option.defaultWith"), SynExpr.CreateLongIdent (
+                                        SynLongIdent.CreateFromLongIdent (
+                                            withoutOptionsType @ [ Ident.Create (sprintf "Default%s" id.idText) ]
+                                        )
                                 )
                             )
                         )
