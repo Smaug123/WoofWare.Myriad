@@ -97,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Install Nix
-        uses: cachix/install-nix-action@v20
+        uses: cachix/install-nix-action@v24
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
