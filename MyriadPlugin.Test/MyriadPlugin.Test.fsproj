@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="TestPureGymJson.fs" />
         <Compile Include="TestSurface.fs" />
         <Compile Include="TestRemoveOptions.fs" />
         <Compile Include="TestJsonParse.fs" />

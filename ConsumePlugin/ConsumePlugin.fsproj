@@ -18,6 +18,10 @@
       <Compile Include="GeneratedJson.fs"> <!--1-->
         <MyriadFile>JsonRecord.fs</MyriadFile> <!--2-->
       </Compile>
+      <Compile Include="PureGymDto.fs" />
+      <Compile Include="GeneratedPureGymDto.fs">
+        <MyriadFile>PureGymDto.fs</MyriadFile> <!--2-->
+      </Compile>
         <None Include="..\runmyriad.sh">
           <Link>runmyriad.sh</Link>
         </None>
