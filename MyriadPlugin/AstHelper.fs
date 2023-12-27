@@ -63,7 +63,7 @@ module internal AstHelper =
         | _ -> false
 
 [<AutoOpen>]
-module SynTypePatterns =
+module internal SynTypePatterns =
     let (|OptionType|_|) (fieldType : SynType) =
         match fieldType with
         | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isOptionIdent ident ->
