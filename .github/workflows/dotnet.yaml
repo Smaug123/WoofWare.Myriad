@@ -165,3 +165,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "All required checks complete."
+
+  nuget-publish:
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
+    needs: [all-required-checks-complete]
+    environment: main-deploy
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v24
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Download NuGet artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+      - name: Publish to NuGet
+        run: nix develop --command dotnet nuget push "WoofWare.Myriad.Plugins.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
