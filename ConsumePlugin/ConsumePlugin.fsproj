@@ -5,7 +5,7 @@
       <IsPackable>false</IsPackable>
     </PropertyGroup>
     <ItemGroup>
-      <MyriadSdkGenerator Include="$(MSBuildThisFileDirectory)..\MyriadPlugin\bin\$(Configuration)\$(TargetFramework)\MyriadPlugin.dll" />
+      <MyriadSdkGenerator Include="$(MSBuildThisFileDirectory)..\MyriadPlugin\bin\$(Configuration)\net6.0\MyriadPlugin.dll" />
     </ItemGroup>
 
     <ItemGroup>
