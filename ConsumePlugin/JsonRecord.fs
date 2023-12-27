@@ -6,7 +6,7 @@ module Literals =
     [<Literal>]
     let something = "something"
 
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type InnerType =
     {
         [<JsonPropertyName(Literals.something)>]
@@ -14,7 +14,7 @@ type InnerType =
     }
 
 /// My whatnot
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type JsonRecordType =
     {
         /// A thing!

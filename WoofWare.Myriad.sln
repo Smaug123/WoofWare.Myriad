@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ConsumePlugin", "ConsumePlugin\ConsumePlugin.fsproj", "{0D174482-9CB2-448A-8BA8-846FAEC65579}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyriadPlugin", "MyriadPlugin\MyriadPlugin.fsproj", "{DB86C53B-4090-4791-884B-024C5759855F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Myriad.Plugins", "WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj", "{DB86C53B-4090-4791-884B-024C5759855F}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyriadPlugin.Test", "MyriadPlugin.Test\MyriadPlugin.Test.fsproj", "{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}"
 EndProject

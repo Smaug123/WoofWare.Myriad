@@ -10,18 +10,16 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymOpeningHours =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymOpeningHours =
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : GymOpeningHours =
         let OpeningHours =
-            node.["openingHours"].AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+            node.["openingHours"].AsArray()
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<string>())
             |> List.ofSeq
 
-        let IsAlwaysOpen = node.["isAlwaysOpen"].AsValue().GetValue<bool> ()
+        let IsAlwaysOpen = node.["isAlwaysOpen"].AsValue().GetValue<bool>()
 
-        {
-            IsAlwaysOpen = IsAlwaysOpen
-            OpeningHours = OpeningHours
-        }
+        { IsAlwaysOpen = IsAlwaysOpen
+          OpeningHours = OpeningHours }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymAccessOptions type
@@ -29,14 +27,12 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymAccessOptions =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAccessOptions =
-        let QrCodeAccess = node.["qrCodeAccess"].AsValue().GetValue<bool> ()
-        let PinAccess = node.["pinAccess"].AsValue().GetValue<bool> ()
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : GymAccessOptions =
+        let QrCodeAccess = node.["qrCodeAccess"].AsValue().GetValue<bool>()
+        let PinAccess = node.["pinAccess"].AsValue().GetValue<bool>()
 
-        {
-            PinAccess = PinAccess
-            QrCodeAccess = QrCodeAccess
-        }
+        { PinAccess = PinAccess
+          QrCodeAccess = QrCodeAccess }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymLocation type
@@ -44,16 +40,16 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymLocation =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymLocation =
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : GymLocation =
         let Latitude =
             try
-                node.["latitude"].AsValue().GetValue<float> ()
+                node.["latitude"].AsValue().GetValue<float>()
             with :? System.InvalidOperationException as exc ->
                 if exc.Message.Contains "cannot be converted to" then
                     if
                         System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
                     then
-                        node.["latitude"].AsValue().GetValue<string> () |> System.Double.Parse
+                        node.["latitude"].AsValue().GetValue<string>() |> System.Double.Parse
                     else
                         reraise ()
                 else
@@ -61,22 +57,20 @@ module GymLocation =
 
         let Longitude =
             try
-                node.["longitude"].AsValue().GetValue<float> ()
+                node.["longitude"].AsValue().GetValue<float>()
             with :? System.InvalidOperationException as exc ->
                 if exc.Message.Contains "cannot be converted to" then
                     if
                         System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
                     then
-                        node.["longitude"].AsValue().GetValue<string> () |> System.Double.Parse
+                        node.["longitude"].AsValue().GetValue<string>() |> System.Double.Parse
                     else
                         reraise ()
                 else
                     reraise ()
 
-        {
-            Longitude = Longitude
-            Latitude = Latitude
-        }
+        { Longitude = Longitude
+          Latitude = Latitude }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymAddress type
@@ -84,36 +78,34 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymAddress =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAddress =
-        let Postcode = node.["postcode"].AsValue().GetValue<string> ()
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : GymAddress =
+        let Postcode = node.["postcode"].AsValue().GetValue<string>()
 
         let County =
             match node.["county"] with
             | null -> None
-            | v -> v.AsValue().GetValue<string> () |> Some
+            | v -> v.AsValue().GetValue<string>() |> Some
 
-        let Town = node.["town"].AsValue().GetValue<string> ()
+        let Town = node.["town"].AsValue().GetValue<string>()
 
         let AddressLine3 =
             match node.["addressLine3"] with
             | null -> None
-            | v -> v.AsValue().GetValue<string> () |> Some
+            | v -> v.AsValue().GetValue<string>() |> Some
 
         let AddressLine2 =
             match node.["addressLine2"] with
             | null -> None
-            | v -> v.AsValue().GetValue<string> () |> Some
+            | v -> v.AsValue().GetValue<string>() |> Some
 
-        let AddressLine1 = node.["addressLine1"].AsValue().GetValue<string> ()
+        let AddressLine1 = node.["addressLine1"].AsValue().GetValue<string>()
 
-        {
-            AddressLine1 = AddressLine1
-            AddressLine2 = AddressLine2
-            AddressLine3 = AddressLine3
-            Town = Town
-            County = County
-            Postcode = Postcode
-        }
+        { AddressLine1 = AddressLine1
+          AddressLine2 = AddressLine2
+          AddressLine3 = AddressLine3
+          Town = Town
+          County = County
+          Postcode = Postcode }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the Gym type
@@ -121,32 +113,30 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Gym =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Gym =
-        let ReopenDate = node.["reopenDate"].AsValue().GetValue<string> ()
-        let TimeZone = node.["timeZone"].AsValue().GetValue<string> ()
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : Gym =
+        let ReopenDate = node.["reopenDate"].AsValue().GetValue<string>()
+        let TimeZone = node.["timeZone"].AsValue().GetValue<string>()
         let Location = GymLocation.jsonParse node.["location"]
         let AccessOptions = GymAccessOptions.jsonParse node.["accessOptions"]
         let GymOpeningHours = GymOpeningHours.jsonParse node.["gymOpeningHours"]
-        let EmailAddress = node.["emailAddress"].AsValue().GetValue<string> ()
-        let PhoneNumber = node.["phoneNumber"].AsValue().GetValue<string> ()
+        let EmailAddress = node.["emailAddress"].AsValue().GetValue<string>()
+        let PhoneNumber = node.["phoneNumber"].AsValue().GetValue<string>()
         let Address = GymAddress.jsonParse node.["address"]
-        let Status = node.["status"].AsValue().GetValue<int> ()
-        let Id = node.["id"].AsValue().GetValue<int> ()
-        let Name = node.["name"].AsValue().GetValue<string> ()
+        let Status = node.["status"].AsValue().GetValue<int>()
+        let Id = node.["id"].AsValue().GetValue<int>()
+        let Name = node.["name"].AsValue().GetValue<string>()
 
-        {
-            Name = Name
-            Id = Id
-            Status = Status
-            Address = Address
-            PhoneNumber = PhoneNumber
-            EmailAddress = EmailAddress
-            GymOpeningHours = GymOpeningHours
-            AccessOptions = AccessOptions
-            Location = Location
-            TimeZone = TimeZone
-            ReopenDate = ReopenDate
-        }
+        { Name = Name
+          Id = Id
+          Status = Status
+          Address = Address
+          PhoneNumber = PhoneNumber
+          EmailAddress = EmailAddress
+          GymOpeningHours = GymOpeningHours
+          AccessOptions = AccessOptions
+          Location = Location
+          TimeZone = TimeZone
+          ReopenDate = ReopenDate }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the Member type
@@ -154,43 +144,41 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Member =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Member =
-        let MemberStatus = node.["memberStatus"].AsValue().GetValue<int> ()
-        let SuspendedReason = node.["suspendedReason"].AsValue().GetValue<int> ()
-        let MembershipLevel = node.["membershipLevel"].AsValue().GetValue<int> ()
-        let MembershipName = node.["membershipName"].AsValue().GetValue<string> ()
-        let Postcode = node.["postCode"].AsValue().GetValue<string> ()
-        let MobileNumber = node.["mobileNumber"].AsValue().GetValue<string> ()
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : Member =
+        let MemberStatus = node.["memberStatus"].AsValue().GetValue<int>()
+        let SuspendedReason = node.["suspendedReason"].AsValue().GetValue<int>()
+        let MembershipLevel = node.["membershipLevel"].AsValue().GetValue<int>()
+        let MembershipName = node.["membershipName"].AsValue().GetValue<string>()
+        let Postcode = node.["postCode"].AsValue().GetValue<string>()
+        let MobileNumber = node.["mobileNumber"].AsValue().GetValue<string>()
 
         let DateOfBirth =
-            node.["dateofBirth"].AsValue().GetValue<string> () |> System.DateOnly.Parse
+            node.["dateofBirth"].AsValue().GetValue<string>() |> System.DateOnly.Parse
 
-        let GymAccessPin = node.["gymAccessPin"].AsValue().GetValue<string> ()
-        let EmailAddress = node.["emailAddress"].AsValue().GetValue<string> ()
-        let HomeGymName = node.["homeGymName"].AsValue().GetValue<string> ()
-        let HomeGymId = node.["homeGymId"].AsValue().GetValue<int> ()
-        let LastName = node.["lastName"].AsValue().GetValue<string> ()
-        let FirstName = node.["firstName"].AsValue().GetValue<string> ()
-        let CompoundMemberId = node.["compoundMemberId"].AsValue().GetValue<string> ()
-        let Id = node.["id"].AsValue().GetValue<int> ()
+        let GymAccessPin = node.["gymAccessPin"].AsValue().GetValue<string>()
+        let EmailAddress = node.["emailAddress"].AsValue().GetValue<string>()
+        let HomeGymName = node.["homeGymName"].AsValue().GetValue<string>()
+        let HomeGymId = node.["homeGymId"].AsValue().GetValue<int>()
+        let LastName = node.["lastName"].AsValue().GetValue<string>()
+        let FirstName = node.["firstName"].AsValue().GetValue<string>()
+        let CompoundMemberId = node.["compoundMemberId"].AsValue().GetValue<string>()
+        let Id = node.["id"].AsValue().GetValue<int>()
 
-        {
-            Id = Id
-            CompoundMemberId = CompoundMemberId
-            FirstName = FirstName
-            LastName = LastName
-            HomeGymId = HomeGymId
-            HomeGymName = HomeGymName
-            EmailAddress = EmailAddress
-            GymAccessPin = GymAccessPin
-            DateOfBirth = DateOfBirth
-            MobileNumber = MobileNumber
-            Postcode = Postcode
-            MembershipName = MembershipName
-            MembershipLevel = MembershipLevel
-            SuspendedReason = SuspendedReason
-            MemberStatus = MemberStatus
-        }
+        { Id = Id
+          CompoundMemberId = CompoundMemberId
+          FirstName = FirstName
+          LastName = LastName
+          HomeGymId = HomeGymId
+          HomeGymName = HomeGymName
+          EmailAddress = EmailAddress
+          GymAccessPin = GymAccessPin
+          DateOfBirth = DateOfBirth
+          MobileNumber = MobileNumber
+          Postcode = Postcode
+          MembershipName = MembershipName
+          MembershipLevel = MembershipLevel
+          SuspendedReason = SuspendedReason
+          MemberStatus = MemberStatus }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymAttendance type
@@ -198,41 +186,39 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymAttendance =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAttendance =
-        let MaximumCapacity = node.["maximumCapacity"].AsValue().GetValue<int> ()
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : GymAttendance =
+        let MaximumCapacity = node.["maximumCapacity"].AsValue().GetValue<int>()
 
         let LastRefreshedPeopleInClasses =
-            node.["lastRefreshedPeopleInClasses"].AsValue().GetValue<string> ()
+            node.["lastRefreshedPeopleInClasses"].AsValue().GetValue<string>()
             |> System.DateTime.Parse
 
         let LastRefreshed =
-            node.["lastRefreshed"].AsValue().GetValue<string> () |> System.DateTime.Parse
+            node.["lastRefreshed"].AsValue().GetValue<string>() |> System.DateTime.Parse
 
         let AttendanceTime =
-            node.["attendanceTime"].AsValue().GetValue<string> () |> System.DateTime.Parse
+            node.["attendanceTime"].AsValue().GetValue<string>() |> System.DateTime.Parse
 
-        let IsApproximate = node.["isApproximate"].AsValue().GetValue<bool> ()
+        let IsApproximate = node.["isApproximate"].AsValue().GetValue<bool>()
 
         let TotalPeopleSuffix =
             match node.["totalPeopleSuffix"] with
             | null -> None
-            | v -> v.AsValue().GetValue<string> () |> Some
+            | v -> v.AsValue().GetValue<string>() |> Some
 
-        let TotalPeopleInClasses = node.["totalPeopleInClasses"].AsValue().GetValue<int> ()
-        let TotalPeopleInGym = node.["totalPeopleInGym"].AsValue().GetValue<int> ()
-        let Description = node.["description"].AsValue().GetValue<string> ()
+        let TotalPeopleInClasses = node.["totalPeopleInClasses"].AsValue().GetValue<int>()
+        let TotalPeopleInGym = node.["totalPeopleInGym"].AsValue().GetValue<int>()
+        let Description = node.["description"].AsValue().GetValue<string>()
 
-        {
-            Description = Description
-            TotalPeopleInGym = TotalPeopleInGym
-            TotalPeopleInClasses = TotalPeopleInClasses
-            TotalPeopleSuffix = TotalPeopleSuffix
-            IsApproximate = IsApproximate
-            AttendanceTime = AttendanceTime
-            LastRefreshed = LastRefreshed
-            LastRefreshedPeopleInClasses = LastRefreshedPeopleInClasses
-            MaximumCapacity = MaximumCapacity
-        }
+        { Description = Description
+          TotalPeopleInGym = TotalPeopleInGym
+          TotalPeopleInClasses = TotalPeopleInClasses
+          TotalPeopleSuffix = TotalPeopleSuffix
+          IsApproximate = IsApproximate
+          AttendanceTime = AttendanceTime
+          LastRefreshed = LastRefreshed
+          LastRefreshedPeopleInClasses = LastRefreshedPeopleInClasses
+          MaximumCapacity = MaximumCapacity }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the MemberActivityDto type
@@ -240,24 +226,22 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module MemberActivityDto =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : MemberActivityDto =
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : MemberActivityDto =
         let LastRefreshed =
-            node.["lastRefreshed"].AsValue().GetValue<string> () |> System.DateTime.Parse
+            node.["lastRefreshed"].AsValue().GetValue<string>() |> System.DateTime.Parse
 
-        let IsEstimated = node.["isEstimated"].AsValue().GetValue<bool> ()
-        let TotalClasses = node.["totalClasses"].AsValue().GetValue<int> ()
-        let TotalVisits = node.["totalVisits"].AsValue().GetValue<int> ()
-        let AverageDuration = node.["averageDuration"].AsValue().GetValue<int> ()
-        let TotalDuration = node.["totalDuration"].AsValue().GetValue<int> ()
+        let IsEstimated = node.["isEstimated"].AsValue().GetValue<bool>()
+        let TotalClasses = node.["totalClasses"].AsValue().GetValue<int>()
+        let TotalVisits = node.["totalVisits"].AsValue().GetValue<int>()
+        let AverageDuration = node.["averageDuration"].AsValue().GetValue<int>()
+        let TotalDuration = node.["totalDuration"].AsValue().GetValue<int>()
 
-        {
-            TotalDuration = TotalDuration
-            AverageDuration = AverageDuration
-            TotalVisits = TotalVisits
-            TotalClasses = TotalClasses
-            IsEstimated = IsEstimated
-            LastRefreshed = LastRefreshed
-        }
+        { TotalDuration = TotalDuration
+          AverageDuration = AverageDuration
+          TotalVisits = TotalVisits
+          TotalClasses = TotalClasses
+          IsEstimated = IsEstimated
+          LastRefreshed = LastRefreshed }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the SessionsAggregate type
@@ -265,16 +249,14 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module SessionsAggregate =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsAggregate =
-        let Duration = node.["duration"].AsValue().GetValue<int> ()
-        let Visits = node.["visits"].AsValue().GetValue<int> ()
-        let Activities = node.["activities"].AsValue().GetValue<int> ()
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : SessionsAggregate =
+        let Duration = node.["duration"].AsValue().GetValue<int>()
+        let Visits = node.["visits"].AsValue().GetValue<int>()
+        let Activities = node.["activities"].AsValue().GetValue<int>()
 
-        {
-            Activities = Activities
-            Visits = Visits
-            Duration = Duration
-        }
+        { Activities = Activities
+          Visits = Visits
+          Duration = Duration }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the VisitGym type
@@ -282,16 +264,14 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module VisitGym =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : VisitGym =
-        let Status = node.["status"].AsValue().GetValue<string> ()
-        let Name = node.["name"].AsValue().GetValue<string> ()
-        let Id = node.["id"].AsValue().GetValue<int> ()
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : VisitGym =
+        let Status = node.["status"].AsValue().GetValue<string>()
+        let Name = node.["name"].AsValue().GetValue<string>()
+        let Id = node.["id"].AsValue().GetValue<int>()
 
-        {
-            Id = Id
-            Name = Name
-            Status = Status
-        }
+        { Id = Id
+          Name = Name
+          Status = Status }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the Visit type
@@ -299,21 +279,19 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Visit =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Visit =
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : Visit =
         let Gym = VisitGym.jsonParse node.["gym"]
-        let Duration = node.["duration"].AsValue().GetValue<int> ()
+        let Duration = node.["duration"].AsValue().GetValue<int>()
 
         let StartTime =
-            node.["startTime"].AsValue().GetValue<string> () |> System.DateTime.Parse
+            node.["startTime"].AsValue().GetValue<string>() |> System.DateTime.Parse
 
-        let IsDurationEstimated = node.["isDurationEstimated"].AsValue().GetValue<bool> ()
+        let IsDurationEstimated = node.["isDurationEstimated"].AsValue().GetValue<bool>()
 
-        {
-            IsDurationEstimated = IsDurationEstimated
-            StartTime = StartTime
-            Duration = Duration
-            Gym = Gym
-        }
+        { IsDurationEstimated = IsDurationEstimated
+          StartTime = StartTime
+          Duration = Duration
+          Gym = Gym }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the SessionsSummary type
@@ -321,14 +299,10 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module SessionsSummary =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsSummary =
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : SessionsSummary =
         let ThisWeek = SessionsAggregate.jsonParse node.["thisWeek"]
         let Total = SessionsAggregate.jsonParse node.["total"]
-
-        {
-            Total = Total
-            ThisWeek = ThisWeek
-        }
+        { Total = Total; ThisWeek = ThisWeek }
 namespace PureGym
 
 /// Module containing JSON parsing methods for the Sessions type
@@ -336,15 +310,12 @@ namespace PureGym
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Sessions =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Sessions =
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : Sessions =
         let Visits =
-            node.["visits"].AsArray ()
+            node.["visits"].AsArray()
             |> Seq.map (fun elt -> Visit.jsonParse elt)
             |> List.ofSeq
 
         let Summary = SessionsSummary.jsonParse node.["summary"]
+        { Summary = Summary; Visits = Visits }
 
-        {
-            Summary = Summary
-            Visits = Visits
-        }

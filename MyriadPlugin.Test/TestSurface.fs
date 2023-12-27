@@ -1,7 +1,7 @@
 namespace MyriadPlugin.Test
 
 open NUnit.Framework
-open MyriadPlugin
+open WoofWare.Myriad.Plugins
 open ApiSurface
 
 [<TestFixture>]

@@ -5,7 +5,7 @@
       <IsPackable>false</IsPackable>
     </PropertyGroup>
     <ItemGroup>
-      <MyriadSdkGenerator Include="$(MSBuildThisFileDirectory)..\MyriadPlugin\bin\$(Configuration)\net6.0\MyriadPlugin.dll" />
+      <MyriadSdkGenerator Include="$(MSBuildThisFileDirectory)..\WoofWare.Myriad.Plugins\bin\$(Configuration)\net6.0\WoofWare.Myriad.Plugins.dll" />
     </ItemGroup>
 
     <ItemGroup>
@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MyriadPlugin\MyriadPlugin.fsproj" />
+      <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj" />
       <PackageReference Include="Myriad.Sdk" Version="0.8.3" />
       <PackageReference Include="Myriad.Core" Version="0.8.3" />
     </ItemGroup>
