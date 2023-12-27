@@ -101,16 +101,38 @@ module internal SynTypePatterns =
         match fieldType with
         | SynType.LongIdent ident ->
             match ident.LongIdent with
+            | [ i ] -> [ "string" ; "float" ; "int" ; "bool" ] |> List.tryFind (fun s -> s = i.idText)
+            | _ -> None
+        | _ -> None
+
+    let (|NumberType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.LongIdent ident ->
+            match ident.LongIdent with
+            | [ i ] -> [ "string" ; "float" ; "int" ; "bool" ] |> List.tryFind (fun s -> s = i.idText)
+            | _ -> None
+        | _ -> None
+
+    let (|DateOnly|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.LongIdent ident ->
+            match ident.LongIdent with
             | [ i ] ->
-                let primitives =
-                    [ "string" ; "float" ; "int" ; "bool" ; "System.DateTime" ; " System.DateOnly" ]
-                    |> List.tryFind (fun s -> s = i.idText)
+                if i.idText = "System.DateOnly" || i.idText = "DateOnly" then
+                    Some ()
+                else
+                    None
+            | _ -> None
+        | _ -> None
 
-                match primitives with
-                | Some v -> Some v
-                | None ->
-
-                [ "DateTime", "System.DateTime" ; "DateOnly", "System.DateOnly" ]
-                |> List.tryPick (fun (abbrev, full) -> if abbrev = i.idText then Some full else None)
+    let (|DateTime|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.LongIdent ident ->
+            match ident.LongIdent with
+            | [ i ] ->
+                if i.idText = "System.DateTime" || i.idText = "DateTime" then
+                    Some ()
+                else
+                    None
             | _ -> None
         | _ -> None
