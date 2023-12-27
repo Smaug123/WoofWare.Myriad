@@ -14,7 +14,7 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      pname = "fsharp-arguments";
+      pname = "WoofWare.Myriad.Plugins";
       dotnet-sdk = pkgs.dotnet-sdk_8;
       dotnet-runtime = pkgs.dotnetCorePackages.runtime_8_0;
       version = "0.1";
@@ -40,6 +40,7 @@
     in {
       packages = {
         fantomas = dotnetTool "fantomas" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fantomas.version "sha256-Jmo7s8JMdQ8SxvNvPnryfE7n24mIgKi5cbgNwcQw3yU=";
+        fsharp-analyzers = dotnetTool "fsharp-analyzers" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fsharp-analyzers.version "sha256-Jmo7s8JMdQ8SxvNvPnryfE7n24mIgKi5cbgNwcQw3yU=";
         fetchDeps = let
           flags = [];
           runtimeIds = ["win-x64"] ++ map (system: pkgs.dotnetCorePackages.systemToDotnetRid system) dotnet-sdk.meta.platforms;
@@ -60,7 +61,7 @@
           }));
         default = pkgs.buildDotnetModule {
           pname = pname;
-          name = "argument-helpers";
+          name = "WoofWare.Myriad.Plugins";
           version = version;
           src = ./.;
           projectFile = "./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj";
