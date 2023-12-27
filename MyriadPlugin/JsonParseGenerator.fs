@@ -60,11 +60,10 @@ module internal JsonParseGenerator =
         )
 
     /// collectionType is e.g. "List"; we'll be calling `ofSeq` on it.
+    /// {node}.AsArray()
+    /// |> Seq.map (fun elt -> elt.AsValue().GetValue<{elementType}>())
+    /// |> {collectionType}.ofSeq
     let asArrayMapped (collectionType : string) (node : SynExpr) (elementType : string) : SynExpr =
-        // node.["openingHours"].AsArray()
-        // |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
-        // |> List.ofSeq
-
         let parsedDataPat = [ SynPat.CreateNamed (Ident.Create "elt") ]
 
         let parsedData =
@@ -122,26 +121,7 @@ module internal JsonParseGenerator =
                                 false,
                                 false,
                                 SynSimplePats.Create [ SynSimplePat.CreateId (Ident.Create "elt") ],
-                                SynExpr.CreateApp (
-                                    SynExpr.TypeApp (
-                                        SynExpr.DotGet (
-                                            SynExpr.CreateApp (
-                                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"),
-                                                SynExpr.CreateConst SynConst.Unit
-                                            ),
-                                            range0,
-                                            SynLongIdent.CreateString "GetValue",
-                                            range0
-                                        ),
-                                        range0,
-                                        [ SynType.CreateLongIdent (SynLongIdent.CreateString elementType) ],
-                                        [],
-                                        None,
-                                        range0,
-                                        range0
-                                    ),
-                                    SynExpr.CreateConst SynConst.Unit
-                                ),
+                                parsedData,
                                 Some (parsedDataPat, parsedData),
                                 range0,
                                 {

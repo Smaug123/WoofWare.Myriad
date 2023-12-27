@@ -6,6 +6,7 @@ module Literals =
     [<Literal>]
     let something = "something"
 
+
 [<MyriadPlugin.JsonParse>]
 type InnerType =
     {
