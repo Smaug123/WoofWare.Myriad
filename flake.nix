@@ -31,7 +31,7 @@
           };
           installPhase = let
             dll =
-              if dllOverride == null
+              if isNull dllOverride
               then name
               else dllOverride;
           in ''
