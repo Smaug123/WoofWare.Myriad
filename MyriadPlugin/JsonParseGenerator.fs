@@ -167,17 +167,12 @@ module internal JsonParseGenerator =
         match fieldType with
         | OptionType ty -> parseNode ty (SynExpr.CreateIdentString "v") |> createParseLineOption node
         | PrimitiveType typeName -> asValueGetValue typeName node
-        | ListType (PrimitiveType typeName) ->
-            asArrayMapped
-                "List"
-                node
-                (asValueGetValue typeName (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt")))
-        | ArrayType (PrimitiveType typeName) ->
-            asArrayMapped
-                "Array"
-                node
-                (asValueGetValue typeName (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt")))
-        // TODO: support recursive lists
+        | ListType ty ->
+            parseNode ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
+            |> asArrayMapped "List" node
+        | ArrayType ty ->
+            parseNode ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
+            |> asArrayMapped "Array" node
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =
