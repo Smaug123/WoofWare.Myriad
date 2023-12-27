@@ -48,8 +48,8 @@
             src = ./nix/fetchDeps.sh;
             pname = pname;
             binPath = pkgs.lib.makeBinPath [pkgs.coreutils dotnet-sdk (pkgs.nuget-to-nix.override {inherit dotnet-sdk;})];
-            projectFiles = toString ["./MyriadPlugin/MyriadPlugin.fsproj" "./ConsumePlugin/ConsumePlugin.fsproj"];
-            testProjectFiles = ["./MyriadPlugin.Test/MyriadPlugin.Test.fsproj"];
+            projectFiles = toString ["./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj" "./ConsumePlugin/ConsumePlugin.fsproj"];
+            testProjectFiles = ["./WoofWare.Myriad.Plugins.Test/WoofWare.Myriad.Plugins.Test.fsproj"];
             rids = pkgs.lib.concatStringsSep "\" \"" runtimeIds;
             packages = dotnet-sdk.packages;
             storeSrc = pkgs.srcOnly {
@@ -63,7 +63,7 @@
           name = "argument-helpers";
           version = version;
           src = ./.;
-          projectFile = "./MyriadPlugin/MyriadPlugin.fsproj";
+          projectFile = "./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj";
           nugetDeps = ./nix/deps.nix;
           doCheck = true;
           dotnet-sdk = dotnet-sdk;
