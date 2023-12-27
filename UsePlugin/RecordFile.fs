@@ -7,6 +7,7 @@ type ParseState =
 /// My whatnot
 [<MyriadPlugin.RemoveOptions>]
 type RecordType =
+
     {
         /// A thing!
         A : int option
