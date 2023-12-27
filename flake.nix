@@ -38,7 +38,7 @@
             runHook preInstall
             mkdir -p "$out/lib"
             cp -r ./bin/* "$out/lib"
-            makeWrapper "${dotnet-runtime}/bin/dotnet" "$out/bin/${name}" --add-flags "$out/lib/${dllOverride}.dll"
+            makeWrapper "${dotnet-runtime}/bin/dotnet" "$out/bin/${name}" --add-flags "$out/lib/${dll}.dll"
             runHook postInstall
           '';
         };
