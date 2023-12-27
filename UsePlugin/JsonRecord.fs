@@ -1,5 +1,11 @@
 namespace UsePlugin
 
+[<MyriadPlugin.JsonParse>]
+type InnerType =
+    {
+        Thing : string
+    }
+
 /// My whatnot
 [<MyriadPlugin.JsonParse>]
 type JsonRecordType =
@@ -8,6 +14,6 @@ type JsonRecordType =
         A : int
         /// Another thing!
         B : string
-        /// Yet another thing!
-        C : float list
+        C : int list
+        D : InnerType
     }

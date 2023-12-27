@@ -50,7 +50,7 @@ module internal JsonParseGenerator =
                     )
                 ],
                 [],
-                None,
+                Some range0,
                 range0,
                 range0
             ),
@@ -75,77 +75,26 @@ module internal JsonParseGenerator =
         // |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
         // |> List.ofSeq
 
-        let parsedData =
-            [
+        let parsedDataPat = [ SynPat.CreateNamed (Ident.Create "elt") ]
 
-            ]
-        (*
-            Some(
-([
-    SynPat.Named(
-        ident = SynIdent.SynIdent(ident = Ident("elt", R("(3,16--3,19)")), trivia = None),
-        isThisVal = false,
-        accessibility = None,
-        range = R("(3,16--3,19)")
-    )
- ],
- SynExpr.App(
-     flag = ExprAtomicFlag.NonAtomic,
-     isInfix = false,
-     funcExpr =
-         SynExpr.TypeApp(
-             expr =
-                 SynExpr.DotGet(
-                     expr =
-                         SynExpr.App(
-                             flag = ExprAtomicFlag.Atomic,
-                             isInfix = false,
-                             funcExpr =
-                                 SynExpr.LongIdent(
-                                     isOptional = false,
-                                     longDotId =
-                                         SynLongIdent.SynLongIdent(
-                                             id = [
-                                                 Ident("elt", R("(3,23--3,26)"))
-                                                 Ident("AsValue", R("(3,27--3,34)"))
-                                             ],
-                                             dotRanges = [ R("(3,26--3,27)") ],
-                                             trivia = [ None; None ]
-                                         ),
-                                     altNameRefCell = None,
-                                     range = R("(3,23--3,34)")
-                                 ),
-                             argExpr = SynExpr.Const(constant = SynConst.Unit, range = R("(3,34--3,36)")),
-                             range = R("(3,23--3,36)")
-                         ),
-                     rangeOfDot = R("(3,36--3,37)"),
-                     longDotId =
-                         SynLongIdent.SynLongIdent(
-                             id = [ Ident("GetValue", R("(3,37--3,45)")) ],
-                             dotRanges = [],
-                             trivia = [ None ]
-                         ),
-                     range = R("(3,23--3,45)")
-                 ),
-             lessRange = R("(3,45--3,46)"),
-             typeArgs = [
-                 SynType.LongIdent(
-                     SynLongIdent.SynLongIdent(
-                         id = [ Ident("string", R("(3,46--3,52)")) ],
-                         dotRanges = [],
-                         trivia = [ None ]
-                     )
-                 )
-             ],
-             commaRanges = [],
-             greaterRange = Some(R("(3,52--3,53)")),
-             typeArgsRange = R("(3,45--3,53)"),
-             range = R("(3,23--3,53)")
-         ),
-     argExpr = SynExpr.Const(constant = SynConst.Unit, range = R("(3,54--3,56)")),
-     range = R("(3,23--3,56)")
- ))
-            *)
+        let parsedData =
+            SynExpr.CreateApp (
+                SynExpr.TypeApp (
+                    SynExpr.DotGet (
+                        SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"),
+                        range0,
+                        SynLongIdent.Create [ "GetValue" ],
+                        range0
+                    ),
+                    range0,
+                    [ SynType.CreateLongIdent elementType ],
+                    [],
+                    Some range0,
+                    range0,
+                    range0
+                ),
+                SynExpr.CreateConst SynConst.Unit
+            )
 
         SynExpr.CreateApp (
             SynExpr.CreateAppInfix (
@@ -197,7 +146,7 @@ module internal JsonParseGenerator =
                                     SynExpr.TypeApp (
                                         SynExpr.DotGet (
                                             SynExpr.CreateApp (
-                                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "elt" ; "AsValue" ]),
+                                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"),
                                                 SynExpr.CreateConst SynConst.Unit
                                             ),
                                             range0,
@@ -213,7 +162,7 @@ module internal JsonParseGenerator =
                                     ),
                                     SynExpr.CreateConst SynConst.Unit
                                 ),
-                                Some (parsedData, SynExpr.CreateConst SynConst.Unit),
+                                Some (parsedDataPat, parsedData),
                                 range0,
                                 {
                                     ArrowRange = Some range0
@@ -231,6 +180,7 @@ module internal JsonParseGenerator =
         | OptionType ty -> failwith "TODO: options"
         | PrimitiveType typeName -> createParseLineValue jsonName typeName
         | ListType (PrimitiveType typeName) -> createParseLineList "List" jsonName typeName
+        // TODO: support recursive lists
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             createParseLineCallThrough jsonName fieldType
@@ -259,7 +209,7 @@ module internal JsonParseGenerator =
                         SynLongIdent.CreateFromLongIdent [ Option.get id ],
                         None,
                         None,
-                        SynArgPats.Pats [ SynPat.CreateNamed (Option.get id) ],
+                        SynArgPats.Empty,
                         None,
                         range0
                     )
@@ -267,8 +217,6 @@ module internal JsonParseGenerator =
                 SynBinding.Let (
                     isInline = false,
                     isMutable = false,
-                    xmldoc = xmlDoc,
-                    returnInfo = returnInfo,
                     // TODO: id.Value.idText is gross for many reasons
                     expr = createParseRhs (id.ToString ()) id.Value.idText fieldType,
                     valData = inputVal,
