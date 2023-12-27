@@ -10,9 +10,12 @@ namespace ConsumePlugin
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module InnerType =
     /// Parse from a JSON node.
-    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : InnerType =
-        let Thing = node.[(Literals.something)].AsValue().GetValue<string>()
-        { Thing = Thing }
+    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerType =
+        let Thing = node.[(Literals.something)].AsValue().GetValue<string> ()
+
+        {
+            Thing = Thing
+        }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JsonRecordType type
@@ -20,31 +23,32 @@ namespace ConsumePlugin
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JsonRecordType =
     /// Parse from a JSON node.
-    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : JsonRecordType =
+    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordType =
         let F =
-            node.["f"].AsArray()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<int>())
+            node.["f"].AsArray ()
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
             |> Array.ofSeq
 
         let E =
-            node.["e"].AsArray()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<string>())
+            node.["e"].AsArray ()
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> Array.ofSeq
 
         let D = InnerType.jsonParse node.["d"]
 
         let C =
-            node.["hi"].AsArray()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<int>())
+            node.["hi"].AsArray ()
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
             |> List.ofSeq
 
-        let B = node.["another-thing"].AsValue().GetValue<string>()
-        let A = node.["a"].AsValue().GetValue<int>()
+        let B = node.["another-thing"].AsValue().GetValue<string> ()
+        let A = node.["a"].AsValue().GetValue<int> ()
 
-        { A = A
-          B = B
-          C = C
-          D = D
-          E = E
-          F = F }
-
+        {
+            A = A
+            B = B
+            C = C
+            D = D
+            E = E
+            F = F
+        }
