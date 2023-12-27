@@ -62,6 +62,19 @@ module internal AstHelper =
         // TODO: consider FSharpList or whatever it is
         | _ -> false
 
+    let isArrayIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent with
+        | [ i ] when
+            System.String.Equals (i.idText, "array", System.StringComparison.OrdinalIgnoreCase)
+            || System.String.Equals (i.idText, "[]", System.StringComparison.Ordinal)
+            ->
+            true
+        // TODO: consider FSharpList or whatever it is
+        | [ i ] ->
+            printfn $"Not array: %s{i.idText}"
+            false
+        | _ -> false
+
 [<AutoOpen>]
 module internal SynTypePatterns =
     let (|OptionType|_|) (fieldType : SynType) =
@@ -76,11 +89,28 @@ module internal SynTypePatterns =
             Some innerType
         | _ -> None
 
+    let (|ArrayType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isArrayIdent ident ->
+            Some innerType
+        | SynType.Array (1, innerType, _) -> Some innerType
+        | _ -> None
+
     /// Returns the string name of the type.
     let (|PrimitiveType|_|) (fieldType : SynType) =
         match fieldType with
         | SynType.LongIdent ident ->
             match ident.LongIdent with
-            | [ i ] -> [ "string" ; "float" ; "int" ] |> List.tryFind (fun s -> s = i.idText)
+            | [ i ] ->
+                let primitives =
+                    [ "string" ; "float" ; "int" ; "bool" ; "System.DateTime" ; " System.DateOnly" ]
+                    |> List.tryFind (fun s -> s = i.idText)
+
+                match primitives with
+                | Some v -> Some v
+                | None ->
+
+                [ "DateTime", "System.DateTime" ; "DateOnly", "System.DateOnly" ]
+                |> List.tryPick (fun (abbrev, full) -> if abbrev = i.idText then Some full else None)
             | _ -> None
         | _ -> None

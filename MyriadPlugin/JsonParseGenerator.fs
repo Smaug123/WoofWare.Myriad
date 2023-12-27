@@ -17,23 +17,23 @@ module internal JsonParseGenerator =
     open Fantomas.FCS.Text.Range
     open Myriad.Core.Ast
 
-    let createParseLineValue (propertyName : SynExpr) (typeName : string) : SynExpr =
-        // node.["town"].AsValue().GetValue<string> ()
-        let indexed =
+    /// {node}.AsValue().GetValue<{typeName}> ()
+    let asValueGetValue (typeName : string) (node : SynExpr) : SynExpr =
+        let asValue =
             SynExpr.CreateApp (
                 SynExpr.DotGet (
-                    SynExpr.DotIndexedGet (SynExpr.Ident (Ident.Create "node"), propertyName, range0, range0),
+                    node,
                     range0,
                     SynLongIdent.SynLongIdent (id = [ Ident.Create "AsValue" ], dotRanges = [], trivia = [ None ]),
                     range0
                 ),
-                SynExpr.CreateConst (SynConst.Unit)
+                SynExpr.CreateConst SynConst.Unit
             )
 
         SynExpr.CreateApp (
             SynExpr.TypeApp (
                 SynExpr.DotGet (
-                    indexed,
+                    asValue,
                     range0,
                     SynLongIdent.SynLongIdent (id = [ Ident.Create "GetValue" ], dotRanges = [], trivia = [ None ]),
                     range0
@@ -52,20 +52,15 @@ module internal JsonParseGenerator =
             SynExpr.CreateConst SynConst.Unit
         )
 
-    let createParseLineCallThrough (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
-        // Type.jsonParse node.["town"]
-        let typeName =
-            match fieldType with
-            | SynType.LongIdent ident -> ident.LongIdent
-            | _ -> failwith $"Unrecognised type: %+A{fieldType}"
-
+    /// {type}.jsonParse {node}
+    let typeJsonParse (typeName : LongIdent) (node : SynExpr) : SynExpr =
         SynExpr.CreateApp (
             SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (typeName @ [ Ident.Create "jsonParse" ])),
-            SynExpr.DotIndexedGet (SynExpr.CreateIdentString "node", propertyName, range0, range0)
+            node
         )
 
     /// collectionType is e.g. "List"; we'll be calling `ofSeq` on it.
-    let createParseLineList (collectionType : string) (propertyName : SynExpr) (elementType : string) : SynExpr =
+    let asArrayMapped (collectionType : string) (node : SynExpr) (elementType : string) : SynExpr =
         // node.["openingHours"].AsArray()
         // |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
         // |> List.ofSeq
@@ -116,17 +111,7 @@ module internal JsonParseGenerator =
                             range0
                         ),
                         SynExpr.CreateApp (
-                            SynExpr.DotGet (
-                                SynExpr.DotIndexedGet (
-                                    SynExpr.CreateIdent (Ident.Create "node"),
-                                    propertyName,
-                                    range0,
-                                    range0
-                                ),
-                                range0,
-                                SynLongIdent.CreateString "AsArray",
-                                range0
-                            ),
+                            SynExpr.DotGet (node, range0, SynLongIdent.CreateString "AsArray", range0),
                             SynExpr.CreateConst SynConst.Unit
                         )
                     ),
@@ -170,16 +155,54 @@ module internal JsonParseGenerator =
             SynExpr.CreateLongIdent (SynLongIdent.Create [ collectionType ; "ofSeq" ])
         )
 
-    /// propertyName is probably a string literal, but it could be a [<Literal>] variable
-    let createParseRhs (varName : string) (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
+    /// match {node} with | null -> None | v -> Some {body}
+    /// Use the variable `v` to get access to the `Some`.
+    let createParseLineOption (node : SynExpr) (body : SynExpr) : SynExpr =
+        let body =
+            SynExpr.CreateApp (
+                SynExpr.CreateAppInfix (
+                    SynExpr.CreateLongIdent (
+                        SynLongIdent.SynLongIdent (
+                            [ Ident.Create "op_PipeRight" ],
+                            [],
+                            [ Some (IdentTrivia.OriginalNotation "|>") ]
+                        )
+                    ),
+                    body
+                ),
+                SynExpr.CreateIdentString "Some"
+            )
+
+        SynExpr.CreateMatch (
+            node,
+            [
+                SynMatchClause.Create (SynPat.CreateNull, None, SynExpr.CreateIdent (Ident.Create "None"))
+                SynMatchClause.Create (SynPat.CreateNamed (Ident.Create "v"), None, body)
+            ]
+        )
+
+    /// Given `node.["town"]`, for example, choose how to obtain a JSON value from it.
+    let rec parseNode (fieldType : SynType) (node : SynExpr) : SynExpr =
         match fieldType with
-        | OptionType ty -> failwith "TODO: options"
-        | PrimitiveType typeName -> createParseLineValue propertyName typeName
-        | ListType (PrimitiveType typeName) -> createParseLineList "List" propertyName typeName
+        | OptionType ty -> parseNode ty (SynExpr.CreateIdentString "v") |> createParseLineOption node
+        | PrimitiveType typeName -> asValueGetValue typeName node
+        | ListType (PrimitiveType typeName) -> asArrayMapped "List" node typeName
+        | ArrayType (PrimitiveType typeName) -> asArrayMapped "Array" node typeName
         // TODO: support recursive lists
         | _ ->
             // Let's just hope that we've also got our own type annotation!
-            createParseLineCallThrough propertyName fieldType
+            let typeName =
+                match fieldType with
+                | SynType.LongIdent ident -> ident.LongIdent
+                | _ -> failwith $"Unrecognised type: %+A{fieldType}"
+
+            typeJsonParse typeName node
+
+    /// propertyName is probably a string literal, but it could be a [<Literal>] variable
+    /// The result of this function is the body of a let-binding (not including the LHS of that let-binding).
+    let createParseRhs (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
+        SynExpr.DotIndexedGet (SynExpr.CreateIdentString "node", propertyName, range0, range0)
+        |> parseNode fieldType
 
     let createMaker (typeName : LongIdent) (fields : SynField list) =
         let xmlDoc = PreXmlDoc.Create " Parse from a JSON node."
@@ -237,7 +260,7 @@ module internal JsonParseGenerator =
                 SynBinding.Let (
                     isInline = false,
                     isMutable = false,
-                    expr = createParseRhs (id.ToString ()) propertyName fieldType,
+                    expr = createParseRhs propertyName fieldType,
                     valData = inputVal,
                     pattern = pattern
                 )

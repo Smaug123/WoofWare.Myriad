@@ -12,7 +12,8 @@ module TestJsonParse =
         let s =
             """
 {
-    "a": 3, "another-thing": "hello", "hi": [6, 1], "d": {"something": "oh hi"}
+    "a": 3, "another-thing": "hello", "hi": [6, 1], "d": {"something": "oh hi"},
+    "e": ["something", "else"], "f": []
 }
 """
 
@@ -25,6 +26,8 @@ module TestJsonParse =
                     {
                         Thing = "oh hi"
                     }
+                E = [| "something" ; "else" |]
+                F = [||]
             }
 
         let actual = s |> JsonNode.Parse |> JsonRecordType.jsonParse

@@ -24,6 +24,16 @@ namespace ConsumePlugin
 module JsonRecordType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordType =
+        let F =
+            node.["f"].AsArray ()
+            |> Seq.map (fun elt -> elt.GetValue<int> ())
+            |> Array.ofSeq
+
+        let E =
+            node.["e"].AsArray ()
+            |> Seq.map (fun elt -> elt.GetValue<string> ())
+            |> Array.ofSeq
+
         let D = InnerType.jsonParse node.["d"]
 
         let C =
@@ -31,8 +41,7 @@ module JsonRecordType =
             |> Seq.map (fun elt -> elt.GetValue<int> ())
             |> List.ofSeq
 
-        let B2 = node.["another-thing"].AsValue ()
-        let B = B2.GetValue<string> ()
+        let B = node.["another-thing"].AsValue().GetValue<string> ()
         let A = node.["a"].AsValue().GetValue<int> ()
 
         {
@@ -40,4 +49,6 @@ module JsonRecordType =
             B = B
             C = C
             D = D
+            E = E
+            F = F
         }
