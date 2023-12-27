@@ -5,6 +5,8 @@
     <NetCoreTargetingPackRoot>[UNDEFINED]</NetCoreTargetingPackRoot>
     <DisableImplicitLibraryPacksFolder>true</DisableImplicitLibraryPacksFolder>
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarnOn>FS3559</WarnOn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.128" PrivateAssets="all" />

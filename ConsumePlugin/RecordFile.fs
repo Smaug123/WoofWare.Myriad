@@ -5,7 +5,7 @@ type ParseState =
     | AwaitingValue of string
 
 /// My whatnot
-[<MyriadPlugin.RemoveOptions>]
+[<WoofWare.Myriad.Plugins.RemoveOptions>]
 type RecordType =
     {
         /// A thing!

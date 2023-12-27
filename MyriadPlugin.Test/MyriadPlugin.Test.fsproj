@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MyriadPlugin\MyriadPlugin.fsproj" />
+      <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj" />
       <ProjectReference Include="..\ConsumePlugin\ConsumePlugin.fsproj" />
     </ItemGroup>
 

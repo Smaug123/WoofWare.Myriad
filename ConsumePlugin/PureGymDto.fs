@@ -6,7 +6,7 @@ open System
 open System.Text.Json.Serialization
 
 /// Describes the opening hours of a given gym.
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type GymOpeningHours =
     {
         /// If this is true, there should be no OpeningHours (but nothing enforces that).
@@ -23,7 +23,7 @@ type GymOpeningHours =
             this.OpeningHours |> String.concat ", "
 
 /// How a human can authenticate with a gym when they physically try to enter it
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type GymAccessOptions =
     {
         /// This gym has PIN entry pads
@@ -33,7 +33,7 @@ type GymAccessOptions =
     }
 
 /// Where a gym is on the Earth
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type GymLocation =
     {
         /// Measured in degrees
@@ -45,7 +45,7 @@ type GymLocation =
     }
 
 /// The postal address of a gym
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type GymAddress =
     {
         /// E.g. "Canterbury Court"
@@ -80,7 +80,7 @@ type GymAddress =
         |> String.concat "\n"
 
 /// Metadata about a physical gym
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type Gym =
     {
         // The following fields are returned but are always null
@@ -135,7 +135,7 @@ Opening hours: %s{string<GymOpeningHours> this.GymOpeningHours}
 """
 
 /// A human member of PureGym
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type Member =
     {
         /// This member's ID. This is a fairly large number.
@@ -171,7 +171,7 @@ type Member =
     }
 
 /// Statistics for how many people are currently at a gym
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type GymAttendance =
     {
         /// This appears always to be just equal to TotalPeopleInGym, but a string.
@@ -216,7 +216,7 @@ type MemberActivityThisMonth =
     }
 
 /// Don't use this type. It's public because System.Text.Json can't do private types.
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type MemberActivityDto =
     {
         [<JsonRequired>]
@@ -243,7 +243,7 @@ type MemberActivityDto =
             LastRefreshed = this.LastRefreshed
         }
 
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type SessionsAggregate =
     {
         /// Number of gym "activities" within some query-defined time period; presumably this is like classes?
@@ -256,7 +256,7 @@ type SessionsAggregate =
     }
 
 /// The DTO for gym info returned from the Sessions endpoint.
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type VisitGym =
     {
         // Omitting Location, GymAccess, ContactInfo, TimeZone because these were all null for me
@@ -269,7 +269,7 @@ type VisitGym =
     }
 
 /// Summary of a single visit to a gym.
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type Visit =
     {
         // Omitted Name because it always was null for me
@@ -289,7 +289,7 @@ type Visit =
         $"%s{this.Gym.Name}: %s{startTime} (%i{this.Duration} minutes)"
 
 /// Aggregate statistics for gym visits across a time period.
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type SessionsSummary =
     {
         /// Aggregate stats for gym visits within the query-dependent time period.
@@ -302,7 +302,7 @@ type SessionsSummary =
     override this.ToString () =
         $"%i{this.Total.Visits} visits, totalling %i{this.Total.Duration} minutes"
 
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type Sessions =
     {
         Summary : SessionsSummary

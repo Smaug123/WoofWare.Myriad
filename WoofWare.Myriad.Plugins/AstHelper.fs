@@ -1,4 +1,4 @@
-namespace MyriadPlugin
+namespace WoofWare.Myriad.Plugins
 
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
