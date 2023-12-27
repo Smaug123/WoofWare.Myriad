@@ -11,7 +11,7 @@ namespace ConsumePlugin
 module InnerType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerType =
-        let Thing = node.["something"].AsValue().GetValue<string> ()
+        let Thing = node.[(Literals.something)].AsValue().GetValue<string> ()
 
         {
             Thing = Thing
@@ -31,7 +31,8 @@ module JsonRecordType =
             |> Seq.map (fun elt -> elt.GetValue<int> ())
             |> List.ofSeq
 
-        let B = node.["b"].AsValue().GetValue<string> ()
+        let B2 = node.["another-thing"].AsValue ()
+        let B = B2.GetValue<string> ()
         let A = node.["a"].AsValue().GetValue<int> ()
 
         {

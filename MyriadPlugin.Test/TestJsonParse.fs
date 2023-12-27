@@ -12,7 +12,7 @@ module TestJsonParse =
         let s =
             """
 {
-    "a": 3, "b": "hello", "hi": [6, 1], "d": {"something": "oh hi"}
+    "a": 3, "another-thing": "hello", "hi": [6, 1], "d": {"something": "oh hi"}
 }
 """
 

@@ -27,6 +27,11 @@
     sha256 = "0733dm5zjdp8w5wwalqlv1q52pghfr04863i9wy807f4qfd7rrin";
   })
   (fetchNuGet {
+    pname = "FsCheck";
+    version = "2.16.6";
+    sha256 = "176rwky6b5rk8dzldiz4068p7m9c5y9ygzbhadrs14jkl94pc56n";
+  })
+  (fetchNuGet {
     pname = "FSharp.Core";
     version = "6.0.1";
     sha256 = "0qks2aadkhsffg9a6xq954ll9xacnph852avd7ljh9n2g6vj06qj";
@@ -35,6 +40,11 @@
     pname = "FSharp.Core";
     version = "8.0.100";
     sha256 = "06z3vg8yj7i83x6gmnzl2lka1bp4hzc07h6mrydpilxswnmy2a0l";
+  })
+  (fetchNuGet {
+    pname = "FsUnit";
+    version = "5.6.1";
+    sha256 = "1zffn9dm2c44v8qjzwfg6y3psydiv2bn3n305rf7mc57cmm4ygv3";
   })
   (fetchNuGet {
     pname = "Microsoft.AspNetCore.App.Ref";
@@ -328,8 +338,8 @@
   })
   (fetchNuGet {
     pname = "NUnit";
-    version = "3.13.3";
-    sha256 = "0wdzfkygqnr73s6lpxg5b1pwaqz9f414fxpvpdmf72bvh4jaqzv6";
+    version = "3.14.0";
+    sha256 = "19p8911lrfds1k9rv47jk1bbn665s0pvghkd06gzbg78j6mzzqqa";
   })
   (fetchNuGet {
     pname = "NUnit.Analyzers";

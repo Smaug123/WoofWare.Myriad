@@ -19,22 +19,21 @@ module internal JsonParseGenerator =
 
     let createParseLineValue (propertyName : SynExpr) (typeName : string) : SynExpr =
         // node.["town"].AsValue().GetValue<string> ()
+        let indexed =
+            SynExpr.CreateApp (
+                SynExpr.DotGet (
+                    SynExpr.DotIndexedGet (SynExpr.Ident (Ident.Create "node"), propertyName, range0, range0),
+                    range0,
+                    SynLongIdent.SynLongIdent (id = [ Ident.Create "AsValue" ], dotRanges = [], trivia = [ None ]),
+                    range0
+                ),
+                SynExpr.CreateConst (SynConst.Unit)
+            )
+
         SynExpr.CreateApp (
             SynExpr.TypeApp (
                 SynExpr.DotGet (
-                    SynExpr.CreateApp (
-                        SynExpr.DotGet (
-                            SynExpr.DotIndexedGet (SynExpr.Ident (Ident.Create "node"), propertyName, range0, range0),
-                            range0,
-                            SynLongIdent.SynLongIdent (
-                                id = [ Ident.Create "AsValue" ],
-                                dotRanges = [],
-                                trivia = [ None ]
-                            ),
-                            range0
-                        ),
-                        SynExpr.CreateConst (SynConst.Unit)
-                    ),
+                    indexed,
                     range0,
                     SynLongIdent.SynLongIdent (id = [ Ident.Create "GetValue" ], dotRanges = [], trivia = [ None ]),
                     range0
@@ -50,7 +49,7 @@ module internal JsonParseGenerator =
                 range0,
                 range0
             ),
-            SynExpr.CreateConst (SynConst.Unit)
+            SynExpr.CreateConst SynConst.Unit
         )
 
     let createParseLineCallThrough (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
@@ -308,7 +307,7 @@ module internal JsonParseGenerator =
         let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
             typeDefn
 
-        let (SynComponentInfo (_attributes, _typeParams, _constraints, recordId, doc, _preferPostfix, _access, _)) =
+        let (SynComponentInfo (_attributes, _typeParams, _constraints, recordId, _, _preferPostfix, _access, _)) =
             synComponentInfo
 
         match synTypeDefnRepr with
