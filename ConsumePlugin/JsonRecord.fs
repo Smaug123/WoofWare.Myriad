@@ -25,4 +25,6 @@ type JsonRecordType =
         [<System.Text.Json.Serialization.JsonPropertyName "hi">]
         C : int list
         D : InnerType
+        E : string array
+        F : int[]
     }
