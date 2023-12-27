@@ -3,8 +3,8 @@
 {fetchNuGet}: [
   (fetchNuGet {
     pname = "fsharp-analyzers";
-    version = "0.16.0";
-    sha256 = "sha256-yGc4oV1fEAfeWUf/y60VUeps3lJWnvVjomWFeVEyXVE=";
+    version = "0.22.0";
+    sha256 = "sha256-wDS7aE4VI718iwU8xUm0aCOYIcFpMuqWu9+H5d+8XAA=";
   })
   (fetchNuGet {
     pname = "fantomas";
