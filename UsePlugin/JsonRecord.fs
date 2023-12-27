@@ -1,8 +1,11 @@
 namespace UsePlugin
 
+open System.Text.Json.Serialization
+
 [<MyriadPlugin.JsonParse>]
 type InnerType =
     {
+        [<JsonPropertyName "something">]
         Thing : string
     }
 
@@ -14,6 +17,7 @@ type JsonRecordType =
         A : int
         /// Another thing!
         B : string
+        [<System.Text.Json.Serialization.JsonPropertyName "hi">]
         C : int list
         D : InnerType
     }

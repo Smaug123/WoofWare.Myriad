@@ -1,6 +1,7 @@
 namespace MyriadPlugin
 
 open System
+open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
@@ -16,19 +17,14 @@ module internal JsonParseGenerator =
     open Fantomas.FCS.Text.Range
     open Myriad.Core.Ast
 
-    let createParseLineValue (jsonName : string) (typeName : string) : SynExpr =
+    let createParseLineValue (propertyName : SynExpr) (typeName : string) : SynExpr =
         // node.["town"].AsValue().GetValue<string> ()
         SynExpr.CreateApp (
             SynExpr.TypeApp (
                 SynExpr.DotGet (
                     SynExpr.CreateApp (
                         SynExpr.DotGet (
-                            SynExpr.DotIndexedGet (
-                                SynExpr.Ident (Ident.Create "node"),
-                                SynExpr.CreateConstString jsonName,
-                                range0,
-                                range0
-                            ),
+                            SynExpr.DotIndexedGet (SynExpr.Ident (Ident.Create "node"), propertyName, range0, range0),
                             range0,
                             SynLongIdent.SynLongIdent (
                                 id = [ Ident.Create "AsValue" ],
@@ -57,7 +53,7 @@ module internal JsonParseGenerator =
             SynExpr.CreateConst (SynConst.Unit)
         )
 
-    let createParseLineCallThrough (jsonName : string) (fieldType : SynType) : SynExpr =
+    let createParseLineCallThrough (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
         // Type.jsonParse node.["town"]
         let typeName =
             match fieldType with
@@ -66,11 +62,11 @@ module internal JsonParseGenerator =
 
         SynExpr.CreateApp (
             SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (typeName @ [ Ident.Create "jsonParse" ])),
-            SynExpr.DotIndexedGet (SynExpr.CreateIdentString "node", SynExpr.CreateConstString jsonName, range0, range0)
+            SynExpr.DotIndexedGet (SynExpr.CreateIdentString "node", propertyName, range0, range0)
         )
 
     /// collectionType is e.g. "List"; we'll be calling `ofSeq` on it.
-    let createParseLineList (collectionType : string) (jsonName : string) (elementType : string) : SynExpr =
+    let createParseLineList (collectionType : string) (propertyName : SynExpr) (elementType : string) : SynExpr =
         // node.["openingHours"].AsArray()
         // |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
         // |> List.ofSeq
@@ -124,7 +120,7 @@ module internal JsonParseGenerator =
                             SynExpr.DotGet (
                                 SynExpr.DotIndexedGet (
                                     SynExpr.CreateIdent (Ident.Create "node"),
-                                    SynExpr.CreateConstString jsonName,
+                                    propertyName,
                                     range0,
                                     range0
                                 ),
@@ -175,15 +171,16 @@ module internal JsonParseGenerator =
             SynExpr.CreateLongIdent (SynLongIdent.Create [ collectionType ; "ofSeq" ])
         )
 
-    let createParseRhs (varName : string) (jsonName : string) (fieldType : SynType) : SynExpr =
+    /// propertyName is probably a string literal, but it could be a [<Literal>] variable
+    let createParseRhs (varName : string) (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
         match fieldType with
         | OptionType ty -> failwith "TODO: options"
-        | PrimitiveType typeName -> createParseLineValue jsonName typeName
-        | ListType (PrimitiveType typeName) -> createParseLineList "List" jsonName typeName
+        | PrimitiveType typeName -> createParseLineValue propertyName typeName
+        | ListType (PrimitiveType typeName) -> createParseLineList "List" propertyName typeName
         // TODO: support recursive lists
         | _ ->
             // Let's just hope that we've also got our own type annotation!
-            createParseLineCallThrough jsonName fieldType
+            createParseLineCallThrough propertyName fieldType
 
     let createMaker (typeName : LongIdent) (fields : SynField list) =
         let xmlDoc = PreXmlDoc.Create " Parse from a JSON node."
@@ -203,10 +200,34 @@ module internal JsonParseGenerator =
 
         let assignments =
             fields
-            |> List.map (fun (SynField (_, _, id, fieldType, _, _, _, _, _)) ->
+            |> List.map (fun (SynField (attrs, _, id, fieldType, _, _, _, _, _)) ->
+                let id =
+                    match id with
+                    | None -> failwith "didn't get an ID on field"
+                    | Some id -> id
+
+                let propertyNameAttr =
+                    attrs
+                    |> List.collect (fun l -> l.Attributes)
+                    |> List.tryFind (fun attr ->
+                        attr.TypeName.AsString.EndsWith ("JsonPropertyName", StringComparison.Ordinal)
+                    )
+
+                let propertyName =
+                    match propertyNameAttr with
+                    | None ->
+                        let sb = StringBuilder id.idText.Length
+                        sb.Append (Char.ToLowerInvariant id.idText.[0]) |> ignore
+
+                        if id.idText.Length > 1 then
+                            sb.Append id.idText.[1..] |> ignore
+
+                        sb.ToString () |> SynConst.CreateString |> SynExpr.CreateConst
+                    | Some name -> name.ArgExpr
+
                 let pattern =
                     SynPat.LongIdent (
-                        SynLongIdent.CreateFromLongIdent [ Option.get id ],
+                        SynLongIdent.CreateFromLongIdent [ id ],
                         None,
                         None,
                         SynArgPats.Empty,
@@ -217,8 +238,7 @@ module internal JsonParseGenerator =
                 SynBinding.Let (
                     isInline = false,
                     isMutable = false,
-                    // TODO: id.Value.idText is gross for many reasons
-                    expr = createParseRhs (id.ToString ()) id.Value.idText fieldType,
+                    expr = createParseRhs (id.ToString ()) propertyName fieldType,
                     valData = inputVal,
                     pattern = pattern
                 )
