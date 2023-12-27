@@ -1,6 +1,4 @@
-namespace UsePlugin
-
-open System
+namespace ConsumePlugin
 
 type ParseState =
     | AwaitingKey

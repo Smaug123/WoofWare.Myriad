@@ -48,7 +48,7 @@
             src = ./nix/fetchDeps.sh;
             pname = pname;
             binPath = pkgs.lib.makeBinPath [pkgs.coreutils dotnet-sdk (pkgs.nuget-to-nix.override {inherit dotnet-sdk;})];
-            projectFiles = toString ["./MyriadPlugin/MyriadPlugin.fsproj" "./UsePlugin/UsePlugin.fsproj"];
+            projectFiles = toString ["./MyriadPlugin/MyriadPlugin.fsproj" "./ConsumePlugin/ConsumePlugin.fsproj"];
             testProjectFiles = ["./MyriadPlugin.Test/MyriadPlugin.Test.fsproj"];
             rids = pkgs.lib.concatStringsSep "\" \"" runtimeIds;
             packages = dotnet-sdk.packages;

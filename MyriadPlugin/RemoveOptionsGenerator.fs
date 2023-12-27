@@ -11,46 +11,10 @@ open Myriad.Core
 type RemoveOptionsAttribute () =
     inherit Attribute ()
 
-module internal Create =
+[<RequireQualifiedAccess>]
+module internal RemoveOptionsGenerator =
     open Fantomas.FCS.Text.Range
     open Myriad.Core.Ast
-
-    let createRecordMyriad fields =
-        // TODO: this first equals-None requires a range
-        let fields =
-            fields
-            |> List.map (fun (rfn, synExpr) -> SynExprRecordField (rfn, Some range0, synExpr, None))
-
-        SynExpr.Record (None, None, fields, range0)
-
-    let createFromRepr (name : Ident, repr : SynTypeDefnRepr, members : SynMemberDefns, xmldoc : PreXmlDoc) =
-        let name = SynComponentInfo.Create ([ name ], xmldoc = xmldoc)
-
-        let trivia : SynTypeDefnTrivia =
-            {
-                LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
-                EqualsRange = Some range0
-                WithKeyword = Some range0
-            }
-
-        SynTypeDefn (name, repr, members, None, range0, trivia)
-
-    let createRecord (name : Ident, fields : SynField seq, members : SynMemberDefns option, xmldoc : PreXmlDoc option) =
-        let repr =
-            SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (None, Seq.toList fields, range0), range0)
-
-        createFromRepr (name, repr, defaultArg members SynMemberDefns.Empty, defaultArg xmldoc PreXmlDoc.Empty)
-
-    let isOptionIdent (ident : SynLongIdent) : bool =
-        match ident.LongIdent with
-        | [ i ] when String.Equals (i.idText, "option", StringComparison.OrdinalIgnoreCase) -> true
-        // TODO: consider Microsoft.FSharp.Option or whatever it is
-        | _ -> false
-
-    let (|OptionType|_|) (fieldType : SynType) =
-        match fieldType with
-        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when isOptionIdent ident -> Some innerType
-        | _ -> None
 
     let private removeOption (s : SynField) : SynField =
         let (SynField.SynField (synAttributeLists,
@@ -88,8 +52,8 @@ module internal Create =
 
         let typeDecl : SynTypeDefn =
             match xmlDoc with
-            | None -> createRecord (name, fields, None, None)
-            | Some xmlDoc -> createRecord (name, fields, None, Some xmlDoc)
+            | None -> AstHelper.defineRecordType (name, fields, None, None)
+            | Some xmlDoc -> AstHelper.defineRecordType (name, fields, None, Some xmlDoc)
 
         SynModuleDecl.Types ([ typeDecl ], range0)
 
@@ -150,7 +114,7 @@ module internal Create =
 
                 (SynLongIdent.CreateFromLongIdent [ id ], true), Some body
             )
-            |> createRecordMyriad
+            |> AstHelper.constructRecord
 
         let pattern =
             SynPat.LongIdent (
@@ -261,7 +225,7 @@ type RemoveOptionsGenerator () =
                 |> List.collect (fun (ns, records) ->
                     records
                     |> List.map (fun record ->
-                        let recordModule = Create.createRecordModule ns record
+                        let recordModule = RemoveOptionsGenerator.createRecordModule ns record
                         recordModule
                     )
                 )
