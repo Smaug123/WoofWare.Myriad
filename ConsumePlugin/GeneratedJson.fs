@@ -26,19 +26,19 @@ module JsonRecordType =
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordType =
         let F =
             node.["f"].AsArray ()
-            |> Seq.map (fun elt -> elt.GetValue<int> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
             |> Array.ofSeq
 
         let E =
             node.["e"].AsArray ()
-            |> Seq.map (fun elt -> elt.GetValue<string> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> Array.ofSeq
 
         let D = InnerType.jsonParse node.["d"]
 
         let C =
             node.["hi"].AsArray ()
-            |> Seq.map (fun elt -> elt.GetValue<int> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
             |> List.ofSeq
 
         let B = node.["another-thing"].AsValue().GetValue<string> ()

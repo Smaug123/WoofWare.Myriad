@@ -60,30 +60,12 @@ module internal JsonParseGenerator =
         )
 
     /// collectionType is e.g. "List"; we'll be calling `ofSeq` on it.
+    /// body is the body of a lambda which takes a parameter `elt`.
     /// {node}.AsArray()
-    /// |> Seq.map (fun elt -> elt.AsValue().GetValue<{elementType}>())
+    /// |> Seq.map (fun elt -> {body})
     /// |> {collectionType}.ofSeq
-    let asArrayMapped (collectionType : string) (node : SynExpr) (elementType : string) : SynExpr =
+    let asArrayMapped (collectionType : string) (node : SynExpr) (body : SynExpr) : SynExpr =
         let parsedDataPat = [ SynPat.CreateNamed (Ident.Create "elt") ]
-
-        let parsedData =
-            SynExpr.CreateApp (
-                SynExpr.TypeApp (
-                    SynExpr.DotGet (
-                        SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"),
-                        range0,
-                        SynLongIdent.Create [ "GetValue" ],
-                        range0
-                    ),
-                    range0,
-                    [ SynType.CreateLongIdent elementType ],
-                    [],
-                    Some range0,
-                    range0,
-                    range0
-                ),
-                SynExpr.CreateConst SynConst.Unit
-            )
 
         SynExpr.CreateApp (
             SynExpr.CreateAppInfix (
@@ -121,8 +103,8 @@ module internal JsonParseGenerator =
                                 false,
                                 false,
                                 SynSimplePats.Create [ SynSimplePat.CreateId (Ident.Create "elt") ],
-                                parsedData,
-                                Some (parsedDataPat, parsedData),
+                                body,
+                                Some (parsedDataPat, body),
                                 range0,
                                 {
                                     ArrowRange = Some range0
@@ -161,13 +143,40 @@ module internal JsonParseGenerator =
             ]
         )
 
+    let eltGetValue (elementType : string) : SynExpr =
+        SynExpr.CreateApp (
+            SynExpr.TypeApp (
+                SynExpr.DotGet (
+                    SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"),
+                    range0,
+                    SynLongIdent.Create [ "GetValue" ],
+                    range0
+                ),
+                range0,
+                [ SynType.CreateLongIdent elementType ],
+                [],
+                Some range0,
+                range0,
+                range0
+            ),
+            SynExpr.CreateConst SynConst.Unit
+        )
+
     /// Given `node.["town"]`, for example, choose how to obtain a JSON value from it.
     let rec parseNode (fieldType : SynType) (node : SynExpr) : SynExpr =
         match fieldType with
         | OptionType ty -> parseNode ty (SynExpr.CreateIdentString "v") |> createParseLineOption node
         | PrimitiveType typeName -> asValueGetValue typeName node
-        | ListType (PrimitiveType typeName) -> asArrayMapped "List" node typeName
-        | ArrayType (PrimitiveType typeName) -> asArrayMapped "Array" node typeName
+        | ListType (PrimitiveType typeName) ->
+            asArrayMapped
+                "List"
+                node
+                (asValueGetValue typeName (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt")))
+        | ArrayType (PrimitiveType typeName) ->
+            asArrayMapped
+                "Array"
+                node
+                (asValueGetValue typeName (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt")))
         // TODO: support recursive lists
         | _ ->
             // Let's just hope that we've also got our own type annotation!
