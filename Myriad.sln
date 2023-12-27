@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "UsePlugin", "UsePlugin\UsePlugin.fsproj", "{0D174482-9CB2-448A-8BA8-846FAEC65579}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ConsumePlugin", "ConsumePlugin\ConsumePlugin.fsproj", "{0D174482-9CB2-448A-8BA8-846FAEC65579}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyriadPlugin", "MyriadPlugin\MyriadPlugin.fsproj", "{DB86C53B-4090-4791-884B-024C5759855F}"
 EndProject

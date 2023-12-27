@@ -3,7 +3,7 @@
 //        Changes to this file will be lost when the code is regenerated.
 //------------------------------------------------------------------------------
 
-namespace UsePlugin
+namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the InnerType type
 [<RequireQualifiedAccess>]
@@ -16,7 +16,7 @@ module InnerType =
         {
             Thing = Thing
         }
-namespace UsePlugin
+namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JsonRecordType type
 [<RequireQualifiedAccess>]

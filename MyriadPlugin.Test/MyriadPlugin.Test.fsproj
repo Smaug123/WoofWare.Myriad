@@ -9,12 +9,16 @@
 
     <ItemGroup>
         <Compile Include="TestSurface.fs" />
+        <Compile Include="TestRemoveOptions.fs" />
+        <Compile Include="TestJsonParse.fs" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="ApiSurface" Version="4.0.25" />
+        <PackageReference Include="FsCheck" Version="2.16.6" />
+        <PackageReference Include="FsUnit" Version="5.6.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
-        <PackageReference Include="NUnit" Version="3.13.3" />
+        <PackageReference Include="NUnit" Version="3.14.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
         <PackageReference Include="NUnit.Analyzers" Version="3.6.1" />
         <PackageReference Include="coverlet.collector" Version="3.2.0" />
@@ -22,6 +26,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MyriadPlugin\MyriadPlugin.fsproj" />
+      <ProjectReference Include="..\ConsumePlugin\ConsumePlugin.fsproj" />
     </ItemGroup>
 
 </Project>

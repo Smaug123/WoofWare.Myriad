@@ -1,4 +1,4 @@
-namespace UsePlugin
+namespace ConsumePlugin
 
 open System.Text.Json.Serialization
 

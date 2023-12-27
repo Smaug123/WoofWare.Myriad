@@ -10,6 +10,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>myriad;fsharp;source-generator;source-gen;json</PackageTags>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarnOn>FS3559</WarnOn>
   </PropertyGroup>
 
   <ItemGroup>
