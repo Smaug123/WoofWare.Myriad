@@ -39,6 +39,25 @@ jobs:
     - name: Test
       run: nix develop --command dotnet test --no-build --verbosity normal --configuration ${{matrix.config}}
 
+  analyzers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v24
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare analyzers
+        run: nix develop --command dotnet restore analyzers/analyzers.fsproj
+      - name: Run analyzers
+        run: nix run .#fsharp-analyzers -- --project ./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj --analyzers-path ./.analyzerpackages/g-research.fsharp.analyzers/0.6.0/ --verbosity detailed --report ./analysis.sarif --treat-as-error GRA-STRING-001 GRA-STRING-002 GRA-STRING-003 GRA-UNIONCASE-001 GRA-INTERPOLATED-001 GRA-TYPE-ANNOTATE-001 GRA-VIRTUALCALL-001 GRA-IMMUTABLECOLLECTIONEQUALITY-001 GRA-JSONOPTS-001 GRA-LOGARGFUNCFULLAPP-001
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: analysis.sarif
+
   build-nix:
     runs-on: ubuntu-latest
     steps:
@@ -89,7 +108,7 @@ jobs:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Run link checker
-        run: nix develop --command markdown-link-check README.md
+        run: nix develop --command markdown-link-check README.md CONTRIBUTING.md
 
   flake-check:
     name: Check flake
@@ -104,8 +123,43 @@ jobs:
       - name: Flake check
         run: nix flake check
 
+  nuget-pack:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # so that NerdBank.GitVersioning has access to history
+    - name: Install Nix
+      uses: cachix/install-nix-action@v24
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+    - name: Restore dependencies
+      run: nix develop --command dotnet restore
+    - name: Build
+      run: nix develop --command dotnet build --no-restore --configuration Release
+    - name: Pack
+      run: nix develop --command dotnet pack --configuration Release
+    - name: Upload NuGet artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-package
+        path: WoofWare.Myriad.Plugins/bin/Release/WoofWare.Myriad.Plugins.*.nupkg
+
+  expected-pack:
+    needs: [nuget-pack]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download NuGet artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+      - name: Check NuGet contents
+        # Verify that there is exactly one nupkg in the artifact that would be NuGet published
+        run: if [[ $(find . -maxdepth 1 -name 'WoofWare.Myriad.Plugins.*.nupkg' -printf c | wc -c) -ne "1" ]]; then exit 1; fi
+
   all-required-checks-complete:
-    needs: [check-dotnet-format, check-nix-format, build, build-nix, linkcheck, flake-check]
+    needs: [check-dotnet-format, check-nix-format, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All required checks complete."

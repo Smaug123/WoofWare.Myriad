@@ -2,6 +2,11 @@
 # Please don't edit it manually, your changes might get overwritten!
 {fetchNuGet}: [
   (fetchNuGet {
+    pname = "fsharp-analyzers";
+    version = "0.22.0";
+    sha256 = "sha256-wDS7aE4VI718iwU8xUm0aCOYIcFpMuqWu9+H5d+8XAA=";
+  })
+  (fetchNuGet {
     pname = "fantomas";
     version = "6.3.0-alpha-005";
     sha256 = "sha256-Jmo7s8JMdQ8SxvNvPnryfE7n24mIgKi5cbgNwcQw3yU=";

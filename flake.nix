@@ -14,11 +14,11 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      pname = "fsharp-arguments";
+      pname = "WoofWare.Myriad.Plugins";
       dotnet-sdk = pkgs.dotnet-sdk_8;
       dotnet-runtime = pkgs.dotnetCorePackages.runtime_8_0;
       version = "0.1";
-      dotnetTool = toolName: toolVersion: sha256:
+      dotnetTool = dllOverride: toolName: toolVersion: sha256:
         pkgs.stdenvNoCC.mkDerivation rec {
           name = toolName;
           version = toolVersion;
@@ -29,17 +29,23 @@
             sha256 = sha256;
             installPhase = ''mkdir -p $out/bin && cp -r tools/net6.0/any/* $out/bin'';
           };
-          installPhase = ''
+          installPhase = let
+            dll =
+              if isNull dllOverride
+              then name
+              else dllOverride;
+          in ''
             runHook preInstall
             mkdir -p "$out/lib"
             cp -r ./bin/* "$out/lib"
-            makeWrapper "${dotnet-runtime}/bin/dotnet" "$out/bin/${name}" --add-flags "$out/lib/${name}.dll"
+            makeWrapper "${dotnet-runtime}/bin/dotnet" "$out/bin/${name}" --add-flags "$out/lib/${dll}.dll"
             runHook postInstall
           '';
         };
     in {
       packages = {
-        fantomas = dotnetTool "fantomas" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fantomas.version "sha256-Jmo7s8JMdQ8SxvNvPnryfE7n24mIgKi5cbgNwcQw3yU=";
+        fantomas = dotnetTool null "fantomas" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fantomas.version "sha256-Jmo7s8JMdQ8SxvNvPnryfE7n24mIgKi5cbgNwcQw3yU=";
+        fsharp-analyzers = dotnetTool "FSharp.Analyzers.Cli" "fsharp-analyzers" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fsharp-analyzers.version "sha256-wDS7aE4VI718iwU8xUm0aCOYIcFpMuqWu9+H5d+8XAA=";
         fetchDeps = let
           flags = [];
           runtimeIds = ["win-x64"] ++ map (system: pkgs.dotnetCorePackages.systemToDotnetRid system) dotnet-sdk.meta.platforms;
@@ -60,7 +66,7 @@
           }));
         default = pkgs.buildDotnetModule {
           pname = pname;
-          name = "argument-helpers";
+          name = "WoofWare.Myriad.Plugins";
           version = version;
           src = ./.;
           projectFile = "./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj";

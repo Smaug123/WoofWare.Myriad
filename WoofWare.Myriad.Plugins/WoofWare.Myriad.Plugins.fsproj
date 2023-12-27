@@ -7,6 +7,7 @@
     <Copyright>Copyright (c) Patrick Stevens 2023</Copyright>
     <Description>Provides some Myriad compile-time code generation plugins.</Description>
     <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Smaug123/WoofWare.Myriad</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>myriad;fsharp;source-generator;source-gen;json</PackageTags>
@@ -27,6 +28,10 @@
     <Compile Include="JsonParseGenerator.fs" />
     <None Include="version.json" />
     <EmbeddedResource Include="SurfaceBaseline.txt" />
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
