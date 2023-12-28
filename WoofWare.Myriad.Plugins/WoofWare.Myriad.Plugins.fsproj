@@ -30,7 +30,7 @@
     <Compile Include="RemoveOptionsGenerator.fs" />
     <Compile Include="JsonParseGenerator.fs" />
     <Compile Include="HttpClientGenerator.fs" />
-    <None Include="version.json" />
+    <EmbeddedResource Include="version.json" />
     <EmbeddedResource Include="SurfaceBaseline.txt" />
     <None Include="..\README.md">
       <Pack>True</Pack>
