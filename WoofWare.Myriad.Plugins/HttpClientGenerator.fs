@@ -233,31 +233,49 @@ module internal HttpClientGenerator =
             match queryParams with
             | [] -> requestUriTrailer
             | (firstKey, firstValue) :: queryParams ->
-                let firstValue =
+                let firstValueId =
                     match firstValue.Id with
                     | None -> failwith "Unable to get parameter variable name from anonymous parameter"
                     | Some id -> id
 
+                let toString (ident : SynExpr) (ty : SynType) =
+                    match ty with
+                    | DateOnly ->
+                        ident
+                        |> SynExpr.callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-dd")
+                    | DateTime ->
+                        ident
+                        |> SynExpr.callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-ddTHH:mm:ss")
+                    | _ -> SynExpr.callMethod "ToString" ident
+
                 let prefix =
-                    SynExpr.plus
-                        (SynExpr.plus requestUriTrailer (SynExpr.CreateConstString ("?" + firstKey + "=")))
-                        (SynExpr.callMethod "ToString" (SynExpr.CreateIdent firstValue))
+                    toString (SynExpr.CreateIdent firstValueId) firstValue.Type
+                    |> SynExpr.CreateParen
+                    |> SynExpr.pipeThroughFunction (
+                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ])
+                    )
+                    |> SynExpr.CreateParen
+                    |> SynExpr.plus (SynExpr.CreateConstString ("?" + firstKey + "="))
 
                 (prefix, queryParams)
                 ||> List.fold (fun uri (paramKey, paramValue) ->
-                    let paramValue =
+                    let paramValueId =
                         match paramValue.Id with
                         | None -> failwith "Unable to get parameter variable name from anonymous parameter"
                         | Some id -> id
 
-                    SynExpr.plus
-                        (SynExpr.plus uri (SynExpr.CreateConstString ("&" + paramKey + "=")))
-                        (SynExpr.callMethod "ToString" (SynExpr.CreateIdent paramValue))
+                    toString (SynExpr.CreateIdent paramValueId) paramValue.Type
+                    |> SynExpr.CreateParen
+                    |> SynExpr.pipeThroughFunction (
+                        SynExpr.CreateLongIdent (
+                            SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ]
+                        )
+                    )
+                    |> SynExpr.CreateParen
+                    |> SynExpr.plus (SynExpr.plus uri (SynExpr.CreateConstString ("&" + paramKey + "=")))
                 )
+                |> SynExpr.plus requestUriTrailer
                 |> SynExpr.CreateParen
-                |> SynExpr.pipeThroughFunction (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ])
-                )
 
         let requestUri =
             SynExpr.App (

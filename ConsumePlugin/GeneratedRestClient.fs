@@ -25,7 +25,10 @@ module PureGymApi =
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri = System.Uri (client.BaseAddress.ToString () + "/v1/gyms/")
+                            RequestUri =
+                                System.Uri (
+                                    client.BaseAddress.ToString () + "/v1/gyms/" |> System.Web.HttpUtility.UrlEncode
+                                )
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -51,6 +54,7 @@ module PureGymApi =
                                 System.Uri (
                                     client.BaseAddress.ToString ()
                                     + "/v1/gyms/{gym_id}/attendance".Replace ("{gym_id}", gymId.ToString ())
+                                    |> System.Web.HttpUtility.UrlEncode
                                 )
                         )
 
@@ -73,7 +77,11 @@ module PureGymApi =
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri = System.Uri (client.BaseAddress.ToString () + "/v1/member")
+                            RequestUri =
+                                System.Uri (
+                                    client.BaseAddress.ToString () + "/v1/member"
+                                    |> System.Web.HttpUtility.UrlEncode
+                                )
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -99,6 +107,7 @@ module PureGymApi =
                                 System.Uri (
                                     client.BaseAddress.ToString ()
                                     + "/v1/gyms/{gym_id}".Replace ("{gym_id}", gymId.ToString ())
+                                    |> System.Web.HttpUtility.UrlEncode
                                 )
                         )
 
@@ -121,7 +130,11 @@ module PureGymApi =
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri = System.Uri (client.BaseAddress.ToString () + "/v1/member/activity")
+                            RequestUri =
+                                System.Uri (
+                                    client.BaseAddress.ToString () + "/v1/member/activity"
+                                    |> System.Web.HttpUtility.UrlEncode
+                                )
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
