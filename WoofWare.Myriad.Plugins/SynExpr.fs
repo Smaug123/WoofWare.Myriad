@@ -191,6 +191,7 @@ module internal SynExpr =
                             (SynExpr.CreateLongIdent (SynLongIdent.CreateString "ct"))
                     ]
             )
+            |> createLambda "a"
 
         pipeThroughFunction lambda body
 
@@ -212,7 +213,9 @@ module internal SynExpr =
                         [],
                         state,
                         range0,
-                        SynExprLetOrUseBangTrivia.Zero
+                        {
+                            EqualsRange = Some range0
+                        }
                     )
                 | Let (lhs, rhs) ->
                     SynExpr.LetOrUse (

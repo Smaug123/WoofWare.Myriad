@@ -4,7 +4,147 @@
 //------------------------------------------------------------------------------
 
 
+namespace PureGym
+
+open System
+open System.Threading
+
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<RequireQualifiedAccess>]
-module PureGymApi
+module PureGymApi =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IPureGymApi =
+        { new IPureGymApi with
+            member _.GetGyms (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let message =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/gyms/")
+                        )
+
+                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! node =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return node.AsArray () |> Seq.map (fun elt -> Gym.jsonParse elt) |> List.ofSeq
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetGymAttendance (gymId : int, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let message =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/gyms/{gym_id}/attendance")
+                        )
+
+                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! node =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return GymAttendance.jsonParse node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetMember (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let message =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/member")
+                        )
+
+                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! node =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return Member.jsonParse node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetGym (gymId : int, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let message =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/gyms/{gym_id}")
+                        )
+
+                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! node =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return Gym.jsonParse node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetMemberActivity (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let message =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/member/activity")
+                        )
+
+                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! node =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return MemberActivityDto.jsonParse node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetSessions (fromDate : DateTime, toDate : DateTime, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let message =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v2/gymSessions/member")
+                        )
+
+                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! node =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return Sessions.jsonParse node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }

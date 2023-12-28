@@ -25,11 +25,15 @@ module internal HttpClientGenerator =
             Type : SynType
         }
 
-    let synBindingTriviaZero =
+    let synBindingTriviaZero (isMember : bool) =
         {
             SynBindingTrivia.EqualsRange = Some range0
-            InlineKeyword = Some range0
-            LeadingKeyword = SynLeadingKeyword.Member range0
+            InlineKeyword = None
+            LeadingKeyword =
+                if isMember then
+                    SynLeadingKeyword.Member range0
+                else
+                    SynLeadingKeyword.Let range0
         }
 
     type MemberInfo =
@@ -137,16 +141,30 @@ module internal HttpClientGenerator =
             )
 
         let argPats =
-            info.Args
-            |> List.map (fun arg ->
-                let argName =
-                    match arg.Id with
-                    | None -> failwith "TODO: create an arg name"
-                    | Some id -> id
+            let args =
+                info.Args
+                |> List.map (fun arg ->
+                    let argName =
+                        match arg.Id with
+                        | None -> failwith "TODO: create an arg name"
+                        | Some id -> id
 
-                SynPat.Tuple (false, [ SynPat.CreateTyped (SynPat.CreateNamed argName, arg.Type) ], [ range0 ], range0)
-                |> SynPat.CreateParen
-            )
+                    let argType =
+                        if arg.IsOptional then
+                            SynType.CreateApp (
+                                SynType.CreateLongIdent (SynLongIdent.CreateString "option"),
+                                [ arg.Type ],
+                                isPostfix = true
+                            )
+                        else
+                            arg.Type
+
+                    SynPat.CreateTyped (SynPat.CreateNamed argName, argType)
+                )
+
+            SynPat.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
+            |> SynPat.CreateParen
+            |> List.singleton
             |> SynArgPats.Pats
 
         let headPat =
@@ -185,11 +203,10 @@ module internal HttpClientGenerator =
             |> SynExpr.CreateParenedTuple
 
         let returnExpr =
-            // TODO
-            SynExpr.CreateApp (
-                SynExpr.CreateLongIdent (SynLongIdent.Create [ "GymAttendance" ; "jsonParse" ]),
-                SynExpr.CreateIdentString "node"
-            )
+            JsonParseGenerator.parseNode
+                JsonParseGenerator.JsonParseOption.None
+                info.ReturnType
+                (SynExpr.CreateIdentString "node")
 
         let implementation =
             [
@@ -268,126 +285,10 @@ module internal HttpClientGenerator =
                 implementation,
                 range0,
                 DebugPointAtBinding.Yes range0,
-                synBindingTriviaZero
+                synBindingTriviaZero true
             ),
             range0
         )
-    (*
-        SynMemberDefn.Member(
-                                        memberDefn =
-                                            SynBinding.SynBinding(
-                                                accessibility = None,
-                                                kind = SynBindingKind.Normal,
-                                                isInline = false,
-                                                isMutable = false,
-                                                attributes = [],
-                                                xmlDoc = PreXmlDoc.Empty,
-                                                valData =
-                                                    SynValData.SynValData(
-                                                        memberFlags =
-                                                            Some(
-                                                                {
-                                                                    IsInstance = true
-                                                                    IsDispatchSlot = false
-                                                                    IsOverrideOrExplicitImpl = true
-                                                                    IsFinal = false
-                                                                    GetterOrSetterIsCompilerGenerated = false
-                                                                    MemberKind = SynMemberKind.Member
-                                                                }
-                                                            ),
-                                                        valInfo =
-                                                            SynValInfo.SynValInfo(
-                                                                curriedArgInfos = [
-                                                                    [ SynArgInfo.SynArgInfo(attributes = [], optional = false, ident = None) ]
-                                                                    [
-                                                                        SynArgInfo.SynArgInfo(attributes = [], optional = false, ident = Some(Ident("ct", R("(2,22--2,24)"))))
-                                                                    ]
-                                                                ],
-                                                                returnInfo = SynArgInfo.SynArgInfo(attributes = [], optional = false, ident = None)
-                                                            ),
-                                                        thisIdOpt = None
-                                                    ),
-                                                headPat =
-                                                    SynPat.LongIdent(
-                                                        longDotId =
-                                                            SynLongIdent.SynLongIdent(
-                                                                id = [ Ident("_", R("(2,11--2,12)")); Ident("GetGyms", R("(2,13--2,20)")) ],
-                                                                dotRanges = [ R("(2,12--2,13)") ],
-                                                                trivia = [ None; None ]
-                                                            ),
-                                                        extraId = None,
-                                                        typarDecls = None,
-                                                        argPats =
-                                                            SynArgPats.Pats(
-                                                                [
-                                                                    SynPat.Paren(
-                                                                        pat =
-                                                                            SynPat.Typed(
-                                                                                pat =
-                                                                                    SynPat.Named(
-                                                                                        ident = SynIdent.SynIdent(ident = Ident("ct", R("(2,22--2,24)")), trivia = None),
-                                                                                        isThisVal = false,
-                                                                                        accessibility = None,
-                                                                                        range = R("(2,22--2,24)")
-                                                                                    ),
-                                                                                targetType =
-                                                                                    SynType.App(
-                                                                                        typeName =
-                                                                                            SynType.LongIdent(
-                                                                                                SynLongIdent.SynLongIdent(
-                                                                                                    id = [ Ident("option", R("(2,45--2,51)")) ],
-                                                                                                    dotRanges = [],
-                                                                                                    trivia = [ None ]
-                                                                                                )
-                                                                                            ),
-                                                                                        lessRange = None,
-                                                                                        typeArgs = [
-                                                                                            SynType.LongIdent(
-                                                                                                SynLongIdent.SynLongIdent(
-                                                                                                    id = [ Ident("CancellationToken", R("(2,27--2,44)")) ],
-                                                                                                    dotRanges = [],
-                                                                                                    trivia = [ None ]
-                                                                                                )
-                                                                                            )
-                                                                                        ],
-                                                                                        commaRanges = [],
-                                                                                        greaterRange = None,
-                                                                                        isPostfix = true,
-                                                                                        range = R("(2,27--2,51)")
-                                                                                    ),
-                                                                                range = R("(2,22--2,51)")
-                                                                            ),
-                                                                        range = R("(2,21--2,52)")
-                                                                    )
-                                                                ]
-                                                            ),
-                                                        accessibility = None,
-                                                        range = R("(2,11--2,52)")
-                                                    ),
-                                                returnInfo = None,
-                                                expr =
-                                                    SynExpr.App(
-                                                        flag = ExprAtomicFlag.NonAtomic,
-                                                        isInfix = false,
-                                                        funcExpr = SynExpr.Ident(Ident("failwith", R("(3,8--3,16)"))),
-                                                        argExpr =
-                                                            SynExpr.Const(
-                                                                constant = SynConst.String(text = "", synStringKind = SynStringKind.Regular, range = R("(3,17--3,19)")),
-                                                                range = R("(3,17--3,19)")
-                                                            ),
-                                                        range = R("(3,8--3,19)")
-                                                    ),
-                                                range = R("(2,11--2,52)"),
-                                                debugPoint = DebugPointAtBinding.NoneAtInvisible,
-                                                trivia = {
-                                                    LeadingKeyword = SynLeadingKeyword.Member(R("(2,4--2,10)"))
-                                                    InlineKeyword = None
-                                                    EqualsRange = Some(R("(2,53--2,54)"))
-                                                }
-                                            ),
-                                        range = R("(2,4--3,19)")
-                                    )
-        *)
 
     let rec convertSigParam (ty : SynType) : Parameter =
         match ty with
@@ -518,7 +419,14 @@ module internal HttpClientGenerator =
                 false,
                 [],
                 PreXmlDoc.Create " Create a REST client.",
-                SynValData.SynValData (None, SynValInfo.Empty, None),
+                SynValData.SynValData (
+                    None,
+                    SynValInfo.SynValInfo (
+                        [ [ SynArgInfo.SynArgInfo ([], false, Some (Ident.Create "client")) ] ],
+                        SynArgInfo.Empty
+                    ),
+                    None
+                ),
                 SynPat.CreateLongIdent (
                     SynLongIdent.CreateString "make",
                     [
@@ -535,8 +443,8 @@ module internal HttpClientGenerator =
                 Some (SynBindingReturnInfo.Create (SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceName))),
                 interfaceImpl,
                 range0,
-                (DebugPointAtBinding.Yes range0),
-                synBindingTriviaZero
+                DebugPointAtBinding.NoneAtLet,
+                synBindingTriviaZero false
             )
             |> List.singleton
             |> SynModuleDecl.CreateLet
@@ -552,14 +460,23 @@ module internal HttpClientGenerator =
             |> Ident.Create
             |> List.singleton
 
-        SynModuleOrNamespace.CreateModule (
-            moduleName,
-            decls = [ createFunc ],
-            docs = docString,
-            attribs =
+        let attribs =
+            [
+                SynAttributeList.Create SynAttribute.compilationRepresentation
+                SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
+            ]
+
+        let modInfo =
+            SynComponentInfo.Create (moduleName, attributes = attribs, xmldoc = docString)
+
+        SynModuleOrNamespace.CreateNamespace (
+            ns,
+            decls =
                 [
-                    SynAttributeList.Create SynAttribute.compilationRepresentation
-                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
+                    // TODO: insert open statements from the original file
+                    SynModuleDecl.CreateOpen "System"
+                    SynModuleDecl.CreateOpen "System.Threading"
+                    SynModuleDecl.CreateNestedModule (modInfo, [ createFunc ])
                 ]
         )
 

@@ -13,16 +13,15 @@ type IPureGymApi =
     [<Get "v1/gyms/{gym_id}/attendance">]
     abstract GetGymAttendance : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<GymAttendance>
 
-(*
     [<Get "v1/member">]
-    abstract GetMember : unit -> Task<Member>
+    abstract GetMember : ?ct : CancellationToken -> Task<Member>
 
     [<Get "v1/gyms/{gym_id}">]
-    abstract GetGym : [<Path "gym_id">] gymId : int -> Task<Gym>
+    abstract GetGym : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<Gym>
 
     [<Get "v1/member/activity">]
-    abstract GetMemberActivity : unit -> Task<MemberActivityDto>
+    abstract GetMemberActivity : ?ct : CancellationToken -> Task<MemberActivityDto>
 
     [<Get "v2/gymSessions/member">]
-    abstract GetSessions : [<Query>] fromDate : DateTime -> [<Query>] toDate : DateTime -> Task<Sessions>
-    *)
+    abstract GetSessions :
+        [<Query>] fromDate : DateTime * [<Query>] toDate : DateTime * ?ct : CancellationToken -> Task<Sessions>
