@@ -198,6 +198,7 @@ The motivating example is again ahead-of-time compilation: we wish to avoid the 
 RestEase is complex, and handles a lot of different stuff.
 * As of this writing, `[<Body>]` is explicitly unsupported (it throws with a TODO).
 * Parameters are serialised solely with `ToString`, and there's no control over this; nor is there control over encoding in any sense.
+* Deserialisation follows the same logic as the `JsonParse` generator, and it generally assumes you're using types which `JsonParse` is applied to.
 * Headers are not yet supported.
 * I haven't yet worked out how to integrate this with a mocked HTTP client; you can always mock up an `HttpClient`, but I prefer to use a mock which defines a single member `SendAsync`.
 * Anonymous parameters are currently forbidden.
