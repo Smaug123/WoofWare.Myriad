@@ -333,25 +333,10 @@ module internal JsonParseGenerator =
 
             let decls = [ createMaker recordId recordFields ]
 
-            let compilationRepresentation : SynAttribute =
-                {
-                    TypeName = SynLongIdent.CreateString "CompilationRepresentation"
-                    ArgExpr =
-                        SynExpr.CreateLongIdent (
-                            false,
-                            SynLongIdent.Create [ "CompilationRepresentationFlags" ; "ModuleSuffix" ],
-                            None
-                        )
-                        |> SynExpr.CreateParen
-                    Target = None
-                    AppliesToGetterAndSetter = false
-                    Range = range0
-                }
-
             let attributes =
                 [
                     SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-                    SynAttributeList.Create compilationRepresentation
+                    SynAttributeList.Create SynAttribute.compilationRepresentation
                 ]
 
             let xmlDoc =
