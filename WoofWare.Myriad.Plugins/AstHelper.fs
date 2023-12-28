@@ -115,24 +115,32 @@ module internal SynTypePatterns =
 
     let (|DateOnly|_|) (fieldType : SynType) =
         match fieldType with
-        | SynType.LongIdent ident ->
-            match ident.LongIdent with
-            | [ i ] ->
-                if i.idText = "System.DateOnly" || i.idText = "DateOnly" then
-                    Some ()
-                else
-                    None
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            match ident |> List.map (fun i -> i.idText) with
+            | [ "System" ; "DateOnly" ]
+            | [ "DateOnly" ] -> Some ()
             | _ -> None
         | _ -> None
 
     let (|DateTime|_|) (fieldType : SynType) =
         match fieldType with
-        | SynType.LongIdent ident ->
-            match ident.LongIdent with
-            | [ i ] ->
-                if i.idText = "System.DateTime" || i.idText = "DateTime" then
-                    Some ()
-                else
-                    None
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            match ident |> List.map (fun i -> i.idText) with
+            | [ "System" ; "DateTime" ]
+            | [ "DateTime" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
+    let (|Task|_|) (fieldType : SynType) : SynType option =
+        match fieldType with
+        | SynType.App (SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)), _, args, _, _, _, _) ->
+            match ident |> List.map (fun i -> i.idText) with
+            | [ "Task" ]
+            | [ "Tasks" ; "Task" ]
+            | [ "Threading" ; "Tasks" ; "Task" ]
+            | [ "System" ; "Threading" ; "Tasks" ; "Task" ] ->
+                match args with
+                | [ arg ] -> Some arg
+                | _ -> failwithf "Expected Task to be applied to exactly one arg, but got: %+A" args
             | _ -> None
         | _ -> None

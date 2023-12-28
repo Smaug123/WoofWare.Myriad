@@ -22,10 +22,10 @@
       <Compile Include="GeneratedPureGymDto.fs">
         <MyriadFile>PureGymDto.fs</MyriadFile> <!--2-->
       </Compile>
-      <None Include="RestApiExample.fs" />
-      <None Include="GeneratedRestClient.fs">
+      <Compile Include="RestApiExample.fs" />
+      <Compile Include="GeneratedRestClient.fs">
         <MyriadFile>RestApiExample.fs</MyriadFile> <!--2-->
-      </None>
+      </Compile>
         <None Include="..\runmyriad.sh">
           <Link>runmyriad.sh</Link>
         </None>

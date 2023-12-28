@@ -6,6 +6,12 @@ open Myriad.Core
 open Myriad.Core.Ast
 open Fantomas.FCS.Text.Range
 
+type internal CompExprBinding =
+    | LetBang of varName : string * rhs : SynExpr
+    | Let of varName : string * rhs : SynExpr
+    | Use of varName : string * rhs : SynExpr
+    | Do of body : SynExpr
+
 [<RequireQualifiedAccess>]
 module internal SynExpr =
 
@@ -73,6 +79,22 @@ module internal SynExpr =
                         Ident.CreateLong "op_Equality",
                         [],
                         [ Some (IdentTrivia.OriginalNotation "=") ]
+                    )
+                ),
+                a
+            ),
+            b
+        )
+
+    /// {a} + {b}
+    let plus (a : SynExpr) (b : SynExpr) =
+        SynExpr.CreateApp (
+            SynExpr.CreateAppInfix (
+                SynExpr.CreateLongIdent (
+                    SynLongIdent.SynLongIdent (
+                        Ident.CreateLong "op_Addition",
+                        [],
+                        [ Some (IdentTrivia.OriginalNotation "+") ]
                     )
                 ),
                 a
@@ -156,3 +178,77 @@ module internal SynExpr =
 
     let reraise : SynExpr =
         SynExpr.CreateApp (SynExpr.CreateIdent (Ident.Create "reraise"), SynExpr.CreateConst SynConst.Unit)
+
+    /// {body} |> fun a -> Async.StartAsTask (a, ?cancellationToken=ct)
+    let startAsTask (body : SynExpr) =
+        let lambda =
+            SynExpr.CreateApp (
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "StartAsTask" ]),
+                SynExpr.CreateParenedTuple
+                    [
+                        SynExpr.CreateLongIdent (SynLongIdent.CreateString "a")
+                        equals
+                            (SynExpr.LongIdent (true, SynLongIdent.CreateString "cancellationToken", None, range0))
+                            (SynExpr.CreateLongIdent (SynLongIdent.CreateString "ct"))
+                    ]
+            )
+            |> createLambda "a"
+
+        pipeThroughFunction lambda body
+
+    /// {compExpr} { {lets} ; return {ret} }
+    let createCompExpr (compExpr : string) (retBody : SynExpr) (lets : CompExprBinding list) : SynExpr =
+        let retStatement = SynExpr.YieldOrReturn ((false, true), retBody, range0)
+
+        let contents : SynExpr =
+            (retStatement, List.rev lets)
+            ||> List.fold (fun state binding ->
+                match binding with
+                | LetBang (lhs, rhs) ->
+                    SynExpr.LetOrUseBang (
+                        DebugPointAtBinding.Yes range0,
+                        false,
+                        true,
+                        SynPat.CreateNamed (Ident.Create lhs),
+                        rhs,
+                        [],
+                        state,
+                        range0,
+                        {
+                            EqualsRange = Some range0
+                        }
+                    )
+                | Let (lhs, rhs) ->
+                    SynExpr.LetOrUse (
+                        false,
+                        false,
+                        [ SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create lhs), expr = rhs) ],
+                        state,
+                        range0,
+                        {
+                            SynExprLetOrUseTrivia.InKeyword = None
+                        }
+                    )
+                | Use (lhs, rhs) ->
+                    SynExpr.LetOrUse (
+                        false,
+                        true,
+                        [ SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create lhs), expr = rhs) ],
+                        state,
+                        range0,
+                        {
+                            SynExprLetOrUseTrivia.InKeyword = None
+                        }
+                    )
+                | Do body -> SynExpr.Do (body, range0)
+            )
+
+        SynExpr.CreateApp (
+            SynExpr.CreateIdent (Ident.Create compExpr),
+            SynExpr.ComputationExpr (false, contents, range0)
+        )
+
+    /// {expr} |> Async.AwaitTask
+    let awaitTask (expr : SynExpr) : SynExpr =
+        expr
+        |> pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "AwaitTask" ]))

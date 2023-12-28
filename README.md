@@ -10,6 +10,7 @@ The `RemoveOptions` generator in particular is extremely half-baked.
 Currently implemented:
 * `JsonParse` (to stamp out `jsonParse : JsonNode -> 'T` methods);
 * `RemoveOptions` (to strip `option` modifiers from a type).
+* `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
 
 ## `JsonParse`
 
@@ -41,7 +42,6 @@ type JsonRecordType =
 and stamps out parsing methods like this:
 
 ```fsharp
-
 /// Module containing JSON parsing methods for the InnerType type
 [<RequireQualifiedAccess>]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -125,6 +125,84 @@ This generator is *far* from where I want it, because I haven't really spent any
 * It really wants to be able to recurse into the types within the record, to strip options from them.
 * It needs some sort of attribute to mark a field as *not* receiving this treatment.
 * What do we do about discriminated unions?
+
+## `HttpClient`
+
+Takes a type like this:
+
+```fsharp
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IPureGymApi =
+    [<Get "v1/gyms/">]
+    abstract GetGyms : ?ct : CancellationToken -> Task<Gym list>
+
+    [<Get "v1/gyms/{gym_id}/attendance">]
+    abstract GetGymAttendance : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<GymAttendance>
+
+    [<Get "v1/member">]
+    abstract GetMember : ?ct : CancellationToken -> Task<Member>
+
+    [<Get "v1/gyms/{gym_id}">]
+    abstract GetGym : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<Gym>
+
+    [<Get "v1/member/activity">]
+    abstract GetMemberActivity : ?ct : CancellationToken -> Task<MemberActivityDto>
+
+    [<Get "v2/gymSessions/member">]
+    abstract GetSessions :
+        [<Query>] fromDate : DateTime * [<Query>] toDate : DateTime * ?ct : CancellationToken -> Task<Sessions>
+```
+
+and stamps out a type like this:
+
+```fsharp
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess>]
+module PureGymApi =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IPureGymApi =
+        { new IPureGymApi with
+            member _.GetGyms (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/gyms/")
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! node =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return node.AsArray () |> Seq.map (fun elt -> Gym.jsonParse elt) |> List.ofSeq
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            // (more methods here)
+        }
+```
+
+### What's the point?
+
+The motivating example is again ahead-of-time compilation: we wish to avoid the reflection which RestEase does.
+
+### Limitations
+
+RestEase is complex, and handles a lot of different stuff.
+* As of this writing, `[<Body>]` is explicitly unsupported (it throws with a TODO).
+* Parameters are serialised solely with `ToString`, and there's no control over this; nor is there control over encoding in any sense.
+* Deserialisation follows the same logic as the `JsonParse` generator, and it generally assumes you're using types which `JsonParse` is applied to.
+* Headers are not yet supported.
+* I haven't yet worked out how to integrate this with a mocked HTTP client; you can always mock up an `HttpClient`, but I prefer to use a mock which defines a single member `SendAsync`.
+* Anonymous parameters are currently forbidden.
+* Every function must take an optional `CancellationToken` (which is good practice anyway); so arguments are forced to be tupled. This is a won't-fix for as long as F# requires tupled arguments if any of the args are optional.
 
 # Detailed examples
 
