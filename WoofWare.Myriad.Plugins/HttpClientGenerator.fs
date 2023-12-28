@@ -469,8 +469,13 @@ module internal HttpClientGenerator =
             convertSigParam param :: extractTypes rest
         | _ -> failwithf "Didn't have alternating type-and-star in interface member definition: %+A" tupleType
 
-    let createModule (ns : LongIdent) (interfaceType : SynTypeDefn) : SynModuleOrNamespace =
-        let (SynTypeDefn (SynComponentInfo (_, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, members, _, _, _)) =
+    let createModule
+        (opens : SynOpenDeclTarget list)
+        (ns : LongIdent)
+        (interfaceType : SynTypeDefn)
+        : SynModuleOrNamespace
+        =
+        let (SynTypeDefn (SynComponentInfo (_, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
             interfaceType
 
         let members =
@@ -632,11 +637,18 @@ module internal HttpClientGenerator =
             ns,
             decls =
                 [
-                    // TODO: insert open statements from the original file
-                    SynModuleDecl.CreateOpen "System"
-                    SynModuleDecl.CreateOpen "System.Threading"
-                    SynModuleDecl.CreateNestedModule (modInfo, [ createFunc ])
+                    for openStatement in opens do
+                        yield SynModuleDecl.CreateOpen openStatement
+                    yield SynModuleDecl.CreateNestedModule (modInfo, [ createFunc ])
                 ]
+        )
+
+    let rec extractOpens (moduleDecls : SynModuleDecl list) : SynOpenDeclTarget list =
+        moduleDecls
+        |> List.choose (fun moduleDecl ->
+            match moduleDecl with
+            | SynModuleDecl.Open (target, _) -> Some target
+            | other -> None
         )
 
 /// Myriad generator that provides an HTTP client for an interface type using RestEase annotations.
@@ -652,6 +664,15 @@ type HttpClientGenerator () =
 
             let types = Ast.extractTypeDefn ast
 
+            let opens =
+                match ast with
+                | ParsedInput.ImplFile (ParsedImplFileInput (_, _, _, _, _, modules, _, _, _)) ->
+                    modules
+                    |> List.collect (fun (SynModuleOrNamespace (nsId, _, _, decls, _, _, _, _, _)) ->
+                        HttpClientGenerator.extractOpens decls
+                    )
+                | _ -> []
+
             let namespaceAndTypes =
                 types
                 |> List.choose (fun (ns, types) ->
@@ -665,7 +686,7 @@ type HttpClientGenerator () =
                 |> List.collect (fun (ns, types) ->
                     types
                     |> List.map (fun interfaceType ->
-                        let clientModule = HttpClientGenerator.createModule ns interfaceType
+                        let clientModule = HttpClientGenerator.createModule opens ns interfaceType
                         clientModule
                     )
                 )

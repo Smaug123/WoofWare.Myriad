@@ -8,6 +8,8 @@ namespace PureGym
 
 open System
 open System.Threading
+open System.Threading.Tasks
+open RestEase
 
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
