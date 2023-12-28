@@ -1,5 +1,7 @@
 # WoofWare.Myriad.Plugins
 
+![Project logo: the face of a cartoon Shiba Inu, staring with powerful cyborg eyes directly at the viewer, with a background of stylised plugs.](./WoofWare.Myriad.Plugins/logo.png)
+
 Some helpers in [Myriad](https://github.com/MoiraeSoftware/myriad/) which might be useful.
 
 These are currently somewhat experimental, and I personally am their primary customer.
