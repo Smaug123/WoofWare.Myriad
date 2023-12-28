@@ -184,7 +184,8 @@ module internal HttpClientGenerator =
             )
 
         let requestUriTrailer =
-            (SynExpr.CreateConstString info.UrlTemplate, info.Args)
+            // TODO: more principled treatment of the slash
+            (SynExpr.CreateConstString ("/" + info.UrlTemplate.TrimStart '/'), info.Args)
             ||> List.fold (fun template arg ->
                 (template, arg.Attributes)
                 ||> List.fold (fun template attr ->
@@ -259,16 +260,28 @@ module internal HttpClientGenerator =
                 )
 
         let requestUri =
-            SynExpr.CreateApp (
-                SynExpr.CreateIdentString "System.Uri",
+            SynExpr.App (
+                ExprAtomicFlag.Atomic,
+                false,
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ]),
                 SynExpr.CreateParen (
                     SynExpr.plus
-                        (SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ; "ToString" ]),
-                            SynExpr.CreateConst SynConst.Unit
+                        (SynExpr.App (
+                            ExprAtomicFlag.Atomic,
+                            false,
+                            SynExpr.CreateLongIdent (
+                                SynLongIdent.SynLongIdent (
+                                    [ Ident.Create "client" ; Ident.Create "BaseAddress" ; Ident.Create "ToString" ],
+                                    [ range0 ; range0 ],
+                                    [ None ; None ; None ]
+                                )
+                            ),
+                            SynExpr.CreateConst SynConst.Unit,
+                            range0
                         ))
                         requestUriTrailer
-                )
+                ),
+                range0
             )
 
         let bodyParams =
