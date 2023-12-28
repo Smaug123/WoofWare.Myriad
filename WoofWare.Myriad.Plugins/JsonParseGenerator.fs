@@ -29,38 +29,9 @@ module internal JsonParseGenerator =
 
     /// {node}.AsValue().GetValue<{typeName}> ()
     let asValueGetValue (typeName : string) (node : SynExpr) : SynExpr =
-        let asValue =
-            SynExpr.CreateApp (
-                SynExpr.DotGet (
-                    node,
-                    range0,
-                    SynLongIdent.SynLongIdent (id = [ Ident.Create "AsValue" ], dotRanges = [], trivia = [ None ]),
-                    range0
-                ),
-                SynExpr.CreateConst SynConst.Unit
-            )
-
-        SynExpr.CreateApp (
-            SynExpr.TypeApp (
-                SynExpr.DotGet (
-                    asValue,
-                    range0,
-                    SynLongIdent.SynLongIdent (id = [ Ident.Create "GetValue" ], dotRanges = [], trivia = [ None ]),
-                    range0
-                ),
-                range0,
-                [
-                    SynType.LongIdent (
-                        SynLongIdent.SynLongIdent (id = [ Ident.Create typeName ], dotRanges = [], trivia = [ None ])
-                    )
-                ],
-                [],
-                Some range0,
-                range0,
-                range0
-            ),
-            SynExpr.CreateConst SynConst.Unit
-        )
+        node
+        |> SynExpr.callMethod "AsValue"
+        |> SynExpr.callGenericMethod "GetValue" typeName
 
     /// {type}.jsonParse {node}
     let typeJsonParse (typeName : LongIdent) (node : SynExpr) : SynExpr =
@@ -75,75 +46,20 @@ module internal JsonParseGenerator =
     /// |> Seq.map (fun elt -> {body})
     /// |> {collectionType}.ofSeq
     let asArrayMapped (collectionType : string) (node : SynExpr) (body : SynExpr) : SynExpr =
-        let parsedDataPat = [ SynPat.CreateNamed (Ident.Create "elt") ]
-
-        SynExpr.CreateApp (
-            SynExpr.CreateAppInfix (
-                SynExpr.LongIdent (
-                    false,
-                    SynLongIdent.SynLongIdent (
-                        [ Ident.Create "op_PipeRight" ],
-                        [],
-                        [ Some (IdentTrivia.OriginalNotation "|>") ]
-                    ),
-                    None,
-                    range0
-                ),
-                SynExpr.CreateApp (
-                    SynExpr.CreateAppInfix (
-                        SynExpr.LongIdent (
-                            false,
-                            SynLongIdent.SynLongIdent (
-                                [ Ident.Create "op_PipeRight" ],
-                                [],
-                                [ Some (IdentTrivia.OriginalNotation "|>") ]
-                            ),
-                            None,
-                            range0
-                        ),
-                        SynExpr.CreateApp (
-                            SynExpr.DotGet (node, range0, SynLongIdent.CreateString "AsArray", range0),
-                            SynExpr.CreateConst SynConst.Unit
-                        )
-                    ),
-                    SynExpr.CreateApp (
-                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                        SynExpr.CreateParen (
-                            SynExpr.Lambda (
-                                false,
-                                false,
-                                SynSimplePats.Create [ SynSimplePat.CreateId (Ident.Create "elt") ],
-                                body,
-                                Some (parsedDataPat, body),
-                                range0,
-                                {
-                                    ArrowRange = Some range0
-                                }
-                            )
-                        )
-                    )
-                )
-            ),
-            SynExpr.CreateLongIdent (SynLongIdent.Create [ collectionType ; "ofSeq" ])
+        node
+        |> SynExpr.callMethod "AsArray"
+        |> SynExpr.pipeThroughFunction (
+            SynExpr.CreateApp (
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
+                SynExpr.createLambda "elt" body
+            )
         )
+        |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ collectionType ; "ofSeq" ]))
 
-    /// match {node} with | null -> None | v -> Some {body}
+    /// match {node} with | null -> None | v -> {body} |> Some
     /// Use the variable `v` to get access to the `Some`.
     let createParseLineOption (node : SynExpr) (body : SynExpr) : SynExpr =
-        let body =
-            SynExpr.CreateApp (
-                SynExpr.CreateAppInfix (
-                    SynExpr.CreateLongIdent (
-                        SynLongIdent.SynLongIdent (
-                            [ Ident.Create "op_PipeRight" ],
-                            [],
-                            [ Some (IdentTrivia.OriginalNotation "|>") ]
-                        )
-                    ),
-                    body
-                ),
-                SynExpr.CreateIdentString "Some"
-            )
+        let body = SynExpr.pipeThroughFunction (SynExpr.CreateIdentString "Some") body
 
         SynExpr.CreateMatch (
             node,
@@ -153,112 +69,9 @@ module internal JsonParseGenerator =
             ]
         )
 
-    let eltGetValue (elementType : string) : SynExpr =
-        SynExpr.CreateApp (
-            SynExpr.TypeApp (
-                SynExpr.DotGet (
-                    SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"),
-                    range0,
-                    SynLongIdent.Create [ "GetValue" ],
-                    range0
-                ),
-                range0,
-                [ SynType.CreateLongIdent elementType ],
-                [],
-                Some range0,
-                range0,
-                range0
-            ),
-            SynExpr.CreateConst SynConst.Unit
-        )
-
-    /// {expr} |> DateOnly.Parse
-    let pipeThroughFunction (ident : SynLongIdent) (expr : SynExpr) : SynExpr =
-        SynExpr.CreateApp (
-            SynExpr.CreateAppInfix (
-                SynExpr.CreateLongIdent (
-                    SynLongIdent.SynLongIdent (
-                        [ Ident.Create "op_PipeRight" ],
-                        [],
-                        [ Some (IdentTrivia.OriginalNotation "|>") ]
-                    )
-                ),
-                expr
-            ),
-            SynExpr.CreateLongIdent ident
-        )
-
-    /// if {cond} then {trueBranch} else {falseBranch}
-    let ifThenElse (cond : SynExpr) (trueBranch : SynExpr) (falseBranch : SynExpr) : SynExpr =
-        SynExpr.IfThenElse (
-            cond,
-            trueBranch,
-            Some falseBranch,
-            DebugPointAtBinding.Yes range0,
-            false,
-            range0,
-            {
-                IfKeyword = range0
-                IsElif = false
-                ThenKeyword = range0
-                ElseKeyword = Some range0
-                IfToThenRange = range0
-            }
-        )
-
-    /// try {body} with | {exc} as exc -> {handler}
-    let pipeThroughTryWith (exc : SynPat) (handler : SynExpr) (body : SynExpr) : SynExpr =
-        let clause =
-            SynMatchClause.Create (SynPat.As (exc, SynPat.CreateNamed (Ident.Create "exc"), range0), None, handler)
-
-        SynExpr.TryWith (
-            body,
-            [ clause ],
-            range0,
-            DebugPointAtTry.Yes range0,
-            DebugPointAtWith.Yes range0,
-            {
-                TryKeyword = range0
-                TryToWithRange = range0
-                WithKeyword = range0
-                WithToEndRange = range0
-            }
-        )
-
-    /// {a} = {b}
-    let equals (a : SynExpr) (b : SynExpr) =
-        SynExpr.CreateApp (
-            SynExpr.CreateAppInfix (
-                SynExpr.CreateLongIdent (
-                    SynLongIdent.SynLongIdent (
-                        Ident.CreateLong "op_Equality",
-                        [],
-                        [ Some (IdentTrivia.OriginalNotation "=") ]
-                    )
-                ),
-                a
-            ),
-            b
-        )
-
-    /// Given e.g. "float", returns "Double.Parse"
+    /// Given e.g. "float", returns "System.Double.Parse"
     let parseFunction (typeName : string) : LongIdent =
-        match typeName with
-        | "float32" -> [ "System" ; "Single" ]
-        | "float" -> [ "System" ; "Double" ]
-        | "byte"
-        | "uint8" -> [ "System" ; "Byte" ]
-        | "sbyte" -> [ "System" ; "SByte" ]
-        | "int16" -> [ "System" ; "Int16" ]
-        | "int" -> [ "System" ; "Int32" ]
-        | "int64" -> [ "System" ; "Int64" ]
-        | "uint16" -> [ "System" ; "UInt16" ]
-        | "uint"
-        | "uint32" -> [ "System" ; "UInt32" ]
-        | "uint64" -> [ "System" ; "UInt64" ]
-        | _ -> failwith $"Unable to identify a parsing function `string -> %s{typeName}`"
-        |> fun a -> List.append a [ "Parse" ]
-        |> List.map Ident.Create
+        List.append (SynExpr.qualifyPrimitiveType typeName) [ Ident.Create "Parse" ]
 
     /// Given `node.["town"]`, for example, choose how to obtain a JSON value from it.
     let rec parseNode (options : JsonParseOption) (fieldType : SynType) (node : SynExpr) : SynExpr =
@@ -266,28 +79,38 @@ module internal JsonParseGenerator =
         match fieldType with
         | DateOnly ->
             asValueGetValue "string" node
-            |> pipeThroughFunction (SynLongIdent.Create [ "System" ; "DateOnly" ; "Parse" ])
+            |> SynExpr.pipeThroughFunction (
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "DateOnly" ; "Parse" ])
+            )
         | DateTime ->
             asValueGetValue "string" node
-            |> pipeThroughFunction (SynLongIdent.Create [ "System" ; "DateTime" ; "Parse" ])
+            |> SynExpr.pipeThroughFunction (
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "DateTime" ; "Parse" ])
+            )
         | NumberType typeName ->
             let basic = asValueGetValue typeName node
 
             match options.JsonNumberHandlingArg with
             | None -> basic
             | Some option ->
-                let reraise =
-                    (SynExpr.CreateApp (SynExpr.CreateIdent (Ident.Create "reraise"), SynExpr.CreateConst SynConst.Unit))
-
                 let cond =
-                    SynExpr.CreateApp (
-                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "exc" ; "Message" ; "Contains" ]),
-                        SynExpr.CreateConst (SynConst.CreateString "cannot be converted to")
+                    SynExpr.DotGet (
+                        SynExpr.CreateIdentString "exc",
+                        range0,
+                        SynLongIdent.CreateString "Message",
+                        range0
                     )
+                    |> SynExpr.callMethodArg
+                        "Contains"
+                        (SynExpr.CreateConst (SynConst.CreateString "cannot be converted to"))
 
-                let trueBranch =
-                    ifThenElse
-                        (equals
+                let handler =
+                    asValueGetValue "string" node
+                    |> SynExpr.pipeThroughFunction (
+                        SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (parseFunction typeName))
+                    )
+                    |> SynExpr.ifThenElse
+                        (SynExpr.equals
                             option
                             (SynExpr.CreateLongIdent (
                                 SynLongIdent.Create
@@ -300,14 +123,11 @@ module internal JsonParseGenerator =
                                         "AllowReadingFromString"
                                     ]
                             )))
-                        (asValueGetValue "string" node
-                         |> pipeThroughFunction (SynLongIdent.CreateFromLongIdent (parseFunction typeName)))
-                        reraise
-
-                let handler = ifThenElse cond trueBranch reraise
+                        SynExpr.reraise
+                    |> SynExpr.ifThenElse cond SynExpr.reraise
 
                 basic
-                |> pipeThroughTryWith
+                |> SynExpr.pipeThroughTryWith
                     (SynPat.IsInst (
                         SynType.LongIdent (SynLongIdent.Create [ "System" ; "InvalidOperationException" ]),
                         range0
@@ -335,13 +155,9 @@ module internal JsonParseGenerator =
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
     /// The result of this function is the body of a let-binding (not including the LHS of that let-binding).
     let createParseRhs (options : JsonParseOption) (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
-        SynExpr.DotIndexedGet (SynExpr.CreateIdentString "node", propertyName, range0, range0)
+        SynExpr.CreateIdentString "node"
+        |> SynExpr.index propertyName
         |> parseNode options fieldType
-
-    let stripOptionalParen (expr : SynExpr) =
-        match expr with
-        | SynExpr.Paren (expr, _, _, _) -> expr
-        | expr -> expr
 
     let isJsonNumberHandling (literal : LongIdent) : bool =
         match List.rev literal |> List.map (fun ident -> ident.idText) with
@@ -389,7 +205,7 @@ module internal JsonParseGenerator =
                     ||> List.fold (fun options attr ->
                         if attr.TypeName.AsString.EndsWith ("JsonNumberHandling", StringComparison.Ordinal) then
                             let qualifiedEnumValue =
-                                match stripOptionalParen attr.ArgExpr with
+                                match SynExpr.stripOptionalParen attr.ArgExpr with
                                 | SynExpr.LongIdent (_, SynLongIdent (ident, _, _), _, _) when
                                     isJsonNumberHandling ident
                                     ->

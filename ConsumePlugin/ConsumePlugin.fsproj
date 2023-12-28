@@ -22,12 +22,17 @@
       <Compile Include="GeneratedPureGymDto.fs">
         <MyriadFile>PureGymDto.fs</MyriadFile> <!--2-->
       </Compile>
+      <None Include="RestApiExample.fs" />
+      <None Include="GeneratedRestClient.fs">
+        <MyriadFile>RestApiExample.fs</MyriadFile> <!--2-->
+      </None>
         <None Include="..\runmyriad.sh">
           <Link>runmyriad.sh</Link>
         </None>
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="RestEase" Version="1.6.4" />
       <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj" />
       <PackageReference Include="Myriad.Sdk" Version="0.8.3" />
       <PackageReference Include="Myriad.Core" Version="0.8.3" />
