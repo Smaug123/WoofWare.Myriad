@@ -10,6 +10,7 @@ type internal CompExprBinding =
     | LetBang of varName : string * rhs : SynExpr
     | Let of varName : string * rhs : SynExpr
     | Use of varName : string * rhs : SynExpr
+    | Do of body : SynExpr
 
 [<RequireQualifiedAccess>]
 module internal SynExpr =
@@ -239,6 +240,7 @@ module internal SynExpr =
                             SynExprLetOrUseTrivia.InKeyword = None
                         }
                     )
+                | Do body -> SynExpr.Do (body, range0)
             )
 
         SynExpr.CreateApp (

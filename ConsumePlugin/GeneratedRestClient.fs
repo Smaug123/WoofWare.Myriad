@@ -20,13 +20,13 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
-                    let message =
+                    let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/gyms/")
                         )
 
-                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
@@ -42,13 +42,17 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
-                    let message =
+                    let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/gyms/{gym_id}/attendance")
+                            RequestUri =
+                                System.Uri (
+                                    client.BaseAddress.ToString ()
+                                    + "v1/gyms/{gym_id}/attendance".Replace ("{gym_id}", gymId.ToString ())
+                                )
                         )
 
-                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
@@ -64,13 +68,13 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
-                    let message =
+                    let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/member")
                         )
 
-                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
@@ -86,13 +90,17 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
-                    let message =
+                    let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/gyms/{gym_id}")
+                            RequestUri =
+                                System.Uri (
+                                    client.BaseAddress.ToString ()
+                                    + "v1/gyms/{gym_id}".Replace ("{gym_id}", gymId.ToString ())
+                                )
                         )
 
-                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
@@ -108,13 +116,13 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
-                    let message =
+                    let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = System.Uri (client.BaseAddress.ToString () + "v1/member/activity")
                         )
 
-                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
@@ -130,13 +138,22 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
-                    let message =
+                    let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri = System.Uri (client.BaseAddress.ToString () + "v2/gymSessions/member")
+                            RequestUri =
+                                System.Uri (
+                                    client.BaseAddress.ToString ()
+                                    + ("v2/gymSessions/member"
+                                       + "?fromDate="
+                                       + fromDate.ToString ()
+                                       + "&toDate="
+                                       + toDate.ToString ())
+                                    |> System.Web.HttpUtility.UrlEncode
+                                )
                         )
 
-                    let! response = client.SendAsync (message, ct) |> Async.AwaitTask
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 

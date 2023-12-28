@@ -17,9 +17,15 @@ module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range
     open Myriad.Core.Ast
 
+    type HttpAttribute =
+        // TODO: Format parameter to these attrs
+        | Query of string option
+        | Path of string
+        | Body
+
     type Parameter =
         {
-            Attributes : SynAttributes
+            Attributes : HttpAttribute list
             IsOptional : bool
             Id : Ident option
             Type : SynType
@@ -177,6 +183,81 @@ module internal HttpClientGenerator =
                 range0
             )
 
+        let requestUriTrailer =
+            (SynExpr.CreateConstString info.UrlTemplate, info.Args)
+            ||> List.fold (fun template arg ->
+                (template, arg.Attributes)
+                ||> List.fold (fun template attr ->
+                    match attr with
+                    | HttpAttribute.Path s ->
+                        let varName =
+                            match arg.Id with
+                            | None -> failwith "TODO: anonymous args"
+                            | Some id -> id
+
+                        template
+                        |> SynExpr.callMethodArg
+                            "Replace"
+                            (SynExpr.CreateParenedTuple
+                                [
+                                    SynExpr.CreateConstString ("{" + s + "}")
+                                    SynExpr.callMethod "ToString" (SynExpr.CreateIdent varName)
+                                ])
+                    | _ -> template
+                )
+            )
+
+        /// List of (query-param-key, parameter-which-provides-value)
+        let queryParams =
+            info.Args
+            |> List.collect (fun arg ->
+                arg.Attributes
+                |> List.choose (fun attr ->
+                    match attr with
+                    | Query None ->
+                        let name =
+                            match arg.Id with
+                            | None ->
+                                failwith
+                                    "Expected a name for the argument we're trying to use as an anonymous query parameter"
+                            | Some name -> name.idText
+
+                        Some (name, arg)
+                    | Query (Some name) -> Some (name, arg)
+                    | _ -> None
+                )
+            )
+
+        let requestUriTrailer =
+            match queryParams with
+            | [] -> requestUriTrailer
+            | (firstKey, firstValue) :: queryParams ->
+                let firstValue =
+                    match firstValue.Id with
+                    | None -> failwith "Unable to get parameter variable name from anonymous parameter"
+                    | Some id -> id
+
+                let prefix =
+                    SynExpr.plus
+                        (SynExpr.plus requestUriTrailer (SynExpr.CreateConstString ("?" + firstKey + "=")))
+                        (SynExpr.callMethod "ToString" (SynExpr.CreateIdent firstValue))
+
+                (prefix, queryParams)
+                ||> List.fold (fun uri (paramKey, paramValue) ->
+                    let paramValue =
+                        match paramValue.Id with
+                        | None -> failwith "Unable to get parameter variable name from anonymous parameter"
+                        | Some id -> id
+
+                    SynExpr.plus
+                        (SynExpr.plus uri (SynExpr.CreateConstString ("&" + paramKey + "=")))
+                        (SynExpr.callMethod "ToString" (SynExpr.CreateIdent paramValue))
+                )
+                |> SynExpr.CreateParen
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ])
+                )
+
         let requestUri =
             SynExpr.CreateApp (
                 SynExpr.CreateIdentString "System.Uri",
@@ -186,9 +267,23 @@ module internal HttpClientGenerator =
                             SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ; "ToString" ]),
                             SynExpr.CreateConst SynConst.Unit
                         ))
-                        (SynExpr.CreateConstString info.UrlTemplate)
+                        requestUriTrailer
                 )
             )
+
+        let bodyParams =
+            info.Args
+            |> List.collect (fun arg ->
+                arg.Attributes
+                |> List.choose (fun attr ->
+                    match attr with
+                    | Body -> Some arg
+                    | _ -> None
+                )
+            )
+
+        if not bodyParams.IsEmpty then
+            failwith "[<Body>] is not yet supported"
 
         let httpReqMessageConstructor =
             [
@@ -210,63 +305,93 @@ module internal HttpClientGenerator =
 
         let implementation =
             [
-                LetBang ("ct", SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "CancellationToken" ]))
-                Use (
-                    "message",
-                    SynExpr.New (
-                        false,
-                        SynType.CreateLongIdent (
-                            SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "HttpRequestMessage" ]
-                        ),
-                        httpReqMessageConstructor,
-                        range0
-                    )
-                )
-                LetBang (
-                    "response",
-                    SynExpr.awaitTask (
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "SendAsync" ]),
-                            SynExpr.CreateParenedTuple
-                                [ SynExpr.CreateIdentString "message" ; SynExpr.CreateIdentString "ct" ]
-                        )
-                    )
-                )
-                Let (
-                    "response",
-                    SynExpr.CreateApp (
-                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "response" ; "EnsureSuccessStatusCode" ]),
-                        SynExpr.CreateConst SynConst.Unit
-                    )
-                )
-                LetBang (
-                    "stream",
-                    SynExpr.awaitTask (
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (
-                                SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
+                yield LetBang ("ct", SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "CancellationToken" ]))
+                yield
+                    Use (
+                        "httpMessage",
+                        SynExpr.New (
+                            false,
+                            SynType.CreateLongIdent (
+                                SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "HttpRequestMessage" ]
                             ),
-                            SynExpr.CreateIdentString "ct"
+                            httpReqMessageConstructor,
+                            range0
                         )
                     )
-                )
-                LetBang (
-                    "node",
-                    SynExpr.awaitTask (
+                (*
+                if not bodyParams.IsEmpty then
+                    yield
+                        Use (
+                            "queryParams",
+                            SynExpr.New (
+                                false,
+                                SynType.CreateLongIdent (
+                                    SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "StringContent" ]
+                                ),
+                                SynExpr.CreateParen (failwith "TODO"),
+                                range0
+                            )
+                        )
+
+                    yield
+                        Do (
+                            SynExpr.LongIdentSet (
+                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
+                                SynExpr.CreateIdentString "queryParams",
+                                range0
+                            )
+                        )
+                *)
+                yield
+                    LetBang (
+                        "response",
+                        SynExpr.awaitTask (
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "SendAsync" ]),
+                                SynExpr.CreateParenedTuple
+                                    [ SynExpr.CreateIdentString "httpMessage" ; SynExpr.CreateIdentString "ct" ]
+                            )
+                        )
+                    )
+                yield
+                    Let (
+                        "response",
                         SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (
-                                SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "ParseAsync" ]
-                            ),
-                            SynExpr.CreateParenedTuple
-                                [
-                                    SynExpr.CreateIdentString "stream"
-                                    SynExpr.equals
-                                        (SynExpr.CreateIdentString "cancellationToken")
-                                        (SynExpr.CreateIdentString "ct")
-                                ]
+                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "response" ; "EnsureSuccessStatusCode" ]),
+                            SynExpr.CreateConst SynConst.Unit
                         )
                     )
-                )
+                yield
+                    LetBang (
+                        "stream",
+                        SynExpr.awaitTask (
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (
+                                    SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
+                                ),
+                                SynExpr.CreateIdentString "ct"
+                            )
+                        )
+                    )
+                yield
+                    LetBang (
+                        "node",
+                        SynExpr.awaitTask (
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (
+                                    SynLongIdent.Create
+                                        [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "ParseAsync" ]
+                                ),
+                                SynExpr.CreateParenedTuple
+                                    [
+                                        SynExpr.CreateIdentString "stream"
+                                        SynExpr.equals
+                                            (SynExpr.CreateIdentString "cancellationToken")
+                                            (SynExpr.CreateIdentString "ct")
+                                    ]
+                            )
+                        )
+                    )
             ]
             |> SynExpr.createCompExpr "async" returnExpr
             |> SynExpr.startAsTask
@@ -294,6 +419,40 @@ module internal HttpClientGenerator =
         match ty with
         | SynType.Paren (inner, _) -> convertSigParam inner
         | SynType.SignatureParameter (attrs, opt, id, usedType, _) ->
+            let attrs =
+                attrs
+                |> List.collect (fun attrs ->
+                    attrs.Attributes
+                    |> List.choose (fun attr ->
+                        match attr.TypeName.AsString with
+                        | "Query"
+                        | "QueryAttribute" ->
+                            match attr.ArgExpr with
+                            | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Query None)
+                            | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
+                                Some (HttpAttribute.Query (Some s))
+                            | SynExpr.Const (a, _) ->
+                                failwithf "unrecognised constant arg to the Query attribute: %+A" a
+                            | _ -> None
+                        | "Path"
+                        | "PathAttribute" ->
+                            match attr.ArgExpr with
+                            | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
+                                Some (HttpAttribute.Path s)
+                            | SynExpr.Const (a, _) ->
+                                failwithf "unrecognised constant arg to the Path attribute: %+A" a
+                            | _ -> None
+                        | "Body"
+                        | "BodyAttribute" ->
+                            match attr.ArgExpr with
+                            | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Body)
+                            | SynExpr.Const (a, _) ->
+                                failwithf "unrecognised constant arg to the Body attribute: %+A" a
+                            | _ -> None
+                        | _ -> None
+                    )
+                )
+
             {
                 Attributes = attrs
                 IsOptional = opt
