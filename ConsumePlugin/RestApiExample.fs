@@ -5,6 +5,7 @@ open System.Threading
 open System.Threading.Tasks
 open RestEase
 
+[<WoofWare.Myriad.Plugins.HttpClient>]
 type IPureGymApi =
     [<Get "v1/gyms/">]
     abstract GetGyms : ?ct : CancellationToken -> Task<Gym list>
@@ -26,13 +27,18 @@ type IPureGymApi =
     abstract GetSessions : [<Query>] fromDate : DateTime -> [<Query>] toDate : DateTime -> Task<Sessions>
     *)
 
+
 module Foo =
     let make (client : System.Net.Http.HttpClient) =
         { new IPureGymApi with
             member _.GetGyms (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
-                    let! response = client.GetAsync (client.BaseAddress.ToString () + "v1/gyms/") |> Async.AwaitTask
+
+                    let! response =
+                        client.GetAsync (client.BaseAddress.ToString () + "v1/gyms/", ct)
+                        |> Async.AwaitTask
+
                     let response = response.EnsureSuccessStatusCode ()
                     let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
@@ -52,7 +58,7 @@ module Foo =
                     let! ct = Async.CancellationToken
 
                     let! response =
-                        client.GetAsync (client.BaseAddress.ToString () + $"v1/gyms/{gym_id}/attendance")
+                        client.GetAsync (client.BaseAddress.ToString () + $"v1/gyms/{gym_id}/attendance", ct)
                         |> Async.AwaitTask
 
                     let response = response.EnsureSuccessStatusCode ()
