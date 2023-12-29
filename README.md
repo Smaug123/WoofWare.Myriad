@@ -21,7 +21,7 @@ Currently implemented:
 Takes records like this:
 
 ```fsharp
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type InnerType =
     {
         [<JsonPropertyName "something">]
@@ -29,7 +29,7 @@ type InnerType =
     }
 
 /// My whatnot
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type JsonRecordType =
     {
         /// A thing!
@@ -212,3 +212,40 @@ RestEase is complex, and handles a lot of different stuff.
 
 See the tests.
 For example, [PureGymDto.fs](./ConsumePlugin/PureGymDto.fs) is a real-world set of DTOs.
+
+## How to use
+
+* In your `.fsproj` file, define a helper variable so that subsequent steps don't all have to be kept in sync:
+    ```xml
+    <PropertyGroup>
+      <WoofWareMyriadPluginVersion>1.1.5</WoofWareMyriadPluginVersion>
+    </PropertyGroup>
+    ```
+* Take a reference on `WoofWare.Myriad.Plugins`:
+    ```xml
+    <ItemGroup>
+        <PackageReference Include="WoofWare.Myriad.Plugins" Version="$(WoofWareMyriadPluginVersion)" />
+    </ItemGroup>
+    ```
+* Point Myriad to the DLL within the NuGet package which is the source of the plugins:
+    ```xml
+    <ItemGroup>
+      <MyriadSdkGenerator Include="$(NuGetPackageRoot)/woofware.myriad.plugins/$(WoofWareMyriadPluginVersion)/lib/net6.0/WoofWare.Myriad.Plugins.dll" />
+    </ItemGroup>
+    ```
+
+Now you are ready to start using the generators.
+For example, the following specifies that Myriad is to use the contents of `Client.fs` to generate the file `GeneratedClient.fs`:
+
+```xml
+<ItemGroup>
+    <Compile Include="Client.fs" />
+    <Compile Include="GeneratedClient.fs">
+        <MyriadFile>Client.fs</MyriadFile>
+    </Compile>
+</ItemGroup>
+```
+
+### Myriad Gotchas
+
+* MsBuild doesn't always realise that it needs to invoke Myriad during rebuild. You can always save a whitespace change to the source file (e.g. `Client.fs` above), and MSBuild will then execute Myriad during the next build.
