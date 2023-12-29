@@ -116,6 +116,16 @@ module internal SynTypePatterns =
             | _ -> None
         | _ -> None
 
+    let (|Stream|_|) (fieldType : SynType) : unit option =
+        match fieldType with
+        | SynType.LongIdent ident ->
+            match ident.LongIdent |> List.map (fun i -> i.idText) with
+            | [ "System" ; "IO" ; "Stream" ]
+            | [ "IO" ; "Stream" ]
+            | [ "Stream" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
     let (|NumberType|_|) (fieldType : SynType) =
         match fieldType with
         | SynType.LongIdent ident ->

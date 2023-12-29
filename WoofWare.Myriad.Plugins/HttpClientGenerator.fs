@@ -331,7 +331,8 @@ module internal HttpClientGenerator =
 
         let returnExpr =
             match info.ReturnType with
-            | String -> SynExpr.CreateIdentString "node"
+            | String
+            | Stream -> SynExpr.CreateIdentString "node"
             | _ ->
                 JsonParseGenerator.parseNode
                     None
@@ -407,6 +408,19 @@ module internal HttpClientGenerator =
                                 SynExpr.CreateApp (
                                     SynExpr.CreateLongIdent (
                                         SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStringAsync" ]
+                                    ),
+                                    SynExpr.CreateIdentString "ct"
+                                )
+                            )
+                        )
+                | Stream ->
+                    yield
+                        LetBang (
+                            "node",
+                            SynExpr.awaitTask (
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateLongIdent (
+                                        SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
                                     ),
                                     SynExpr.CreateIdentString "ct"
                                 )
