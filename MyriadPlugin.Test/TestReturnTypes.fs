@@ -56,3 +56,33 @@ module TestReturnTypes =
         let buf = Array.zeroCreate 10
         stream.Read (buf, 0, 10) |> shouldEqual 4
         Array.take 4 buf |> shouldEqual result
+
+    [<TestCase "GetResponseMessage">]
+    [<TestCase "GetResponseMessage'">]
+    [<TestCase "GetResponseMessage''">]
+    [<TestCase "GetResponseMessage'''">]
+    let ``HttpResponseMessage return`` (case : string) =
+        let mutable responseMessage = None
+
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.Method |> shouldEqual HttpMethod.Get
+                let content = new StringContent ("a response!")
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- content
+                responseMessage <- Some resp
+                return resp
+            }
+
+        use client = HttpClientMock.make (Uri "https://example.com") proc
+        let api = PureGymApi.make client
+
+        let message =
+            match case with
+            | "GetResponseMessage" -> api.GetResponseMessage().Result
+            | "GetResponseMessage'" -> api.GetResponseMessage'().Result
+            | "GetResponseMessage''" -> api.GetResponseMessage''().Result
+            | "GetResponseMessage'''" -> api.GetResponseMessage'''().Result
+            | _ -> failwith $"unrecognised case: %s{case}"
+
+        Object.ReferenceEquals (message, Option.get responseMessage) |> shouldEqual true
