@@ -331,6 +331,7 @@ module internal HttpClientGenerator =
 
         let returnExpr =
             match info.ReturnType with
+            | HttpResponseMessage
             | String
             | Stream -> SynExpr.CreateIdentString "node"
             | _ ->
@@ -400,6 +401,7 @@ module internal HttpClientGenerator =
                         )
                     )
                 match info.ReturnType with
+                | HttpResponseMessage -> yield Let ("node", SynExpr.CreateIdentString "response")
                 | String ->
                     yield
                         LetBang (
