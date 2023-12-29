@@ -51,7 +51,8 @@ module PureGymApi =
                         System.Uri (
                             client.BaseAddress,
                             System.Uri (
-                                "v1/gyms/{gym_id}/attendance".Replace ("{gym_id}", gymId.ToString ()),
+                                "v1/gyms/{gym_id}/attendance"
+                                    .Replace ("{gym_id}", gymId.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
                         )
@@ -107,7 +108,8 @@ module PureGymApi =
                         System.Uri (
                             client.BaseAddress,
                             System.Uri (
-                                "v1/gyms/{gym_id}".Replace ("{gym_id}", gymId.ToString ()),
+                                "v1/gyms/{gym_id}"
+                                    .Replace ("{gym_id}", gymId.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
                         )
@@ -187,6 +189,33 @@ module PureGymApi =
                         |> Async.AwaitTask
 
                     return Sessions.jsonParse node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            client.BaseAddress,
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return node
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
         }

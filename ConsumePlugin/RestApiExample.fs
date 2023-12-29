@@ -26,3 +26,6 @@ type IPureGymApi =
     [<Get "/v2/gymSessions/member">]
     abstract GetSessions :
         [<Query>] fromDate : DateOnly * [<Query>] toDate : DateOnly * ?ct : CancellationToken -> Task<Sessions>
+
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>

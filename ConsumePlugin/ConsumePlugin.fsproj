@@ -1,41 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-      <TargetFramework>net8.0</TargetFramework>
-      <IsPackable>false</IsPackable>
-    </PropertyGroup>
-    <ItemGroup>
-      <MyriadSdkGenerator Include="$(MSBuildThisFileDirectory)..\WoofWare.Myriad.Plugins\bin\$(Configuration)\net6.0\WoofWare.Myriad.Plugins.dll" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <MyriadSdkGenerator Include="$(MSBuildThisFileDirectory)..\WoofWare.Myriad.Plugins\bin\$(Configuration)\net6.0\WoofWare.Myriad.Plugins.dll"/>
+  </ItemGroup>
 
-    <ItemGroup>
-        <None Include="myriad.toml" />
-        <Compile Include="RecordFile.fs" />
-        <Compile Include="GeneratedRecord.fs"> <!--1-->
-          <MyriadFile>RecordFile.fs</MyriadFile> <!--2-->
-        </Compile>
-      <Compile Include="JsonRecord.fs" />
-      <Compile Include="GeneratedJson.fs"> <!--1-->
-        <MyriadFile>JsonRecord.fs</MyriadFile> <!--2-->
-      </Compile>
-      <Compile Include="PureGymDto.fs" />
-      <Compile Include="GeneratedPureGymDto.fs">
-        <MyriadFile>PureGymDto.fs</MyriadFile> <!--2-->
-      </Compile>
-      <Compile Include="RestApiExample.fs" />
-      <Compile Include="GeneratedRestClient.fs">
-        <MyriadFile>RestApiExample.fs</MyriadFile> <!--2-->
-      </Compile>
-        <None Include="..\runmyriad.sh">
-          <Link>runmyriad.sh</Link>
-        </None>
-    </ItemGroup>
+  <ItemGroup>
+    <None Include="myriad.toml"/>
+    <Compile Include="RecordFile.fs"/>
+    <Compile Include="GeneratedRecord.fs"> <!--1-->
+      <MyriadFile>RecordFile.fs</MyriadFile> <!--2-->
+    </Compile>
+    <Compile Include="JsonRecord.fs"/>
+    <Compile Include="GeneratedJson.fs"> <!--1-->
+      <MyriadFile>JsonRecord.fs</MyriadFile> <!--2-->
+    </Compile>
+    <Compile Include="PureGymDto.fs"/>
+    <Compile Include="GeneratedPureGymDto.fs">
+      <MyriadFile>PureGymDto.fs</MyriadFile> <!--2-->
+    </Compile>
+    <Compile Include="RestApiExample.fs"/>
+    <Compile Include="GeneratedRestClient.fs">
+      <MyriadFile>RestApiExample.fs</MyriadFile> <!--2-->
+    </Compile>
+    <None Include="..\runmyriad.sh">
+      <Link>runmyriad.sh</Link>
+    </None>
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="RestEase" Version="1.6.4" />
-      <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj" />
-      <PackageReference Include="Myriad.Sdk" Version="0.8.3" />
-      <PackageReference Include="Myriad.Core" Version="0.8.3" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="RestEase" Version="1.6.4"/>
+    <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj"/>
+    <PackageReference Include="Myriad.Sdk" Version="0.8.3"/>
+    <PackageReference Include="Myriad.Core" Version="0.8.3"/>
+  </ItemGroup>
 
 </Project>
