@@ -8,10 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="TestPureGymJson.fs" />
-        <Compile Include="TestSurface.fs" />
-        <Compile Include="TestRemoveOptions.fs" />
-        <Compile Include="TestJsonParse.fs" />
+      <Compile Include="HttpClient.fs" />
+      <Compile Include="TestSurface.fs" />
+      <Compile Include="TestRemoveOptions.fs" />
+      <Compile Include="TestJsonParse.fs" />
+      <Compile Include="PureGymDtos.fs" />
+      <Compile Include="TestPureGymJson.fs" />
+      <Compile Include="TestRestApi.fs" />
     </ItemGroup>
 
     <ItemGroup>

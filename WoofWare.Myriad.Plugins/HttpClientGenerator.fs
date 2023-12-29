@@ -184,8 +184,7 @@ module internal HttpClientGenerator =
             )
 
         let requestUriTrailer =
-            // TODO: more principled treatment of the slash
-            (SynExpr.CreateConstString ("/" + info.UrlTemplate.TrimStart '/'), info.Args)
+            (SynExpr.CreateConstString info.UrlTemplate, info.Args)
             ||> List.fold (fun template arg ->
                 (template, arg.Attributes)
                 ||> List.fold (fun template attr ->
@@ -278,27 +277,24 @@ module internal HttpClientGenerator =
                 |> SynExpr.CreateParen
 
         let requestUri =
+            let uriIdent = SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ])
+
             SynExpr.App (
                 ExprAtomicFlag.Atomic,
                 false,
-                SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ]),
-                SynExpr.CreateParen (
-                    SynExpr.plus
-                        (SynExpr.App (
-                            ExprAtomicFlag.Atomic,
-                            false,
-                            SynExpr.CreateLongIdent (
-                                SynLongIdent.SynLongIdent (
-                                    [ Ident.Create "client" ; Ident.Create "BaseAddress" ; Ident.Create "ToString" ],
-                                    [ range0 ; range0 ],
-                                    [ None ; None ; None ]
-                                )
-                            ),
-                            SynExpr.CreateConst SynConst.Unit,
-                            range0
-                        ))
-                        requestUriTrailer
-                ),
+                uriIdent,
+                SynExpr.CreateParenedTuple
+                    [
+                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
+                        SynExpr.CreateApp (
+                            uriIdent,
+                            SynExpr.CreateParenedTuple
+                                [
+                                    requestUriTrailer
+                                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "UriKind" ; "Relative" ])
+                                ]
+                        )
+                    ],
                 range0
             )
 
@@ -324,7 +320,7 @@ module internal HttpClientGenerator =
                         SynLongIdent.Create
                             [ "System" ; "Net" ; "Http" ; "HttpMethod" ; httpMethodString info.HttpMethod ]
                     ))
-                SynExpr.equals (SynExpr.CreateIdentString "RequestUri") requestUri
+                SynExpr.equals (SynExpr.CreateIdentString "RequestUri") (SynExpr.CreateIdentString "uri")
             ]
             |> SynExpr.CreateParenedTuple
 
@@ -337,6 +333,7 @@ module internal HttpClientGenerator =
         let implementation =
             [
                 yield LetBang ("ct", SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "CancellationToken" ]))
+                yield Let ("uri", requestUri)
                 yield
                     Use (
                         "httpMessage",
