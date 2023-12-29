@@ -23,6 +23,7 @@ module internal JsonParseGenerator =
         }
 
         static member None =
+            let x = "".EndsWith "foo"
             {
                 JsonNumberHandlingArg = None
             }
