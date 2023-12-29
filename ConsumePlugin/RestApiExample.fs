@@ -3,6 +3,7 @@ namespace PureGym
 open System
 open System.Threading
 open System.Threading.Tasks
+open System.IO
 open RestEase
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
@@ -29,3 +30,12 @@ type IPureGymApi =
 
     [<Get "endpoint/{param}">]
     abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+    [<Get "endpoint">]
+    abstract GetStream : ?ct : CancellationToken -> Task<System.IO.Stream>
+
+    [<Get "endpoint">]
+    abstract GetStream' : ?ct : CancellationToken -> Task<IO.Stream>
+
+    [<Get "endpoint">]
+    abstract GetStream'' : ?ct : CancellationToken -> Task<Stream>
