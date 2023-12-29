@@ -266,9 +266,9 @@ namespace PureGym
 module SessionsAggregate =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsAggregate =
-        let Duration = node.["duration"].AsValue().GetValue<int> ()
-        let Visits = node.["visits"].AsValue().GetValue<int> ()
-        let Activities = node.["activities"].AsValue().GetValue<int> ()
+        let Duration = node.["Duration"].AsValue().GetValue<int> ()
+        let Visits = node.["Visits"].AsValue().GetValue<int> ()
+        let Activities = node.["Activities"].AsValue().GetValue<int> ()
 
         {
             Activities = Activities
@@ -283,9 +283,9 @@ namespace PureGym
 module VisitGym =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : VisitGym =
-        let Status = node.["status"].AsValue().GetValue<string> ()
-        let Name = node.["name"].AsValue().GetValue<string> ()
-        let Id = node.["id"].AsValue().GetValue<int> ()
+        let Status = node.["Status"].AsValue().GetValue<string> ()
+        let Name = node.["Name"].AsValue().GetValue<string> ()
+        let Id = node.["Id"].AsValue().GetValue<int> ()
 
         {
             Id = Id
@@ -300,13 +300,13 @@ namespace PureGym
 module Visit =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Visit =
-        let Gym = VisitGym.jsonParse node.["gym"]
-        let Duration = node.["duration"].AsValue().GetValue<int> ()
+        let Gym = VisitGym.jsonParse node.["Gym"]
+        let Duration = node.["Duration"].AsValue().GetValue<int> ()
 
         let StartTime =
-            node.["startTime"].AsValue().GetValue<string> () |> System.DateTime.Parse
+            node.["StartTime"].AsValue().GetValue<string> () |> System.DateTime.Parse
 
-        let IsDurationEstimated = node.["isDurationEstimated"].AsValue().GetValue<bool> ()
+        let IsDurationEstimated = node.["IsDurationEstimated"].AsValue().GetValue<bool> ()
 
         {
             IsDurationEstimated = IsDurationEstimated
@@ -322,8 +322,8 @@ namespace PureGym
 module SessionsSummary =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsSummary =
-        let ThisWeek = SessionsAggregate.jsonParse node.["thisWeek"]
-        let Total = SessionsAggregate.jsonParse node.["total"]
+        let ThisWeek = SessionsAggregate.jsonParse node.["ThisWeek"]
+        let Total = SessionsAggregate.jsonParse node.["Total"]
 
         {
             Total = Total
@@ -338,11 +338,11 @@ module Sessions =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Sessions =
         let Visits =
-            node.["visits"].AsArray ()
+            node.["Visits"].AsArray ()
             |> Seq.map (fun elt -> Visit.jsonParse elt)
             |> List.ofSeq
 
-        let Summary = SessionsSummary.jsonParse node.["summary"]
+        let Summary = SessionsSummary.jsonParse node.["Summary"]
 
         {
             Summary = Summary

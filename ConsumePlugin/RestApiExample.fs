@@ -24,4 +24,4 @@ type IPureGymApi =
 
     [<Get "v2/gymSessions/member">]
     abstract GetSessions :
-        [<Query>] fromDate : DateTime * [<Query>] toDate : DateTime * ?ct : CancellationToken -> Task<Sessions>
+        [<Query>] fromDate : DateOnly * [<Query>] toDate : DateOnly * ?ct : CancellationToken -> Task<Sessions>

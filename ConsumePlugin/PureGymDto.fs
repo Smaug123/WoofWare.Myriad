@@ -128,38 +128,52 @@ type MemberActivityDto =
 [<WoofWare.Myriad.Plugins.JsonParse>]
 type SessionsAggregate =
     {
+        [<JsonPropertyName "Activities">]
         Activities : int
+        [<JsonPropertyName "Visits">]
         Visits : int
+        [<JsonPropertyName "Duration">]
         Duration : int
     }
 
 [<WoofWare.Myriad.Plugins.JsonParse>]
 type VisitGym =
     {
+        [<JsonPropertyName "Id">]
         Id : int
+        [<JsonPropertyName "Name">]
         Name : string
+        [<JsonPropertyName "Status">]
         Status : string
     }
 
 [<WoofWare.Myriad.Plugins.JsonParse>]
 type Visit =
     {
+        [<JsonPropertyName "IsDurationEstimated">]
         IsDurationEstimated : bool
+        [<JsonPropertyName "StartTime">]
         StartTime : DateTime
+        [<JsonPropertyName "Duration">]
         Duration : int
+        [<JsonPropertyName "Gym">]
         Gym : VisitGym
     }
 
 [<WoofWare.Myriad.Plugins.JsonParse>]
 type SessionsSummary =
     {
+        [<JsonPropertyName "Total">]
         Total : SessionsAggregate
+        [<JsonPropertyName "ThisWeek">]
         ThisWeek : SessionsAggregate
     }
 
 [<WoofWare.Myriad.Plugins.JsonParse>]
 type Sessions =
     {
+        [<JsonPropertyName "Summary">]
         Summary : SessionsSummary
+        [<JsonPropertyName "Visits">]
         Visits : Visit list
     }

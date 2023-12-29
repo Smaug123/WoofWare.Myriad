@@ -155,7 +155,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetSessions (fromDate : DateTime, toDate : DateTime, ct : CancellationToken option) =
+            member _.GetSessions (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -165,9 +165,9 @@ module PureGymApi =
                             System.Uri (
                                 ("v2/gymSessions/member"
                                  + "?fromDate="
-                                 + ((fromDate.ToString "yyyy-MM-ddTHH:mm:ss") |> System.Web.HttpUtility.UrlEncode)
+                                 + ((fromDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)
                                  + "&toDate="
-                                 + ((toDate.ToString "yyyy-MM-ddTHH:mm:ss") |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((toDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)),
                                 System.UriKind.Relative
                             )
                         )
