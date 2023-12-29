@@ -41,7 +41,7 @@ module internal JsonParseGenerator =
                             SynExpr.CreateApp (
                                 SynExpr.CreateApp (
                                     SynExpr.CreateIdentString "sprintf",
-                                    SynExpr.CreateConstString "Key '%s' not found on JSON object"
+                                    SynExpr.CreateConstString "Required key '%s' not found on JSON object"
                                 ),
                                 SynExpr.CreateParen propertyName
                             )

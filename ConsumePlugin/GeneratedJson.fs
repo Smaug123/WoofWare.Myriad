@@ -16,7 +16,7 @@ module InnerType =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ((Literals.something))
+                         sprintf "Required key '%s' not found on JSON object" ((Literals.something))
                      )
                  )
              | v -> v)
@@ -38,7 +38,9 @@ module JsonRecordType =
             (match node.["f"] with
              | null ->
                  raise (
-                     System.Collections.Generic.KeyNotFoundException (sprintf "Key '%s' not found on JSON object" ("f"))
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("f")
+                     )
                  )
              | v -> v)
                 .AsArray ()
@@ -49,7 +51,9 @@ module JsonRecordType =
             (match node.["e"] with
              | null ->
                  raise (
-                     System.Collections.Generic.KeyNotFoundException (sprintf "Key '%s' not found on JSON object" ("e"))
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("e")
+                     )
                  )
              | v -> v)
                 .AsArray ()
@@ -63,7 +67,7 @@ module JsonRecordType =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("hi")
+                         sprintf "Required key '%s' not found on JSON object" ("hi")
                      )
                  )
              | v -> v)
@@ -76,7 +80,7 @@ module JsonRecordType =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("another-thing")
+                         sprintf "Required key '%s' not found on JSON object" ("another-thing")
                      )
                  )
              | v -> v)
@@ -87,7 +91,9 @@ module JsonRecordType =
             (match node.["a"] with
              | null ->
                  raise (
-                     System.Collections.Generic.KeyNotFoundException (sprintf "Key '%s' not found on JSON object" ("a"))
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("a")
+                     )
                  )
              | v -> v)
                 .AsValue()

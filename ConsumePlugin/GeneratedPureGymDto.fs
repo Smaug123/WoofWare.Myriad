@@ -16,7 +16,7 @@ module GymOpeningHours =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("openingHours")
+                         sprintf "Required key '%s' not found on JSON object" ("openingHours")
                      )
                  )
              | v -> v)
@@ -29,7 +29,7 @@ module GymOpeningHours =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("isAlwaysOpen")
+                         sprintf "Required key '%s' not found on JSON object" ("isAlwaysOpen")
                      )
                  )
              | v -> v)
@@ -53,7 +53,7 @@ module GymAccessOptions =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("qrCodeAccess")
+                         sprintf "Required key '%s' not found on JSON object" ("qrCodeAccess")
                      )
                  )
              | v -> v)
@@ -65,7 +65,7 @@ module GymAccessOptions =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("pinAccess")
+                         sprintf "Required key '%s' not found on JSON object" ("pinAccess")
                      )
                  )
              | v -> v)
@@ -90,7 +90,7 @@ module GymLocation =
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Key '%s' not found on JSON object" ("latitude")
+                             sprintf "Required key '%s' not found on JSON object" ("latitude")
                          )
                      )
                  | v -> v)
@@ -105,7 +105,7 @@ module GymLocation =
                          | null ->
                              raise (
                                  System.Collections.Generic.KeyNotFoundException (
-                                     sprintf "Key '%s' not found on JSON object" ("latitude")
+                                     sprintf "Required key '%s' not found on JSON object" ("latitude")
                                  )
                              )
                          | v -> v)
@@ -123,7 +123,7 @@ module GymLocation =
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Key '%s' not found on JSON object" ("longitude")
+                             sprintf "Required key '%s' not found on JSON object" ("longitude")
                          )
                      )
                  | v -> v)
@@ -138,7 +138,7 @@ module GymLocation =
                          | null ->
                              raise (
                                  System.Collections.Generic.KeyNotFoundException (
-                                     sprintf "Key '%s' not found on JSON object" ("longitude")
+                                     sprintf "Required key '%s' not found on JSON object" ("longitude")
                                  )
                              )
                          | v -> v)
@@ -167,7 +167,7 @@ module GymAddress =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("postcode")
+                         sprintf "Required key '%s' not found on JSON object" ("postcode")
                      )
                  )
              | v -> v)
@@ -184,7 +184,7 @@ module GymAddress =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("town")
+                         sprintf "Required key '%s' not found on JSON object" ("town")
                      )
                  )
              | v -> v)
@@ -206,7 +206,7 @@ module GymAddress =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("addressLine1")
+                         sprintf "Required key '%s' not found on JSON object" ("addressLine1")
                      )
                  )
              | v -> v)
@@ -234,7 +234,7 @@ module Gym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("reopenDate")
+                         sprintf "Required key '%s' not found on JSON object" ("reopenDate")
                      )
                  )
              | v -> v)
@@ -246,7 +246,7 @@ module Gym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("timeZone")
+                         sprintf "Required key '%s' not found on JSON object" ("timeZone")
                      )
                  )
              | v -> v)
@@ -262,7 +262,7 @@ module Gym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("emailAddress")
+                         sprintf "Required key '%s' not found on JSON object" ("emailAddress")
                      )
                  )
              | v -> v)
@@ -274,7 +274,7 @@ module Gym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("phoneNumber")
+                         sprintf "Required key '%s' not found on JSON object" ("phoneNumber")
                      )
                  )
              | v -> v)
@@ -288,7 +288,7 @@ module Gym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("status")
+                         sprintf "Required key '%s' not found on JSON object" ("status")
                      )
                  )
              | v -> v)
@@ -300,7 +300,7 @@ module Gym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("id")
+                         sprintf "Required key '%s' not found on JSON object" ("id")
                      )
                  )
              | v -> v)
@@ -312,7 +312,7 @@ module Gym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("name")
+                         sprintf "Required key '%s' not found on JSON object" ("name")
                      )
                  )
              | v -> v)
@@ -345,7 +345,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("memberStatus")
+                         sprintf "Required key '%s' not found on JSON object" ("memberStatus")
                      )
                  )
              | v -> v)
@@ -357,7 +357,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("suspendedReason")
+                         sprintf "Required key '%s' not found on JSON object" ("suspendedReason")
                      )
                  )
              | v -> v)
@@ -369,7 +369,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("membershipLevel")
+                         sprintf "Required key '%s' not found on JSON object" ("membershipLevel")
                      )
                  )
              | v -> v)
@@ -381,7 +381,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("membershipName")
+                         sprintf "Required key '%s' not found on JSON object" ("membershipName")
                      )
                  )
              | v -> v)
@@ -393,7 +393,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("postCode")
+                         sprintf "Required key '%s' not found on JSON object" ("postCode")
                      )
                  )
              | v -> v)
@@ -405,7 +405,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("mobileNumber")
+                         sprintf "Required key '%s' not found on JSON object" ("mobileNumber")
                      )
                  )
              | v -> v)
@@ -417,7 +417,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("dateofBirth")
+                         sprintf "Required key '%s' not found on JSON object" ("dateofBirth")
                      )
                  )
              | v -> v)
@@ -430,7 +430,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("gymAccessPin")
+                         sprintf "Required key '%s' not found on JSON object" ("gymAccessPin")
                      )
                  )
              | v -> v)
@@ -442,7 +442,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("emailAddress")
+                         sprintf "Required key '%s' not found on JSON object" ("emailAddress")
                      )
                  )
              | v -> v)
@@ -454,7 +454,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("homeGymName")
+                         sprintf "Required key '%s' not found on JSON object" ("homeGymName")
                      )
                  )
              | v -> v)
@@ -466,7 +466,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("homeGymId")
+                         sprintf "Required key '%s' not found on JSON object" ("homeGymId")
                      )
                  )
              | v -> v)
@@ -478,7 +478,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("lastName")
+                         sprintf "Required key '%s' not found on JSON object" ("lastName")
                      )
                  )
              | v -> v)
@@ -490,7 +490,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("firstName")
+                         sprintf "Required key '%s' not found on JSON object" ("firstName")
                      )
                  )
              | v -> v)
@@ -502,7 +502,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("compoundMemberId")
+                         sprintf "Required key '%s' not found on JSON object" ("compoundMemberId")
                      )
                  )
              | v -> v)
@@ -514,7 +514,7 @@ module Member =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("id")
+                         sprintf "Required key '%s' not found on JSON object" ("id")
                      )
                  )
              | v -> v)
@@ -551,7 +551,7 @@ module GymAttendance =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("maximumCapacity")
+                         sprintf "Required key '%s' not found on JSON object" ("maximumCapacity")
                      )
                  )
              | v -> v)
@@ -563,7 +563,7 @@ module GymAttendance =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("lastRefreshedPeopleInClasses")
+                         sprintf "Required key '%s' not found on JSON object" ("lastRefreshedPeopleInClasses")
                      )
                  )
              | v -> v)
@@ -576,7 +576,7 @@ module GymAttendance =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("lastRefreshed")
+                         sprintf "Required key '%s' not found on JSON object" ("lastRefreshed")
                      )
                  )
              | v -> v)
@@ -589,7 +589,7 @@ module GymAttendance =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("attendanceTime")
+                         sprintf "Required key '%s' not found on JSON object" ("attendanceTime")
                      )
                  )
              | v -> v)
@@ -602,7 +602,7 @@ module GymAttendance =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("isApproximate")
+                         sprintf "Required key '%s' not found on JSON object" ("isApproximate")
                      )
                  )
              | v -> v)
@@ -619,7 +619,7 @@ module GymAttendance =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("totalPeopleInClasses")
+                         sprintf "Required key '%s' not found on JSON object" ("totalPeopleInClasses")
                      )
                  )
              | v -> v)
@@ -631,7 +631,7 @@ module GymAttendance =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("totalPeopleInGym")
+                         sprintf "Required key '%s' not found on JSON object" ("totalPeopleInGym")
                      )
                  )
              | v -> v)
@@ -643,7 +643,7 @@ module GymAttendance =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("description")
+                         sprintf "Required key '%s' not found on JSON object" ("description")
                      )
                  )
              | v -> v)
@@ -674,7 +674,7 @@ module MemberActivityDto =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("lastRefreshed")
+                         sprintf "Required key '%s' not found on JSON object" ("lastRefreshed")
                      )
                  )
              | v -> v)
@@ -687,7 +687,7 @@ module MemberActivityDto =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("isEstimated")
+                         sprintf "Required key '%s' not found on JSON object" ("isEstimated")
                      )
                  )
              | v -> v)
@@ -699,7 +699,7 @@ module MemberActivityDto =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("totalClasses")
+                         sprintf "Required key '%s' not found on JSON object" ("totalClasses")
                      )
                  )
              | v -> v)
@@ -711,7 +711,7 @@ module MemberActivityDto =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("totalVisits")
+                         sprintf "Required key '%s' not found on JSON object" ("totalVisits")
                      )
                  )
              | v -> v)
@@ -723,7 +723,7 @@ module MemberActivityDto =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("averageDuration")
+                         sprintf "Required key '%s' not found on JSON object" ("averageDuration")
                      )
                  )
              | v -> v)
@@ -735,7 +735,7 @@ module MemberActivityDto =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("totalDuration")
+                         sprintf "Required key '%s' not found on JSON object" ("totalDuration")
                      )
                  )
              | v -> v)
@@ -763,7 +763,7 @@ module SessionsAggregate =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("Duration")
+                         sprintf "Required key '%s' not found on JSON object" ("Duration")
                      )
                  )
              | v -> v)
@@ -775,7 +775,7 @@ module SessionsAggregate =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("Visits")
+                         sprintf "Required key '%s' not found on JSON object" ("Visits")
                      )
                  )
              | v -> v)
@@ -787,7 +787,7 @@ module SessionsAggregate =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("Activities")
+                         sprintf "Required key '%s' not found on JSON object" ("Activities")
                      )
                  )
              | v -> v)
@@ -812,7 +812,7 @@ module VisitGym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("Status")
+                         sprintf "Required key '%s' not found on JSON object" ("Status")
                      )
                  )
              | v -> v)
@@ -824,7 +824,7 @@ module VisitGym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("Name")
+                         sprintf "Required key '%s' not found on JSON object" ("Name")
                      )
                  )
              | v -> v)
@@ -836,7 +836,7 @@ module VisitGym =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("Id")
+                         sprintf "Required key '%s' not found on JSON object" ("Id")
                      )
                  )
              | v -> v)
@@ -863,7 +863,7 @@ module Visit =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("Duration")
+                         sprintf "Required key '%s' not found on JSON object" ("Duration")
                      )
                  )
              | v -> v)
@@ -875,7 +875,7 @@ module Visit =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("StartTime")
+                         sprintf "Required key '%s' not found on JSON object" ("StartTime")
                      )
                  )
              | v -> v)
@@ -888,7 +888,7 @@ module Visit =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("IsDurationEstimated")
+                         sprintf "Required key '%s' not found on JSON object" ("IsDurationEstimated")
                      )
                  )
              | v -> v)
@@ -929,7 +929,7 @@ module Sessions =
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Key '%s' not found on JSON object" ("Visits")
+                         sprintf "Required key '%s' not found on JSON object" ("Visits")
                      )
                  )
              | v -> v)
