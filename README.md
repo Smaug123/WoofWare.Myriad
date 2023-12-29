@@ -204,6 +204,7 @@ RestEase is complex, and handles a lot of different stuff.
 * Parameters are serialised solely with `ToString`, and there's no control over this; nor is there control over encoding in any sense.
 * Deserialisation follows the same logic as the `JsonParse` generator, and it generally assumes you're using types which `JsonParse` is applied to.
 * Headers are not yet supported.
+* You have to specify the `BaseAddress` on the input client yourself, and you can't have the same client talking to a different `BaseAddress` this way unless you manually set it before making any different request.
 * I haven't yet worked out how to integrate this with a mocked HTTP client; you can always mock up an `HttpClient`, but I prefer to use a mock which defines a single member `SendAsync`.
 * Anonymous parameters are currently forbidden.
 * Every function must take an optional `CancellationToken` (which is good practice anyway); so arguments are forced to be tupled. This is a won't-fix for as long as F# requires tupled arguments if any of the args are optional.
