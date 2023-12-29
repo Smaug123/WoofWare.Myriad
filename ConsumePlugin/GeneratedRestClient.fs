@@ -10,6 +10,8 @@ open System
 open System.Threading
 open System.Threading.Tasks
 open System.IO
+open System.Net
+open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
@@ -276,6 +278,86 @@ module PureGymApi =
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    return node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetResponseMessage (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let node = response
+                    return node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetResponseMessage' (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let node = response
+                    return node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetResponseMessage'' (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let node = response
+                    return node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetResponseMessage''' (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let node = response
                     return node
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))

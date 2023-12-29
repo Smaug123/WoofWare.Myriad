@@ -4,6 +4,8 @@ open System
 open System.Threading
 open System.Threading.Tasks
 open System.IO
+open System.Net
+open System.Net.Http
 open RestEase
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
@@ -39,3 +41,15 @@ type IPureGymApi =
 
     [<Get "endpoint">]
     abstract GetStream'' : ?ct : CancellationToken -> Task<Stream>
+
+    [<Get "endpoint">]
+    abstract GetResponseMessage : ?ct : CancellationToken -> Task<System.Net.Http.HttpResponseMessage>
+
+    [<Get "endpoint">]
+    abstract GetResponseMessage' : ?ct : CancellationToken -> Task<Net.Http.HttpResponseMessage>
+
+    [<Get "endpoint">]
+    abstract GetResponseMessage'' : ?ct : CancellationToken -> Task<Http.HttpResponseMessage>
+
+    [<Get "endpoint">]
+    abstract GetResponseMessage''' : ?ct : CancellationToken -> Task<HttpResponseMessage>
