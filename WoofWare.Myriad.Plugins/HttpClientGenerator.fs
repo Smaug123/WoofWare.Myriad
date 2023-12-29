@@ -326,6 +326,7 @@ module internal HttpClientGenerator =
 
         let returnExpr =
             JsonParseGenerator.parseNode
+                None
                 JsonParseGenerator.JsonParseOption.None
                 info.ReturnType
                 (SynExpr.CreateIdentString "node")

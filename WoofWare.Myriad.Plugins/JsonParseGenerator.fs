@@ -27,9 +27,44 @@ module internal JsonParseGenerator =
                 JsonNumberHandlingArg = None
             }
 
+    /// (match {indexed} with | null -> raise (System.Collections.Generic.KeyNotFoundException ()) | v -> v)
+    let assertNotNull (propertyName : SynExpr) (indexed : SynExpr) =
+        let raiseExpr =
+            SynExpr.CreateApp (
+                SynExpr.CreateIdentString "raise",
+                SynExpr.CreateParen (
+                    SynExpr.CreateApp (
+                        SynExpr.CreateLongIdent (
+                            SynLongIdent.Create [ "System" ; "Collections" ; "Generic" ; "KeyNotFoundException" ]
+                        ),
+                        SynExpr.CreateParen (
+                            SynExpr.CreateApp (
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateIdentString "sprintf",
+                                    SynExpr.CreateConstString "Key '%s' not found on JSON object"
+                                ),
+                                SynExpr.CreateParen propertyName
+                            )
+                        )
+                    )
+                )
+            )
+
+        SynExpr.CreateMatch (
+            indexed,
+            [
+                SynMatchClause.Create (SynPat.CreateNull, None, raiseExpr)
+                SynMatchClause.Create (SynPat.CreateNamed (Ident.Create "v"), None, SynExpr.CreateIdentString "v")
+            ]
+        )
+        |> SynExpr.CreateParen
+
     /// {node}.AsValue().GetValue<{typeName}> ()
-    let asValueGetValue (typeName : string) (node : SynExpr) : SynExpr =
-        node
+    /// If `propertyName` is Some, uses `assertNotNull {node}` instead of `{node}`.
+    let asValueGetValue (propertyName : SynExpr option) (typeName : string) (node : SynExpr) : SynExpr =
+        match propertyName with
+        | None -> node
+        | Some propertyName -> assertNotNull propertyName node
         |> SynExpr.callMethod "AsValue"
         |> SynExpr.callGenericMethod "GetValue" typeName
 
@@ -74,21 +109,31 @@ module internal JsonParseGenerator =
         List.append (SynExpr.qualifyPrimitiveType typeName) [ Ident.Create "Parse" ]
 
     /// Given `node.["town"]`, for example, choose how to obtain a JSON value from it.
-    let rec parseNode (options : JsonParseOption) (fieldType : SynType) (node : SynExpr) : SynExpr =
+    /// The property name is used in error messages at runtime to show where a JSON
+    /// parse error occurred; supply `None` to indicate "don't validate".
+    let rec parseNode
+        (propertyName : SynExpr option)
+        (options : JsonParseOption)
+        (fieldType : SynType)
+        (node : SynExpr)
+        : SynExpr
+        =
         // TODO: parsing format for DateTime etc
         match fieldType with
         | DateOnly ->
-            asValueGetValue "string" node
+            node
+            |> asValueGetValue propertyName "string"
             |> SynExpr.pipeThroughFunction (
                 SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "DateOnly" ; "Parse" ])
             )
         | DateTime ->
-            asValueGetValue "string" node
+            node
+            |> asValueGetValue propertyName "string"
             |> SynExpr.pipeThroughFunction (
                 SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "DateTime" ; "Parse" ])
             )
         | NumberType typeName ->
-            let basic = asValueGetValue typeName node
+            let basic = asValueGetValue propertyName typeName node
 
             match options.JsonNumberHandlingArg with
             | None -> basic
@@ -105,7 +150,7 @@ module internal JsonParseGenerator =
                         (SynExpr.CreateConst (SynConst.CreateString "cannot be converted to"))
 
                 let handler =
-                    asValueGetValue "string" node
+                    asValueGetValue propertyName "string" node
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (parseFunction typeName))
                     )
@@ -133,15 +178,15 @@ module internal JsonParseGenerator =
                         range0
                     ))
                     handler
-        | PrimitiveType typeName -> asValueGetValue typeName node
+        | PrimitiveType typeName -> asValueGetValue propertyName typeName node
         | OptionType ty ->
-            parseNode options ty (SynExpr.CreateIdentString "v")
+            parseNode None options ty (SynExpr.CreateIdentString "v")
             |> createParseLineOption node
         | ListType ty ->
-            parseNode options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
+            parseNode propertyName options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
             |> asArrayMapped "List" node
         | ArrayType ty ->
-            parseNode options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
+            parseNode propertyName options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
             |> asArrayMapped "Array" node
         | _ ->
             // Let's just hope that we've also got our own type annotation!
@@ -157,7 +202,7 @@ module internal JsonParseGenerator =
     let createParseRhs (options : JsonParseOption) (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
         SynExpr.CreateIdentString "node"
         |> SynExpr.index propertyName
-        |> parseNode options fieldType
+        |> parseNode (Some propertyName) options fieldType
 
     let isJsonNumberHandling (literal : LongIdent) : bool =
         match List.rev literal |> List.map (fun ident -> ident.idText) with

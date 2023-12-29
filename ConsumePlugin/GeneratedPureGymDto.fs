@@ -13,10 +13,31 @@ module GymOpeningHours =
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymOpeningHours =
         let OpeningHours =
             node.["openingHours"].AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+            |> Seq.map (fun elt ->
+                (match elt with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Key '%s' not found on JSON object" ("openingHours")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<string> ()
+            )
             |> List.ofSeq
 
-        let IsAlwaysOpen = node.["isAlwaysOpen"].AsValue().GetValue<bool> ()
+        let IsAlwaysOpen =
+            (match node.["isAlwaysOpen"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("isAlwaysOpen")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<bool> ()
 
         {
             IsAlwaysOpen = IsAlwaysOpen
@@ -30,8 +51,29 @@ namespace PureGym
 module GymAccessOptions =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAccessOptions =
-        let QrCodeAccess = node.["qrCodeAccess"].AsValue().GetValue<bool> ()
-        let PinAccess = node.["pinAccess"].AsValue().GetValue<bool> ()
+        let QrCodeAccess =
+            (match node.["qrCodeAccess"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("qrCodeAccess")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<bool> ()
+
+        let PinAccess =
+            (match node.["pinAccess"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("pinAccess")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<bool> ()
 
         {
             PinAccess = PinAccess
@@ -47,13 +89,32 @@ module GymLocation =
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymLocation =
         let Latitude =
             try
-                node.["latitude"].AsValue().GetValue<float> ()
+                (match node.["latitude"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Key '%s' not found on JSON object" ("latitude")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<float> ()
             with :? System.InvalidOperationException as exc ->
                 if exc.Message.Contains "cannot be converted to" then
                     if
                         System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
                     then
-                        node.["latitude"].AsValue().GetValue<string> () |> System.Double.Parse
+                        (match node.["latitude"] with
+                         | null ->
+                             raise (
+                                 System.Collections.Generic.KeyNotFoundException (
+                                     sprintf "Key '%s' not found on JSON object" ("latitude")
+                                 )
+                             )
+                         | v -> v)
+                            .AsValue()
+                            .GetValue<string> ()
+                        |> System.Double.Parse
                     else
                         reraise ()
                 else
@@ -61,13 +122,32 @@ module GymLocation =
 
         let Longitude =
             try
-                node.["longitude"].AsValue().GetValue<float> ()
+                (match node.["longitude"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Key '%s' not found on JSON object" ("longitude")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<float> ()
             with :? System.InvalidOperationException as exc ->
                 if exc.Message.Contains "cannot be converted to" then
                     if
                         System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
                     then
-                        node.["longitude"].AsValue().GetValue<string> () |> System.Double.Parse
+                        (match node.["longitude"] with
+                         | null ->
+                             raise (
+                                 System.Collections.Generic.KeyNotFoundException (
+                                     sprintf "Key '%s' not found on JSON object" ("longitude")
+                                 )
+                             )
+                         | v -> v)
+                            .AsValue()
+                            .GetValue<string> ()
+                        |> System.Double.Parse
                     else
                         reraise ()
                 else
@@ -85,14 +165,34 @@ namespace PureGym
 module GymAddress =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAddress =
-        let Postcode = node.["postcode"].AsValue().GetValue<string> ()
+        let Postcode =
+            (match node.["postcode"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("postcode")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
 
         let County =
             match node.["county"] with
             | null -> None
             | v -> v.AsValue().GetValue<string> () |> Some
 
-        let Town = node.["town"].AsValue().GetValue<string> ()
+        let Town =
+            (match node.["town"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("town")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
 
         let AddressLine3 =
             match node.["addressLine3"] with
@@ -104,7 +204,17 @@ module GymAddress =
             | null -> None
             | v -> v.AsValue().GetValue<string> () |> Some
 
-        let AddressLine1 = node.["addressLine1"].AsValue().GetValue<string> ()
+        let AddressLine1 =
+            (match node.["addressLine1"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("addressLine1")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
 
         {
             AddressLine1 = AddressLine1
@@ -122,17 +232,95 @@ namespace PureGym
 module Gym =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Gym =
-        let ReopenDate = node.["reopenDate"].AsValue().GetValue<string> ()
-        let TimeZone = node.["timeZone"].AsValue().GetValue<string> ()
+        let ReopenDate =
+            (match node.["reopenDate"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("reopenDate")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let TimeZone =
+            (match node.["timeZone"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("timeZone")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
         let Location = GymLocation.jsonParse node.["location"]
         let AccessOptions = GymAccessOptions.jsonParse node.["accessOptions"]
         let GymOpeningHours = GymOpeningHours.jsonParse node.["gymOpeningHours"]
-        let EmailAddress = node.["emailAddress"].AsValue().GetValue<string> ()
-        let PhoneNumber = node.["phoneNumber"].AsValue().GetValue<string> ()
+
+        let EmailAddress =
+            (match node.["emailAddress"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("emailAddress")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let PhoneNumber =
+            (match node.["phoneNumber"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("phoneNumber")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
         let Address = GymAddress.jsonParse node.["address"]
-        let Status = node.["status"].AsValue().GetValue<int> ()
-        let Id = node.["id"].AsValue().GetValue<int> ()
-        let Name = node.["name"].AsValue().GetValue<string> ()
+
+        let Status =
+            (match node.["status"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("status")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let Id =
+            (match node.["id"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("id")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let Name =
+            (match node.["name"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("name")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
 
         {
             Name = Name
@@ -155,24 +343,186 @@ namespace PureGym
 module Member =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Member =
-        let MemberStatus = node.["memberStatus"].AsValue().GetValue<int> ()
-        let SuspendedReason = node.["suspendedReason"].AsValue().GetValue<int> ()
-        let MembershipLevel = node.["membershipLevel"].AsValue().GetValue<int> ()
-        let MembershipName = node.["membershipName"].AsValue().GetValue<string> ()
-        let Postcode = node.["postCode"].AsValue().GetValue<string> ()
-        let MobileNumber = node.["mobileNumber"].AsValue().GetValue<string> ()
+        let MemberStatus =
+            (match node.["memberStatus"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("memberStatus")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let SuspendedReason =
+            (match node.["suspendedReason"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("suspendedReason")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let MembershipLevel =
+            (match node.["membershipLevel"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("membershipLevel")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let MembershipName =
+            (match node.["membershipName"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("membershipName")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let Postcode =
+            (match node.["postCode"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("postCode")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let MobileNumber =
+            (match node.["mobileNumber"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("mobileNumber")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
 
         let DateOfBirth =
-            node.["dateofBirth"].AsValue().GetValue<string> () |> System.DateOnly.Parse
+            (match node.["dateofBirth"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("dateofBirth")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+            |> System.DateOnly.Parse
 
-        let GymAccessPin = node.["gymAccessPin"].AsValue().GetValue<string> ()
-        let EmailAddress = node.["emailAddress"].AsValue().GetValue<string> ()
-        let HomeGymName = node.["homeGymName"].AsValue().GetValue<string> ()
-        let HomeGymId = node.["homeGymId"].AsValue().GetValue<int> ()
-        let LastName = node.["lastName"].AsValue().GetValue<string> ()
-        let FirstName = node.["firstName"].AsValue().GetValue<string> ()
-        let CompoundMemberId = node.["compoundMemberId"].AsValue().GetValue<string> ()
-        let Id = node.["id"].AsValue().GetValue<int> ()
+        let GymAccessPin =
+            (match node.["gymAccessPin"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("gymAccessPin")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let EmailAddress =
+            (match node.["emailAddress"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("emailAddress")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let HomeGymName =
+            (match node.["homeGymName"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("homeGymName")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let HomeGymId =
+            (match node.["homeGymId"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("homeGymId")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let LastName =
+            (match node.["lastName"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("lastName")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let FirstName =
+            (match node.["firstName"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("firstName")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let CompoundMemberId =
+            (match node.["compoundMemberId"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("compoundMemberId")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let Id =
+            (match node.["id"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("id")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
 
         {
             Id = Id
@@ -199,28 +549,109 @@ namespace PureGym
 module GymAttendance =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAttendance =
-        let MaximumCapacity = node.["maximumCapacity"].AsValue().GetValue<int> ()
+        let MaximumCapacity =
+            (match node.["maximumCapacity"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("maximumCapacity")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
 
         let LastRefreshedPeopleInClasses =
-            node.["lastRefreshedPeopleInClasses"].AsValue().GetValue<string> ()
+            (match node.["lastRefreshedPeopleInClasses"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("lastRefreshedPeopleInClasses")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
             |> System.DateTime.Parse
 
         let LastRefreshed =
-            node.["lastRefreshed"].AsValue().GetValue<string> () |> System.DateTime.Parse
+            (match node.["lastRefreshed"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("lastRefreshed")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+            |> System.DateTime.Parse
 
         let AttendanceTime =
-            node.["attendanceTime"].AsValue().GetValue<string> () |> System.DateTime.Parse
+            (match node.["attendanceTime"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("attendanceTime")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+            |> System.DateTime.Parse
 
-        let IsApproximate = node.["isApproximate"].AsValue().GetValue<bool> ()
+        let IsApproximate =
+            (match node.["isApproximate"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("isApproximate")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<bool> ()
 
         let TotalPeopleSuffix =
             match node.["totalPeopleSuffix"] with
             | null -> None
             | v -> v.AsValue().GetValue<string> () |> Some
 
-        let TotalPeopleInClasses = node.["totalPeopleInClasses"].AsValue().GetValue<int> ()
-        let TotalPeopleInGym = node.["totalPeopleInGym"].AsValue().GetValue<int> ()
-        let Description = node.["description"].AsValue().GetValue<string> ()
+        let TotalPeopleInClasses =
+            (match node.["totalPeopleInClasses"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("totalPeopleInClasses")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let TotalPeopleInGym =
+            (match node.["totalPeopleInGym"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("totalPeopleInGym")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let Description =
+            (match node.["description"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("description")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
 
         {
             Description = Description
@@ -242,13 +673,77 @@ module MemberActivityDto =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : MemberActivityDto =
         let LastRefreshed =
-            node.["lastRefreshed"].AsValue().GetValue<string> () |> System.DateTime.Parse
+            (match node.["lastRefreshed"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("lastRefreshed")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+            |> System.DateTime.Parse
 
-        let IsEstimated = node.["isEstimated"].AsValue().GetValue<bool> ()
-        let TotalClasses = node.["totalClasses"].AsValue().GetValue<int> ()
-        let TotalVisits = node.["totalVisits"].AsValue().GetValue<int> ()
-        let AverageDuration = node.["averageDuration"].AsValue().GetValue<int> ()
-        let TotalDuration = node.["totalDuration"].AsValue().GetValue<int> ()
+        let IsEstimated =
+            (match node.["isEstimated"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("isEstimated")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<bool> ()
+
+        let TotalClasses =
+            (match node.["totalClasses"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("totalClasses")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let TotalVisits =
+            (match node.["totalVisits"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("totalVisits")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let AverageDuration =
+            (match node.["averageDuration"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("averageDuration")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let TotalDuration =
+            (match node.["totalDuration"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("totalDuration")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
 
         {
             TotalDuration = TotalDuration
@@ -266,9 +761,41 @@ namespace PureGym
 module SessionsAggregate =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsAggregate =
-        let Duration = node.["Duration"].AsValue().GetValue<int> ()
-        let Visits = node.["Visits"].AsValue().GetValue<int> ()
-        let Activities = node.["Activities"].AsValue().GetValue<int> ()
+        let Duration =
+            (match node.["Duration"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("Duration")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let Visits =
+            (match node.["Visits"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("Visits")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
+
+        let Activities =
+            (match node.["Activities"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("Activities")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
 
         {
             Activities = Activities
@@ -283,9 +810,41 @@ namespace PureGym
 module VisitGym =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : VisitGym =
-        let Status = node.["Status"].AsValue().GetValue<string> ()
-        let Name = node.["Name"].AsValue().GetValue<string> ()
-        let Id = node.["Id"].AsValue().GetValue<int> ()
+        let Status =
+            (match node.["Status"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("Status")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let Name =
+            (match node.["Name"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("Name")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let Id =
+            (match node.["Id"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("Id")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
 
         {
             Id = Id
@@ -301,12 +860,43 @@ module Visit =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Visit =
         let Gym = VisitGym.jsonParse node.["Gym"]
-        let Duration = node.["Duration"].AsValue().GetValue<int> ()
+
+        let Duration =
+            (match node.["Duration"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("Duration")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
 
         let StartTime =
-            node.["StartTime"].AsValue().GetValue<string> () |> System.DateTime.Parse
+            (match node.["StartTime"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("StartTime")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+            |> System.DateTime.Parse
 
-        let IsDurationEstimated = node.["IsDurationEstimated"].AsValue().GetValue<bool> ()
+        let IsDurationEstimated =
+            (match node.["IsDurationEstimated"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("IsDurationEstimated")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<bool> ()
 
         {
             IsDurationEstimated = IsDurationEstimated

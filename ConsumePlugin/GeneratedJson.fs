@@ -11,7 +11,17 @@ namespace ConsumePlugin
 module InnerType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerType =
-        let Thing = node.[(Literals.something)].AsValue().GetValue<string> ()
+        let Thing =
+            (match node.[(Literals.something)] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ((Literals.something))
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
 
         {
             Thing = Thing
@@ -26,23 +36,75 @@ module JsonRecordType =
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordType =
         let F =
             node.["f"].AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
+            |> Seq.map (fun elt ->
+                (match elt with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Key '%s' not found on JSON object" ("f")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<int> ()
+            )
             |> Array.ofSeq
 
         let E =
             node.["e"].AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+            |> Seq.map (fun elt ->
+                (match elt with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Key '%s' not found on JSON object" ("e")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<string> ()
+            )
             |> Array.ofSeq
 
         let D = InnerType.jsonParse node.["d"]
 
         let C =
             node.["hi"].AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
+            |> Seq.map (fun elt ->
+                (match elt with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Key '%s' not found on JSON object" ("hi")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<int> ()
+            )
             |> List.ofSeq
 
-        let B = node.["another-thing"].AsValue().GetValue<string> ()
-        let A = node.["a"].AsValue().GetValue<int> ()
+        let B =
+            (match node.["another-thing"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("another-thing")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        let A =
+            (match node.["a"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (sprintf "Key '%s' not found on JSON object" ("a"))
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<int> ()
 
         {
             A = A
