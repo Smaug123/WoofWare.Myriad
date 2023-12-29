@@ -163,7 +163,7 @@ module PureGymApi =
                         System.Uri (
                             client.BaseAddress,
                             System.Uri (
-                                ("v2/gymSessions/member"
+                                ("/v2/gymSessions/member"
                                  + "?fromDate="
                                  + ((fromDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)
                                  + "&toDate="

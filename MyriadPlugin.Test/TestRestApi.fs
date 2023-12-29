@@ -10,7 +10,16 @@ open FsUnitTyped
 [<TestFixture>]
 module TestRestApi =
     // several of these, to check behaviour around treatment of initial slashes
-    let baseUris = [ "https://example.com" ; "https://example.com/foo" ] |> List.map Uri
+    let baseUris =
+        [
+            // Everything is relative to the root:
+            "https://example.com"
+            // Everything is also relative to the root, because `foo` is not a subdir:
+            "https://example.com/foo"
+            // Everything is relative to `foo`, because `foo` is a subdir
+            "https://example.com/foo/"
+        ]
+        |> List.map Uri
 
     let gymsCases =
         PureGymDtos.gymCases
@@ -24,7 +33,16 @@ module TestRestApi =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
 
-                message.RequestUri.ToString () |> shouldEqual $"https://example.com/v1/gyms/"
+                // URI is relative in the attribute on the IPureGymApi member,
+                // so this never gets redirected
+                let expectedUri =
+                    match baseUri.ToString () with
+                    | "https://example.com/" -> "https://example.com/v1/gyms/"
+                    | "https://example.com/foo" -> "https://example.com/v1/gyms/"
+                    | "https://example.com/foo/" -> "https://example.com/foo/v1/gyms/"
+                    | s -> failwith $"Unrecognised base URI: %s{s}"
+
+                message.RequestUri.ToString () |> shouldEqual expectedUri
 
                 let content = new StringContent (json)
                 let resp = new HttpResponseMessage (HttpStatusCode.OK)
@@ -50,8 +68,16 @@ module TestRestApi =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
 
-                message.RequestUri.ToString ()
-                |> shouldEqual $"https://example.com/v1/gyms/%i{requestedGym}/attendance"
+                // URI is relative in the attribute on the IPureGymApi member,
+                // so this never gets redirected
+                let expectedUri =
+                    match baseUri.ToString () with
+                    | "https://example.com/" -> $"https://example.com/v1/gyms/%i{requestedGym}/attendance"
+                    | "https://example.com/foo" -> $"https://example.com/v1/gyms/%i{requestedGym}/attendance"
+                    | "https://example.com/foo/" -> $"https://example.com/foo/v1/gyms/%i{requestedGym}/attendance"
+                    | s -> failwith $"Unrecognised base URI: %s{s}"
+
+                message.RequestUri.ToString () |> shouldEqual expectedUri
 
                 let content = new StringContent (json)
                 let resp = new HttpResponseMessage (HttpStatusCode.OK)
@@ -73,7 +99,16 @@ module TestRestApi =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
 
-                message.RequestUri.ToString () |> shouldEqual "https://example.com/v1/member"
+                // URI is relative in the attribute on the IPureGymApi member,
+                // so this never gets redirected
+                let expectedUri =
+                    match baseUri.ToString () with
+                    | "https://example.com/" -> "https://example.com/v1/member"
+                    | "https://example.com/foo" -> "https://example.com/v1/member"
+                    | "https://example.com/foo/" -> "https://example.com/foo/v1/member"
+                    | s -> failwith $"Unrecognised base URI: %s{s}"
+
+                message.RequestUri.ToString () |> shouldEqual expectedUri
 
                 let content = new StringContent (json)
                 let resp = new HttpResponseMessage (HttpStatusCode.OK)
@@ -97,8 +132,16 @@ module TestRestApi =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
 
-                message.RequestUri.ToString ()
-                |> shouldEqual $"https://example.com/v1/gyms/%i{requestedGym}"
+                // URI is relative in the attribute on the IPureGymApi member,
+                // so this never gets redirected
+                let expectedUri =
+                    match baseUri.ToString () with
+                    | "https://example.com/" -> $"https://example.com/v1/gyms/%i{requestedGym}"
+                    | "https://example.com/foo" -> $"https://example.com/v1/gyms/%i{requestedGym}"
+                    | "https://example.com/foo/" -> $"https://example.com/foo/v1/gyms/%i{requestedGym}"
+                    | s -> failwith $"Unrecognised base URI: %s{s}"
+
+                message.RequestUri.ToString () |> shouldEqual expectedUri
 
                 let content = new StringContent (json)
                 let resp = new HttpResponseMessage (HttpStatusCode.OK)
@@ -122,8 +165,16 @@ module TestRestApi =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
 
-                message.RequestUri.ToString ()
-                |> shouldEqual "https://example.com/v1/member/activity"
+                // URI is relative in the attribute on the IPureGymApi member,
+                // so this never gets redirected
+                let expectedUri =
+                    match baseUri.ToString () with
+                    | "https://example.com/" -> "https://example.com/v1/member/activity"
+                    | "https://example.com/foo" -> "https://example.com/v1/member/activity"
+                    | "https://example.com/foo/" -> "https://example.com/foo/v1/member/activity"
+                    | s -> failwith $"Unrecognised base URI: %s{s}"
+
+                message.RequestUri.ToString () |> shouldEqual expectedUri
 
                 let content = new StringContent (json)
                 let resp = new HttpResponseMessage (HttpStatusCode.OK)
@@ -167,9 +218,13 @@ module TestRestApi =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
 
-                message.RequestUri.ToString ()
-                |> shouldEqual
-                    $"https://example.com/v2/gymSessions/member?fromDate={dateOnlyToString startDate}&toDate={dateOnlyToString endDate}"
+                // This one is specified as being absolute, in its attribute on the IPureGymApi type
+                let expectedUri =
+                    let fromDate = dateOnlyToString startDate
+                    let toDate = dateOnlyToString endDate
+                    $"https://example.com/v2/gymSessions/member?fromDate=%s{fromDate}&toDate=%s{toDate}"
+
+                message.RequestUri.ToString () |> shouldEqual expectedUri
 
                 let content = new StringContent (json)
                 let resp = new HttpResponseMessage (HttpStatusCode.OK)
