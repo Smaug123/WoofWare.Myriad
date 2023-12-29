@@ -12,6 +12,7 @@ These are currently somewhat experimental, and I personally am their primary cus
 The `RemoveOptions` generator in particular is extremely half-baked.
 
 Currently implemented:
+
 * `JsonParse` (to stamp out `jsonParse : JsonNode -> 'T` methods);
 * `RemoveOptions` (to strip `option` modifiers from a type).
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
@@ -21,7 +22,7 @@ Currently implemented:
 Takes records like this:
 
 ```fsharp
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type InnerType =
     {
         [<JsonPropertyName "something">]
@@ -29,7 +30,7 @@ type InnerType =
     }
 
 /// My whatnot
-[<MyriadPlugin.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse>]
 type JsonRecordType =
     {
         /// A thing!
@@ -78,7 +79,8 @@ module JsonRecordType =
 The default reflection-heavy implementations have the necessary code trimmed away, and result in a runtime exception.
 But C# source generators [are entirely unsupported in F#](https://github.com/dotnet/fsharp/issues/14300).
 
-This Myriad generator expects you to use `System.Text.Json` to construct a `JsonNode`, and then the generator takes over to construct a strongly-typed object.
+This Myriad generator expects you to use `System.Text.Json` to construct a `JsonNode`,
+and then the generator takes over to construct a strongly-typed object.
 
 ### Limitations
 
@@ -120,11 +122,13 @@ module Foo =
 The motivating example is argument parsing.
 An argument parser naturally wants to express "the user did not supply this, so I will provide a default".
 But it's not a very ergonomic experience for the programmer to deal with all these options,
-so this Myriad generator stamps out a type *without* any options, and also stamps out an appropriate constructor function.
+so this Myriad generator stamps out a type *without* any options,
+and also stamps out an appropriate constructor function.
 
 ### Limitations
 
 This generator is *far* from where I want it, because I haven't really spent any time on it.
+
 * It really wants to be able to recurse into the types within the record, to strip options from them.
 * It needs some sort of attribute to mark a field as *not* receiving this treatment.
 * What do we do about discriminated unions?
@@ -199,16 +203,70 @@ The motivating example is again ahead-of-time compilation: we wish to avoid the 
 ### Limitations
 
 RestEase is complex, and handles a lot of different stuff.
+
 * As of this writing, `[<Body>]` is explicitly unsupported (it throws with a TODO).
-* Parameters are serialised solely with `ToString`, and there's no control over this; nor is there control over encoding in any sense.
-* Deserialisation follows the same logic as the `JsonParse` generator, and it generally assumes you're using types which `JsonParse` is applied to.
+* Parameters are serialised solely with `ToString`, and there's no control over this;
+  nor is there control over encoding in any sense.
+* Deserialisation follows the same logic as the `JsonParse` generator,
+  and it generally assumes you're using types which `JsonParse` is applied to.
 * Headers are not yet supported.
-* You have to specify the `BaseAddress` on the input client yourself, and you can't have the same client talking to a different `BaseAddress` this way unless you manually set it before making any different request.
-* I haven't yet worked out how to integrate this with a mocked HTTP client; you can always mock up an `HttpClient`, but I prefer to use a mock which defines a single member `SendAsync`.
+* You have to specify the `BaseAddress` on the input client yourself, and you can't have the same client talking to a
+  different `BaseAddress` this way unless you manually set it before making any different request.
+* I haven't yet worked out how to integrate this with a mocked HTTP client; you can always mock up an `HttpClient`,
+  but I prefer to use a mock which defines a single member `SendAsync`.
 * Anonymous parameters are currently forbidden.
-* Every function must take an optional `CancellationToken` (which is good practice anyway); so arguments are forced to be tupled. This is a won't-fix for as long as F# requires tupled arguments if any of the args are optional.
+* Every function must take an optional `CancellationToken` (which is good practice anyway);
+  so arguments are forced to be tupled.
+  This is a won't-fix for as long as F# requires tupled arguments if any of the args are optional.
 
 # Detailed examples
 
 See the tests.
 For example, [PureGymDto.fs](./ConsumePlugin/PureGymDto.fs) is a real-world set of DTOs.
+
+## How to use
+
+* In your `.fsproj` file, define a helper variable so that subsequent steps don't all have to be kept in sync:
+    ```xml
+    <PropertyGroup>
+      <WoofWareMyriadPluginVersion>1.1.5</WoofWareMyriadPluginVersion>
+    </PropertyGroup>
+    ```
+* Take a reference on `WoofWare.Myriad.Plugins`:
+    ```xml
+    <ItemGroup>
+        <PackageReference Include="WoofWare.Myriad.Plugins" Version="$(WoofWareMyriadPluginVersion)" />
+    </ItemGroup>
+    ```
+* Point Myriad to the DLL within the NuGet package which is the source of the plugins:
+    ```xml
+    <ItemGroup>
+      <MyriadSdkGenerator Include="$(NuGetPackageRoot)/woofware.myriad.plugins/$(WoofWareMyriadPluginVersion)/lib/net6.0/WoofWare.Myriad.Plugins.dll" />
+    </ItemGroup>
+    ```
+
+Now you are ready to start using the generators.
+For example, this specifies that Myriad is to use the contents of `Client.fs` to generate the file `GeneratedClient.fs`:
+
+```xml
+<ItemGroup>
+    <Compile Include="Client.fs" />
+    <Compile Include="GeneratedClient.fs">
+        <MyriadFile>Client.fs</MyriadFile>
+    </Compile>
+</ItemGroup>
+```
+
+### Myriad Gotchas
+
+* MsBuild doesn't always realise that it needs to invoke Myriad during rebuild.
+  You can always save a whitespace change to the source file (e.g. `Client.fs` above),
+  and MsBuild will then execute Myriad during the next build.
+* [Fantomas](https://github.com/fsprojects/fantomas), the F# source formatter which powers Myriad,
+  is customisable with [editorconfig](https://editorconfig.org/),
+  but it [does not easily expose](https://github.com/fsprojects/fantomas/issues/3031) this customisation
+  except through the standalone Fantomas client.
+  So Myriad's output is formatted without respect to any conventions which may hold in the rest of your repository.
+  You should probably add these files to your [fantomasignore](https://github.com/fsprojects/fantomas/blob/a999b77ca5a024fbc3409955faac797e29b39d27/docs/docs/end-users/IgnoreFiles.md)
+  if you use Fantomas to format your repo;
+  the alternative is to manually reformat every time Myriad changes the generated files.

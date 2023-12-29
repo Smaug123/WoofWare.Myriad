@@ -18,20 +18,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Myriad.Core" Version="0.8.3" />
+    <PackageReference Include="Myriad.Core" Version="0.8.3"/>
     <!-- the lowest version allowed by Myriad.Core -->
-    <PackageReference Update="FSharp.Core" Version="6.0.1" />
+    <PackageReference Update="FSharp.Core" Version="6.0.1"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="AstHelper.fs" />
-    <Compile Include="SynExpr.fs" />
-    <Compile Include="SynAttribute.fs" />
-    <Compile Include="RemoveOptionsGenerator.fs" />
-    <Compile Include="JsonParseGenerator.fs" />
-    <Compile Include="HttpClientGenerator.fs" />
-    <EmbeddedResource Include="version.json" />
-    <EmbeddedResource Include="SurfaceBaseline.txt" />
+    <Compile Include="AstHelper.fs"/>
+    <Compile Include="SynExpr.fs"/>
+    <Compile Include="SynAttribute.fs"/>
+    <Compile Include="RemoveOptionsGenerator.fs"/>
+    <Compile Include="JsonParseGenerator.fs"/>
+    <Compile Include="HttpClientGenerator.fs"/>
+    <EmbeddedResource Include="version.json"/>
+    <EmbeddedResource Include="SurfaceBaseline.txt"/>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
