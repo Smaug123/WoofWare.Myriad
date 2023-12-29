@@ -17,7 +17,7 @@ type IPureGymApi =
     abstract GetGymAttendance : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<GymAttendance>
 
     [<RestEase.GetAttribute "v1/member">]
-    abstract GetMember : ?ct : CancellationToken -> Task<Member>
+    abstract GetMember : ?ct : CancellationToken -> Member Task
 
     [<RestEase.Get "v1/gyms/{gym_id}">]
     abstract GetGym : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<Gym>
@@ -59,6 +59,12 @@ type IPureGymApi =
 
     [<Get "endpoint">]
     abstract GetResponse' : ?ct : CancellationToken -> Task<RestEase.Response<MemberActivityDto>>
+
+    [<Get "endpoint">]
+    abstract GetResponse'' : ?ct : CancellationToken -> Task<MemberActivityDto Response>
+
+    [<Get "endpoint">]
+    abstract GetResponse''' : ?ct : CancellationToken -> Task<MemberActivityDto RestEase.Response>
 
     [<Get "endpoint">]
     [<AllowAnyStatusCode>]

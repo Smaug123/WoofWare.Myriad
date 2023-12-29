@@ -87,8 +87,10 @@ module TestReturnTypes =
 
         Object.ReferenceEquals (message, Option.get responseMessage) |> shouldEqual true
 
-    [<TestCase "Response">]
-    [<TestCase "RestEase.Response">]
+    [<TestCase "Task<Response>">]
+    [<TestCase "Task<RestEase.Response>">]
+    [<TestCase "RestEase.Response Task">]
+    [<TestCase "RestEase.Response Task">]
     let ``Response return`` (case : string) =
         for json, memberDto in PureGymDtos.memberActivityDtoCases do
             let mutable responseMessage = None
@@ -108,8 +110,10 @@ module TestReturnTypes =
 
             let response =
                 match case with
-                | "Response" -> api.GetResponse().Result
-                | "RestEase.Response'" -> api.GetResponse'().Result
+                | "Task<Response>" -> api.GetResponse().Result
+                | "Task<RestEase.Response>" -> api.GetResponse'().Result
+                | "Response Task" -> api.GetResponse''().Result
+                | "RestEase.Response Task" -> api.GetResponse'''().Result
                 | _ -> failwith $"unrecognised case: %s{case}"
 
             response.ResponseMessage |> shouldEqual (Option.get responseMessage)
