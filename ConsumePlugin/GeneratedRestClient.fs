@@ -376,7 +376,6 @@ module PureGymApi =
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
                     let node = response
                     return node
                 }

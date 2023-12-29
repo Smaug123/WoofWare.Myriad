@@ -52,6 +52,7 @@ module internal HttpClientGenerator =
             Arity : SynArgInfo list
             Args : Parameter list
             Identifier : Ident
+            EnsureSuccessHttpCode : bool
         }
 
     let httpMethodString (m : HttpMethod) : string =
@@ -115,6 +116,17 @@ module internal HttpClientGenerator =
         | [] -> failwith "Required exactly one recognised RestEase attribute on member, but got none"
         | matchingAttrs ->
             failwithf "Required exactly one recognised RestEase attribute on member, but got %i" matchingAttrs.Length
+
+    let shouldAllowAnyStatusCode (attrs : SynAttribute list) : bool =
+        attrs
+        |> List.exists (fun attr ->
+            match attr.TypeName.AsString with
+            | "AllowAnyStatusCode"
+            | "AllowAnyStatusCodeAttribute"
+            | "RestEase.AllowAnyStatusCode"
+            | "RestEase.AllowAnyStatusCodeAttribute" -> true
+            | _ -> false
+        )
 
     let constructMember (info : MemberInfo) : SynMemberDefn =
         let valInfo =
@@ -392,14 +404,15 @@ module internal HttpClientGenerator =
                             )
                         )
                     )
-                yield
-                    Let (
-                        "response",
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "response" ; "EnsureSuccessStatusCode" ]),
-                            SynExpr.CreateConst SynConst.Unit
+                if info.EnsureSuccessHttpCode then
+                    yield
+                        Let (
+                            "response",
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "response" ; "EnsureSuccessStatusCode" ]),
+                                SynExpr.CreateConst SynConst.Unit
+                            )
                         )
-                    )
                 match info.ReturnType with
                 | HttpResponseMessage -> yield Let ("node", SynExpr.CreateIdentString "response")
                 | String ->
@@ -617,6 +630,8 @@ module internal HttpClientGenerator =
 
                             let httpMethod, url = extractHttpInformation attrs
 
+                            let shouldEnsureSuccess = not (shouldAllowAnyStatusCode attrs)
+
                             {
                                 HttpMethod = httpMethod
                                 UrlTemplate = url
@@ -624,6 +639,7 @@ module internal HttpClientGenerator =
                                 Arity = arity
                                 Args = args
                                 Identifier = ident
+                                EnsureSuccessHttpCode = shouldEnsureSuccess
                             }
                     | _ -> failwithf "Unrecognised member definition: %+A" defn
                 )

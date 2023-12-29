@@ -16,13 +16,13 @@ type IPureGymApi =
     [<Get "v1/gyms/{gym_id}/attendance">]
     abstract GetGymAttendance : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<GymAttendance>
 
-    [<Get "v1/member">]
+    [<RestEase.GetAttribute "v1/member">]
     abstract GetMember : ?ct : CancellationToken -> Task<Member>
 
-    [<Get "v1/gyms/{gym_id}">]
+    [<RestEase.Get "v1/gyms/{gym_id}">]
     abstract GetGym : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<Gym>
 
-    [<Get "v1/member/activity">]
+    [<GetAttribute "v1/member/activity">]
     abstract GetMemberActivity : ?ct : CancellationToken -> Task<MemberActivityDto>
 
     // We'll use this one to check handling of absolute URIs too

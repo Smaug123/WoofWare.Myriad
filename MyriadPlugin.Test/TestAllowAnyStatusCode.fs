@@ -57,6 +57,6 @@ module TestAllowAnyStatusCode =
         use client = HttpClientMock.make (Uri "https://example.com") proc
         let api = PureGymApi.make client
 
-        let message = api.GetWithoutAnyReturnCode().Result
+        let message = api.GetWithAnyReturnCode().Result
         message.StatusCode |> shouldEqual HttpStatusCode.NotFound
         message.Content.ReadAsStringAsync().Result |> shouldEqual "nothing was here :("
