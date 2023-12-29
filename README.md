@@ -87,7 +87,6 @@ However, there is *far* more that could be done.
 
 * Make it possible to give an exact format and cultural info in date and time parsing.
 * Make it possible to reject parsing if extra fields are present.
-* Rather than just throwing `NullReferenceException`, print out the field name that failed.
 * Generally support all the `System.Text.Json` attributes.
 
 ## `RemoveOptions`
