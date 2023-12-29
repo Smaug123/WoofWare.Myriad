@@ -53,3 +53,10 @@ type IPureGymApi =
 
     [<Get "endpoint">]
     abstract GetResponseMessage''' : ?ct : CancellationToken -> Task<HttpResponseMessage>
+
+    [<Get "endpoint">]
+    [<AllowAnyStatusCode>]
+    abstract GetWithAnyReturnCode : ?ct : CancellationToken -> Task<HttpResponseMessage>
+
+    [<Get "endpoint">]
+    abstract GetWithoutAnyReturnCode : ?ct : CancellationToken -> Task<HttpResponseMessage>
