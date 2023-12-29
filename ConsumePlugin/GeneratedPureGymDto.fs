@@ -12,19 +12,16 @@ module GymOpeningHours =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymOpeningHours =
         let OpeningHours =
-            node.["openingHours"].AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Key '%s' not found on JSON object" ("openingHours")
-                         )
+            (match node.["openingHours"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("openingHours")
                      )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<string> ()
-            )
+                 )
+             | v -> v)
+                .AsArray ()
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> List.ofSeq
 
         let IsAlwaysOpen =
@@ -928,7 +925,15 @@ module Sessions =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Sessions =
         let Visits =
-            node.["Visits"].AsArray ()
+            (match node.["Visits"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("Visits")
+                     )
+                 )
+             | v -> v)
+                .AsArray ()
             |> Seq.map (fun elt -> Visit.jsonParse elt)
             |> List.ofSeq
 

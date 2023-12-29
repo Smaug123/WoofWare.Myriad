@@ -35,53 +35,40 @@ module JsonRecordType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordType =
         let F =
-            node.["f"].AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Key '%s' not found on JSON object" ("f")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<int> ()
-            )
+            (match node.["f"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (sprintf "Key '%s' not found on JSON object" ("f"))
+                 )
+             | v -> v)
+                .AsArray ()
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
             |> Array.ofSeq
 
         let E =
-            node.["e"].AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Key '%s' not found on JSON object" ("e")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<string> ()
-            )
+            (match node.["e"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (sprintf "Key '%s' not found on JSON object" ("e"))
+                 )
+             | v -> v)
+                .AsArray ()
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> Array.ofSeq
 
         let D = InnerType.jsonParse node.["d"]
 
         let C =
-            node.["hi"].AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Key '%s' not found on JSON object" ("hi")
-                         )
+            (match node.["hi"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Key '%s' not found on JSON object" ("hi")
                      )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<int> ()
-            )
+                 )
+             | v -> v)
+                .AsArray ()
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
             |> List.ofSeq
 
         let B =

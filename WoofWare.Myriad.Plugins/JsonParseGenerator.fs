@@ -77,11 +77,19 @@ module internal JsonParseGenerator =
 
     /// collectionType is e.g. "List"; we'll be calling `ofSeq` on it.
     /// body is the body of a lambda which takes a parameter `elt`.
-    /// {node}.AsArray()
+    /// {assertNotNull node}.AsArray()
     /// |> Seq.map (fun elt -> {body})
     /// |> {collectionType}.ofSeq
-    let asArrayMapped (collectionType : string) (node : SynExpr) (body : SynExpr) : SynExpr =
-        node
+    let asArrayMapped
+        (propertyName : SynExpr option)
+        (collectionType : string)
+        (node : SynExpr)
+        (body : SynExpr)
+        : SynExpr
+        =
+        match propertyName with
+        | None -> node
+        | Some propertyName -> assertNotNull propertyName node
         |> SynExpr.callMethod "AsArray"
         |> SynExpr.pipeThroughFunction (
             SynExpr.CreateApp (
@@ -183,11 +191,11 @@ module internal JsonParseGenerator =
             parseNode None options ty (SynExpr.CreateIdentString "v")
             |> createParseLineOption node
         | ListType ty ->
-            parseNode propertyName options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
-            |> asArrayMapped "List" node
+            parseNode None options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
+            |> asArrayMapped propertyName "List" node
         | ArrayType ty ->
-            parseNode propertyName options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
-            |> asArrayMapped "Array" node
+            parseNode None options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
+            |> asArrayMapped propertyName "Array" node
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =
