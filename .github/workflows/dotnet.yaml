@@ -46,6 +46,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # so that NerdBank.GitVersioning has access to history
       - name: Install Nix
         uses: cachix/install-nix-action@v24
         with:
@@ -53,12 +55,10 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Prepare analyzers
         run: nix develop --command dotnet restore analyzers/analyzers.fsproj
+      - name: Build project
+        run: nix develop --command dotnet build ./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj
       - name: Run analyzers
         run: nix run .#fsharp-analyzers -- --project ./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj --analyzers-path ./.analyzerpackages/g-research.fsharp.analyzers/0.6.0/ --verbosity detailed --report ./analysis.sarif --treat-as-error GRA-STRING-001 GRA-STRING-002 GRA-STRING-003 GRA-UNIONCASE-001 GRA-INTERPOLATED-001 GRA-TYPE-ANNOTATE-001 GRA-VIRTUALCALL-001 GRA-IMMUTABLECOLLECTIONEQUALITY-001 GRA-JSONOPTS-001 GRA-LOGARGFUNCFULLAPP-001
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: analysis.sarif
 
   build-nix:
     runs-on: ubuntu-latest
