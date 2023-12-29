@@ -22,6 +22,7 @@ type IPureGymApi =
     [<Get "v1/member/activity">]
     abstract GetMemberActivity : ?ct : CancellationToken -> Task<MemberActivityDto>
 
-    [<Get "v2/gymSessions/member">]
+    // We'll use this one to check handling of absolute URIs too
+    [<Get "/v2/gymSessions/member">]
     abstract GetSessions :
-        [<Query>] fromDate : DateTime * [<Query>] toDate : DateTime * ?ct : CancellationToken -> Task<Sessions>
+        [<Query>] fromDate : DateOnly * [<Query>] toDate : DateOnly * ?ct : CancellationToken -> Task<Sessions>

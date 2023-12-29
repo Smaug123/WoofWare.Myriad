@@ -22,10 +22,13 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let uri =
+                        System.Uri (client.BaseAddress, System.Uri ("v1/gyms/", System.UriKind.Relative))
+
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri = System.Uri (client.BaseAddress.ToString () + "/v1/gyms/")
+                            RequestUri = uri
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -44,14 +47,19 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let uri =
+                        System.Uri (
+                            client.BaseAddress,
+                            System.Uri (
+                                "v1/gyms/{gym_id}/attendance".Replace ("{gym_id}", gymId.ToString ()),
+                                System.UriKind.Relative
+                            )
+                        )
+
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri =
-                                System.Uri (
-                                    client.BaseAddress.ToString ()
-                                    + "/v1/gyms/{gym_id}/attendance".Replace ("{gym_id}", gymId.ToString ())
-                                )
+                            RequestUri = uri
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -70,10 +78,13 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let uri =
+                        System.Uri (client.BaseAddress, System.Uri ("v1/member", System.UriKind.Relative))
+
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri = System.Uri (client.BaseAddress.ToString () + "/v1/member")
+                            RequestUri = uri
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -92,14 +103,19 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let uri =
+                        System.Uri (
+                            client.BaseAddress,
+                            System.Uri (
+                                "v1/gyms/{gym_id}".Replace ("{gym_id}", gymId.ToString ()),
+                                System.UriKind.Relative
+                            )
+                        )
+
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri =
-                                System.Uri (
-                                    client.BaseAddress.ToString ()
-                                    + "/v1/gyms/{gym_id}".Replace ("{gym_id}", gymId.ToString ())
-                                )
+                            RequestUri = uri
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -118,10 +134,13 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let uri =
+                        System.Uri (client.BaseAddress, System.Uri ("v1/member/activity", System.UriKind.Relative))
+
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri = System.Uri (client.BaseAddress.ToString () + "/v1/member/activity")
+                            RequestUri = uri
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -136,22 +155,27 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetSessions (fromDate : DateTime, toDate : DateTime, ct : CancellationToken option) =
+            member _.GetSessions (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            client.BaseAddress,
+                            System.Uri (
+                                ("/v2/gymSessions/member"
+                                 + "?fromDate="
+                                 + ((fromDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)
+                                 + "&toDate="
+                                 + ((toDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)),
+                                System.UriKind.Relative
+                            )
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
-                            RequestUri =
-                                System.Uri (
-                                    client.BaseAddress.ToString ()
-                                    + ("/v2/gymSessions/member"
-                                       + "?fromDate="
-                                       + ((fromDate.ToString "yyyy-MM-ddTHH:mm:ss") |> System.Web.HttpUtility.UrlEncode)
-                                       + "&toDate="
-                                       + ((toDate.ToString "yyyy-MM-ddTHH:mm:ss") |> System.Web.HttpUtility.UrlEncode))
-                                )
+                            RequestUri = uri
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
