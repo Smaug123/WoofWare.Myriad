@@ -10,6 +10,7 @@
     <Compile Include="HttpClient.fs"/>
     <Compile Include="TestPathParam.fs" />
     <Compile Include="TestReturnTypes.fs" />
+    <Compile Include="TestAllowAnyStatusCode.fs" />
     <Compile Include="TestSurface.fs"/>
     <Compile Include="TestRemoveOptions.fs"/>
     <Compile Include="TestJsonParse.fs"/>
