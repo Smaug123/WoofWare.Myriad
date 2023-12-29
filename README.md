@@ -248,4 +248,5 @@ For example, the following specifies that Myriad is to use the contents of `Clie
 
 ### Myriad Gotchas
 
-* MsBuild doesn't always realise that it needs to invoke Myriad during rebuild. You can always save a whitespace change to the source file (e.g. `Client.fs` above), and MSBuild will then execute Myriad during the next build.
+* MsBuild doesn't always realise that it needs to invoke Myriad during rebuild. You can always save a whitespace change to the source file (e.g. `Client.fs` above), and MsBuild will then execute Myriad during the next build.
+* [Fantomas](https://github.com/fsprojects/fantomas), the F# source formatter which powers Myriad, is customisable with [editorconfig](https://editorconfig.org/), but it [does not easily expose](https://github.com/fsprojects/fantomas/issues/3031) this customisation except through the standalone Fantomas client. So Myriad's output is formatted without respect to any conventions which may hold in the rest of your repository. You should probably add these files to your [fantomasignore](https://github.com/fsprojects/fantomas/blob/a999b77ca5a024fbc3409955faac797e29b39d27/docs/docs/end-users/IgnoreFiles.md) if you use Fantomas to format your repo; the alternative is to manually reformat every time Myriad changes the generated files.
