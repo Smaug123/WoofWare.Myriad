@@ -96,6 +96,13 @@ module internal SynTypePatterns =
         | SynType.Array (1, innerType, _) -> Some innerType
         | _ -> None
 
+    let (|RestEaseResponseType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isArrayIdent ident ->
+            Some innerType
+        | SynType.Array (1, innerType, _) -> Some innerType
+        | _ -> None
+
     /// Returns the string name of the type.
     let (|PrimitiveType|_|) (fieldType : SynType) =
         match fieldType with
