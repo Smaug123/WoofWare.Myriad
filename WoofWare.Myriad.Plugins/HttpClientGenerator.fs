@@ -458,7 +458,9 @@ module internal HttpClientGenerator =
                             )
                         )
                     ]
-                | BodyParamMethods.Serialise ty ->
+                | BodyParamMethods.Serialise _ ->
+                    failwith "We don't yet support serialising Body parameters; use string or Stream instead"
+        (*
                     // TODO: this should use JSON instead of ToString
                     [
                         Let (
@@ -480,6 +482,7 @@ module internal HttpClientGenerator =
                             )
                         )
                     ]
+                    *)
 
         let implementation =
             [

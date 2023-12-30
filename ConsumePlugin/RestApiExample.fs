@@ -36,16 +36,16 @@ type IPureGymApi =
     abstract CreateUserString : [<Body>] user : string * ?ct : CancellationToken -> Task<string>
 
     [<Post "users/new">]
-    abstract CreateUserStream : [<Body>] user : System.IO.Stream * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserStream : [<Body>] user : System.IO.Stream * ?ct : CancellationToken -> Task<Stream>
 
     [<Post "users/new">]
-    abstract CreateUserByteArr : [<Body>] user : byte[] * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserByteArr : [<Body>] user : byte[] * ?ct : CancellationToken -> Task<Stream>
 
     [<Post "users/new">]
-    abstract CreateUserByteArr' : [<Body>] user : array<byte> * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserByteArr' : [<Body>] user : array<byte> * ?ct : CancellationToken -> Task<Stream>
 
     [<Post "users/new">]
-    abstract CreateUserByteArr'' : [<Body>] user : byte array * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserByteArr'' : [<Body>] user : byte array * ?ct : CancellationToken -> Task<Stream>
 
     [<Post "users/new">]
     abstract CreateUserHttpContent :

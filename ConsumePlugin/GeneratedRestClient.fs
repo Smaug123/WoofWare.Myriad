@@ -265,7 +265,7 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return node
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -292,7 +292,7 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return node
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -319,7 +319,7 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return node
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -346,7 +346,7 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return node
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
