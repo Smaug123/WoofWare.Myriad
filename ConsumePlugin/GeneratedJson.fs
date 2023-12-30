@@ -3,6 +3,7 @@
 //        Changes to this file will be lost when the code is regenerated.
 //------------------------------------------------------------------------------
 
+
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the InnerType type

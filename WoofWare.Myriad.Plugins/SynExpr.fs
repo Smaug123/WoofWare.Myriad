@@ -262,3 +262,14 @@ module internal SynExpr =
             ident
             |> callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-ddTHH:mm:ss")
         | _ -> callMethod "ToString" ident
+
+    let synBindingTriviaZero (isMember : bool) =
+        {
+            SynBindingTrivia.EqualsRange = Some range0
+            InlineKeyword = None
+            LeadingKeyword =
+                if isMember then
+                    SynLeadingKeyword.Member range0
+                else
+                    SynLeadingKeyword.Let range0
+        }
