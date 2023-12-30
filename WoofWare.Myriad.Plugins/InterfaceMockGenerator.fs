@@ -45,8 +45,13 @@ module internal InterfaceMockGenerator =
             SynExpr.createLambda
                 "x"
                 (SynExpr.CreateApp (
-                    SynExpr.CreateIdentString "failwith",
-                    SynExpr.CreateConstString "Unimplemented function"
+                    SynExpr.CreateIdentString "raise",
+                    SynExpr.CreateParen (
+                        SynExpr.CreateApp (
+                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "NotImplementedException" ]),
+                            SynExpr.CreateConstString "Unimplemented mock function"
+                        )
+                    )
                 ))
 
         let constructorIdent =
@@ -223,6 +228,14 @@ module internal InterfaceMockGenerator =
 
             SynMemberDefn.Interface (interfaceName, Some range0, Some members, range0)
 
+        // TODO: allow an arg to the attribute, specifying a custom visibility
+        let access =
+            match interfaceType.Accessibility with
+            | Some (SynAccess.Public _)
+            | Some (SynAccess.Internal _)
+            | None -> SynAccess.Internal range0
+            | Some (SynAccess.Private _) -> SynAccess.Private range0
+
         let record =
             {
                 Name = Ident.Create name
@@ -230,6 +243,7 @@ module internal InterfaceMockGenerator =
                 Members = Some [ constructor ; interfaceMembers ]
                 XmlDoc = Some xmlDoc
                 Generics = interfaceType.Generics
+                Accessibility = Some access
             }
 
         let typeDecl = AstHelper.defineRecordType record

@@ -16,6 +16,7 @@ Currently implemented:
 * `JsonParse` (to stamp out `jsonParse : JsonNode -> 'T` methods);
 * `RemoveOptions` (to strip `option` modifiers from a type).
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
+* `GenerateMock` (to stamp out a record type corresponding to an interface).
 
 ## `JsonParse`
 
@@ -218,6 +219,51 @@ There are also some design decisions:
 
 * Every function must take an optional `CancellationToken` (which is good practice anyway);
   so arguments are forced to be tupled.
+
+## `GenerateMock`
+
+Takes a type like this:
+
+```fsharp
+[<GenerateMock>]
+type IPublicType =
+    abstract Mem1 : string * int -> string list
+    abstract Mem2 : string -> int
+```
+
+and stamps out a type like this:
+
+```fsharp
+/// Mock record type for an interface
+type internal PublicTypeMock =
+    {
+        Mem1 : string * int -> string list
+        Mem2 : string -> int
+    }
+
+    static member Empty : PublicTypeMock =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
+
+    interface IPublicType with
+        member this.Mem1 (arg0, arg1) = this.Mem1 (arg0, arg1)
+        member this.Mem2 (arg0) = this.Mem2 (arg0)
+```
+
+### What's the point?
+
+Reflective mocking libraries like [Foq](https://github.com/fsprojects/Foq) in my experience are a rich source of flaky tests.
+The [Grug-brained developer](https://grugbrain.dev/) would prefer to do this without reflection, and this reduces the rate of strange one-in-ten-thousand "failed to generate IL" errors.
+But since F# does not let you partially update an interface definition, we instead stamp out a record,
+thereby allowing the programmer to use F#'s record-update syntax.
+
+### Limitations
+
+* We currently only support interfaces with tupled arguments.
+* We make the resulting record type at most internal (never public), since this is intended only to be used in tests.
+  You will therefore need an `AssemblyInfo.fs` file [like the one in WoofWare.Myriad's own tests](./ConsumePlugin/AssemblyInfo.fs).
 
 # Detailed examples
 

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <None Include="myriad.toml"/>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="RecordFile.fs"/>
     <Compile Include="GeneratedRecord.fs">
       <MyriadFile>RecordFile.fs</MyriadFile>

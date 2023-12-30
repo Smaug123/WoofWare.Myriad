@@ -47,7 +47,12 @@ module internal RemoveOptionsGenerator =
         )
 
     // TODO: this option seems a bit odd
-    let createType (xmlDoc : PreXmlDoc option) (generics : SynTyparDecls option) (fields : SynField list) =
+    let createType
+        (xmlDoc : PreXmlDoc option)
+        (accessibility : SynAccess option)
+        (generics : SynTyparDecls option)
+        (fields : SynField list)
+        =
         let fields : SynField list = fields |> List.map removeOption
         let name = Ident.Create "Short"
 
@@ -58,6 +63,7 @@ module internal RemoveOptionsGenerator =
                 Members = None
                 XmlDoc = xmlDoc
                 Generics = generics
+                Accessibility = accessibility
             }
 
         let typeDecl = AstHelper.defineRecordType record
@@ -161,11 +167,11 @@ module internal RemoveOptionsGenerator =
             synComponentInfo
 
         match synTypeDefnRepr with
-        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, recordFields, _recordRange), _) ->
+        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (accessibility, recordFields, _recordRange), _) ->
 
             let decls =
                 [
-                    createType (Some doc) typeParams recordFields
+                    createType (Some doc) accessibility typeParams recordFields
                     createMaker [ Ident.Create "Short" ] recordId recordFields
                 ]
 

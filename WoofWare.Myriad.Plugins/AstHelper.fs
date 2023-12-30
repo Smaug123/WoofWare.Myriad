@@ -30,6 +30,7 @@ type internal InterfaceType =
         Name : LongIdent
         Members : MemberInfo list
         Generics : SynTyparDecls option
+        Accessibility : SynAccess option
     }
 
 type internal RecordType =
@@ -39,6 +40,7 @@ type internal RecordType =
         Members : SynMemberDefns option
         XmlDoc : PreXmlDoc option
         Generics : SynTyparDecls option
+        Accessibility : SynAccess option
     }
 
 [<RequireQualifiedAccess>]
@@ -53,11 +55,15 @@ module internal AstHelper =
 
     let defineRecordType (record : RecordType) : SynTypeDefn =
         let repr =
-            // TODO: make this internal at best
             SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (None, Seq.toList record.Fields, range0), range0)
 
         let name =
-            SynComponentInfo.Create ([ record.Name ], ?xmldoc = record.XmlDoc, ?parameters = record.Generics)
+            SynComponentInfo.Create (
+                [ record.Name ],
+                ?xmldoc = record.XmlDoc,
+                ?parameters = record.Generics,
+                access = record.Accessibility
+            )
 
         let trivia : SynTypeDefnTrivia =
             {
@@ -139,7 +145,12 @@ module internal AstHelper =
 
     /// Assumes that the input type is an ObjectModel, i.e. a `type Foo = member ...`
     let parseInterface (interfaceType : SynTypeDefn) : InterfaceType =
-        let (SynTypeDefn (SynComponentInfo (attrs, typars, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
+        let (SynTypeDefn (SynComponentInfo (attrs, typars, _, interfaceName, _, _, accessibility, _),
+                          synTypeDefnRepr,
+                          _,
+                          _,
+                          _,
+                          _)) =
             interfaceType
 
         let attrs = attrs |> List.collect (fun s -> s.Attributes)
@@ -245,6 +256,7 @@ module internal AstHelper =
             Name = interfaceName
             Attributes = attrs
             Generics = typars
+            Accessibility = accessibility
         }
 
 

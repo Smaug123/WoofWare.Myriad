@@ -6,16 +6,16 @@
 namespace SomeNamespace
 
 /// Mock record type for an interface
-type PublicTypeMock =
+type internal PublicTypeMock =
     {
-        Mem1 : string * int -> unit
+        Mem1 : string * int -> string list
         Mem2 : string -> int
     }
 
     static member Empty : PublicTypeMock =
         {
-            Mem1 = (fun x -> failwith "Unimplemented function")
-            Mem2 = (fun x -> failwith "Unimplemented function")
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface IPublicType with
@@ -24,7 +24,7 @@ type PublicTypeMock =
 namespace SomeNamespace
 
 /// Mock record type for an interface
-type InternalTypeMock =
+type internal InternalTypeMock =
     {
         Mem1 : string * int -> unit
         Mem2 : string -> int
@@ -32,8 +32,8 @@ type InternalTypeMock =
 
     static member Empty : InternalTypeMock =
         {
-            Mem1 = (fun x -> failwith "Unimplemented function")
-            Mem2 = (fun x -> failwith "Unimplemented function")
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface InternalType with
@@ -42,7 +42,7 @@ type InternalTypeMock =
 namespace SomeNamespace
 
 /// Mock record type for an interface
-type PrivateTypeMock =
+type private PrivateTypeMock =
     {
         Mem1 : string * int -> unit
         Mem2 : string -> int
@@ -50,8 +50,8 @@ type PrivateTypeMock =
 
     static member Empty : PrivateTypeMock =
         {
-            Mem1 = (fun x -> failwith "Unimplemented function")
-            Mem2 = (fun x -> failwith "Unimplemented function")
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface PrivateType with
@@ -60,14 +60,14 @@ type PrivateTypeMock =
 namespace SomeNamespace
 
 /// Mock record type for an interface
-type VeryPublicTypeMock<'a, 'b> =
+type internal VeryPublicTypeMock<'a, 'b> =
     {
         Mem1 : 'a -> 'b
     }
 
     static member Empty<'a, 'b> () : VeryPublicTypeMock<'a, 'b> =
         {
-            Mem1 = (fun x -> failwith "Unimplemented function")
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface VeryPublicType<'a, 'b> with

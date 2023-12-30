@@ -4,7 +4,7 @@ open WoofWare.Myriad.Plugins
 
 [<GenerateMock>]
 type IPublicType =
-    abstract Mem1 : string * int -> unit
+    abstract Mem1 : string * int -> string list
     abstract Mem2 : string -> int
 
 [<GenerateMock>]
