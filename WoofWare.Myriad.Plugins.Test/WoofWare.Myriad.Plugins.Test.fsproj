@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="HttpClient.fs"/>
+    <Compile Include="PureGymDtos.fs"/>
+    <Compile Include="TestJsonParse\TestJsonParse.fs" />
+    <Compile Include="TestJsonParse\TestPureGymJson.fs" />
+    <Compile Include="TestHttpClient\TestPureGymRestApi.fs" />
+    <Compile Include="TestHttpClient\TestPathParam.fs" />
+    <Compile Include="TestHttpClient\TestReturnTypes.fs" />
+    <Compile Include="TestHttpClient\TestAllowAnyStatusCode.fs" />
+    <Compile Include="TestHttpClient\TestBasePath.fs" />
+    <Compile Include="TestHttpClient\TestBodyParam.fs" />
+    <Compile Include="TestSurface.fs"/>
+    <Compile Include="TestRemoveOptions.fs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ApiSurface" Version="4.0.25"/>
+    <PackageReference Include="FsCheck" Version="2.16.6"/>
+    <PackageReference Include="FsUnit" Version="6.0.0-alpha3"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+    <PackageReference Include="NUnit" Version="4.0.1"/>
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0"/>
+    <PackageReference Include="NUnit.Analyzers" Version="3.10.0"/>
+    <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj"/>
+    <ProjectReference Include="..\ConsumePlugin\ConsumePlugin.fsproj"/>
+  </ItemGroup>
+
+</Project>

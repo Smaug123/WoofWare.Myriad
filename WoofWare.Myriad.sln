@@ -4,7 +4,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ConsumePlugin", "ConsumePlu
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Myriad.Plugins", "WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj", "{DB86C53B-4090-4791-884B-024C5759855F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyriadPlugin.Test", "MyriadPlugin.Test\MyriadPlugin.Test.fsproj", "{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Myriad.Plugins.Test", "WoofWare.Myriad.Plugins.Test\WoofWare.Myriad.Plugins.Test.fsproj", "{EBFFA5D3-7F74-4824-8795-B6194E6FE0CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,9 +20,9 @@ Global
 		{DB86C53B-4090-4791-884B-024C5759855F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB86C53B-4090-4791-884B-024C5759855F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB86C53B-4090-4791-884B-024C5759855F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{13370CA7-2A80-4B4D-8DEB-F1AA77F206C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBFFA5D3-7F74-4824-8795-B6194E6FE0CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBFFA5D3-7F74-4824-8795-B6194E6FE0CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBFFA5D3-7F74-4824-8795-B6194E6FE0CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBFFA5D3-7F74-4824-8795-B6194E6FE0CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
