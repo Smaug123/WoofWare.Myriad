@@ -31,6 +31,22 @@ module internal HttpClientGenerator =
             Type : SynType
         }
 
+    [<RequireQualifiedAccess>]
+    type BodyParamMethods =
+        | StringContent
+        | StreamContent
+        | ByteArrayContent
+        | HttpContent
+        | Serialise of SynType
+
+        override this.ToString () =
+            match this with
+            | BodyParamMethods.Serialise _ -> "ToString"
+            | BodyParamMethods.ByteArrayContent -> "ByteArrayContent"
+            | BodyParamMethods.StringContent -> "StringContent"
+            | BodyParamMethods.StreamContent -> "StreamContent"
+            | BodyParamMethods.HttpContent -> "HttpContent"
+
     let synBindingTriviaZero (isMember : bool) =
         {
             SynBindingTrivia.EqualsRange = Some range0
@@ -256,18 +272,9 @@ module internal HttpClientGenerator =
                     | None -> failwith "Unable to get parameter variable name from anonymous parameter"
                     | Some id -> id
 
-                let toString (ident : SynExpr) (ty : SynType) =
-                    match ty with
-                    | DateOnly ->
-                        ident
-                        |> SynExpr.callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-dd")
-                    | DateTime ->
-                        ident
-                        |> SynExpr.callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-ddTHH:mm:ss")
-                    | _ -> SynExpr.callMethod "ToString" ident
-
                 let prefix =
-                    toString (SynExpr.CreateIdent firstValueId) firstValue.Type
+                    SynExpr.CreateIdent firstValueId
+                    |> SynExpr.toString firstValue.Type
                     |> SynExpr.CreateParen
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ])
@@ -282,7 +289,7 @@ module internal HttpClientGenerator =
                         | None -> failwith "Unable to get parameter variable name from anonymous parameter"
                         | Some id -> id
 
-                    toString (SynExpr.CreateIdent paramValueId) paramValue.Type
+                    SynExpr.toString paramValue.Type (SynExpr.CreateIdent paramValueId)
                     |> SynExpr.CreateParen
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.CreateLongIdent (
@@ -370,8 +377,23 @@ module internal HttpClientGenerator =
                 )
             )
 
-        if not bodyParams.IsEmpty then
-            failwith "[<Body>] is not yet supported"
+        let bodyParam =
+            match bodyParams with
+            | [] -> None
+            | [ x ] ->
+                // TODO: body serialisation method
+                let paramName =
+                    match x.Id with
+                    | None -> failwith "Anonymous [<Body>] parameter is unsupported"
+                    | Some id -> id
+
+                match x.Type with
+                | Stream -> Some (BodyParamMethods.StreamContent, paramName)
+                | String -> Some (BodyParamMethods.StringContent, paramName)
+                | ArrayType Byte -> Some (BodyParamMethods.ByteArrayContent, paramName)
+                | HttpContent -> Some (BodyParamMethods.HttpContent, paramName)
+                | ty -> Some (BodyParamMethods.Serialise ty, paramName)
+            | _ -> failwith "You can only have at most one [<Body>] parameter on a method."
 
         let httpReqMessageConstructor =
             [
@@ -397,6 +419,71 @@ module internal HttpClientGenerator =
                     info.ReturnType
                     (SynExpr.CreateIdentString "node")
 
+        let handleBodyParams =
+            match bodyParam with
+            | None -> []
+            | Some (bodyParamType, bodyParamName) ->
+                match bodyParamType with
+                | BodyParamMethods.StreamContent
+                | BodyParamMethods.ByteArrayContent
+                | BodyParamMethods.StringContent ->
+                    [
+                        Let (
+                            "queryParams",
+                            SynExpr.New (
+                                false,
+                                SynType.CreateLongIdent (
+                                    SynLongIdent.Create
+                                        [ "System" ; "Net" ; "Http" ; (bodyParamType : BodyParamMethods).ToString () ]
+                                ),
+                                SynExpr.CreateParen (SynExpr.CreateIdent bodyParamName),
+                                range0
+                            )
+                        )
+                        Do (
+                            SynExpr.LongIdentSet (
+                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
+                                SynExpr.CreateIdentString "queryParams",
+                                range0
+                            )
+                        )
+                    ]
+                | BodyParamMethods.HttpContent ->
+                    [
+                        Do (
+                            SynExpr.LongIdentSet (
+                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
+                                SynExpr.CreateIdent bodyParamName,
+                                range0
+                            )
+                        )
+                    ]
+                | BodyParamMethods.Serialise _ ->
+                    failwith "We don't yet support serialising Body parameters; use string or Stream instead"
+        (*
+                    // TODO: this should use JSON instead of ToString
+                    [
+                        Let (
+                            "queryParams",
+                            SynExpr.New (
+                                false,
+                                SynType.CreateLongIdent (
+                                    SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "StringContent" ]
+                                ),
+                                SynExpr.CreateParen (SynExpr.CreateIdent bodyParamName |> SynExpr.toString ty),
+                                range0
+                            )
+                        )
+                        Do (
+                            SynExpr.LongIdentSet (
+                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
+                                SynExpr.CreateIdentString "queryParams",
+                                range0
+                            )
+                        )
+                    ]
+                    *)
+
         let implementation =
             [
                 yield LetBang ("ct", SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "CancellationToken" ]))
@@ -413,30 +500,9 @@ module internal HttpClientGenerator =
                             range0
                         )
                     )
-                (*
-                if not bodyParams.IsEmpty then
-                    yield
-                        Use (
-                            "queryParams",
-                            SynExpr.New (
-                                false,
-                                SynType.CreateLongIdent (
-                                    SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "StringContent" ]
-                                ),
-                                SynExpr.CreateParen (failwith "TODO"),
-                                range0
-                            )
-                        )
 
-                    yield
-                        Do (
-                            SynExpr.LongIdentSet (
-                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
-                                SynExpr.CreateIdentString "queryParams",
-                                range0
-                            )
-                        )
-                *)
+                yield! handleBodyParams
+
                 yield
                     LetBang (
                         "response",

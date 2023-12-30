@@ -204,7 +204,6 @@ The motivating example is again ahead-of-time compilation: we wish to avoid the 
 
 RestEase is complex, and handles a lot of different stuff.
 
-* As of this writing, `[<Body>]` is explicitly unsupported (it throws with a TODO).
 * Parameters are serialised solely with `ToString`, and there's no control over this;
   nor is there control over encoding in any sense.
 * Deserialisation follows the same logic as the `JsonParse` generator,

@@ -116,6 +116,14 @@ module internal SynTypePatterns =
             | _ -> None
         | _ -> None
 
+    let (|Byte|_|) (fieldType : SynType) : unit option =
+        match fieldType with
+        | SynType.LongIdent ident ->
+            match ident.LongIdent with
+            | [ i ] -> [ "byte" ] |> List.tryFind (fun s -> s = i.idText) |> Option.map ignore<string>
+            | _ -> None
+        | _ -> None
+
     let (|HttpResponseMessage|_|) (fieldType : SynType) : unit option =
         match fieldType with
         | SynType.LongIdent ident ->
@@ -124,6 +132,17 @@ module internal SynTypePatterns =
             | [ "Net" ; "Http" ; "HttpResponseMessage" ]
             | [ "Http" ; "HttpResponseMessage" ]
             | [ "HttpResponseMessage" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
+    let (|HttpContent|_|) (fieldType : SynType) : unit option =
+        match fieldType with
+        | SynType.LongIdent ident ->
+            match ident.LongIdent |> List.map (fun i -> i.idText) with
+            | [ "System" ; "Net" ; "Http" ; "HttpContent" ]
+            | [ "Net" ; "Http" ; "HttpContent" ]
+            | [ "Http" ; "HttpContent" ]
+            | [ "HttpContent" ] -> Some ()
             | _ -> None
         | _ -> None
 

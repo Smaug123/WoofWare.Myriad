@@ -31,6 +31,26 @@ type IPureGymApi =
     abstract GetSessions :
         [<Query>] fromDate : DateOnly * [<Query>] toDate : DateOnly * ?ct : CancellationToken -> Task<Sessions>
 
+    // An example from RestEase's own docs
+    [<Post "users/new">]
+    abstract CreateUserString : [<Body>] user : string * ?ct : CancellationToken -> Task<string>
+
+    [<Post "users/new">]
+    abstract CreateUserStream : [<Body>] user : System.IO.Stream * ?ct : CancellationToken -> Task<Stream>
+
+    [<Post "users/new">]
+    abstract CreateUserByteArr : [<Body>] user : byte[] * ?ct : CancellationToken -> Task<Stream>
+
+    [<Post "users/new">]
+    abstract CreateUserByteArr' : [<Body>] user : array<byte> * ?ct : CancellationToken -> Task<Stream>
+
+    [<Post "users/new">]
+    abstract CreateUserByteArr'' : [<Body>] user : byte array * ?ct : CancellationToken -> Task<Stream>
+
+    [<Post "users/new">]
+    abstract CreateUserHttpContent :
+        [<Body>] user : System.Net.Http.HttpContent * ?ct : CancellationToken -> Task<string>
+
     [<Get "endpoint/{param}">]
     abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
 
