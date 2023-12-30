@@ -3,9 +3,13 @@ namespace PureGym
 open System
 open System.Threading
 open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
 open RestEase
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
+[<BaseAddress "https://whatnot.com">]
 type IPureGymApi =
     [<Get "v1/gyms/">]
     abstract GetGyms : ?ct : CancellationToken -> Task<Gym list>
@@ -13,13 +17,13 @@ type IPureGymApi =
     [<Get "v1/gyms/{gym_id}/attendance">]
     abstract GetGymAttendance : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<GymAttendance>
 
-    [<Get "v1/member">]
+    [<RestEase.GetAttribute "v1/member">]
     abstract GetMember : ?ct : CancellationToken -> Task<Member>
 
-    [<Get "v1/gyms/{gym_id}">]
+    [<RestEase.Get "v1/gyms/{gym_id}">]
     abstract GetGym : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<Gym>
 
-    [<Get "v1/member/activity">]
+    [<GetAttribute "v1/member/activity">]
     abstract GetMemberActivity : ?ct : CancellationToken -> Task<MemberActivityDto>
 
     // We'll use this one to check handling of absolute URIs too
@@ -29,19 +33,71 @@ type IPureGymApi =
 
     // An example from RestEase's own docs
     [<Post "users/new">]
-    abstract CreateUserString : [<Body>] user: string * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserString : [<Body>] user : string * ?ct : CancellationToken -> Task<string>
 
     [<Post "users/new">]
-    abstract CreateUserStream : [<Body>] user: System.IO.Stream * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserStream : [<Body>] user : System.IO.Stream * ?ct : CancellationToken -> Task<string>
 
     [<Post "users/new">]
-    abstract CreateUserByteArr : [<Body>] user: byte[] * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserByteArr : [<Body>] user : byte[] * ?ct : CancellationToken -> Task<string>
 
     [<Post "users/new">]
-    abstract CreateUserByteArr' : [<Body>] user: array<byte> * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserByteArr' : [<Body>] user : array<byte> * ?ct : CancellationToken -> Task<string>
 
     [<Post "users/new">]
-    abstract CreateUserByteArr'' : [<Body>] user: byte array * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserByteArr'' : [<Body>] user : byte array * ?ct : CancellationToken -> Task<string>
 
     [<Post "users/new">]
-    abstract CreateUserHttpContent : [<Body>] user: System.Net.Http.HttpContent * ?ct : CancellationToken -> Task<string>
+    abstract CreateUserHttpContent :
+        [<Body>] user : System.Net.Http.HttpContent * ?ct : CancellationToken -> Task<string>
+
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+    [<Get "endpoint">]
+    abstract GetStream : ?ct : CancellationToken -> Task<System.IO.Stream>
+
+    [<Get "endpoint">]
+    abstract GetStream' : ?ct : CancellationToken -> Task<IO.Stream>
+
+    [<Get "endpoint">]
+    abstract GetStream'' : ?ct : CancellationToken -> Task<Stream>
+
+    [<Get "endpoint">]
+    abstract GetResponseMessage : ?ct : CancellationToken -> Task<System.Net.Http.HttpResponseMessage>
+
+    [<Get "endpoint">]
+    abstract GetResponseMessage' : ?ct : CancellationToken -> Task<Net.Http.HttpResponseMessage>
+
+    [<Get "endpoint">]
+    abstract GetResponseMessage'' : ?ct : CancellationToken -> Task<Http.HttpResponseMessage>
+
+    [<Get "endpoint">]
+    abstract GetResponseMessage''' : ?ct : CancellationToken -> Task<HttpResponseMessage>
+
+    [<Get "endpoint">]
+    [<AllowAnyStatusCode>]
+    abstract GetWithAnyReturnCode : ?ct : CancellationToken -> Task<HttpResponseMessage>
+
+    [<Get "endpoint">]
+    abstract GetWithoutAnyReturnCode : ?ct : CancellationToken -> Task<HttpResponseMessage>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IApiWithoutBaseAddress =
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+// TODO: implement BasePath support
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BasePath "foo">]
+type IApiWithBasePath =
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BaseAddress "https://whatnot.com">]
+[<BasePath "foo">]
+type IApiWithBasePathAndAddress =
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>

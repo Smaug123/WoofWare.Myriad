@@ -52,6 +52,9 @@ module internal HttpClientGenerator =
             Arity : SynArgInfo list
             Args : Parameter list
             Identifier : Ident
+            EnsureSuccessHttpCode : bool
+            BaseAddress : SynExpr option
+            BasePath : SynExpr option
         }
 
     let httpMethodString (m : HttpMethod) : string =
@@ -115,6 +118,17 @@ module internal HttpClientGenerator =
         | [] -> failwith "Required exactly one recognised RestEase attribute on member, but got none"
         | matchingAttrs ->
             failwithf "Required exactly one recognised RestEase attribute on member, but got %i" matchingAttrs.Length
+
+    let shouldAllowAnyStatusCode (attrs : SynAttribute list) : bool =
+        attrs
+        |> List.exists (fun attr ->
+            match attr.TypeName.AsString with
+            | "AllowAnyStatusCode"
+            | "AllowAnyStatusCodeAttribute"
+            | "RestEase.AllowAnyStatusCode"
+            | "RestEase.AllowAnyStatusCodeAttribute" -> true
+            | _ -> false
+        )
 
     let constructMember (info : MemberInfo) : SynMemberDefn =
         let valInfo =
@@ -202,6 +216,11 @@ module internal HttpClientGenerator =
                                 [
                                     SynExpr.CreateConstString ("{" + s + "}")
                                     SynExpr.callMethod "ToString" (SynExpr.CreateIdent varName)
+                                    |> SynExpr.pipeThroughFunction (
+                                        SynExpr.CreateLongIdent (
+                                            SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ]
+                                        )
+                                    )
                                 ])
                     | _ -> template
                 )
@@ -279,13 +298,55 @@ module internal HttpClientGenerator =
         let requestUri =
             let uriIdent = SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ])
 
+            let baseAddress =
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
+
+            let baseAddress =
+                SynExpr.CreateMatch (
+                    baseAddress,
+                    [
+                        SynMatchClause.Create (
+                            SynPat.CreateNull,
+                            None,
+                            match info.BaseAddress with
+                            | None ->
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateIdentString "raise",
+                                    SynExpr.CreateParen (
+                                        SynExpr.CreateApp (
+                                            SynExpr.CreateLongIdent (
+                                                SynLongIdent.Create [ "System" ; "ArgumentNullException" ]
+                                            ),
+                                            SynExpr.CreateParenedTuple
+                                                [
+                                                    SynExpr.CreateApp (
+                                                        SynExpr.CreateIdentString "nameof",
+                                                        SynExpr.CreateParen baseAddress
+                                                    )
+                                                    SynExpr.CreateConstString
+                                                        "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                                ]
+                                        )
+                                    )
+                                )
+                            | Some expr -> SynExpr.CreateApp (uriIdent, expr)
+                        )
+                        SynMatchClause.Create (
+                            SynPat.CreateNamed (Ident.Create "v"),
+                            None,
+                            SynExpr.CreateIdentString "v"
+                        )
+                    ]
+                )
+                |> SynExpr.CreateParen
+
             SynExpr.App (
                 ExprAtomicFlag.Atomic,
                 false,
                 uriIdent,
                 SynExpr.CreateParenedTuple
                     [
-                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
+                        baseAddress
                         SynExpr.CreateApp (
                             uriIdent,
                             SynExpr.CreateParenedTuple
@@ -325,11 +386,16 @@ module internal HttpClientGenerator =
             |> SynExpr.CreateParenedTuple
 
         let returnExpr =
-            JsonParseGenerator.parseNode
-                None
-                JsonParseGenerator.JsonParseOption.None
-                info.ReturnType
-                (SynExpr.CreateIdentString "node")
+            match info.ReturnType with
+            | HttpResponseMessage
+            | String
+            | Stream -> SynExpr.CreateIdentString "node"
+            | _ ->
+                JsonParseGenerator.parseNode
+                    None
+                    JsonParseGenerator.JsonParseOption.None
+                    info.ReturnType
+                    (SynExpr.CreateIdentString "node")
 
         let implementation =
             [
@@ -382,45 +448,76 @@ module internal HttpClientGenerator =
                             )
                         )
                     )
-                yield
-                    Let (
-                        "response",
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "response" ; "EnsureSuccessStatusCode" ]),
-                            SynExpr.CreateConst SynConst.Unit
-                        )
-                    )
-                yield
-                    LetBang (
-                        "stream",
-                        SynExpr.awaitTask (
+                if info.EnsureSuccessHttpCode then
+                    yield
+                        Let (
+                            "response",
                             SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (
-                                    SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
-                                ),
-                                SynExpr.CreateIdentString "ct"
+                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "response" ; "EnsureSuccessStatusCode" ]),
+                                SynExpr.CreateConst SynConst.Unit
                             )
                         )
-                    )
-                yield
-                    LetBang (
-                        "node",
-                        SynExpr.awaitTask (
-                            SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (
-                                    SynLongIdent.Create
-                                        [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "ParseAsync" ]
-                                ),
-                                SynExpr.CreateParenedTuple
-                                    [
-                                        SynExpr.CreateIdentString "stream"
-                                        SynExpr.equals
-                                            (SynExpr.CreateIdentString "cancellationToken")
-                                            (SynExpr.CreateIdentString "ct")
-                                    ]
+                match info.ReturnType with
+                | HttpResponseMessage -> yield Let ("node", SynExpr.CreateIdentString "response")
+                | String ->
+                    yield
+                        LetBang (
+                            "node",
+                            SynExpr.awaitTask (
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateLongIdent (
+                                        SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStringAsync" ]
+                                    ),
+                                    SynExpr.CreateIdentString "ct"
+                                )
                             )
                         )
-                    )
+                | Stream ->
+                    yield
+                        LetBang (
+                            "node",
+                            SynExpr.awaitTask (
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateLongIdent (
+                                        SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
+                                    ),
+                                    SynExpr.CreateIdentString "ct"
+                                )
+                            )
+                        )
+                | _ ->
+                    yield
+                        LetBang (
+                            "stream",
+                            SynExpr.awaitTask (
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateLongIdent (
+                                        SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
+                                    ),
+                                    SynExpr.CreateIdentString "ct"
+                                )
+                            )
+                        )
+
+                    yield
+                        LetBang (
+                            "node",
+                            SynExpr.awaitTask (
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateLongIdent (
+                                        SynLongIdent.Create
+                                            [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "ParseAsync" ]
+                                    ),
+                                    SynExpr.CreateParenedTuple
+                                        [
+                                            SynExpr.CreateIdentString "stream"
+                                            SynExpr.equals
+                                                (SynExpr.CreateIdentString "cancellationToken")
+                                                (SynExpr.CreateIdentString "ct")
+                                        ]
+                                )
+                            )
+                        )
             ]
             |> SynExpr.createCompExpr "async" returnExpr
             |> SynExpr.startAsTask
@@ -498,14 +595,45 @@ module internal HttpClientGenerator =
             convertSigParam param :: extractTypes rest
         | _ -> failwithf "Didn't have alternating type-and-star in interface member definition: %+A" tupleType
 
+    let extractBasePath (attrs : SynAttributes) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            attr.Attributes
+            |> List.tryPick (fun attr ->
+                match attr.TypeName.AsString with
+                | "BasePath"
+                | "RestEase.BasePath"
+                | "BasePathAttribute"
+                | "RestEase.BasePathAttribute" -> Some attr.ArgExpr
+                | _ -> None
+            )
+        )
+
+    let extractBaseAddress (attrs : SynAttributes) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            attr.Attributes
+            |> List.tryPick (fun attr ->
+                match attr.TypeName.AsString with
+                | "BaseAddress"
+                | "RestEase.BaseAddress"
+                | "BaseAddressAttribute"
+                | "RestEase.BaseAddressAttribute" -> Some attr.ArgExpr
+                | _ -> None
+            )
+        )
+
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
         (interfaceType : SynTypeDefn)
         : SynModuleOrNamespace
         =
-        let (SynTypeDefn (SynComponentInfo (_, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
+        let (SynTypeDefn (SynComponentInfo (attrs, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
             interfaceType
+
+        let baseAddress = extractBaseAddress attrs
+        let basePath = extractBasePath attrs
 
         let members =
             match synTypeDefnRepr with
@@ -577,6 +705,8 @@ module internal HttpClientGenerator =
 
                             let httpMethod, url = extractHttpInformation attrs
 
+                            let shouldEnsureSuccess = not (shouldAllowAnyStatusCode attrs)
+
                             {
                                 HttpMethod = httpMethod
                                 UrlTemplate = url
@@ -584,6 +714,9 @@ module internal HttpClientGenerator =
                                 Arity = arity
                                 Args = args
                                 Identifier = ident
+                                EnsureSuccessHttpCode = shouldEnsureSuccess
+                                BaseAddress = baseAddress
+                                BasePath = basePath
                             }
                     | _ -> failwithf "Unrecognised member definition: %+A" defn
                 )

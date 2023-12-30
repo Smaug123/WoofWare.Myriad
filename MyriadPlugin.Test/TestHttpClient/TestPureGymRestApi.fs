@@ -8,7 +8,7 @@ open PureGym
 open FsUnitTyped
 
 [<TestFixture>]
-module TestRestApi =
+module TestPureGymRestApi =
     // several of these, to check behaviour around treatment of initial slashes
     let baseUris =
         [
