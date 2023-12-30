@@ -53,6 +53,7 @@ module internal HttpClientGenerator =
             Args : Parameter list
             Identifier : Ident
             EnsureSuccessHttpCode : bool
+            BaseAddress : SynExpr option
             BasePath : SynExpr option
         }
 
@@ -307,7 +308,7 @@ module internal HttpClientGenerator =
                         SynMatchClause.Create (
                             SynPat.CreateNull,
                             None,
-                            match info.BasePath with
+                            match info.BaseAddress with
                             | None ->
                                 SynExpr.CreateApp (
                                     SynExpr.CreateIdentString "raise",
@@ -323,7 +324,7 @@ module internal HttpClientGenerator =
                                                         SynExpr.CreateParen baseAddress
                                                     )
                                                     SynExpr.CreateConstString
-                                                        "No base path was supplied on the type, and no BaseAddress was on the HttpClient."
+                                                        "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                                 ]
                                         )
                                     )
@@ -608,6 +609,20 @@ module internal HttpClientGenerator =
             )
         )
 
+    let extractBaseAddress (attrs : SynAttributes) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            attr.Attributes
+            |> List.tryPick (fun attr ->
+                match attr.TypeName.AsString with
+                | "BaseAddress"
+                | "RestEase.BaseAddress"
+                | "BaseAddressAttribute"
+                | "RestEase.BaseAddressAttribute" -> Some attr.ArgExpr
+                | _ -> None
+            )
+        )
+
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
@@ -617,6 +632,7 @@ module internal HttpClientGenerator =
         let (SynTypeDefn (SynComponentInfo (attrs, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
             interfaceType
 
+        let baseAddress = extractBaseAddress attrs
         let basePath = extractBasePath attrs
 
         let members =
@@ -699,6 +715,7 @@ module internal HttpClientGenerator =
                                 Args = args
                                 Identifier = ident
                                 EnsureSuccessHttpCode = shouldEnsureSuccess
+                                BaseAddress = baseAddress
                                 BasePath = basePath
                             }
                     | _ -> failwithf "Unrecognised member definition: %+A" defn

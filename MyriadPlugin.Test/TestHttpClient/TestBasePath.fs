@@ -10,7 +10,7 @@ open FsUnitTyped
 [<TestFixture>]
 module TestBasePath =
     [<Test>]
-    let ``Base path is respected`` () =
+    let ``Base address is respected`` () =
         let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
@@ -27,7 +27,7 @@ module TestBasePath =
         observedUri |> shouldEqual "https://whatnot.com/endpoint/param"
 
     [<Test>]
-    let ``Without a base path but with BaseAddress, request goes through`` () =
+    let ``Without a base address attr but with BaseAddress on client, request goes through`` () =
         let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
@@ -38,13 +38,13 @@ module TestBasePath =
             }
 
         use client = HttpClientMock.make (System.Uri "https://baseaddress.com") proc
-        let api = ApiWithoutBasePath.make client
+        let api = ApiWithoutBaseAddress.make client
 
         let observedUri = api.GetPathParam("param").Result
         observedUri |> shouldEqual "https://baseaddress.com/endpoint/param"
 
     [<Test>]
-    let ``Without a base path, request throws`` () =
+    let ``Without a base address attr or BaseAddress on client, request throws`` () =
         let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
@@ -55,7 +55,7 @@ module TestBasePath =
             }
 
         use client = HttpClientMock.makeNoUri proc
-        let api = ApiWithoutBasePath.make client
+        let api = ApiWithoutBaseAddress.make client
 
         let observedExc =
             async {
@@ -77,4 +77,4 @@ module TestBasePath =
 
         observedExc.Message
         |> shouldEqual
-            "No base path was supplied on the type, and no BaseAddress was on the HttpClient. (Parameter 'BaseAddress')"
+            "No base address was supplied on the type, and no BaseAddress was on the HttpClient. (Parameter 'BaseAddress')"
