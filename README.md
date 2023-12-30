@@ -204,6 +204,9 @@ The motivating example is again ahead-of-time compilation: we wish to avoid the 
 
 RestEase is complex, and handles a lot of different stuff.
 
+* If you set the `BaseAddress` on your input `HttpClient`, make sure to end with a trailing slash
+  on any trailing directories (so `"blah/foo/"` rather than `"blah/foo"`).
+  We combine URIs using `UriKind.Relative`, so without a trailing slash, the last component may be chopped off.
 * Parameters are serialised solely with `ToString`, and there's no control over this;
   nor is there control over encoding in any sense.
 * Deserialisation follows the same logic as the `JsonParse` generator,
