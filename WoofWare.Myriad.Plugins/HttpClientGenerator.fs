@@ -53,6 +53,7 @@ module internal HttpClientGenerator =
             Args : Parameter list
             Identifier : Ident
             EnsureSuccessHttpCode : bool
+            BasePath : SynExpr option
         }
 
     let httpMethodString (m : HttpMethod) : string =
@@ -296,13 +297,55 @@ module internal HttpClientGenerator =
         let requestUri =
             let uriIdent = SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ])
 
+            let baseAddress =
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
+
+            let baseAddress =
+                SynExpr.CreateMatch (
+                    baseAddress,
+                    [
+                        SynMatchClause.Create (
+                            SynPat.CreateNull,
+                            None,
+                            match info.BasePath with
+                            | None ->
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateIdentString "raise",
+                                    SynExpr.CreateParen (
+                                        SynExpr.CreateApp (
+                                            SynExpr.CreateLongIdent (
+                                                SynLongIdent.Create [ "System" ; "ArgumentNullException" ]
+                                            ),
+                                            SynExpr.CreateParenedTuple
+                                                [
+                                                    SynExpr.CreateApp (
+                                                        SynExpr.CreateIdentString "nameof",
+                                                        SynExpr.CreateParen baseAddress
+                                                    )
+                                                    SynExpr.CreateConstString
+                                                        "No base path was supplied on the type, and no BaseAddress was on the HttpClient."
+                                                ]
+                                        )
+                                    )
+                                )
+                            | Some expr -> SynExpr.CreateApp (uriIdent, expr)
+                        )
+                        SynMatchClause.Create (
+                            SynPat.CreateNamed (Ident.Create "v"),
+                            None,
+                            SynExpr.CreateIdentString "v"
+                        )
+                    ]
+                )
+                |> SynExpr.CreateParen
+
             SynExpr.App (
                 ExprAtomicFlag.Atomic,
                 false,
                 uriIdent,
                 SynExpr.CreateParenedTuple
                     [
-                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
+                        baseAddress
                         SynExpr.CreateApp (
                             uriIdent,
                             SynExpr.CreateParenedTuple
@@ -551,14 +594,30 @@ module internal HttpClientGenerator =
             convertSigParam param :: extractTypes rest
         | _ -> failwithf "Didn't have alternating type-and-star in interface member definition: %+A" tupleType
 
+    let extractBasePath (attrs : SynAttributes) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            attr.Attributes
+            |> List.tryPick (fun attr ->
+                match attr.TypeName.AsString with
+                | "BasePath"
+                | "RestEase.BasePath"
+                | "BasePathAttribute"
+                | "RestEase.BasePathAttribute" -> Some attr.ArgExpr
+                | _ -> None
+            )
+        )
+
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
         (interfaceType : SynTypeDefn)
         : SynModuleOrNamespace
         =
-        let (SynTypeDefn (SynComponentInfo (_, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
+        let (SynTypeDefn (SynComponentInfo (attrs, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
             interfaceType
+
+        let basePath = extractBasePath attrs
 
         let members =
             match synTypeDefnRepr with
@@ -640,6 +699,7 @@ module internal HttpClientGenerator =
                                 Args = args
                                 Identifier = ident
                                 EnsureSuccessHttpCode = shouldEnsureSuccess
+                                BasePath = basePath
                             }
                     | _ -> failwithf "Unrecognised member definition: %+A" defn
                 )

@@ -26,7 +26,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("v1/gyms/", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("v1/gyms/", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -52,7 +57,9 @@ module PureGymApi =
 
                     let uri =
                         System.Uri (
-                            client.BaseAddress,
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
                             System.Uri (
                                 "v1/gyms/{gym_id}/attendance"
                                     .Replace ("{gym_id}", gymId.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -83,7 +90,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("v1/member", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("v1/member", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -109,7 +121,9 @@ module PureGymApi =
 
                     let uri =
                         System.Uri (
-                            client.BaseAddress,
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
                             System.Uri (
                                 "v1/gyms/{gym_id}"
                                     .Replace ("{gym_id}", gymId.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -140,7 +154,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("v1/member/activity", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("v1/member/activity", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -166,7 +185,9 @@ module PureGymApi =
 
                     let uri =
                         System.Uri (
-                            client.BaseAddress,
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
                             System.Uri (
                                 ("/v2/gymSessions/member"
                                  + "?fromDate="
@@ -201,7 +222,9 @@ module PureGymApi =
 
                     let uri =
                         System.Uri (
-                            client.BaseAddress,
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
                             System.Uri (
                                 "endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -227,7 +250,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -247,7 +275,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -267,7 +300,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -287,7 +325,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -307,7 +350,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -327,7 +375,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -347,7 +400,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -367,7 +425,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -386,7 +449,12 @@ module PureGymApi =
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (client.BaseAddress, System.Uri ("endpoint", System.UriKind.Relative))
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
@@ -397,6 +465,58 @@ module PureGymApi =
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let node = response
+                    return node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess>]
+module ApiWithoutBasePath =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithoutBasePath =
+        { new IApiWithoutBasePath with
+            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base path was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return node
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
