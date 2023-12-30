@@ -482,10 +482,10 @@ open RestEase
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<RequireQualifiedAccess>]
-module ApiWithoutBasePath =
+module ApiWithoutBaseAddress =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithoutBasePath =
-        { new IApiWithoutBasePath with
+    let make (client : System.Net.Http.HttpClient) : IApiWithoutBaseAddress =
+        { new IApiWithoutBaseAddress with
             member _.GetPathParam (parameter : string, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
@@ -497,9 +497,107 @@ module ApiWithoutBasePath =
                                  raise (
                                      System.ArgumentNullException (
                                          nameof (client.BaseAddress),
-                                         "No base path was supplied on the type, and no BaseAddress was on the HttpClient."
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess>]
+module ApiWithBasePath =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithBasePath =
+        { new IApiWithBasePath with
+            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess>]
+module ApiWithBasePathAndAddress =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithBasePathAndAddress =
+        { new IApiWithBasePathAndAddress with
+            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
                              | v -> v),
                             System.Uri (
                                 "endpoint/{param}"

@@ -9,7 +9,7 @@ open System.Net.Http
 open RestEase
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
-[<BasePath "https://whatnot.com">]
+[<BaseAddress "https://whatnot.com">]
 type IPureGymApi =
     [<Get "v1/gyms/">]
     abstract GetGyms : ?ct : CancellationToken -> Task<Gym list>
@@ -63,6 +63,21 @@ type IPureGymApi =
     abstract GetWithoutAnyReturnCode : ?ct : CancellationToken -> Task<HttpResponseMessage>
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
-type IApiWithoutBasePath =
+type IApiWithoutBaseAddress =
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+// TODO: implement BasePath support
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BasePath "foo">]
+type IApiWithBasePath =
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BaseAddress "https://whatnot.com">]
+[<BasePath "foo">]
+type IApiWithBasePathAndAddress =
     [<Get "endpoint/{param}">]
     abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
