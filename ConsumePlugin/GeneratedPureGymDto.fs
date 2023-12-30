@@ -3,6 +3,7 @@
 //        Changes to this file will be lost when the code is regenerated.
 //------------------------------------------------------------------------------
 
+
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymOpeningHours type

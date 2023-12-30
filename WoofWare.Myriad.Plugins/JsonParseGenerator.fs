@@ -9,6 +9,8 @@ open Myriad.Core
 
 /// Attribute indicating a record type to which the "Add JSON parse" Myriad
 /// generator should apply during build.
+/// The purpose of this generator is to create methods of the form
+/// `{TypeName}.jsonParse : System.Text.Json.Nodes.JsonNode -> {TypeName}`.
 type JsonParseAttribute () =
     inherit Attribute ()
 
@@ -325,7 +327,7 @@ module internal JsonParseGenerator =
                 (SynLongIdent.CreateFromLongIdent [ id ], true),
                 Some (SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ id ]))
             )
-            |> AstHelper.constructRecord
+            |> AstHelper.instantiateRecord
 
         let assignments =
             (finalConstruction, assignments)

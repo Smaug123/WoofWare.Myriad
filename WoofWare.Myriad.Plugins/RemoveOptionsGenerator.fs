@@ -8,6 +8,7 @@ open Myriad.Core
 
 /// Attribute indicating a record type to which the "Remove Options" Myriad
 /// generator should apply during build.
+/// The purpose of this generator is to strip the `option` modifier from types.
 type RemoveOptionsAttribute () =
     inherit Attribute ()
 
@@ -46,14 +47,20 @@ module internal RemoveOptionsGenerator =
         )
 
     // TODO: this option seems a bit odd
-    let createType (xmlDoc : PreXmlDoc option) (fields : SynField list) =
+    let createType (xmlDoc : PreXmlDoc option) (generics : SynTyparDecls option) (fields : SynField list) =
         let fields : SynField list = fields |> List.map removeOption
         let name = Ident.Create "Short"
 
-        let typeDecl : SynTypeDefn =
-            match xmlDoc with
-            | None -> AstHelper.defineRecordType (name, fields, None, None)
-            | Some xmlDoc -> AstHelper.defineRecordType (name, fields, None, Some xmlDoc)
+        let record =
+            {
+                Name = name
+                Fields = fields
+                Members = None
+                XmlDoc = xmlDoc
+                Generics = generics
+            }
+
+        let typeDecl = AstHelper.defineRecordType record
 
         SynModuleDecl.Types ([ typeDecl ], range0)
 
@@ -114,7 +121,7 @@ module internal RemoveOptionsGenerator =
 
                 (SynLongIdent.CreateFromLongIdent [ id ], true), Some body
             )
-            |> AstHelper.constructRecord
+            |> AstHelper.instantiateRecord
 
         let pattern =
             SynPat.LongIdent (
@@ -150,7 +157,7 @@ module internal RemoveOptionsGenerator =
         let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
             typeDefn
 
-        let (SynComponentInfo (_attributes, _typeParams, _constraints, recordId, doc, _preferPostfix, _access, _)) =
+        let (SynComponentInfo (_attributes, typeParams, _constraints, recordId, doc, _preferPostfix, _access, _)) =
             synComponentInfo
 
         match synTypeDefnRepr with
@@ -158,7 +165,7 @@ module internal RemoveOptionsGenerator =
 
             let decls =
                 [
-                    createType (Some doc) recordFields
+                    createType (Some doc) typeParams recordFields
                     createMaker [ Ident.Create "Short" ] recordId recordFields
                 ]
 
