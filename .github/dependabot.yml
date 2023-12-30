@@ -7,7 +7,7 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "nuget"
-    directory: "/ApiSurface"
+    directory: "/"
     schedule:
       interval: "weekly"
     ignore:
