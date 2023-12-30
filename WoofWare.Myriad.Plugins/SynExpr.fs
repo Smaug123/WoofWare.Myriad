@@ -240,7 +240,7 @@ module internal SynExpr =
                             SynExprLetOrUseTrivia.InKeyword = None
                         }
                     )
-                | Do body -> SynExpr.Do (body, range0)
+                | Do body -> SynExpr.CreateSequential [ SynExpr.Do (body, range0) ; state ]
             )
 
         SynExpr.CreateApp (
@@ -252,3 +252,13 @@ module internal SynExpr =
     let awaitTask (expr : SynExpr) : SynExpr =
         expr
         |> pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "AwaitTask" ]))
+
+    /// {ident}.ToString ()
+    /// with special casing for some types like DateTime
+    let toString (ty : SynType) (ident : SynExpr) =
+        match ty with
+        | DateOnly -> ident |> callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-dd")
+        | DateTime ->
+            ident
+            |> callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-ddTHH:mm:ss")
+        | _ -> callMethod "ToString" ident
