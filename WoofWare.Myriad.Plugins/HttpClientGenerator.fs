@@ -297,13 +297,55 @@ module internal HttpClientGenerator =
         let requestUri =
             let uriIdent = SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ])
 
+            let baseAddress =
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
+
+            let baseAddress =
+                SynExpr.CreateMatch (
+                    baseAddress,
+                    [
+                        SynMatchClause.Create (
+                            SynPat.CreateNull,
+                            None,
+                            match info.BasePath with
+                            | None ->
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateIdentString "raise",
+                                    SynExpr.CreateParen (
+                                        SynExpr.CreateApp (
+                                            SynExpr.CreateLongIdent (
+                                                SynLongIdent.Create [ "System" ; "ArgumentNullException" ]
+                                            ),
+                                            SynExpr.CreateParenedTuple
+                                                [
+                                                    SynExpr.CreateApp (
+                                                        SynExpr.CreateIdentString "nameof",
+                                                        SynExpr.CreateParen baseAddress
+                                                    )
+                                                    SynExpr.CreateConstString
+                                                        "No base path was supplied on the type, and no BaseAddress was on the HttpClient."
+                                                ]
+                                        )
+                                    )
+                                )
+                            | Some expr -> SynExpr.CreateApp (uriIdent, expr)
+                        )
+                        SynMatchClause.Create (
+                            SynPat.CreateNamed (Ident.Create "v"),
+                            None,
+                            SynExpr.CreateIdentString "v"
+                        )
+                    ]
+                )
+                |> SynExpr.CreateParen
+
             SynExpr.App (
                 ExprAtomicFlag.Atomic,
                 false,
                 uriIdent,
                 SynExpr.CreateParenedTuple
                     [
-                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
+                        baseAddress
                         SynExpr.CreateApp (
                             uriIdent,
                             SynExpr.CreateParenedTuple

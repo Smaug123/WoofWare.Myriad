@@ -61,3 +61,8 @@ type IPureGymApi =
 
     [<Get "endpoint">]
     abstract GetWithoutAnyReturnCode : ?ct : CancellationToken -> Task<HttpResponseMessage>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IApiWithoutBasePath =
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
