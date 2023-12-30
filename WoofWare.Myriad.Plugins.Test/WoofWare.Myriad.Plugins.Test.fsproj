@@ -17,8 +17,9 @@
     <Compile Include="TestHttpClient\TestAllowAnyStatusCode.fs" />
     <Compile Include="TestHttpClient\TestBasePath.fs" />
     <Compile Include="TestHttpClient\TestBodyParam.fs" />
-    <Compile Include="TestSurface.fs"/>
+    <Compile Include="TestMockGenerator\TestMockGenerator.fs" />
     <Compile Include="TestRemoveOptions.fs"/>
+    <Compile Include="TestSurface.fs"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -35,10 +36,6 @@
   <ItemGroup>
     <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj"/>
     <ProjectReference Include="..\ConsumePlugin\ConsumePlugin.fsproj"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="TestMockGenerator\TestMockGenerator.fs" />
   </ItemGroup>
 
 </Project>
