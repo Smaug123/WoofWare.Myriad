@@ -11,7 +11,11 @@ type HttpClientMock (result : HttpRequestMessage -> Async<HttpResponseMessage>) 
 
 [<RequireQualifiedAccess>]
 module HttpClientMock =
-    let make (baseUrl : System.Uri) (handler : HttpRequestMessage -> Async<HttpResponseMessage>) =
+    let makeNoUri (handler : HttpRequestMessage -> Async<HttpResponseMessage>) =
         let result = new HttpClientMock (handler)
+        result
+
+    let make (baseUrl : System.Uri) (handler : HttpRequestMessage -> Async<HttpResponseMessage>) =
+        let result = makeNoUri handler
         result.BaseAddress <- baseUrl
         result

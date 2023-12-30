@@ -53,6 +53,7 @@ module internal HttpClientGenerator =
             Args : Parameter list
             Identifier : Ident
             EnsureSuccessHttpCode : bool
+            BasePath : SynExpr option
         }
 
     let httpMethodString (m : HttpMethod) : string =
@@ -551,14 +552,30 @@ module internal HttpClientGenerator =
             convertSigParam param :: extractTypes rest
         | _ -> failwithf "Didn't have alternating type-and-star in interface member definition: %+A" tupleType
 
+    let extractBasePath (attrs : SynAttributes) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            attr.Attributes
+            |> List.tryPick (fun attr ->
+                match attr.TypeName.AsString with
+                | "BasePath"
+                | "RestEase.BasePath"
+                | "BasePathAttribute"
+                | "RestEase.BasePathAttribute" -> Some attr.ArgExpr
+                | _ -> None
+            )
+        )
+
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
         (interfaceType : SynTypeDefn)
         : SynModuleOrNamespace
         =
-        let (SynTypeDefn (SynComponentInfo (_, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
+        let (SynTypeDefn (SynComponentInfo (attrs, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
             interfaceType
+
+        let basePath = extractBasePath attrs
 
         let members =
             match synTypeDefnRepr with
@@ -640,6 +657,7 @@ module internal HttpClientGenerator =
                                 Args = args
                                 Identifier = ident
                                 EnsureSuccessHttpCode = shouldEnsureSuccess
+                                BasePath = basePath
                             }
                     | _ -> failwithf "Unrecognised member definition: %+A" defn
                 )

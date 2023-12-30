@@ -8,15 +8,16 @@
 
   <ItemGroup>
     <Compile Include="HttpClient.fs"/>
-    <Compile Include="TestPathParam.fs" />
-    <Compile Include="TestReturnTypes.fs" />
-    <Compile Include="TestAllowAnyStatusCode.fs" />
+    <Compile Include="PureGymDtos.fs"/>
+    <Compile Include="TestJsonParse\TestJsonParse.fs" />
+    <Compile Include="TestJsonParse\TestPureGymJson.fs" />
+    <Compile Include="TestHttpClient\TestPureGymRestApi.fs" />
+    <Compile Include="TestHttpClient\TestPathParam.fs" />
+    <Compile Include="TestHttpClient\TestReturnTypes.fs" />
+    <Compile Include="TestHttpClient\TestAllowAnyStatusCode.fs" />
+    <Compile Include="TestHttpClient\TestBasePath.fs" />
     <Compile Include="TestSurface.fs"/>
     <Compile Include="TestRemoveOptions.fs"/>
-    <Compile Include="TestJsonParse.fs"/>
-    <Compile Include="PureGymDtos.fs"/>
-    <Compile Include="TestPureGymJson.fs"/>
-    <Compile Include="TestPureGymRestApi.fs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,6 +9,7 @@ open System.Net.Http
 open RestEase
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
+[<BasePath "https://whatnot.com">]
 type IPureGymApi =
     [<Get "v1/gyms/">]
     abstract GetGyms : ?ct : CancellationToken -> Task<Gym list>
