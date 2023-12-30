@@ -26,7 +26,7 @@ module internal InterfaceMockGenerator =
 
     let createType
         (name : string)
-        (generics : SynTyparDecls option)
+        (interfaceType : InterfaceType)
         (xmlDoc : PreXmlDoc)
         (fields : SynField list)
         : SynModuleDecl
@@ -51,7 +51,8 @@ module internal InterfaceMockGenerator =
 
         let constructorIdent =
             let generics =
-                generics |> Option.map (fun generics -> SynValTyparDecls (Some generics, false))
+                interfaceType.Generics
+                |> Option.map (fun generics -> SynValTyparDecls (Some generics, false))
 
             SynPat.LongIdent (
                 SynLongIdent.CreateString "Empty",
@@ -68,7 +69,7 @@ module internal InterfaceMockGenerator =
             )
 
         let constructorReturnType =
-            match generics with
+            match interfaceType.Generics with
             | None -> SynType.CreateLongIdent name
             | Some generics ->
                 let generics =
@@ -107,19 +108,128 @@ module internal InterfaceMockGenerator =
                     range0,
                     DebugPointAtBinding.Yes range0,
                     { SynExpr.synBindingTriviaZero true with
-                        LeadingKeyword = SynLeadingKeyword.Static range0
+                        LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
                     }
                 ),
                 range0
             )
 
+        let interfaceMembers =
+            let members =
+                interfaceType.Members
+                |> List.map (fun memberInfo ->
+
+                    let synValData =
+                        SynValData.SynValData (
+                            Some (
+                                {
+                                    IsInstance = true
+                                    IsDispatchSlot = false
+                                    IsOverrideOrExplicitImpl = true
+                                    IsFinal = false
+                                    GetterOrSetterIsCompilerGenerated = false
+                                    MemberKind = SynMemberKind.Member
+                                }
+                            ),
+                            valInfo =
+                                SynValInfo.SynValInfo (
+                                    curriedArgInfos =
+                                        [
+                                            [ SynArgInfo.SynArgInfo (attributes = [], optional = false, ident = None) ]
+                                            []
+                                        ],
+                                    returnInfo =
+                                        SynArgInfo.SynArgInfo (attributes = [], optional = false, ident = None)
+                                ),
+                            thisIdOpt = None
+                        )
+
+                    let headArgs =
+                        SynPat.Tuple (
+                            false,
+                            memberInfo.Args
+                            |> List.mapi (fun i _arg -> SynPat.CreateNamed (Ident.Create $"arg%i{i}")),
+                            List.replicate (memberInfo.Args.Length - 1) range0,
+                            range0
+                        )
+                        |> SynPat.CreateParen
+
+                    let headPat =
+                        SynPat.LongIdent (
+                            SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; memberInfo.Identifier ],
+                            None,
+                            None,
+                            SynArgPats.Pats [ headArgs ],
+                            None,
+                            range0
+                        )
+
+                    SynMemberDefn.Member (
+                        SynBinding.SynBinding (
+                            None,
+                            SynBindingKind.Normal,
+                            false,
+                            false,
+                            [],
+                            PreXmlDoc.Empty,
+                            synValData,
+                            headPat,
+                            None,
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (
+                                    SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; memberInfo.Identifier ]
+                                ),
+                                SynExpr.CreateParen (
+                                    memberInfo.Args
+                                    |> List.mapi (fun i _arg -> SynExpr.CreateIdentString $"arg%i{i}")
+                                    |> SynExpr.CreateTuple
+                                )
+                            ),
+                            range0,
+                            DebugPointAtBinding.Yes range0,
+                            {
+                                LeadingKeyword = SynLeadingKeyword.Member range0
+                                InlineKeyword = None
+                                EqualsRange = Some range0
+                            }
+                        ),
+                        range0
+                    )
+                )
+
+            let interfaceName =
+                let baseName =
+                    SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name)
+
+                match interfaceType.Generics with
+                | None -> baseName
+                | Some generics ->
+                    let generics =
+                        match generics with
+                        | SynTyparDecls.PostfixList (decls, _, _) -> decls
+                        | SynTyparDecls.PrefixList (decls, _) -> decls
+                        | SynTyparDecls.SinglePrefix (decl, _) -> [ decl ]
+                        |> List.map (fun (SynTyparDecl (_, typar)) -> SynType.Var (typar, range0))
+
+                    SynType.App (
+                        baseName,
+                        Some range0,
+                        generics,
+                        List.replicate (generics.Length - 1) range0,
+                        Some range0,
+                        false,
+                        range0
+                    )
+
+            SynMemberDefn.Interface (interfaceName, Some range0, Some members, range0)
+
         let record =
             {
                 Name = Ident.Create name
                 Fields = fields
-                Members = Some [ constructor ]
+                Members = Some [ constructor ; interfaceMembers ]
                 XmlDoc = Some xmlDoc
-                Generics = generics
+                Generics = interfaceType.Generics
             }
 
         let typeDecl = AstHelper.defineRecordType record
@@ -167,7 +277,7 @@ module internal InterfaceMockGenerator =
                     s
             |> fun s -> s + "Mock"
 
-        let typeDecl = createType name interfaceType.Generics docString fields
+        let typeDecl = createType name interfaceType docString fields
 
         SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ typeDecl ])
 

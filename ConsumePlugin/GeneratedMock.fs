@@ -7,40 +7,68 @@ namespace SomeNamespace
 
 /// Mock record type for an interface
 type PublicTypeMock =
-    { Mem1: string * int -> unit
-      Mem2: string -> int }
+    {
+        Mem1 : string * int -> unit
+        Mem2 : string -> int
+    }
 
-    static Empty: PublicTypeMock =
-        { Mem1 = (fun x -> failwith "Unimplemented function")
-          Mem2 = (fun x -> failwith "Unimplemented function") }
+    static member Empty : PublicTypeMock =
+        {
+            Mem1 = (fun x -> failwith "Unimplemented function")
+            Mem2 = (fun x -> failwith "Unimplemented function")
+        }
+
+    interface IPublicType with
+        member this.Mem1 (arg0, arg1) = this.Mem1 (arg0, arg1)
+        member this.Mem2 (arg0) = this.Mem2 (arg0)
 namespace SomeNamespace
 
 /// Mock record type for an interface
 type InternalTypeMock =
-    { Mem1: string * int -> unit
-      Mem2: string -> int }
+    {
+        Mem1 : string * int -> unit
+        Mem2 : string -> int
+    }
 
-    static Empty: InternalTypeMock =
-        { Mem1 = (fun x -> failwith "Unimplemented function")
-          Mem2 = (fun x -> failwith "Unimplemented function") }
+    static member Empty : InternalTypeMock =
+        {
+            Mem1 = (fun x -> failwith "Unimplemented function")
+            Mem2 = (fun x -> failwith "Unimplemented function")
+        }
+
+    interface InternalType with
+        member this.Mem1 (arg0, arg1) = this.Mem1 (arg0, arg1)
+        member this.Mem2 (arg0) = this.Mem2 (arg0)
 namespace SomeNamespace
 
 /// Mock record type for an interface
 type PrivateTypeMock =
-    { Mem1: string * int -> unit
-      Mem2: string -> int }
+    {
+        Mem1 : string * int -> unit
+        Mem2 : string -> int
+    }
 
-    static Empty: PrivateTypeMock =
-        { Mem1 = (fun x -> failwith "Unimplemented function")
-          Mem2 = (fun x -> failwith "Unimplemented function") }
+    static member Empty : PrivateTypeMock =
+        {
+            Mem1 = (fun x -> failwith "Unimplemented function")
+            Mem2 = (fun x -> failwith "Unimplemented function")
+        }
+
+    interface PrivateType with
+        member this.Mem1 (arg0, arg1) = this.Mem1 (arg0, arg1)
+        member this.Mem2 (arg0) = this.Mem2 (arg0)
 namespace SomeNamespace
 
 /// Mock record type for an interface
 type VeryPublicTypeMock<'a, 'b> =
-    { Mem1: 'a -> 'b }
+    {
+        Mem1 : 'a -> 'b
+    }
 
-    static Empty<'a, 'b> () : VeryPublicTypeMock<'a, 'b> =
-        { Mem1 = (fun x -> failwith "Unimplemented function") }
+    static member Empty<'a, 'b> () : VeryPublicTypeMock<'a, 'b> =
+        {
+            Mem1 = (fun x -> failwith "Unimplemented function")
+        }
 
-
-
+    interface VeryPublicType<'a, 'b> with
+        member this.Mem1 (arg0) = this.Mem1 (arg0)
