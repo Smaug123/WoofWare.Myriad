@@ -68,7 +68,7 @@ type internal VeryPublicTypeMock<'a, 'b> =
         Mem1 : 'a -> 'b
     }
 
-    static member Empty<'a, 'b> () : VeryPublicTypeMock<'a, 'b> =
+    static member Empty () : VeryPublicTypeMock<'a, 'b> =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
@@ -88,7 +88,7 @@ type internal CurriedMock<'a> =
         Mem6 : int * string -> 'a * int -> string
     }
 
-    static member Empty<'a> () : CurriedMock<'a> =
+    static member Empty () : CurriedMock<'a> =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
             Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))

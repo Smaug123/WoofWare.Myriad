@@ -62,7 +62,7 @@ module internal InterfaceMockGenerator =
             SynPat.LongIdent (
                 SynLongIdent.CreateString "Empty",
                 None,
-                generics,
+                None, // no generics on the "Empty", only on the return type
                 SynArgPats.Pats (
                     if generics.IsNone then
                         []
