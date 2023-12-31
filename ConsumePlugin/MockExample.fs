@@ -6,6 +6,7 @@ open WoofWare.Myriad.Plugins
 type IPublicType =
     abstract Mem1 : string * int -> string list
     abstract Mem2 : string -> int
+    abstract Mem3 : x : int * ?ct : System.Threading.CancellationToken -> string
 
 [<GenerateMock>]
 type internal InternalType =
@@ -20,3 +21,12 @@ type private PrivateType =
 [<GenerateMock>]
 type VeryPublicType<'a, 'b> =
     abstract Mem1 : 'a -> 'b
+
+[<GenerateMock>]
+type Curried<'a> =
+    abstract Mem1 : int -> 'a -> string
+    abstract Mem2 : int * string -> 'a -> string
+    abstract Mem3 : (int * string) -> 'a -> string
+    abstract Mem4 : (int * string) -> ('a * int) -> string
+    abstract Mem5 : x : int * string -> ('a * int) -> string
+    abstract Mem6 : int * string -> y : 'a * int -> string

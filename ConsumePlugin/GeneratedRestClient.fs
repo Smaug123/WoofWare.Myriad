@@ -644,7 +644,7 @@ open RestEase
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<RequireQualifiedAccess>]
-module ApiWithoutBaseAddress =
+module internal ApiWithoutBaseAddress =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IApiWithoutBaseAddress =
         { new IApiWithoutBaseAddress with

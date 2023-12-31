@@ -3,7 +3,6 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Net.Http
 open Fantomas.FCS.Syntax
-open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
 
@@ -56,12 +55,12 @@ module internal HttpClientGenerator =
             /// E.g. "v1/gyms/{gym_id}/attendance"
             UrlTemplate : string
             TaskReturnType : SynType
-            Arity : SynArgInfo list
             Args : Parameter list
             Identifier : Ident
             EnsureSuccessHttpCode : bool
             BaseAddress : SynExpr option
             BasePath : SynExpr option
+            Accessibility : SynAccess option
         }
 
     let httpMethodString (m : HttpMethod) : string =
@@ -121,10 +120,10 @@ module internal HttpClientGenerator =
             match arg with
             | SynExpr.Const (SynConst.String (text, SynStringKind.Regular, _), _) -> meth, text
             | arg ->
-                failwithf "Unrecognised AST member in attribute argument. Only regular strings are supported: %+A" arg
+                failwith $"Unrecognised AST member in attribute argument. Only regular strings are supported: %+A{arg}"
         | [] -> failwith "Required exactly one recognised RestEase attribute on member, but got none"
         | matchingAttrs ->
-            failwithf "Required exactly one recognised RestEase attribute on member, but got %i" matchingAttrs.Length
+            failwith $"Required exactly one recognised RestEase attribute on member, but got %i{matchingAttrs.Length}"
 
     let shouldAllowAnyStatusCode (attrs : SynAttribute list) : bool =
         attrs
@@ -581,7 +580,7 @@ module internal HttpClientGenerator =
 
         SynMemberDefn.Member (
             SynBinding.SynBinding (
-                None,
+                info.Accessibility,
                 SynBindingKind.Normal,
                 false,
                 false,
@@ -608,19 +607,19 @@ module internal HttpClientGenerator =
                 | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Query None)
                 | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
                     Some (HttpAttribute.Query (Some s))
-                | SynExpr.Const (a, _) -> failwithf "unrecognised constant arg to the Query attribute: %+A" a
+                | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Query attribute: %+A{a}"
                 | _ -> None
             | "Path"
             | "PathAttribute" ->
                 match attr.ArgExpr with
                 | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) -> Some (HttpAttribute.Path s)
-                | SynExpr.Const (a, _) -> failwithf "unrecognised constant arg to the Path attribute: %+A" a
+                | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Path attribute: %+A{a}"
                 | _ -> None
             | "Body"
             | "BodyAttribute" ->
                 match attr.ArgExpr with
-                | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Body)
-                | SynExpr.Const (a, _) -> failwithf "unrecognised constant arg to the Body attribute: %+A" a
+                | SynExpr.Const (SynConst.Unit, _) -> Some HttpAttribute.Body
+                | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Body attribute: %+A{a}"
                 | _ -> None
             | _ -> None
         )
@@ -670,13 +669,16 @@ module internal HttpClientGenerator =
                     | Task ty -> ty
                     | a -> failwith $"Method must return a generic Task; returned %+A{a}"
 
-                {
-                    HttpMethod = httpMethod
-                    UrlTemplate = url
-                    TaskReturnType = returnType
-                    Arity = mem.Arity
-                    Args =
-                        mem.Args
+                if mem.IsMutable then
+                    failwith $"mutable methods not supported (identifier: %+A{mem.Identifier})"
+
+                if mem.IsInline then
+                    failwith $"inline methods not supported (identifier: %+A{mem.Identifier})"
+
+                let args =
+                    match mem.Args with
+                    | [ args ] ->
+                        args
                         |> List.map (fun arg ->
                             {
                                 Attributes = arg.Attributes |> getHttpAttributes
@@ -685,10 +687,21 @@ module internal HttpClientGenerator =
                                 Type = arg.Type
                             }
                         )
+                    | [] -> failwith $"Expected %+A{mem.Identifier} to have tupled args, but it had no args."
+                    | _ ->
+                        failwith
+                            $"Expected %+A{mem.Identifier} to have tupled args, but it was curried: %+A{mem.Args}."
+
+                {
+                    HttpMethod = httpMethod
+                    UrlTemplate = url
+                    TaskReturnType = returnType
+                    Args = args
                     Identifier = mem.Identifier
                     EnsureSuccessHttpCode = shouldEnsureSuccess
                     BaseAddress = baseAddress
                     BasePath = basePath
+                    Accessibility = mem.Accessibility
                 }
             )
 
@@ -756,7 +769,7 @@ module internal HttpClientGenerator =
                 if s.StartsWith 'I' then
                     s.[1..]
                 else
-                    failwithf "Expected interface type to start with 'I', but was: %s" s
+                    failwith $"Expected interface type to start with 'I', but was: %s{s}"
             |> Ident.Create
             |> List.singleton
 
@@ -767,7 +780,12 @@ module internal HttpClientGenerator =
             ]
 
         let modInfo =
-            SynComponentInfo.Create (moduleName, attributes = attribs, xmldoc = docString)
+            SynComponentInfo.Create (
+                moduleName,
+                attributes = attribs,
+                xmldoc = docString,
+                access = interfaceType.Accessibility
+            )
 
         SynModuleOrNamespace.CreateNamespace (
             ns,

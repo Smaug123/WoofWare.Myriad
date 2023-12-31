@@ -17,11 +17,14 @@ type internal ParameterInfo =
 type internal MemberInfo =
     {
         ReturnType : SynType
-        Arity : SynArgInfo list
-        Args : ParameterInfo list
+        Accessibility : SynAccess option
+        /// Each element of this list is a list of args in a tuple, or just one arg if not a tuple.
+        Args : ParameterInfo list list
         Identifier : Ident
         Attributes : SynAttribute list
         XmlDoc : PreXmlDoc option
+        IsInline : bool
+        IsMutable : bool
     }
 
 type internal InterfaceType =
@@ -133,6 +136,13 @@ module internal AstHelper =
                 Id = id
                 Type = usedType
             }
+        | SynType.Var (typar, _) ->
+            {
+                Attributes = []
+                IsOptional = false
+                Id = None
+                Type = SynType.Var (typar, range0)
+            }
         | _ -> failwithf "expected SignatureParameter, got: %+A" ty
 
     let rec extractTupledTypes (tupleType : SynTupleTypeSegment list) : ParameterInfo list =
@@ -142,6 +152,20 @@ module internal AstHelper =
         | SynTupleTypeSegment.Type param :: SynTupleTypeSegment.Star _ :: rest ->
             convertSigParam param :: extractTupledTypes rest
         | _ -> failwithf "Didn't have alternating type-and-star in interface member definition: %+A" tupleType
+
+    let toFun (inputs : SynType list) (ret : SynType) : SynType =
+        (ret, List.rev inputs)
+        ||> List.fold (fun ty input -> SynType.CreateFun (input, ty))
+
+    /// Returns the args (where these are tuple types if curried) in order, and the return type.
+    let rec getType (ty : SynType) : SynType list * SynType =
+        match ty with
+        | SynType.Paren (ty, _) -> getType ty
+        | SynType.Fun (argType, returnType, _, _) ->
+            let args, ret = getType returnType
+            let inputArgs, inputRet = getType argType
+            (toFun inputArgs inputRet) :: args, ret
+        | _ -> [], ty
 
     /// Assumes that the input type is an ObjectModel, i.e. a `type Foo = member ...`
     let parseInterface (interfaceType : SynTypeDefn) : InterfaceType =
@@ -182,74 +206,53 @@ module internal AstHelper =
                                      synExpr,
                                      _,
                                      _) ->
-                            if isInline then
-                                failwith "inline members not supported"
-
-                            if isMutable then
-                                failwith "mutable members not supported"
-
-                            match accessibility with
-                            | Some (SynAccess.Internal _)
-                            | Some (SynAccess.Private _) -> failwith "only public members are supported"
-                            | _ -> ()
 
                             match synExpr with
                             | Some _ -> failwith "literal members are not supported"
                             | None -> ()
 
-                            let arity =
-                                match arity with
-                                | SynValInfo ([ curriedArgs ], SynArgInfo ([], false, _)) -> curriedArgs
-                                | SynValInfo (curriedArgs, SynArgInfo ([], false, _)) ->
-                                    failwithf "only tupled arguments are currently supported, but got: %+A" curriedArgs
-                                | SynValInfo (_, info) ->
-                                    failwithf
-                                        "only bare return values like `Task<foo>` are supported, but got: %+A"
-                                        info
-
                             let attrs = attrs |> List.collect (fun attr -> attr.Attributes)
 
-                            let args, ret =
-                                match synType with
-                                | SynType.Fun (argType, returnType, _, _) -> argType, returnType
-                                | _ ->
-                                    failwithf
-                                        "Expected a return type of a generic Task; bad signature was: %+A"
-                                        synType
+                            let args, ret = getType synType
 
                             let args =
-                                match args with
-                                | SynType.SignatureParameter _ -> [ convertSigParam args ]
-                                | SynType.Tuple (false, path, _) -> extractTupledTypes path
-                                | SynType.LongIdent (SynLongIdent (ident, _, _)) ->
-                                    {
-                                        Attributes = []
-                                        IsOptional = false
-                                        Id = None
-                                        Type = SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent ident)
-                                    }
-                                    |> List.singleton
-                                | SynType.Var (typar, _) ->
-                                    {
-                                        Attributes = []
-                                        IsOptional = false
-                                        Id = None
-                                        Type = SynType.Var (typar, range0)
-                                    }
-                                    |> List.singleton
-                                | _ -> failwithf "Unrecognised args in interface method declaration: %+A" args
+                                args
+                                |> List.map (fun args ->
+                                    match args with
+                                    | SynType.SignatureParameter _ -> [ convertSigParam args ]
+                                    | SynType.Tuple (false, path, _) -> extractTupledTypes path
+                                    | SynType.LongIdent (SynLongIdent (ident, _, _)) ->
+                                        {
+                                            Attributes = []
+                                            IsOptional = false
+                                            Id = None
+                                            Type = SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent ident)
+                                        }
+                                        |> List.singleton
+                                    | SynType.Var (typar, _) ->
+                                        {
+                                            Attributes = []
+                                            IsOptional = false
+                                            Id = None
+                                            Type = SynType.Var (typar, range0)
+                                        }
+                                        |> List.singleton
+                                    | _ -> failwith $"Unrecognised args in interface method declaration: %+A{args}"
+                                )
 
                             {
                                 ReturnType = ret
-                                Arity = arity
                                 Args = args
                                 Identifier = ident
                                 Attributes = attrs
                                 XmlDoc = Some xmlDoc
+                                Accessibility = accessibility
+                                IsInline = isInline
+                                IsMutable = isMutable
                             }
-                    | _ -> failwithf "Unrecognised member definition: %+A" defn
+                    | _ -> failwith $"Unrecognised member definition: %+A{defn}"
                 )
-            | _ -> failwithf "Unrecognised SynTypeDefnRepr for an interface type: %+A" synTypeDefnRepr
+            | _ -> failwith $"Unrecognised SynTypeDefnRepr for an interface type: %+A{synTypeDefnRepr}"
 
         {
             Members = members
