@@ -278,8 +278,14 @@ module internal InterfaceMockGenerator =
 
         SynModuleDecl.Types ([ typeDecl ], range0)
 
+    let private buildType (x : ParameterInfo) : SynType =
+        if x.IsOptional then
+            SynType.App (SynType.CreateLongIdent "option", Some range0, [ x.Type ], [], Some range0, false, range0)
+        else
+            x.Type
+
     let private constructMemberSinglePlace (tuple : ParameterInfo list) : SynType =
-        match tuple |> List.rev |> List.map (fun arg -> arg.Type) with
+        match tuple |> List.rev |> List.map buildType with
         | [] -> failwith "no-arg functions not supported yet"
         | [ x ] -> x
         | last :: rest ->
@@ -294,7 +300,7 @@ module internal InterfaceMockGenerator =
 
         SynField.SynField (
             [],
-            true,
+            false,
             Some mem.Identifier,
             funcType,
             false,

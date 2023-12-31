@@ -10,7 +10,7 @@ type internal PublicTypeMock =
     {
         Mem1 : string * int -> string list
         Mem2 : string -> int
-        Mem3 : int * System.Threading.CancellationToken -> string
+        Mem3 : int * option<System.Threading.CancellationToken> -> string
     }
 
     static member Empty : PublicTypeMock =
@@ -101,7 +101,7 @@ type internal CurriedMock<'a> =
     interface Curried<'a> with
         member this.Mem1 (arg_0_0) (arg_1_0) = this.Mem1 (arg_0_0) (arg_1_0)
         member this.Mem2 (arg_0_0, arg_0_1) (arg_1_0) = this.Mem2 (arg_0_0, arg_0_1) (arg_1_0)
-        member this.Mem3 ((arg_0_0, arg_0_1)) (arg_1_0) = this.Mem3 (arg_0_0, arg_0_1) (arg_1_0)
+        member this.Mem3 (arg_0_0, arg_0_1) (arg_1_0) = this.Mem3 (arg_0_0, arg_0_1) (arg_1_0)
 
         member this.Mem4 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1) =
             this.Mem4 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
