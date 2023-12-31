@@ -82,9 +82,9 @@ type internal CurriedMock<'a> =
     {
         Mem1 : int -> 'a -> string
         Mem2 : int * string -> 'a -> string
-        Mem3 : int * string -> 'a -> string
-        Mem4 : int * string -> 'a * int -> string
-        Mem5 : int * string -> 'a * int -> string
+        Mem3 : (int * string) -> 'a -> string
+        Mem4 : (int * string) -> ('a * int) -> string
+        Mem5 : int * string -> ('a * int) -> string
         Mem6 : int * string -> 'a * int -> string
     }
 
@@ -101,12 +101,12 @@ type internal CurriedMock<'a> =
     interface Curried<'a> with
         member this.Mem1 (arg_0_0) (arg_1_0) = this.Mem1 (arg_0_0) (arg_1_0)
         member this.Mem2 (arg_0_0, arg_0_1) (arg_1_0) = this.Mem2 (arg_0_0, arg_0_1) (arg_1_0)
-        member this.Mem3 (arg_0_0, arg_0_1) (arg_1_0) = this.Mem3 (arg_0_0, arg_0_1) (arg_1_0)
+        member this.Mem3 ((arg_0_0, arg_0_1)) (arg_1_0) = this.Mem3 (arg_0_0, arg_0_1) (arg_1_0)
 
-        member this.Mem4 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1) =
+        member this.Mem4 ((arg_0_0, arg_0_1)) ((arg_1_0, arg_1_1)) =
             this.Mem4 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
 
-        member this.Mem5 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1) =
+        member this.Mem5 (arg_0_0, arg_0_1) ((arg_1_0, arg_1_1)) =
             this.Mem5 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
 
         member this.Mem6 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1) =

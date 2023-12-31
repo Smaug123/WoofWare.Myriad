@@ -678,7 +678,7 @@ module internal HttpClientGenerator =
                 let args =
                     match mem.Args with
                     | [ args ] ->
-                        args
+                        args.Args
                         |> List.map (fun arg ->
                             {
                                 Attributes = arg.Attributes |> getHttpAttributes

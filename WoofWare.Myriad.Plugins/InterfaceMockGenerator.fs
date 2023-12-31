@@ -150,7 +150,7 @@ module internal InterfaceMockGenerator =
                                             yield!
                                                 memberInfo.Args
                                                 |> List.mapi (fun i arg ->
-                                                    arg
+                                                    arg.Args
                                                     |> List.mapi (fun j arg ->
                                                         SynArgInfo.CreateIdString $"arg_%i{i}_%i{j}"
                                                     )
@@ -164,13 +164,14 @@ module internal InterfaceMockGenerator =
 
                     let headArgs =
                         memberInfo.Args
-                        |> List.mapi (fun i args ->
+                        |> List.mapi (fun i tupledArgs ->
                             let args =
-                                args
+                                tupledArgs.Args
                                 |> List.mapi (fun j _ -> SynPat.CreateNamed (Ident.Create $"arg_%i{i}_%i{j}"))
 
                             SynPat.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
                             |> SynPat.CreateParen
+                            |> fun i -> if tupledArgs.HasParen then SynPat.Paren (i, range0) else i
                         )
 
                     let headPat =
@@ -187,7 +188,7 @@ module internal InterfaceMockGenerator =
                         let tuples =
                             memberInfo.Args
                             |> List.mapi (fun i args ->
-                                args
+                                args.Args
                                 |> List.mapi (fun j args -> SynExpr.CreateIdentString $"arg_%i{i}_%i{j}")
                                 |> SynExpr.CreateParenedTuple
                             )
@@ -284,14 +285,15 @@ module internal InterfaceMockGenerator =
         else
             x.Type
 
-    let private constructMemberSinglePlace (tuple : ParameterInfo list) : SynType =
-        match tuple |> List.rev |> List.map buildType with
+    let private constructMemberSinglePlace (tuple : TupledArg) : SynType =
+        match tuple.Args |> List.rev |> List.map buildType with
         | [] -> failwith "no-arg functions not supported yet"
         | [ x ] -> x
         | last :: rest ->
             ([ SynTupleTypeSegment.Type last ], rest)
             ||> List.fold (fun ty nextArg -> SynTupleTypeSegment.Type nextArg :: SynTupleTypeSegment.Star range0 :: ty)
             |> fun segs -> SynType.Tuple (false, segs, range0)
+        |> fun ty -> if tuple.HasParen then SynType.Paren (ty, range0) else ty
 
     let constructMember (mem : MemberInfo) : SynField =
         let inputType = mem.Args |> List.map constructMemberSinglePlace
