@@ -136,6 +136,10 @@ module internal JsonParseGenerator =
             |> SynExpr.pipeThroughFunction (
                 SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "DateOnly" ; "Parse" ])
             )
+        | Uri ->
+            node
+            |> asValueGetValue propertyName "string"
+            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ]))
         | DateTime ->
             node
             |> asValueGetValue propertyName "string"

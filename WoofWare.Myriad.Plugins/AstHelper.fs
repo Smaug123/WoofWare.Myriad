@@ -423,6 +423,15 @@ module internal SynTypePatterns =
             | _ -> None
         | _ -> None
 
+    let (|Uri|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            match ident |> List.map (fun i -> i.idText) with
+            | [ "System" ; "Uri" ]
+            | [ "Uri" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
     let (|Task|_|) (fieldType : SynType) : SynType option =
         match fieldType with
         | SynType.App (SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)), _, args, _, _, _, _) ->

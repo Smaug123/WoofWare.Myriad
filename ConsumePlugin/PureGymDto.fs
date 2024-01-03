@@ -177,3 +177,9 @@ type Sessions =
         [<JsonPropertyName "Visits">]
         Visits : Visit list
     }
+
+[<WoofWare.Myriad.Plugins.JsonParse>]
+type UriThing =
+    {
+        SomeUri : Uri
+    }

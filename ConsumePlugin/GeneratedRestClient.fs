@@ -206,7 +206,7 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return Uri.jsonParse node
+                    return UriThing.jsonParse node
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
