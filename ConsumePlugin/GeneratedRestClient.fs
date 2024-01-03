@@ -180,6 +180,36 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
+            member _.GetUrl (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("some/url", System.UriKind.Relative)
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! node =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return Uri.jsonParse node
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
             member _.GetSessions (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
