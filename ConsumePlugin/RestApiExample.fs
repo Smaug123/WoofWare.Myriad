@@ -26,6 +26,9 @@ type IPureGymApi =
     [<GetAttribute "v1/member/activity">]
     abstract GetMemberActivity : ?ct : CancellationToken -> Task<MemberActivityDto>
 
+    [<Get "some/url">]
+    abstract GetUrl : ?ct : CancellationToken -> Task<UriThing>
+
     // We'll use this one to check handling of absolute URIs too
     [<Get "/v2/gymSessions/member">]
     abstract GetSessions :

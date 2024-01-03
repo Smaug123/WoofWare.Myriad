@@ -944,3 +944,27 @@ module Sessions =
             Summary = Summary
             Visits = Visits
         }
+namespace PureGym
+
+/// Module containing JSON parsing methods for the UriThing type
+[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module UriThing =
+    /// Parse from a JSON node.
+    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : UriThing =
+        let SomeUri =
+            (match node.["someUri"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("someUri")
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+            |> System.Uri
+
+        {
+            SomeUri = SomeUri
+        }
