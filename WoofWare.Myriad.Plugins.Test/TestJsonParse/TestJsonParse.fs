@@ -32,3 +32,18 @@ module TestJsonParse =
 
         let actual = s |> JsonNode.Parse |> JsonRecordType.jsonParse
         actual |> shouldEqual expected
+
+    [<Test>]
+    let ``Inner example`` () =
+        let s =
+            """{
+    "something": "oh hi"
+}"""
+
+        let expected =
+            {
+                Thing = "oh hi"
+            }
+
+        let actual = s |> JsonNode.Parse |> InnerType.jsonParse
+        actual |> shouldEqual expected
