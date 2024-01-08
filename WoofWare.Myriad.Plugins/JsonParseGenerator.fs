@@ -507,7 +507,7 @@ module internal JsonParseGenerator =
             SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ mdl ])
         | _ -> failwithf "Not a record type"
 
-/// Myriad generator that provides an extension method for a record type,
+/// Myriad generator that provides a method (possibly an extension method) for a record type,
 /// containing a JSON parse function.
 [<MyriadGenerator("json-parse")>]
 type JsonParseGenerator () =
