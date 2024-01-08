@@ -7,6 +7,7 @@ WoofWare.Myriad.Plugins.HttpClientGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.InterfaceMockGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.InterfaceMockGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonParseAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.JsonParseAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.JsonParseAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonParseGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.JsonParseGenerator..ctor [constructor]: unit
