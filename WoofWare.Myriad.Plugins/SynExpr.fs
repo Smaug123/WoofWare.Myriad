@@ -102,9 +102,9 @@ module internal SynExpr =
             b
         )
 
-    let stripOptionalParen (expr : SynExpr) : SynExpr =
+    let rec stripOptionalParen (expr : SynExpr) : SynExpr =
         match expr with
-        | SynExpr.Paren (expr, _, _, _) -> expr
+        | SynExpr.Paren (expr, _, _, _) -> stripOptionalParen expr
         | expr -> expr
 
     /// Given e.g. "byte", returns "System.Byte".

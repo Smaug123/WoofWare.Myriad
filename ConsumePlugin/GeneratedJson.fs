@@ -108,3 +108,68 @@ module JsonRecordType =
             E = E
             F = F
         }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the ToGetExtensionMethod type
+[<AutoOpen>]
+module ToGetExtensionMethodJsonParseExtension =
+    ///Extension methods for JSON parsing
+    type ToGetExtensionMethod with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ToGetExtensionMethod =
+            let Sailor =
+                (match node.["sailor"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("sailor")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<float> ()
+
+            let Soldier =
+                (match node.["soldier"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("soldier")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<string> ()
+                |> System.Uri
+
+            let Tailor =
+                (match node.["tailor"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("tailor")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<int> ()
+
+            let Tinker =
+                (match node.["tinker"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("tinker")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<string> ()
+
+            {
+                Tinker = Tinker
+                Tailor = Tailor
+                Soldier = Soldier
+                Sailor = Sailor
+            }

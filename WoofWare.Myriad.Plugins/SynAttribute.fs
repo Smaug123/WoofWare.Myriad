@@ -20,3 +20,12 @@ module internal SynAttribute =
             AppliesToGetterAndSetter = false
             Range = range0
         }
+
+    let internal autoOpen : SynAttribute =
+        {
+            TypeName = SynLongIdent.CreateString "AutoOpen"
+            ArgExpr = SynExpr.CreateConst SynConst.Unit
+            Target = None
+            AppliesToGetterAndSetter = false
+            Range = range0
+        }
