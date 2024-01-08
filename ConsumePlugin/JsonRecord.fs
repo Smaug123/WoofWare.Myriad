@@ -28,3 +28,16 @@ type JsonRecordType =
         E : string array
         F : int[]
     }
+
+[<WoofWare.Myriad.Plugins.JsonParse true>]
+type ToGetExtensionMethod =
+    {
+        Tinker : string
+        Tailor : int
+        Soldier : System.Uri
+        Sailor : float
+    }
+
+[<RequireQualifiedAccess>]
+module ToGetExtensionMethod =
+    let thisModuleWouldClash = 3
