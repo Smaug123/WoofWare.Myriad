@@ -14,6 +14,7 @@ module TestMockGenerator =
             { PublicTypeMock.Empty with
                 Mem1 = fun (s, count) -> List.replicate count s
             }
+            :> _
 
         let _ =
             Assert.Throws<NotImplementedException> (fun () -> mock.Mem2 "hi" |> ignore<int>)
@@ -28,6 +29,7 @@ module TestMockGenerator =
                 Mem2 = fun (i, s) c -> String.concat $"%c{c}" (List.replicate i s)
                 Mem3 = fun (i, s) c -> String.concat $"%c{c}" (List.replicate i s)
             }
+            :> _
 
         mock.Mem1 3 'a' |> shouldEqual "aaa"
         mock.Mem2 (3, "hi") 'a' |> shouldEqual "hiahiahi"
