@@ -49,11 +49,11 @@ module JwtVaultAuthResponse =
                 .GetValue<string> ()
 
         let TokenType =
-            (match node.["tokenType"] with
+            (match node.["token_type"] with
              | null ->
                  raise (
                      System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("tokenType")
+                         sprintf "Required key '%s' not found on JSON object" ("token_type")
                      )
                  )
              | v -> v)

@@ -21,6 +21,7 @@ type JwtVaultAuthResponse =
         [<JsonPropertyName "lease_duration">]
         LeaseDuration : int
         Renewable : bool
+        [<JsonPropertyName "token_type">]
         TokenType : string
         [<JsonPropertyName "entity_id">]
         EntityId : string
