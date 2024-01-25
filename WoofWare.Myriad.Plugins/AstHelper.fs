@@ -102,10 +102,22 @@ module internal AstHelper =
             || System.String.Equals (i.idText, "[]", System.StringComparison.Ordinal)
             ->
             true
-        // TODO: consider FSharpList or whatever it is
-        | [ i ] ->
-            printfn $"Not array: %s{i.idText}"
-            false
+        | _ -> false
+
+    let isReadOnlyDictionaryIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent |> List.map _.idText with
+        | [ "IReadOnlyDictionary" ]
+        | [ "Generic" ; "IReadOnlyDictionary" ]
+        | [ "Collections" ; "Generic" ; "IReadOnlyDictionary" ]
+        | [ "System" ; "Collections" ; "Generic" ; "IReadOnlyDictionary" ] -> true
+        | _ -> false
+
+    let isDictionaryIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent |> List.map _.idText with
+        | [ "Dictionary" ]
+        | [ "Generic" ; "Dictionary" ]
+        | [ "Collections" ; "Generic" ; "Dictionary" ]
+        | [ "System" ; "Collections" ; "Generic" ; "Dictionary" ] -> true
         | _ -> false
 
     let rec private extractOpensFromDecl (moduleDecls : SynModuleDecl list) : SynOpenDeclTarget list =
@@ -335,6 +347,20 @@ module internal SynTypePatterns =
         | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isArrayIdent ident ->
             Some innerType
         | SynType.Array (1, innerType, _) -> Some innerType
+        | _ -> None
+
+    let (|DictionaryType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ key ; value ], _, _, _, _) when AstHelper.isDictionaryIdent ident ->
+            Some (key, value)
+        | _ -> None
+
+    let (|IReadOnlyDictionaryType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ key ; value ], _, _, _, _) when
+            AstHelper.isReadOnlyDictionaryIdent ident
+            ->
+            Some (key, value)
         | _ -> None
 
     /// Returns the string name of the type.

@@ -85,6 +85,14 @@ module internal JsonParseGenerator =
         |> SynExpr.callMethod "AsValue"
         |> SynExpr.callGenericMethod "GetValue" typeName
 
+    /// {node}.AsObject()
+    /// If `propertyName` is Some, uses `assertNotNull {node}` instead of `{node}`.
+    let asObject (propertyName : SynExpr option) (node : SynExpr) : SynExpr =
+        match propertyName with
+        | None -> node
+        | Some propertyName -> assertNotNull propertyName node
+        |> SynExpr.callMethod "AsObject"
+
     /// {type}.jsonParse {node}
     let typeJsonParse (typeName : LongIdent) (node : SynExpr) : SynExpr =
         SynExpr.CreateApp (
@@ -132,6 +140,54 @@ module internal JsonParseGenerator =
     /// Given e.g. "float", returns "System.Double.Parse"
     let parseFunction (typeName : string) : LongIdent =
         List.append (SynExpr.qualifyPrimitiveType typeName) [ Ident.Create "Parse" ]
+
+    /// fun kvp -> let key = {key(kvp)} in let value = {value(kvp)} in (key, value))
+    /// The inputs will be fed with appropriate SynExprs to apply them to the `kvp.Key` and `kvp.Value` args.
+    let dictionaryMapper (key : SynExpr -> SynExpr) (value : SynExpr -> SynExpr) : SynExpr =
+        let keyArg =
+            SynExpr.CreateLongIdent (SynLongIdent.Create [ "kvp" ; "Key" ])
+            |> SynExpr.CreateParen
+
+        let valueArg =
+            SynExpr.CreateLongIdent (SynLongIdent.Create [ "kvp" ; "Value" ])
+            |> SynExpr.CreateParen
+
+        SynExpr.LetOrUse (
+            false,
+            false,
+            [
+                SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create "key"), expr = key keyArg)
+            ],
+            SynExpr.LetOrUse (
+                false,
+                false,
+                [
+                    SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create "value"), expr = value valueArg)
+                ],
+                SynExpr.CreateTuple [ SynExpr.CreateIdentString "key" ; SynExpr.CreateIdentString "value" ],
+                range0,
+                {
+                    InKeyword = None
+                }
+            ),
+            range0,
+            {
+                InKeyword = None
+            }
+        )
+        |> SynExpr.createLambda "kvp"
+
+    /// A conforming JSON object has only strings as keys. But it would be reasonable to allow the user
+    /// to parse these as URIs, for example.
+    let parseKeyString (desiredType : SynType) (key : SynExpr) : SynExpr =
+        match desiredType with
+        | String -> key
+        | Uri ->
+            key
+            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ]))
+        | _ ->
+            failwithf
+                $"Unable to parse the key type %+A{desiredType} of a JSON object. Keys are strings, and this plugin does not know how to convert to that from a string."
 
     /// Given `node.["town"]`, for example, choose how to obtain a JSON value from it.
     /// The property name is used in error messages at runtime to show where a JSON
@@ -217,6 +273,26 @@ module internal JsonParseGenerator =
         | ArrayType ty ->
             parseNode None options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
             |> asArrayMapped propertyName "Array" node
+        | DictionaryType (keyType, valueType) ->
+            node
+            |> asObject propertyName
+            |> SynExpr.pipeThroughFunction (
+                SynExpr.CreateApp (
+                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
+                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
+                )
+            )
+            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "dict" ]))
+        | IReadOnlyDictionaryType (keyType, valueType) ->
+            node
+            |> asObject propertyName
+            |> SynExpr.pipeThroughFunction (
+                SynExpr.CreateApp (
+                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
+                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
+                )
+            )
+            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "readOnlyDict" ]))
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =
@@ -224,7 +300,10 @@ module internal JsonParseGenerator =
                 | SynType.LongIdent ident -> ident.LongIdent
                 | _ -> failwith $"Unrecognised type: %+A{fieldType}"
 
-            typeJsonParse typeName node
+            match propertyName with
+            | None -> node
+            | Some propertyName -> assertNotNull propertyName node
+            |> typeJsonParse typeName
 
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
     /// The result of this function is the body of a let-binding (not including the LHS of that let-binding).

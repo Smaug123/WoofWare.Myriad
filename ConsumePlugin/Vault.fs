@@ -2,6 +2,9 @@ namespace ConsumePlugin
 
 open System.Collections.Generic
 open System.Text.Json.Serialization
+open System.Threading
+open System.Threading.Tasks
+open RestEase
 
 [<WoofWare.Myriad.Plugins.JsonParse>]
 type JwtVaultAuthResponse =
@@ -53,5 +56,13 @@ type JwtSecretResponse =
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
 type IVaultClient =
-    abstract GetSecret : jwt : JwtVaultResponse -> path : string -> mountPoint : string -> Async<JwtSecretResponse>
-    abstract GetJwt : role : string -> jwt : string -> Async<JwtVaultResponse>
+    [<Get "v1/{mountPoint}/{path}">]
+    abstract GetSecret :
+        jwt : JwtVaultResponse *
+        [<Path "path">] path : string *
+        [<Path "mountPoint">] mountPoint : string *
+        ?ct : CancellationToken ->
+            Task<JwtSecretResponse>
+
+    [<Get "v1/auth/jwt/login">]
+    abstract GetJwt : role : string * jwt : string * ?ct : CancellationToken -> Task<JwtVaultResponse>
