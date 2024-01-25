@@ -1,4 +1,4 @@
-namespace MyriadPlugin.Test
+namespace WoofWare.Myriad.Plugins.Test
 
 open System
 open System.Net
@@ -236,3 +236,27 @@ module TestPureGymRestApi =
         let api = PureGymApi.make client
 
         api.GetSessions(startDate, endDate).Result |> shouldEqual expected
+
+    [<Test>]
+    let ``URI example`` () =
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.Method |> shouldEqual HttpMethod.Get
+
+                message.RequestUri.ToString () |> shouldEqual "https://whatnot.com/some/url"
+
+                let content =
+                    new StringContent ("""{"someUri": "https://patrick@en.wikipedia.org/wiki/foo"}""")
+
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- content
+                return resp
+            }
+
+        use client = HttpClientMock.makeNoUri proc
+        let api = PureGymApi.make client
+
+        let uri = api.GetUrl().Result.SomeUri
+        uri.ToString () |> shouldEqual "https://patrick@en.wikipedia.org/wiki/foo"
+        uri.UserInfo |> shouldEqual "patrick"
+        uri.Host |> shouldEqual "en.wikipedia.org"

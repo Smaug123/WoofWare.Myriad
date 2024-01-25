@@ -102,9 +102,9 @@ module internal SynExpr =
             b
         )
 
-    let stripOptionalParen (expr : SynExpr) : SynExpr =
+    let rec stripOptionalParen (expr : SynExpr) : SynExpr =
         match expr with
-        | SynExpr.Paren (expr, _, _, _) -> expr
+        | SynExpr.Paren (expr, _, _, _) -> stripOptionalParen expr
         | expr -> expr
 
     /// Given e.g. "byte", returns "System.Byte".
@@ -240,7 +240,7 @@ module internal SynExpr =
                             SynExprLetOrUseTrivia.InKeyword = None
                         }
                     )
-                | Do body -> SynExpr.Do (body, range0)
+                | Do body -> SynExpr.CreateSequential [ SynExpr.Do (body, range0) ; state ]
             )
 
         SynExpr.CreateApp (
@@ -252,3 +252,24 @@ module internal SynExpr =
     let awaitTask (expr : SynExpr) : SynExpr =
         expr
         |> pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "AwaitTask" ]))
+
+    /// {ident}.ToString ()
+    /// with special casing for some types like DateTime
+    let toString (ty : SynType) (ident : SynExpr) =
+        match ty with
+        | DateOnly -> ident |> callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-dd")
+        | DateTime ->
+            ident
+            |> callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-ddTHH:mm:ss")
+        | _ -> callMethod "ToString" ident
+
+    let synBindingTriviaZero (isMember : bool) =
+        {
+            SynBindingTrivia.EqualsRange = Some range0
+            InlineKeyword = None
+            LeadingKeyword =
+                if isMember then
+                    SynLeadingKeyword.Member range0
+                else
+                    SynLeadingKeyword.Let range0
+        }

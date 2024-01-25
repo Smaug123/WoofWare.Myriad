@@ -1,4 +1,4 @@
-namespace MyriadPlugin.Test
+namespace WoofWare.Myriad.Plugins.Test
 
 open System
 open System.IO
@@ -54,8 +54,8 @@ module TestReturnTypes =
             | _ -> failwith $"unrecognised case: %s{case}"
 
         let buf = Array.zeroCreate 10
-        stream.Read (buf, 0, 10) |> shouldEqual 4
-        Array.take 4 buf |> shouldEqual result
+        let written = stream.ReadAtLeast (buf.AsSpan (), 10, false)
+        Array.take written buf |> shouldEqual result
 
     [<TestCase "GetResponseMessage">]
     [<TestCase "GetResponseMessage'">]

@@ -3,12 +3,13 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Net.Http
 open Fantomas.FCS.Syntax
-open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
 
 /// Attribute indicating a record type to which the "create HTTP client" Myriad
 /// generator should apply during build.
+/// This generator is intended to replicate much of the functionality of RestEase,
+/// i.e. to stamp out HTTP REST clients from interfaces defining the API.
 type HttpClientAttribute () =
     inherit Attribute ()
 
@@ -31,16 +32,21 @@ module internal HttpClientGenerator =
             Type : SynType
         }
 
-    let synBindingTriviaZero (isMember : bool) =
-        {
-            SynBindingTrivia.EqualsRange = Some range0
-            InlineKeyword = None
-            LeadingKeyword =
-                if isMember then
-                    SynLeadingKeyword.Member range0
-                else
-                    SynLeadingKeyword.Let range0
-        }
+    [<RequireQualifiedAccess>]
+    type BodyParamMethods =
+        | StringContent
+        | StreamContent
+        | ByteArrayContent
+        | HttpContent
+        | Serialise of SynType
+
+        override this.ToString () =
+            match this with
+            | BodyParamMethods.Serialise _ -> "ToString"
+            | BodyParamMethods.ByteArrayContent -> "ByteArrayContent"
+            | BodyParamMethods.StringContent -> "StringContent"
+            | BodyParamMethods.StreamContent -> "StreamContent"
+            | BodyParamMethods.HttpContent -> "HttpContent"
 
     type MemberInfo =
         {
@@ -48,11 +54,13 @@ module internal HttpClientGenerator =
             HttpMethod : HttpMethod
             /// E.g. "v1/gyms/{gym_id}/attendance"
             UrlTemplate : string
-            ReturnType : SynType
-            Arity : SynArgInfo list
+            TaskReturnType : SynType
             Args : Parameter list
             Identifier : Ident
             EnsureSuccessHttpCode : bool
+            BaseAddress : SynExpr option
+            BasePath : SynExpr option
+            Accessibility : SynAccess option
         }
 
     let httpMethodString (m : HttpMethod) : string =
@@ -112,10 +120,10 @@ module internal HttpClientGenerator =
             match arg with
             | SynExpr.Const (SynConst.String (text, SynStringKind.Regular, _), _) -> meth, text
             | arg ->
-                failwithf "Unrecognised AST member in attribute argument. Only regular strings are supported: %+A" arg
+                failwith $"Unrecognised AST member in attribute argument. Only regular strings are supported: %+A{arg}"
         | [] -> failwith "Required exactly one recognised RestEase attribute on member, but got none"
         | matchingAttrs ->
-            failwithf "Required exactly one recognised RestEase attribute on member, but got %i" matchingAttrs.Length
+            failwith $"Required exactly one recognised RestEase attribute on member, but got %i{matchingAttrs.Length}"
 
     let shouldAllowAnyStatusCode (attrs : SynAttribute list) : bool =
         attrs
@@ -254,18 +262,9 @@ module internal HttpClientGenerator =
                     | None -> failwith "Unable to get parameter variable name from anonymous parameter"
                     | Some id -> id
 
-                let toString (ident : SynExpr) (ty : SynType) =
-                    match ty with
-                    | DateOnly ->
-                        ident
-                        |> SynExpr.callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-dd")
-                    | DateTime ->
-                        ident
-                        |> SynExpr.callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-ddTHH:mm:ss")
-                    | _ -> SynExpr.callMethod "ToString" ident
-
                 let prefix =
-                    toString (SynExpr.CreateIdent firstValueId) firstValue.Type
+                    SynExpr.CreateIdent firstValueId
+                    |> SynExpr.toString firstValue.Type
                     |> SynExpr.CreateParen
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ])
@@ -280,7 +279,7 @@ module internal HttpClientGenerator =
                         | None -> failwith "Unable to get parameter variable name from anonymous parameter"
                         | Some id -> id
 
-                    toString (SynExpr.CreateIdent paramValueId) paramValue.Type
+                    SynExpr.toString paramValue.Type (SynExpr.CreateIdent paramValueId)
                     |> SynExpr.CreateParen
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.CreateLongIdent (
@@ -296,13 +295,55 @@ module internal HttpClientGenerator =
         let requestUri =
             let uriIdent = SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ])
 
+            let baseAddress =
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
+
+            let baseAddress =
+                SynExpr.CreateMatch (
+                    baseAddress,
+                    [
+                        SynMatchClause.Create (
+                            SynPat.CreateNull,
+                            None,
+                            match info.BaseAddress with
+                            | None ->
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateIdentString "raise",
+                                    SynExpr.CreateParen (
+                                        SynExpr.CreateApp (
+                                            SynExpr.CreateLongIdent (
+                                                SynLongIdent.Create [ "System" ; "ArgumentNullException" ]
+                                            ),
+                                            SynExpr.CreateParenedTuple
+                                                [
+                                                    SynExpr.CreateApp (
+                                                        SynExpr.CreateIdentString "nameof",
+                                                        SynExpr.CreateParen baseAddress
+                                                    )
+                                                    SynExpr.CreateConstString
+                                                        "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                                ]
+                                        )
+                                    )
+                                )
+                            | Some expr -> SynExpr.CreateApp (uriIdent, expr)
+                        )
+                        SynMatchClause.Create (
+                            SynPat.CreateNamed (Ident.Create "v"),
+                            None,
+                            SynExpr.CreateIdentString "v"
+                        )
+                    ]
+                )
+                |> SynExpr.CreateParen
+
             SynExpr.App (
                 ExprAtomicFlag.Atomic,
                 false,
                 uriIdent,
                 SynExpr.CreateParenedTuple
                     [
-                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
+                        baseAddress
                         SynExpr.CreateApp (
                             uriIdent,
                             SynExpr.CreateParenedTuple
@@ -326,8 +367,23 @@ module internal HttpClientGenerator =
                 )
             )
 
-        if not bodyParams.IsEmpty then
-            failwith "[<Body>] is not yet supported"
+        let bodyParam =
+            match bodyParams with
+            | [] -> None
+            | [ x ] ->
+                // TODO: body serialisation method
+                let paramName =
+                    match x.Id with
+                    | None -> failwith "Anonymous [<Body>] parameter is unsupported"
+                    | Some id -> id
+
+                match x.Type with
+                | Stream -> Some (BodyParamMethods.StreamContent, paramName)
+                | String -> Some (BodyParamMethods.StringContent, paramName)
+                | ArrayType Byte -> Some (BodyParamMethods.ByteArrayContent, paramName)
+                | HttpContent -> Some (BodyParamMethods.HttpContent, paramName)
+                | ty -> Some (BodyParamMethods.Serialise ty, paramName)
+            | _ -> failwith "You can only have at most one [<Body>] parameter on a method."
 
         let httpReqMessageConstructor =
             [
@@ -342,16 +398,81 @@ module internal HttpClientGenerator =
             |> SynExpr.CreateParenedTuple
 
         let returnExpr =
-            match info.ReturnType with
+            match info.TaskReturnType with
             | HttpResponseMessage
             | String
             | Stream -> SynExpr.CreateIdentString "node"
-            | _ ->
+            | retType ->
                 JsonParseGenerator.parseNode
                     None
                     JsonParseGenerator.JsonParseOption.None
-                    info.ReturnType
+                    retType
                     (SynExpr.CreateIdentString "node")
+
+        let handleBodyParams =
+            match bodyParam with
+            | None -> []
+            | Some (bodyParamType, bodyParamName) ->
+                match bodyParamType with
+                | BodyParamMethods.StreamContent
+                | BodyParamMethods.ByteArrayContent
+                | BodyParamMethods.StringContent ->
+                    [
+                        Let (
+                            "queryParams",
+                            SynExpr.New (
+                                false,
+                                SynType.CreateLongIdent (
+                                    SynLongIdent.Create
+                                        [ "System" ; "Net" ; "Http" ; (bodyParamType : BodyParamMethods).ToString () ]
+                                ),
+                                SynExpr.CreateParen (SynExpr.CreateIdent bodyParamName),
+                                range0
+                            )
+                        )
+                        Do (
+                            SynExpr.LongIdentSet (
+                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
+                                SynExpr.CreateIdentString "queryParams",
+                                range0
+                            )
+                        )
+                    ]
+                | BodyParamMethods.HttpContent ->
+                    [
+                        Do (
+                            SynExpr.LongIdentSet (
+                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
+                                SynExpr.CreateIdent bodyParamName,
+                                range0
+                            )
+                        )
+                    ]
+                | BodyParamMethods.Serialise _ ->
+                    failwith "We don't yet support serialising Body parameters; use string or Stream instead"
+        (*
+                    // TODO: this should use JSON instead of ToString
+                    [
+                        Let (
+                            "queryParams",
+                            SynExpr.New (
+                                false,
+                                SynType.CreateLongIdent (
+                                    SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "StringContent" ]
+                                ),
+                                SynExpr.CreateParen (SynExpr.CreateIdent bodyParamName |> SynExpr.toString ty),
+                                range0
+                            )
+                        )
+                        Do (
+                            SynExpr.LongIdentSet (
+                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
+                                SynExpr.CreateIdentString "queryParams",
+                                range0
+                            )
+                        )
+                    ]
+                    *)
 
         let implementation =
             [
@@ -369,30 +490,9 @@ module internal HttpClientGenerator =
                             range0
                         )
                     )
-                (*
-                if not bodyParams.IsEmpty then
-                    yield
-                        Use (
-                            "queryParams",
-                            SynExpr.New (
-                                false,
-                                SynType.CreateLongIdent (
-                                    SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "StringContent" ]
-                                ),
-                                SynExpr.CreateParen (failwith "TODO"),
-                                range0
-                            )
-                        )
 
-                    yield
-                        Do (
-                            SynExpr.LongIdentSet (
-                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
-                                SynExpr.CreateIdentString "queryParams",
-                                range0
-                            )
-                        )
-                *)
+                yield! handleBodyParams
+
                 yield
                     LetBang (
                         "response",
@@ -413,7 +513,7 @@ module internal HttpClientGenerator =
                                 SynExpr.CreateConst SynConst.Unit
                             )
                         )
-                match info.ReturnType with
+                match info.TaskReturnType with
                 | HttpResponseMessage -> yield Let ("node", SynExpr.CreateIdentString "response")
                 | String ->
                     yield
@@ -480,7 +580,7 @@ module internal HttpClientGenerator =
 
         SynMemberDefn.Member (
             SynBinding.SynBinding (
-                None,
+                info.Accessibility,
                 SynBindingKind.Normal,
                 false,
                 false,
@@ -492,64 +592,59 @@ module internal HttpClientGenerator =
                 implementation,
                 range0,
                 DebugPointAtBinding.Yes range0,
-                synBindingTriviaZero true
+                SynExpr.synBindingTriviaZero true
             ),
             range0
         )
 
-    let rec convertSigParam (ty : SynType) : Parameter =
-        match ty with
-        | SynType.Paren (inner, _) -> convertSigParam inner
-        | SynType.SignatureParameter (attrs, opt, id, usedType, _) ->
-            let attrs =
-                attrs
-                |> List.collect (fun attrs ->
-                    attrs.Attributes
-                    |> List.choose (fun attr ->
-                        match attr.TypeName.AsString with
-                        | "Query"
-                        | "QueryAttribute" ->
-                            match attr.ArgExpr with
-                            | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Query None)
-                            | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
-                                Some (HttpAttribute.Query (Some s))
-                            | SynExpr.Const (a, _) ->
-                                failwithf "unrecognised constant arg to the Query attribute: %+A" a
-                            | _ -> None
-                        | "Path"
-                        | "PathAttribute" ->
-                            match attr.ArgExpr with
-                            | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
-                                Some (HttpAttribute.Path s)
-                            | SynExpr.Const (a, _) ->
-                                failwithf "unrecognised constant arg to the Path attribute: %+A" a
-                            | _ -> None
-                        | "Body"
-                        | "BodyAttribute" ->
-                            match attr.ArgExpr with
-                            | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Body)
-                            | SynExpr.Const (a, _) ->
-                                failwithf "unrecognised constant arg to the Body attribute: %+A" a
-                            | _ -> None
-                        | _ -> None
-                    )
-                )
+    let getHttpAttributes (attrs : SynAttribute list) : HttpAttribute list =
+        attrs
+        |> List.choose (fun attr ->
+            match attr.TypeName.AsString with
+            | "Query"
+            | "QueryAttribute" ->
+                match attr.ArgExpr with
+                | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Query None)
+                | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
+                    Some (HttpAttribute.Query (Some s))
+                | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Query attribute: %+A{a}"
+                | _ -> None
+            | "Path"
+            | "PathAttribute" ->
+                match attr.ArgExpr with
+                | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) -> Some (HttpAttribute.Path s)
+                | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Path attribute: %+A{a}"
+                | _ -> None
+            | "Body"
+            | "BodyAttribute" ->
+                match attr.ArgExpr with
+                | SynExpr.Const (SynConst.Unit, _) -> Some HttpAttribute.Body
+                | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Body attribute: %+A{a}"
+                | _ -> None
+            | _ -> None
+        )
 
-            {
-                Attributes = attrs
-                IsOptional = opt
-                Id = id
-                Type = usedType
-            }
-        | _ -> failwithf "expected SignatureParameter, got: %+A" ty
+    let extractBasePath (attrs : SynAttribute list) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            match attr.TypeName.AsString with
+            | "BasePath"
+            | "RestEase.BasePath"
+            | "BasePathAttribute"
+            | "RestEase.BasePathAttribute" -> Some attr.ArgExpr
+            | _ -> None
+        )
 
-    let rec extractTypes (tupleType : SynTupleTypeSegment list) : Parameter list =
-        match tupleType with
-        | [] -> []
-        | [ SynTupleTypeSegment.Type param ] -> [ convertSigParam param ]
-        | SynTupleTypeSegment.Type param :: SynTupleTypeSegment.Star _ :: rest ->
-            convertSigParam param :: extractTypes rest
-        | _ -> failwithf "Didn't have alternating type-and-star in interface member definition: %+A" tupleType
+    let extractBaseAddress (attrs : SynAttribute list) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            match attr.TypeName.AsString with
+            | "BaseAddress"
+            | "RestEase.BaseAddress"
+            | "BaseAddressAttribute"
+            | "RestEase.BaseAddressAttribute" -> Some attr.ArgExpr
+            | _ -> None
+        )
 
     let createModule
         (opens : SynOpenDeclTarget list)
@@ -557,100 +652,65 @@ module internal HttpClientGenerator =
         (interfaceType : SynTypeDefn)
         : SynModuleOrNamespace
         =
-        let (SynTypeDefn (SynComponentInfo (_, _, _, interfaceName, _, _, _, _), synTypeDefnRepr, _, _, _, _)) =
-            interfaceType
+        let interfaceType = AstHelper.parseInterface interfaceType
+
+        let baseAddress = extractBaseAddress interfaceType.Attributes
+        let basePath = extractBasePath interfaceType.Attributes
 
         let members =
-            match synTypeDefnRepr with
-            | SynTypeDefnRepr.ObjectModel (_kind, members, _) ->
-                members
-                |> List.map (fun defn ->
-                    match defn with
-                    | SynMemberDefn.AbstractSlot (slotSig, flags, _, _) ->
-                        match flags.MemberKind with
-                        | SynMemberKind.Member -> ()
-                        | kind -> failwithf "Unrecognised member kind: %+A" kind
+            interfaceType.Members
+            |> List.map (fun mem ->
+                let httpMethod, url = extractHttpInformation mem.Attributes
 
-                        if not flags.IsInstance then
-                            failwith "member was not an instance member"
+                let shouldEnsureSuccess = not (shouldAllowAnyStatusCode mem.Attributes)
 
-                        match slotSig with
-                        | SynValSig (attrs,
-                                     SynIdent.SynIdent (ident, _),
-                                     _typeParams,
-                                     synType,
-                                     arity,
-                                     isInline,
-                                     isMutable,
-                                     _xmlDoc,
-                                     accessibility,
-                                     synExpr,
-                                     _,
-                                     _) ->
-                            if isInline then
-                                failwith "inline members not supported"
+                let returnType =
+                    match mem.ReturnType with
+                    | Task ty -> ty
+                    | a -> failwith $"Method must return a generic Task; returned %+A{a}"
 
-                            if isMutable then
-                                failwith "mutable members not supported"
+                if mem.IsMutable then
+                    failwith $"mutable methods not supported (identifier: %+A{mem.Identifier})"
 
-                            match accessibility with
-                            | Some (SynAccess.Internal _)
-                            | Some (SynAccess.Private _) -> failwith "only public members are supported"
-                            | _ -> ()
+                if mem.IsInline then
+                    failwith $"inline methods not supported (identifier: %+A{mem.Identifier})"
 
-                            match synExpr with
-                            | Some _ -> failwith "literal members are not supported"
-                            | None -> ()
-
-                            let attrs = attrs |> List.collect (fun a -> a.Attributes)
-
-                            let arity =
-                                match arity with
-                                | SynValInfo ([ curriedArgs ], SynArgInfo ([], false, _)) -> curriedArgs
-                                | SynValInfo (curriedArgs, SynArgInfo ([], false, _)) ->
-                                    failwithf "only tupled arguments are supported, but got: %+A" curriedArgs
-                                | SynValInfo (_, info) ->
-                                    failwithf
-                                        "only bare return values like `Task<foo>` are supported, but got: %+A"
-                                        info
-
-                            let args, ret =
-                                match synType with
-                                | SynType.Fun (argType, Task returnType, _, _) -> argType, returnType
-                                | _ ->
-                                    failwithf
-                                        "Expected a return type of a generic Task; bad signature was: %+A"
-                                        synType
-
-                            let args =
-                                match args with
-                                | SynType.SignatureParameter _ -> [ convertSigParam args ]
-                                | SynType.Tuple (false, path, _) -> extractTypes path
-                                | _ -> failwithf "Unrecognised args in interface method declaration: %+A" args
-
-                            let httpMethod, url = extractHttpInformation attrs
-
-                            let shouldEnsureSuccess = not (shouldAllowAnyStatusCode attrs)
-
+                let args =
+                    match mem.Args with
+                    | [ args ] ->
+                        args.Args
+                        |> List.map (fun arg ->
                             {
-                                HttpMethod = httpMethod
-                                UrlTemplate = url
-                                ReturnType = ret
-                                Arity = arity
-                                Args = args
-                                Identifier = ident
-                                EnsureSuccessHttpCode = shouldEnsureSuccess
+                                Attributes = arg.Attributes |> getHttpAttributes
+                                IsOptional = arg.IsOptional
+                                Id = arg.Id
+                                Type = arg.Type
                             }
-                    | _ -> failwithf "Unrecognised member definition: %+A" defn
-                )
-            | _ -> failwithf "Unrecognised SynTypeDefnRepr: %+A" synTypeDefnRepr
+                        )
+                    | [] -> failwith $"Expected %+A{mem.Identifier} to have tupled args, but it had no args."
+                    | _ ->
+                        failwith
+                            $"Expected %+A{mem.Identifier} to have tupled args, but it was curried: %+A{mem.Args}."
+
+                {
+                    HttpMethod = httpMethod
+                    UrlTemplate = url
+                    TaskReturnType = returnType
+                    Args = args
+                    Identifier = mem.Identifier
+                    EnsureSuccessHttpCode = shouldEnsureSuccess
+                    BaseAddress = baseAddress
+                    BasePath = basePath
+                    Accessibility = mem.Accessibility
+                }
+            )
 
         let constructed = members |> List.map constructMember
         let docString = PreXmlDoc.Create " Module for constructing a REST client."
 
         let interfaceImpl =
             SynExpr.ObjExpr (
-                SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceName),
+                SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name),
                 None,
                 Some range0,
                 [],
@@ -689,23 +749,27 @@ module internal HttpClientGenerator =
                         )
                     ]
                 ),
-                Some (SynBindingReturnInfo.Create (SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceName))),
+                Some (
+                    SynBindingReturnInfo.Create (
+                        SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name)
+                    )
+                ),
                 interfaceImpl,
                 range0,
                 DebugPointAtBinding.NoneAtLet,
-                synBindingTriviaZero false
+                SynExpr.synBindingTriviaZero false
             )
             |> List.singleton
             |> SynModuleDecl.CreateLet
 
         let moduleName : LongIdent =
-            List.last interfaceName
+            List.last interfaceType.Name
             |> fun ident -> ident.idText
             |> fun s ->
                 if s.StartsWith 'I' then
                     s.[1..]
                 else
-                    failwithf "Expected interface type to start with 'I', but was: %s" s
+                    failwith $"Expected interface type to start with 'I', but was: %s{s}"
             |> Ident.Create
             |> List.singleton
 
@@ -716,7 +780,12 @@ module internal HttpClientGenerator =
             ]
 
         let modInfo =
-            SynComponentInfo.Create (moduleName, attributes = attribs, xmldoc = docString)
+            SynComponentInfo.Create (
+                moduleName,
+                attributes = attribs,
+                xmldoc = docString,
+                access = interfaceType.Accessibility
+            )
 
         SynModuleOrNamespace.CreateNamespace (
             ns,
@@ -726,14 +795,6 @@ module internal HttpClientGenerator =
                         yield SynModuleDecl.CreateOpen openStatement
                     yield SynModuleDecl.CreateNestedModule (modInfo, [ createFunc ])
                 ]
-        )
-
-    let rec extractOpens (moduleDecls : SynModuleDecl list) : SynOpenDeclTarget list =
-        moduleDecls
-        |> List.choose (fun moduleDecl ->
-            match moduleDecl with
-            | SynModuleDecl.Open (target, _) -> Some target
-            | other -> None
         )
 
 /// Myriad generator that provides an HTTP client for an interface type using RestEase annotations.
@@ -749,14 +810,7 @@ type HttpClientGenerator () =
 
             let types = Ast.extractTypeDefn ast
 
-            let opens =
-                match ast with
-                | ParsedInput.ImplFile (ParsedImplFileInput (_, _, _, _, _, modules, _, _, _)) ->
-                    modules
-                    |> List.collect (fun (SynModuleOrNamespace (nsId, _, _, decls, _, _, _, _, _)) ->
-                        HttpClientGenerator.extractOpens decls
-                    )
-                | _ -> []
+            let opens = AstHelper.extractOpens ast
 
             let namespaceAndTypes =
                 types
@@ -768,12 +822,6 @@ type HttpClientGenerator () =
 
             let modules =
                 namespaceAndTypes
-                |> List.collect (fun (ns, types) ->
-                    types
-                    |> List.map (fun interfaceType ->
-                        let clientModule = HttpClientGenerator.createModule opens ns interfaceType
-                        clientModule
-                    )
-                )
+                |> List.collect (fun (ns, types) -> types |> List.map (HttpClientGenerator.createModule opens ns))
 
             Output.Ast modules
