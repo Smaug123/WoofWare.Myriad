@@ -1,5 +1,6 @@
 namespace ConsumePlugin
 
+open System
 open System.Collections.Generic
 open System.Text.Json.Serialization
 open System.Threading
@@ -52,6 +53,14 @@ type JwtSecretResponse =
         [<JsonPropertyName "lease_duration">]
         LeaseDuration : int
         Data : IReadOnlyDictionary<string, string>
+        // These ones aren't actually part of the Vault response, but are here for tests
+        Data2 : IDictionary<string, string>
+        Data3 : Dictionary<string, string>
+        Data4 : Map<string, string>
+        Data5 : IReadOnlyDictionary<System.Uri, string>
+        Data6 : IDictionary<Uri, string>
+        Data7 : Map<string, int>
+        Data8 : Dictionary<string, Uri>
     }
 
 [<WoofWare.Myriad.Plugins.HttpClient>]

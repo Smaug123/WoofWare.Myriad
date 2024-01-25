@@ -243,6 +243,127 @@ namespace ConsumePlugin
 module JwtSecretResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtSecretResponse =
+        let Data8 =
+            (match node.["data8"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("data8")
+                     )
+                 )
+             | v -> v)
+                .AsObject ()
+            |> Seq.map (fun kvp ->
+                let key = (kvp.Key)
+                let value = (kvp.Value).AsValue().GetValue<string> () |> System.Uri
+                key, value
+            )
+            |> Seq.map System.Collections.Generic.KeyValuePair
+            |> System.Collections.Generic.Dictionary
+
+        let Data7 =
+            (match node.["data7"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("data7")
+                     )
+                 )
+             | v -> v)
+                .AsObject ()
+            |> Seq.map (fun kvp ->
+                let key = (kvp.Key)
+                let value = (kvp.Value).AsValue().GetValue<int> ()
+                key, value
+            )
+            |> Map.ofSeq
+
+        let Data6 =
+            (match node.["data6"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("data6")
+                     )
+                 )
+             | v -> v)
+                .AsObject ()
+            |> Seq.map (fun kvp ->
+                let key = (kvp.Key) |> System.Uri
+                let value = (kvp.Value).AsValue().GetValue<string> ()
+                key, value
+            )
+            |> dict
+
+        let Data5 =
+            (match node.["data5"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("data5")
+                     )
+                 )
+             | v -> v)
+                .AsObject ()
+            |> Seq.map (fun kvp ->
+                let key = (kvp.Key) |> System.Uri
+                let value = (kvp.Value).AsValue().GetValue<string> ()
+                key, value
+            )
+            |> readOnlyDict
+
+        let Data4 =
+            (match node.["data4"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("data4")
+                     )
+                 )
+             | v -> v)
+                .AsObject ()
+            |> Seq.map (fun kvp ->
+                let key = (kvp.Key)
+                let value = (kvp.Value).AsValue().GetValue<string> ()
+                key, value
+            )
+            |> Map.ofSeq
+
+        let Data3 =
+            (match node.["data3"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("data3")
+                     )
+                 )
+             | v -> v)
+                .AsObject ()
+            |> Seq.map (fun kvp ->
+                let key = (kvp.Key)
+                let value = (kvp.Value).AsValue().GetValue<string> ()
+                key, value
+            )
+            |> Seq.map System.Collections.Generic.KeyValuePair
+            |> System.Collections.Generic.Dictionary
+
+        let Data2 =
+            (match node.["data2"] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ("data2")
+                     )
+                 )
+             | v -> v)
+                .AsObject ()
+            |> Seq.map (fun kvp ->
+                let key = (kvp.Key)
+                let value = (kvp.Value).AsValue().GetValue<string> ()
+                key, value
+            )
+            |> dict
+
         let Data =
             (match node.["data"] with
              | null ->
@@ -314,10 +435,18 @@ module JwtSecretResponse =
             Renewable = Renewable
             LeaseDuration = LeaseDuration
             Data = Data
+            Data2 = Data2
+            Data3 = Data3
+            Data4 = Data4
+            Data5 = Data5
+            Data6 = Data6
+            Data7 = Data7
+            Data8 = Data8
         }
 
 namespace ConsumePlugin
 
+open System
 open System.Collections.Generic
 open System.Text.Json.Serialization
 open System.Threading

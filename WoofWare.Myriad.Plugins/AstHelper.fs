@@ -104,6 +104,11 @@ module internal AstHelper =
             true
         | _ -> false
 
+    let isMapIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent |> List.map _.idText with
+        | [ "Map" ] -> true
+        | _ -> false
+
     let isReadOnlyDictionaryIdent (ident : SynLongIdent) : bool =
         match ident.LongIdent |> List.map _.idText with
         | [ "IReadOnlyDictionary" ]
@@ -118,6 +123,14 @@ module internal AstHelper =
         | [ "Generic" ; "Dictionary" ]
         | [ "Collections" ; "Generic" ; "Dictionary" ]
         | [ "System" ; "Collections" ; "Generic" ; "Dictionary" ] -> true
+        | _ -> false
+
+    let isIDictionaryIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent |> List.map _.idText with
+        | [ "IDictionary" ]
+        | [ "Generic" ; "IDictionary" ]
+        | [ "Collections" ; "Generic" ; "IDictionary" ]
+        | [ "System" ; "Collections" ; "Generic" ; "IDictionary" ] -> true
         | _ -> false
 
     let rec private extractOpensFromDecl (moduleDecls : SynModuleDecl list) : SynOpenDeclTarget list =
@@ -355,11 +368,23 @@ module internal SynTypePatterns =
             Some (key, value)
         | _ -> None
 
+    let (|IDictionaryType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ key ; value ], _, _, _, _) when AstHelper.isIDictionaryIdent ident ->
+            Some (key, value)
+        | _ -> None
+
     let (|IReadOnlyDictionaryType|_|) (fieldType : SynType) =
         match fieldType with
         | SynType.App (SynType.LongIdent ident, _, [ key ; value ], _, _, _, _) when
             AstHelper.isReadOnlyDictionaryIdent ident
             ->
+            Some (key, value)
+        | _ -> None
+
+    let (|MapType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ key ; value ], _, _, _, _) when AstHelper.isMapIdent ident ->
             Some (key, value)
         | _ -> None
 

@@ -273,7 +273,7 @@ module internal JsonParseGenerator =
         | ArrayType ty ->
             parseNode None options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
             |> asArrayMapped propertyName "Array" node
-        | DictionaryType (keyType, valueType) ->
+        | IDictionaryType (keyType, valueType) ->
             node
             |> asObject propertyName
             |> SynExpr.pipeThroughFunction (
@@ -283,6 +283,26 @@ module internal JsonParseGenerator =
                 )
             )
             |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "dict" ]))
+        | DictionaryType (keyType, valueType) ->
+            node
+            |> asObject propertyName
+            |> SynExpr.pipeThroughFunction (
+                SynExpr.CreateApp (
+                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
+                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
+                )
+            )
+            |> SynExpr.pipeThroughFunction (
+                SynExpr.CreateApp (
+                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
+                    SynExpr.CreateLongIdent (
+                        SynLongIdent.Create [ "System" ; "Collections" ; "Generic" ; "KeyValuePair" ]
+                    )
+                )
+            )
+            |> SynExpr.pipeThroughFunction (
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Collections" ; "Generic" ; "Dictionary" ])
+            )
         | IReadOnlyDictionaryType (keyType, valueType) ->
             node
             |> asObject propertyName
@@ -293,6 +313,16 @@ module internal JsonParseGenerator =
                 )
             )
             |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "readOnlyDict" ]))
+        | MapType (keyType, valueType) ->
+            node
+            |> asObject propertyName
+            |> SynExpr.pipeThroughFunction (
+                SynExpr.CreateApp (
+                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
+                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
+                )
+            )
+            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Map" ; "ofSeq" ]))
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =
