@@ -31,9 +31,10 @@
     <Compile Include="GeneratedMock.fs">
       <MyriadFile>MockExample.fs</MyriadFile>
     </Compile>
-    <None Include="..\runmyriad.sh">
-      <Link>runmyriad.sh</Link>
-    </None>
+    <Compile Include="Vault.fs" />
+    <Compile Include="GeneratedVault.fs">
+      <MyriadFile>Vault.fs</MyriadFile>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

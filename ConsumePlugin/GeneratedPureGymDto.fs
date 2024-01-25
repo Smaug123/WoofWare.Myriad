@@ -254,9 +254,41 @@ module Gym =
                 .AsValue()
                 .GetValue<string> ()
 
-        let Location = GymLocation.jsonParse node.["location"]
-        let AccessOptions = GymAccessOptions.jsonParse node.["accessOptions"]
-        let GymOpeningHours = GymOpeningHours.jsonParse node.["gymOpeningHours"]
+        let Location =
+            GymLocation.jsonParse (
+                match node.["location"] with
+                | null ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("location")
+                        )
+                    )
+                | v -> v
+            )
+
+        let AccessOptions =
+            GymAccessOptions.jsonParse (
+                match node.["accessOptions"] with
+                | null ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("accessOptions")
+                        )
+                    )
+                | v -> v
+            )
+
+        let GymOpeningHours =
+            GymOpeningHours.jsonParse (
+                match node.["gymOpeningHours"] with
+                | null ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("gymOpeningHours")
+                        )
+                    )
+                | v -> v
+            )
 
         let EmailAddress =
             (match node.["emailAddress"] with
@@ -282,7 +314,17 @@ module Gym =
                 .AsValue()
                 .GetValue<string> ()
 
-        let Address = GymAddress.jsonParse node.["address"]
+        let Address =
+            GymAddress.jsonParse (
+                match node.["address"] with
+                | null ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("address")
+                        )
+                    )
+                | v -> v
+            )
 
         let Status =
             (match node.["status"] with
@@ -857,7 +899,17 @@ namespace PureGym
 module Visit =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Visit =
-        let Gym = VisitGym.jsonParse node.["Gym"]
+        let Gym =
+            VisitGym.jsonParse (
+                match node.["Gym"] with
+                | null ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("Gym")
+                        )
+                    )
+                | v -> v
+            )
 
         let Duration =
             (match node.["Duration"] with
@@ -910,8 +962,29 @@ namespace PureGym
 module SessionsSummary =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsSummary =
-        let ThisWeek = SessionsAggregate.jsonParse node.["ThisWeek"]
-        let Total = SessionsAggregate.jsonParse node.["Total"]
+        let ThisWeek =
+            SessionsAggregate.jsonParse (
+                match node.["ThisWeek"] with
+                | null ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("ThisWeek")
+                        )
+                    )
+                | v -> v
+            )
+
+        let Total =
+            SessionsAggregate.jsonParse (
+                match node.["Total"] with
+                | null ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("Total")
+                        )
+                    )
+                | v -> v
+            )
 
         {
             Total = Total
@@ -938,7 +1011,17 @@ module Sessions =
             |> Seq.map (fun elt -> Visit.jsonParse elt)
             |> List.ofSeq
 
-        let Summary = SessionsSummary.jsonParse node.["Summary"]
+        let Summary =
+            SessionsSummary.jsonParse (
+                match node.["Summary"] with
+                | null ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("Summary")
+                        )
+                    )
+                | v -> v
+            )
 
         {
             Summary = Summary

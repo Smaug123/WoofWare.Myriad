@@ -61,7 +61,17 @@ module JsonRecordType =
             |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> Array.ofSeq
 
-        let D = InnerType.jsonParse node.["d"]
+        let D =
+            InnerType.jsonParse (
+                match node.["d"] with
+                | null ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("d")
+                        )
+                    )
+                | v -> v
+            )
 
         let C =
             (match node.["hi"] with
