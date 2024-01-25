@@ -30,6 +30,7 @@ type JsonRecordType =
     }
 
 [<WoofWare.Myriad.Plugins.JsonParse true>]
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
 type ToGetExtensionMethod =
     {
         Tinker : string
