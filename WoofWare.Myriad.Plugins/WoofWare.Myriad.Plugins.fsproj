@@ -29,6 +29,7 @@
     <Compile Include="SynAttribute.fs"/>
     <Compile Include="RemoveOptionsGenerator.fs"/>
     <Compile Include="InterfaceMockGenerator.fs" />
+    <Compile Include="JsonSerializeGenerator.fs" />
     <Compile Include="JsonParseGenerator.fs"/>
     <Compile Include="HttpClientGenerator.fs"/>
     <EmbeddedResource Include="version.json"/>
