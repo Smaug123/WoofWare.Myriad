@@ -11,9 +11,15 @@ Some helpers in [Myriad](https://github.com/MoiraeSoftware/myriad/) which might 
 These are currently somewhat experimental, and I personally am their primary customer.
 The `RemoveOptions` generator in particular is extremely half-baked.
 
+If you would like to ensure that your particular use-case remains unbroken, please do contribute tests to this repository.
+The `ConsumePlugin` assembly contains a number of invocations of these source generators,
+so you just need to add copies of your types to that assembly to ensure that I will at least notice if I break the build;
+and if you add tests to `WoofWare.Myriad.Plugins.Test` then I will also notice if I break the runtime semantics of the generated code.
+
 Currently implemented:
 
 * `JsonParse` (to stamp out `jsonParse : JsonNode -> 'T` methods);
+* `JsonSerialize` (to stamp out `toJsonNode : 'T -> JsonNode` methods);
 * `RemoveOptions` (to strip `option` modifiers from a type).
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
 * `GenerateMock` (to stamp out a record type corresponding to an interface).
@@ -74,6 +80,11 @@ module JsonRecordType =
         { A = A; B = B; C = C; D = D }
 ```
 
+You can optionally supply the boolean `true` to the attribute,
+which will cause Myriad to stamp out an extension method rather than a module with the same name as the type.
+This is useful if you want to reuse the type name as a module name yourself,
+or if you want to apply multiple source generators which each want to use the module name.
+
 ### What's the point?
 
 `System.Text.Json`, in a `PublishAot` context, relies on C# source generators.
@@ -91,6 +102,52 @@ However, there is *far* more that could be done.
 * Make it possible to give an exact format and cultural info in date and time parsing.
 * Make it possible to reject parsing if extra fields are present.
 * Generally support all the `System.Text.Json` attributes.
+
+For an example of using both `JsonParse` and `JsonSerialize` together with complex types, see [the type definitions](./ConsumePlugin/SerializationAndDeserialization.fs) and [tests](./WoofWare.Myriad.Plugins.Test/TestJsonSerialize/TestJsonSerde.fs).
+
+## `JsonSerialize`
+
+Takes records like this:
+```fsharp
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
+type InnerTypeWithBoth =
+    {
+        [<JsonPropertyName("it's-a-me")>]
+        Thing : string
+        ReadOnlyDict : IReadOnlyDictionary<string, Uri list>
+    }
+```
+
+and stamps out modules like this:
+```fsharp
+module InnerTypeWithBoth =
+    let toJsonNode (input : InnerTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
+        let node = System.Text.Json.Nodes.JsonObject ()
+
+        do
+            node.Add (("it's-a-me"), System.Text.Json.Nodes.JsonValue.Create<string> input.Thing)
+
+            node.Add (
+                "ReadOnlyDict",
+                (fun field ->
+                    let ret = System.Text.Json.Nodes.JsonObject ()
+
+                    for (KeyValue (key, value)) in field do
+                        ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<Uri> value)
+
+                    ret
+                ) input.Map
+            )
+
+        node
+```
+
+As in `JsonParse`, you can optionally supply the boolean `true` to the attribute,
+which will cause Myriad to stamp out an extension method rather than a module with the same name as the type.
+
+The same limitations generally apply to `JsonSerialize` as do to `JsonParse`.
+
+For an example of using both `JsonParse` and `JsonSerialize` together with complex types, see [the type definitions](./ConsumePlugin/SerializationAndDeserialization.fs) and [tests](./WoofWare.Myriad.Plugins.Test/TestJsonSerialize/TestJsonSerde.fs).
 
 ## `RemoveOptions`
 
@@ -275,7 +332,7 @@ For example, [PureGymDto.fs](./ConsumePlugin/PureGymDto.fs) is a real-world set 
 * In your `.fsproj` file, define a helper variable so that subsequent steps don't all have to be kept in sync:
     ```xml
     <PropertyGroup>
-      <WoofWareMyriadPluginVersion>1.1.5</WoofWareMyriadPluginVersion>
+      <WoofWareMyriadPluginVersion>1.3.5</WoofWareMyriadPluginVersion>
     </PropertyGroup>
     ```
 * Take a reference on `WoofWare.Myriad.Plugins`:
