@@ -533,7 +533,7 @@ module internal JsonParseGenerator =
 
             let containingType =
                 SynTypeDefn.SynTypeDefn (
-                    SynComponentInfo.Create (typeName, xmldoc = PreXmlDoc.Create "Extension methods for JSON parsing"),
+                    SynComponentInfo.Create (typeName, xmldoc = PreXmlDoc.Create " Extension methods for JSON parsing"),
                     SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Augmentation range0, [], range0),
                     [ mem ],
                     None,
@@ -644,7 +644,7 @@ type JsonParseGenerator () =
                                 | SynExpr.Const (SynConst.Unit, _) -> JsonParseAttribute.DefaultIsExtensionMethod
                                 | arg ->
                                     failwith
-                                        $"Unrecognised argument %+A{arg} to [<JsonParseAttribute>]. Literals are not supported. Use `true` or `false` (or unit) only."
+                                        $"Unrecognised argument %+A{arg} to [<%s{nameof JsonParseAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."
 
                             let spec =
                                 {

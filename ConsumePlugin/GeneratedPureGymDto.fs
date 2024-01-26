@@ -4,6 +4,7 @@
 //------------------------------------------------------------------------------
 
 
+
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymOpeningHours type

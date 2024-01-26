@@ -393,7 +393,9 @@ module internal SynTypePatterns =
         match fieldType with
         | SynType.LongIdent ident ->
             match ident.LongIdent with
-            | [ i ] -> [ "string" ; "float" ; "int" ; "bool" ] |> List.tryFind (fun s -> s = i.idText)
+            | [ i ] ->
+                [ "string" ; "float" ; "int" ; "bool" ; "char" ]
+                |> List.tryFind (fun s -> s = i.idText)
             | _ -> None
         | _ -> None
 

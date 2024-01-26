@@ -4,6 +4,7 @@
 //------------------------------------------------------------------------------
 
 
+
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the InnerType type
@@ -123,7 +124,7 @@ namespace ConsumePlugin
 /// Module containing JSON parsing extension members for the ToGetExtensionMethod type
 [<AutoOpen>]
 module ToGetExtensionMethodJsonParseExtension =
-    ///Extension methods for JSON parsing
+    /// Extension methods for JSON parsing
     type ToGetExtensionMethod with
 
         /// Parse from a JSON node.
