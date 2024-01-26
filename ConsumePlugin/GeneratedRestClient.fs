@@ -406,10 +406,11 @@ module PureGymApi =
                             user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
 
+                    do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-                    return responseStream
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 

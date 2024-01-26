@@ -515,6 +515,13 @@ module internal HttpClientGenerator =
                                 range0
                             )
                         )
+                        Do (
+                            SynExpr.LongIdentSet (
+                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
+                                SynExpr.CreateIdent (Ident.Create "queryParams"),
+                                range0
+                            )
+                        )
                     ]
 
         let implementation =
