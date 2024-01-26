@@ -35,6 +35,10 @@
     <Compile Include="GeneratedVault.fs">
       <MyriadFile>Vault.fs</MyriadFile>
     </Compile>
+    <Compile Include="SerializationAndDeserialization.fs" />
+    <Compile Include="GeneratedSerde.fs">
+      <MyriadFile>SerializationAndDeserialization.fs</MyriadFile>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

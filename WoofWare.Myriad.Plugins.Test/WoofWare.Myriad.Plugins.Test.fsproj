@@ -40,4 +40,8 @@
     <ProjectReference Include="..\ConsumePlugin\ConsumePlugin.fsproj"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="TestJsonSerialize\TestJsonSerde.fs" />
+  </ItemGroup>
+
 </Project>

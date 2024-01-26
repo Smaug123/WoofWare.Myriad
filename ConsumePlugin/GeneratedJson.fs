@@ -4,25 +4,6 @@
 //------------------------------------------------------------------------------
 
 
-namespace ConsumePlugin
-
-/// Module containing JSON serializing extension members for the ToGetExtensionMethod type
-[<AutoOpen>]
-module ToGetExtensionMethodJsonSerializeExtension =
-    /// Extension methods for JSON parsing
-    type ToGetExtensionMethod with
-
-        /// Serialize to a JSON node
-        static member toJsonNode (input : ToGetExtensionMethod) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject ()
-
-            do
-                node.Add ("tinker", System.Text.Json.Nodes.JsonValue.Create input.Tinker)
-                node.Add ("tailor", System.Text.Json.Nodes.JsonValue.Create input.Tailor)
-                node.Add ("soldier", System.Text.Json.Nodes.JsonValue.Create input.Soldier)
-                node.Add ("sailor", System.Text.Json.Nodes.JsonValue.Create input.Sailor)
-
-            node :> _
 
 namespace ConsumePlugin
 
