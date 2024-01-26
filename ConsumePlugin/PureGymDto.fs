@@ -68,7 +68,8 @@ type Gym =
         ReopenDate : string
     }
 
-[<WoofWare.Myriad.Plugins.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse true>]
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
 type Member =
     {
         Id : int

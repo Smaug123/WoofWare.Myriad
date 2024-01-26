@@ -265,8 +265,9 @@ RestEase is complex, and handles a lot of different stuff.
 * If you set the `BaseAddress` on your input `HttpClient`, make sure to end with a trailing slash
   on any trailing directories (so `"blah/foo/"` rather than `"blah/foo"`).
   We combine URIs using `UriKind.Relative`, so without a trailing slash, the last component may be chopped off.
-* Parameters are serialised solely with `ToString`, and there's no control over this;
-  nor is there control over encoding in any sense.
+* Parameters are serialised naively with `toJsonNode` as though the `JsonSerialize` generator were applied,
+  and you can't control the serialisation. You can't yet serialise e.g. a primitive type this way (other than `String`);
+  all body parameters must be types which have a suitable `toJsonNode : 'a -> JsonNode` method.
 * Deserialisation follows the same logic as the `JsonParse` generator,
   and it generally assumes you're using types which `JsonParse` is applied to.
 * Headers are not yet supported.

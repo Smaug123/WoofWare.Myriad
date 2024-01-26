@@ -4,7 +4,6 @@ open System
 open System.IO
 open System.Net
 open System.Net.Http
-open System.Text.Json.Nodes
 open NUnit.Framework
 open PureGym
 open FsUnitTyped
@@ -103,3 +102,49 @@ module TestBodyParam =
         let buf = Array.zeroCreate 10
         let written = observedContent.ReadAtLeast (buf.AsSpan (), 5, false)
         buf |> Array.take written |> shouldEqual contents
+
+    [<Test>]
+    let ``Body param of serialised thing`` () =
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.Method |> shouldEqual HttpMethod.Post
+                let! content = message.Content.ReadAsStringAsync () |> Async.AwaitTask
+                let content = new StringContent ("Done! " + content)
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- content
+                return resp
+            }
+
+        use client = HttpClientMock.make (Uri "https://example.com") proc
+        let api = PureGymApi.make client
+
+        let expected =
+            {
+                Id = 3
+                CompoundMemberId = "compound!"
+                FirstName = "Patrick"
+                LastName = "Stevens"
+                HomeGymId = 100
+                HomeGymName = "Big Boy Gym"
+                EmailAddress = "woof@ware"
+                GymAccessPin = "l3tm31n"
+                // To the reader: what's the significance of this date?
+                // answer rot13: ghevatpbzchgnovyvglragfpurvqhatfceboyrzcncre
+                DateOfBirth = DateOnly (1936, 05, 28)
+                MobileNumber = "+44-GHOST-BUSTERS"
+                Postcode = "W1A 111"
+                MembershipName = "mario"
+                MembershipLevel = 4
+                SuspendedReason = 1090
+                MemberStatus = -3
+            }
+
+        let result = api.CreateUserSerialisedBody(expected).Result
+
+        result.StartsWith ("Done! ", StringComparison.Ordinal) |> shouldEqual true
+        let result = result.[6..]
+
+        result
+        |> System.Text.Json.Nodes.JsonNode.Parse
+        |> PureGym.Member.jsonParse
+        |> shouldEqual expected

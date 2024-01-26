@@ -362,7 +362,7 @@ module internal HttpClientGenerator =
                 arg.Attributes
                 |> List.choose (fun attr ->
                     match attr with
-                    | Body -> Some arg
+                    | HttpAttribute.Body -> Some arg
                     | _ -> None
                 )
             )
@@ -480,10 +480,12 @@ module internal HttpClientGenerator =
                             )
                         )
                     ]
-                | BodyParamMethods.Serialise _ ->
-                    failwith "We don't yet support serialising Body parameters; use string or Stream instead"
-        (*
-                    // TODO: this should use JSON instead of ToString
+                | BodyParamMethods.Serialise ty ->
+                    let typeIdent =
+                        match SynType.stripOptionalParen ty with
+                        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) -> ident
+                        | _ -> failwith $"Unable to identify type %+A{ty}"
+
                     [
                         Let (
                             "queryParams",
@@ -492,19 +494,35 @@ module internal HttpClientGenerator =
                                 SynType.CreateLongIdent (
                                     SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "StringContent" ]
                                 ),
-                                SynExpr.CreateParen (SynExpr.CreateIdent bodyParamName |> SynExpr.toString ty),
+                                SynExpr.CreateParen (
+                                    SynExpr.CreateIdent bodyParamName
+                                    |> SynExpr.pipeThroughFunction (
+                                        SynExpr.CreateLongIdent (
+                                            SynLongIdent.CreateFromLongIdent (typeIdent @ [ Ident.Create "toJsonNode" ])
+                                        )
+                                    )
+                                    |> SynExpr.pipeThroughFunction (
+                                        SynExpr.createLambda
+                                            "node"
+                                            (SynExpr.CreateApp (
+                                                SynExpr.CreateLongIdent (
+                                                    SynLongIdent.Create [ "node" ; "ToJsonString" ]
+                                                ),
+                                                SynExpr.CreateConst SynConst.Unit
+                                            ))
+                                    )
+                                ),
                                 range0
                             )
                         )
                         Do (
                             SynExpr.LongIdentSet (
                                 SynLongIdent.Create [ "httpMessage" ; "Content" ],
-                                SynExpr.CreateIdentString "queryParams",
+                                SynExpr.CreateIdent (Ident.Create "queryParams"),
                                 range0
                             )
                         )
                     ]
-                    *)
 
         let implementation =
             let responseString =
