@@ -4,6 +4,7 @@
 //------------------------------------------------------------------------------
 
 
+
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JwtVaultAuthResponse type

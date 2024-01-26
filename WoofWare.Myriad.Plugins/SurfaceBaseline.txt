@@ -11,6 +11,11 @@ WoofWare.Myriad.Plugins.JsonParseAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.JsonParseAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonParseGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.JsonParseGenerator..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.JsonSerializeAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.JsonSerializeAttribute..ctor [constructor]: bool
+WoofWare.Myriad.Plugins.JsonSerializeAttribute..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.JsonSerializeGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
+WoofWare.Myriad.Plugins.JsonSerializeGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RemoveOptionsAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RemoveOptionsAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RemoveOptionsGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
