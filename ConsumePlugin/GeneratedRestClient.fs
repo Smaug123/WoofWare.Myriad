@@ -43,13 +43,13 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
-                    let! node =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return node.AsArray () |> Seq.map (fun elt -> Gym.jsonParse elt) |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Gym.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -77,13 +77,13 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
-                    let! node =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return GymAttendance.jsonParse node
+                    return GymAttendance.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -107,13 +107,13 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
-                    let! node =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return Member.jsonParse node
+                    return Member.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -141,13 +141,13 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
-                    let! node =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return Gym.jsonParse node
+                    return Gym.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -171,13 +171,13 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
-                    let! node =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return MemberActivityDto.jsonParse node
+                    return MemberActivityDto.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -201,13 +201,13 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
-                    let! node =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return UriThing.jsonParse node
+                    return UriThing.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -238,13 +238,13 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
-                    let! node =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return Sessions.jsonParse node
+                    return Sessions.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -270,8 +270,8 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -297,8 +297,8 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    return responseStream
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -324,8 +324,8 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    return responseStream
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -351,8 +351,8 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    return responseStream
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -378,8 +378,8 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    return responseStream
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -404,8 +404,8 @@ module PureGymApi =
                     do httpMessage.Content <- user
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -433,8 +433,8 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -458,8 +458,8 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    return responseStream
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -483,8 +483,8 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    return responseStream
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -508,8 +508,8 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    return responseStream
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -533,8 +533,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let node = response
-                    return node
+                    return response
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -558,8 +557,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let node = response
-                    return node
+                    return response
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -583,8 +581,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let node = response
-                    return node
+                    return response
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -608,8 +605,151 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let node = response
-                    return node
+                    return response
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetResponse (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return
+                        new RestEase.Response<_> (
+                            responseString,
+                            response,
+                            (fun () -> (MemberActivityDto.jsonParse jsonNode))
+                        )
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetResponse' (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return
+                        new RestEase.Response<_> (
+                            responseString,
+                            response,
+                            (fun () -> (MemberActivityDto.jsonParse jsonNode))
+                        )
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetResponse'' (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return
+                        new RestEase.Response<_> (
+                            responseString,
+                            response,
+                            (fun () -> (MemberActivityDto.jsonParse jsonNode))
+                        )
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetResponse''' (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return
+                        new RestEase.Response<_> (
+                            responseString,
+                            response,
+                            (fun () -> (MemberActivityDto.jsonParse jsonNode))
+                        )
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -632,8 +772,7 @@ module PureGymApi =
                         )
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let node = response
-                    return node
+                    return response
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -657,8 +796,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let node = response
-                    return node
+                    return response
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
         }
@@ -709,8 +847,8 @@ module internal ApiWithoutBaseAddress =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
         }
@@ -761,8 +899,8 @@ module ApiWithBasePath =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
         }
@@ -807,8 +945,8 @@ module ApiWithBasePathAndAddress =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! node = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
-                    return node
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
         }

@@ -399,15 +399,47 @@ module internal HttpClientGenerator =
 
         let returnExpr =
             match info.TaskReturnType with
-            | HttpResponseMessage
-            | String
-            | Stream -> SynExpr.CreateIdentString "node"
+            | HttpResponseMessage -> SynExpr.CreateIdentString "response"
+            | String -> SynExpr.CreateIdentString "responseString"
+            | Stream -> SynExpr.CreateIdentString "responseStream"
+            | RestEaseResponseType contents ->
+                let deserialiser =
+                    SynExpr.CreateLambda (
+                        [ SynPat.CreateConst SynConst.Unit ],
+                        SynExpr.CreateParen (
+                            JsonParseGenerator.parseNode
+                                None
+                                JsonParseGenerator.JsonParseOption.None
+                                contents
+                                (SynExpr.CreateIdentString "jsonNode")
+                        )
+                    )
+                // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
+                SynExpr.New (
+                    false,
+                    SynType.App (
+                        SynType.CreateLongIdent (SynLongIdent.Create [ "RestEase" ; "Response" ]),
+                        Some range0,
+                        [ SynType.Anon range0 ],
+                        [],
+                        Some range0,
+                        false,
+                        range0
+                    ),
+                    SynExpr.CreateParenedTuple
+                        [
+                            SynExpr.CreateIdentString "responseString"
+                            SynExpr.CreateIdentString "response"
+                            SynExpr.CreateParen deserialiser
+                        ],
+                    range0
+                )
             | retType ->
                 JsonParseGenerator.parseNode
                     None
                     JsonParseGenerator.JsonParseOption.None
                     retType
-                    (SynExpr.CreateIdentString "node")
+                    (SynExpr.CreateIdentString "jsonNode")
 
         let handleBodyParams =
             match bodyParam with
@@ -475,6 +507,51 @@ module internal HttpClientGenerator =
                     *)
 
         let implementation =
+            let responseString =
+                LetBang (
+                    "responseString",
+                    SynExpr.awaitTask (
+                        SynExpr.CreateApp (
+                            SynExpr.CreateLongIdent (
+                                SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStringAsync" ]
+                            ),
+                            SynExpr.CreateIdentString "ct"
+                        )
+                    )
+                )
+
+            let responseStream =
+                LetBang (
+                    "responseStream",
+                    SynExpr.awaitTask (
+                        SynExpr.CreateApp (
+                            SynExpr.CreateLongIdent (
+                                SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
+                            ),
+                            SynExpr.CreateIdentString "ct"
+                        )
+                    )
+                )
+
+            let jsonNode =
+                LetBang (
+                    "jsonNode",
+                    SynExpr.awaitTask (
+                        SynExpr.CreateApp (
+                            SynExpr.CreateLongIdent (
+                                SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "ParseAsync" ]
+                            ),
+                            SynExpr.CreateParenedTuple
+                                [
+                                    SynExpr.CreateIdentString "responseStream"
+                                    SynExpr.equals
+                                        (SynExpr.CreateIdentString "cancellationToken")
+                                        (SynExpr.CreateIdentString "ct")
+                                ]
+                        )
+                    )
+                )
+
             [
                 yield LetBang ("ct", SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "CancellationToken" ]))
                 yield Let ("uri", requestUri)
@@ -514,66 +591,16 @@ module internal HttpClientGenerator =
                             )
                         )
                 match info.TaskReturnType with
-                | HttpResponseMessage -> yield Let ("node", SynExpr.CreateIdentString "response")
-                | String ->
-                    yield
-                        LetBang (
-                            "node",
-                            SynExpr.awaitTask (
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateLongIdent (
-                                        SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStringAsync" ]
-                                    ),
-                                    SynExpr.CreateIdentString "ct"
-                                )
-                            )
-                        )
-                | Stream ->
-                    yield
-                        LetBang (
-                            "node",
-                            SynExpr.awaitTask (
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateLongIdent (
-                                        SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
-                                    ),
-                                    SynExpr.CreateIdentString "ct"
-                                )
-                            )
-                        )
+                | HttpResponseMessage -> ()
+                | RestEaseResponseType _ ->
+                    yield responseString
+                    yield responseStream
+                    yield jsonNode
+                | String -> yield responseString
+                | Stream -> yield responseStream
                 | _ ->
-                    yield
-                        LetBang (
-                            "stream",
-                            SynExpr.awaitTask (
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateLongIdent (
-                                        SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
-                                    ),
-                                    SynExpr.CreateIdentString "ct"
-                                )
-                            )
-                        )
-
-                    yield
-                        LetBang (
-                            "node",
-                            SynExpr.awaitTask (
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateLongIdent (
-                                        SynLongIdent.Create
-                                            [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "ParseAsync" ]
-                                    ),
-                                    SynExpr.CreateParenedTuple
-                                        [
-                                            SynExpr.CreateIdentString "stream"
-                                            SynExpr.equals
-                                                (SynExpr.CreateIdentString "cancellationToken")
-                                                (SynExpr.CreateIdentString "ct")
-                                        ]
-                                )
-                            )
-                        )
+                    yield responseStream
+                    yield jsonNode
             ]
             |> SynExpr.createCompExpr "async" returnExpr
             |> SynExpr.startAsTask

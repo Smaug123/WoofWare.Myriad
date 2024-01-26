@@ -502,13 +502,13 @@ module VaultClient =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
-                    let! node =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return JwtSecretResponse.jsonParse node
+                    return JwtSecretResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -538,13 +538,13 @@ module VaultClient =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! stream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
-                    let! node =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (stream, cancellationToken = ct)
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return JwtVaultResponse.jsonParse node
+                    return JwtVaultResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
         }

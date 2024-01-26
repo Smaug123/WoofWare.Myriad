@@ -104,6 +104,12 @@ module internal AstHelper =
             true
         | _ -> false
 
+    let isResponseIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent |> List.map _.idText with
+        | [ "Response" ]
+        | [ "RestEase" ; "Response" ] -> true
+        | _ -> false
+
     let isMapIdent (ident : SynLongIdent) : bool =
         match ident.LongIdent |> List.map _.idText with
         | [ "Map" ] -> true
@@ -364,9 +370,8 @@ module internal SynTypePatterns =
 
     let (|RestEaseResponseType|_|) (fieldType : SynType) =
         match fieldType with
-        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isArrayIdent ident ->
+        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isResponseIdent ident ->
             Some innerType
-        | SynType.Array (1, innerType, _) -> Some innerType
         | _ -> None
 
     let (|DictionaryType|_|) (fieldType : SynType) =
