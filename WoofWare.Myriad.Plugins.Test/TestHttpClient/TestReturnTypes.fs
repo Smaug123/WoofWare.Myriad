@@ -86,3 +86,36 @@ module TestReturnTypes =
             | _ -> failwith $"unrecognised case: %s{case}"
 
         Object.ReferenceEquals (message, Option.get responseMessage) |> shouldEqual true
+
+    [<TestCase "Task<Response>">]
+    [<TestCase "Task<RestEase.Response>">]
+    [<TestCase "RestEase.Response Task">]
+    [<TestCase "RestEase.Response Task">]
+    let ``Response return`` (case : string) =
+        for json, memberDto in PureGymDtos.memberActivityDtoCases do
+            let mutable responseMessage = None
+
+            let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+                async {
+                    message.Method |> shouldEqual HttpMethod.Get
+                    let content = new StringContent (json)
+                    let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                    resp.Content <- content
+                    responseMessage <- Some resp
+                    return resp
+                }
+
+            use client = HttpClientMock.make (Uri "https://example.com") proc
+            let api = PureGymApi.make client
+
+            let response =
+                match case with
+                | "Task<Response>" -> api.GetResponse().Result
+                | "Task<RestEase.Response>" -> api.GetResponse'().Result
+                | "Response Task" -> api.GetResponse''().Result
+                | "RestEase.Response Task" -> api.GetResponse'''().Result
+                | _ -> failwith $"unrecognised case: %s{case}"
+
+            response.ResponseMessage |> shouldEqual (Option.get responseMessage)
+            response.StringContent |> shouldEqual json
+            response.GetContent () |> shouldEqual memberDto
