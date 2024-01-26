@@ -44,7 +44,7 @@ module internal JsonSerializeGenerator =
         | NumberType _
         | PrimitiveType _
         | Uri ->
-            // JsonValue.Create
+            // JsonValue.Create<{type}>
             SynExpr.TypeApp (
                 SynExpr.CreateLongIdent (
                     SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]
@@ -56,10 +56,6 @@ module internal JsonSerializeGenerator =
                 range0,
                 range0
             )
-        // SynExpr.CreateApp (
-        //     SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]),
-        //     SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent [Ident.Create "input" ; fieldId])
-        // )
         | OptionType ty ->
             // fun field -> match field with | None -> JsonValue.Create null | Some v -> {serializeNode ty} field
             SynExpr.CreateMatch (
@@ -89,6 +85,10 @@ module internal JsonSerializeGenerator =
             |> SynExpr.createLambda "field"
         | ArrayType ty
         | ListType ty ->
+            // fun field ->
+            //     let arr = JsonArray ()
+            //     for mem in field do arr.Add ({serializeNode} mem)
+            //     arr
             SynExpr.LetOrUse (
                 false,
                 false,
@@ -129,60 +129,79 @@ module internal JsonSerializeGenerator =
                 }
             )
             |> SynExpr.createLambda "field"
-        (*
-        | IDictionaryType (keyType, valueType) ->
-            node
-            |> asObject propertyName
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
-                )
-            )
-            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "dict" ]))
-        | DictionaryType (keyType, valueType) ->
-            node
-            |> asObject propertyName
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
-                )
-            )
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    SynExpr.CreateLongIdent (
-                        SynLongIdent.Create [ "System" ; "Collections" ; "Generic" ; "KeyValuePair" ]
-                    )
-                )
-            )
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Collections" ; "Generic" ; "Dictionary" ])
-            )
-        | IReadOnlyDictionaryType (keyType, valueType) ->
-            node
-            |> asObject propertyName
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
-                )
-            )
-            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "readOnlyDict" ]))
+        | IDictionaryType (keyType, valueType)
+        | DictionaryType (keyType, valueType)
+        | IReadOnlyDictionaryType (keyType, valueType)
         | MapType (keyType, valueType) ->
-            node
-            |> asObject propertyName
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
-                )
+            // fun field ->
+            //    let ret = JsonObject ()
+            //    for (KeyValue(key, value)) in field do
+            //        ret.Add (key.ToString (), {serializeNode} value)
+            //    ret
+            SynExpr.LetOrUse (
+                false,
+                false,
+                [
+                    SynBinding.Let (
+                        pattern = SynPat.CreateNamed (Ident.Create "ret"),
+                        expr =
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (
+                                    SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
+                                ),
+                                SynExpr.CreateConst SynConst.Unit
+                            )
+                    )
+                ],
+                SynExpr.CreateSequential
+                    [
+                        SynExpr.ForEach (
+                            DebugPointAtFor.Yes range0,
+                            DebugPointAtInOrTo.Yes range0,
+                            SeqExprOnly.SeqExprOnly false,
+                            true,
+                            SynPat.CreateParen (
+                                SynPat.CreateLongIdent (
+                                    SynLongIdent.CreateString "KeyValue",
+                                    [
+                                        SynPat.CreateParen (
+                                            SynPat.Tuple (
+                                                false,
+                                                [
+                                                    SynPat.CreateNamed (Ident.Create "key")
+                                                    SynPat.CreateNamed (Ident.Create "value")
+                                                ],
+                                                [ range0 ],
+                                                range0
+                                            )
+                                        )
+                                    ]
+                                )
+                            ),
+                            SynExpr.CreateIdent (Ident.Create "field"),
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "ret" ; "Add" ]),
+                                SynExpr.CreateParenedTuple
+                                    [
+                                        SynExpr.CreateApp (
+                                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "key" ; "ToString" ]),
+                                            SynExpr.CreateConst SynConst.Unit
+                                        )
+                                        SynExpr.CreateApp (serializeNode valueType, SynExpr.CreateIdentString "value")
+                                    ]
+                            ),
+                            range0
+                        )
+                        SynExpr.CreateIdentString "ret"
+                    ],
+                range0,
+                {
+                    InKeyword = None
+                }
             )
-            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Map" ; "ofSeq" ]))
-        *)
+            |> SynExpr.createLambda "field"
         | _ ->
-            // Let's just hope that we've also got our own type annotation!
+            // {type}.toJsonNode
             let typeName =
                 match fieldType with
                 | SynType.LongIdent ident -> ident.LongIdent
@@ -191,7 +210,6 @@ module internal JsonSerializeGenerator =
             SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (typeName @ [ Ident.Create "toJsonNode" ]))
 
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
-    /// The result of this function is the body of a let-binding (not including the LHS of that let-binding).
     /// `node.Add ({propertyName}, {toJsonNode})`
     let createSerializeRhs (propertyName : SynExpr) (fieldId : Ident) (fieldType : SynType) : SynExpr =
         let func = SynExpr.CreateLongIdent (SynLongIdent.Create [ "node" ; "Add" ])
@@ -207,15 +225,6 @@ module internal JsonSerializeGenerator =
                 ]
 
         SynExpr.CreateApp (func, args)
-
-    let isJsonNumberHandling (literal : LongIdent) : bool =
-        match List.rev literal |> List.map (fun ident -> ident.idText) with
-        | [ _ ; "JsonNumberHandling" ]
-        | [ _ ; "JsonNumberHandling" ; "Serialization" ]
-        | [ _ ; "JsonNumberHandling" ; "Serialization" ; "Json" ]
-        | [ _ ; "JsonNumberHandling" ; "Serialization" ; "Json" ; "Text" ]
-        | [ _ ; "JsonNumberHandling" ; "Serialization" ; "Json" ; "Text" ; "System" ] -> true
-        | _ -> false
 
     let createMaker (spec : JsonSerializeOutputSpec) (typeName : LongIdent) (fields : SynField list) =
         let xmlDoc = PreXmlDoc.Create " Serialize to a JSON node"
@@ -404,7 +413,12 @@ module internal JsonSerializeGenerator =
 
             SynModuleDecl.CreateLet [ binding ]
 
-    let createRecordModule (namespaceId : LongIdent) (spec : JsonSerializeOutputSpec) (typeDefn : SynTypeDefn) =
+    let createRecordModule
+        (namespaceId : LongIdent)
+        (opens : SynOpenDeclTarget list)
+        (spec : JsonSerializeOutputSpec)
+        (typeDefn : SynTypeDefn)
+        =
         let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
             typeDefn
 
@@ -457,7 +471,10 @@ module internal JsonSerializeGenerator =
 
             let mdl = SynModuleDecl.CreateNestedModule (info, decls)
 
-            SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ mdl ])
+            SynModuleOrNamespace.CreateNamespace (
+                namespaceId,
+                decls = (opens |> List.map SynModuleDecl.CreateOpen) @ [ mdl ]
+            )
         | _ -> failwithf "Not a record type"
 
 /// Myriad generator that provides a method (possibly an extension method) for a record type,
@@ -502,12 +519,14 @@ type JsonSerializeGenerator () =
                         | ty -> Some (ns, ty)
                 )
 
+            let opens = AstHelper.extractOpens ast
+
             let modules =
                 namespaceAndRecords
                 |> List.collect (fun (ns, records) ->
                     records
                     |> List.map (fun (record, spec) ->
-                        let recordModule = JsonSerializeGenerator.createRecordModule ns spec record
+                        let recordModule = JsonSerializeGenerator.createRecordModule ns opens spec record
                         recordModule
                     )
                 )

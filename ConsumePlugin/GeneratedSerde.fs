@@ -6,6 +6,10 @@
 
 namespace ConsumePlugin
 
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
 /// Module containing JSON serializing extension members for the InnerTypeWithBoth type
 [<AutoOpen>]
 module InnerTypeWithBothJsonSerializeExtension =
@@ -15,9 +19,79 @@ module InnerTypeWithBothJsonSerializeExtension =
         /// Serialize to a JSON node
         static member toJsonNode (input : InnerTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
             let node = System.Text.Json.Nodes.JsonObject ()
-            do node.Add (("it's-a-me"), System.Text.Json.Nodes.JsonValue.Create<string> input.Thing)
+
+            do
+                node.Add (("it's-a-me"), System.Text.Json.Nodes.JsonValue.Create<string> input.Thing)
+
+                node.Add (
+                    "map",
+                    (fun field ->
+                        let ret = System.Text.Json.Nodes.JsonObject ()
+
+                        for (KeyValue (key, value)) in field do
+                            ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<Uri> value)
+
+                        ret
+                    )
+                        input.Map
+                )
+
+                node.Add (
+                    "readOnlyDict",
+                    (fun field ->
+                        let ret = System.Text.Json.Nodes.JsonObject ()
+
+                        for (KeyValue (key, value)) in field do
+                            ret.Add (
+                                key.ToString (),
+                                (fun field ->
+                                    let arr = System.Text.Json.Nodes.JsonArray ()
+
+                                    for mem in field do
+                                        arr.Add (System.Text.Json.Nodes.JsonValue.Create<char> mem)
+
+                                    arr
+                                )
+                                    value
+                            )
+
+                        ret
+                    )
+                        input.ReadOnlyDict
+                )
+
+                node.Add (
+                    "dict",
+                    (fun field ->
+                        let ret = System.Text.Json.Nodes.JsonObject ()
+
+                        for (KeyValue (key, value)) in field do
+                            ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<bool> value)
+
+                        ret
+                    )
+                        input.Dict
+                )
+
+                node.Add (
+                    "concreteDict",
+                    (fun field ->
+                        let ret = System.Text.Json.Nodes.JsonObject ()
+
+                        for (KeyValue (key, value)) in field do
+                            ret.Add (key.ToString (), InnerTypeWithBoth.toJsonNode value)
+
+                        ret
+                    )
+                        input.ConcreteDict
+                )
+
             node :> _
 namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
 
 /// Module containing JSON serializing extension members for the JsonRecordTypeWithBoth type
 [<AutoOpen>]
@@ -86,6 +160,80 @@ module InnerTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerTypeWithBoth =
+            let ConcreteDict =
+                (match node.["concreteDict"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("concreteDict")
+                         )
+                     )
+                 | v -> v)
+                    .AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = InnerTypeWithBoth.jsonParse (kvp.Value)
+                    key, value
+                )
+                |> Seq.map System.Collections.Generic.KeyValuePair
+                |> System.Collections.Generic.Dictionary
+
+            let Dict =
+                (match node.["dict"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("dict")
+                         )
+                     )
+                 | v -> v)
+                    .AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key) |> System.Uri
+                    let value = (kvp.Value).AsValue().GetValue<bool> ()
+                    key, value
+                )
+                |> dict
+
+            let ReadOnlyDict =
+                (match node.["readOnlyDict"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("readOnlyDict")
+                         )
+                     )
+                 | v -> v)
+                    .AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+
+                    let value =
+                        (kvp.Value).AsArray ()
+                        |> Seq.map (fun elt -> elt.AsValue().GetValue<char> ())
+                        |> List.ofSeq
+
+                    key, value
+                )
+                |> readOnlyDict
+
+            let Map =
+                (match node.["map"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("map")
+                         )
+                     )
+                 | v -> v)
+                    .AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = (kvp.Value).AsValue().GetValue<string> () |> System.Uri
+                    key, value
+                )
+                |> Map.ofSeq
+
             let Thing =
                 (match node.[("it's-a-me")] with
                  | null ->
@@ -100,6 +248,10 @@ module InnerTypeWithBothJsonParseExtension =
 
             {
                 Thing = Thing
+                Map = Map
+                ReadOnlyDict = ReadOnlyDict
+                Dict = Dict
+                ConcreteDict = ConcreteDict
             }
 namespace ConsumePlugin
 
