@@ -19,6 +19,7 @@
     <Compile Include="TestHttpClient\TestBasePath.fs" />
     <Compile Include="TestHttpClient\TestBodyParam.fs" />
     <Compile Include="TestHttpClient\TestVaultClient.fs" />
+    <Compile Include="TestHttpClient\TestBodySerialiser.fs" />
     <Compile Include="TestMockGenerator\TestMockGenerator.fs" />
     <Compile Include="TestRemoveOptions.fs"/>
     <Compile Include="TestSurface.fs"/>

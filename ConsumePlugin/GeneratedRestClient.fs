@@ -383,6 +383,36 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
+            member _.CreateUserSerialisedBody (user : PureGym.Member, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("users/new", System.UriKind.Relative)
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams =
+                        new System.Net.Http.StringContent (
+                            user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+                    return responseStream
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
             member _.CreateUserHttpContent (user : System.Net.Http.HttpContent, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken

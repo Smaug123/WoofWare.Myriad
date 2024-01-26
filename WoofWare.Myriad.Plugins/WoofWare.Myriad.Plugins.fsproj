@@ -26,6 +26,7 @@
   <ItemGroup>
     <Compile Include="AstHelper.fs"/>
     <Compile Include="SynExpr.fs"/>
+    <Compile Include="SynType.fs" />
     <Compile Include="SynAttribute.fs"/>
     <Compile Include="RemoveOptionsGenerator.fs"/>
     <Compile Include="InterfaceMockGenerator.fs" />
