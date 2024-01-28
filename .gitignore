@@ -9,3 +9,4 @@ riderModule.iml
 result
 .analyzerpackages/
 analysis.sarif
+.direnv/
