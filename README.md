@@ -319,7 +319,6 @@ thereby allowing the programmer to use F#'s record-update syntax.
 
 ### Limitations
 
-* We currently only support interfaces with tupled arguments.
 * We make the resulting record type at most internal (never public), since this is intended only to be used in tests.
   You will therefore need an `AssemblyInfo.fs` file [like the one in WoofWare.Myriad's own tests](./ConsumePlugin/AssemblyInfo.fs).
 

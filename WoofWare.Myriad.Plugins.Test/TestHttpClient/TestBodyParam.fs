@@ -148,3 +148,41 @@ module TestBodyParam =
         |> System.Text.Json.Nodes.JsonNode.Parse
         |> PureGym.Member.jsonParse
         |> shouldEqual expected
+
+    [<Test>]
+    let ``Body param of primitive: int`` () =
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.Method |> shouldEqual HttpMethod.Post
+                let! content = message.Content.ReadAsStringAsync () |> Async.AwaitTask
+                let content = new StringContent ("Done! " + content)
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- content
+                return resp
+            }
+
+        use client = HttpClientMock.make (Uri "https://example.com") proc
+        let api = PureGymApi.make client
+
+        let result = api.CreateUserSerialisedIntBody(3).Result
+
+        result |> shouldEqual "Done! 3"
+
+    [<Test>]
+    let ``Body param of primitive: Uri`` () =
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.Method |> shouldEqual HttpMethod.Post
+                let! content = message.Content.ReadAsStringAsync () |> Async.AwaitTask
+                let content = new StringContent ("Done! " + content)
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- content
+                return resp
+            }
+
+        use client = HttpClientMock.make (Uri "https://example.com") proc
+        let api = PureGymApi.make client
+
+        let result = api.CreateUserSerialisedUrlBody(Uri "https://mything.com/blah").Result
+
+        result |> shouldEqual "Done! \"https://mything.com/blah\""

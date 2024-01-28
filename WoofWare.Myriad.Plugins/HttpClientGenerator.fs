@@ -481,11 +481,6 @@ module internal HttpClientGenerator =
                         )
                     ]
                 | BodyParamMethods.Serialise ty ->
-                    let typeIdent =
-                        match SynType.stripOptionalParen ty with
-                        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) -> ident
-                        | _ -> failwith $"Unable to identify type %+A{ty}"
-
                     [
                         Let (
                             "queryParams",
@@ -496,11 +491,7 @@ module internal HttpClientGenerator =
                                 ),
                                 SynExpr.CreateParen (
                                     SynExpr.CreateIdent bodyParamName
-                                    |> SynExpr.pipeThroughFunction (
-                                        SynExpr.CreateLongIdent (
-                                            SynLongIdent.CreateFromLongIdent (typeIdent @ [ Ident.Create "toJsonNode" ])
-                                        )
-                                    )
+                                    |> SynExpr.pipeThroughFunction (JsonSerializeGenerator.serializeNode ty)
                                     |> SynExpr.pipeThroughFunction (
                                         SynExpr.createLambda
                                             "node"
