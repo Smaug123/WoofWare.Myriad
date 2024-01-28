@@ -491,12 +491,7 @@ module internal HttpClientGenerator =
                                 ),
                                 SynExpr.CreateParen (
                                     SynExpr.CreateIdent bodyParamName
-                                    |> SynExpr.pipeThroughFunction (
-                                        JsonSerializeGenerator.serializeNode ty
-                                    // SynExpr.CreateLongIdent (
-                                    //     SynLongIdent.CreateFromLongIdent (typeIdent @ [ Ident.Create "toJsonNode" ])
-                                    // )
-                                    )
+                                    |> SynExpr.pipeThroughFunction (JsonSerializeGenerator.serializeNode ty)
                                     |> SynExpr.pipeThroughFunction (
                                         SynExpr.createLambda
                                             "node"
