@@ -34,12 +34,12 @@ type internal MemberInfo =
     }
 
 [<RequireQualifiedAccess>]
-type PropertyAccessors =
+type internal PropertyAccessors =
     | Get
     | Set
     | GetSet
 
-type PropertyInfo =
+type internal PropertyInfo =
     {
         Type : SynType
         Accessibility : SynAccess option
