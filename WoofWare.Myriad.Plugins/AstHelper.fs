@@ -33,11 +33,29 @@ type internal MemberInfo =
         IsMutable : bool
     }
 
+[<RequireQualifiedAccess>]
+type internal PropertyAccessors =
+    | Get
+    | Set
+    | GetSet
+
+type internal PropertyInfo =
+    {
+        Type : SynType
+        Accessibility : SynAccess option
+        Attributes : SynAttribute list
+        XmlDoc : PreXmlDoc option
+        Accessors : PropertyAccessors
+        IsInline : bool
+        Identifier : Ident
+    }
+
 type internal InterfaceType =
     {
         Attributes : SynAttribute list
         Name : LongIdent
         Members : MemberInfo list
+        Properties : PropertyInfo list
         Generics : SynTyparDecls option
         Accessibility : SynAccess option
     }
@@ -230,6 +248,108 @@ module internal AstHelper =
             ((toFun (List.map fst inputArgs) inputRet), hasParen) :: args, ret
         | _ -> [], ty
 
+    let private parseMember (slotSig : SynValSig) (flags : SynMemberFlags) : Choice<MemberInfo, PropertyInfo> =
+        if not flags.IsInstance then
+            failwith "member was not an instance member"
+
+        let propertyAccessors =
+            match flags.MemberKind with
+            | SynMemberKind.Member -> None
+            | SynMemberKind.PropertyGet -> Some PropertyAccessors.Get
+            | SynMemberKind.PropertySet -> Some PropertyAccessors.Set
+            | SynMemberKind.PropertyGetSet -> Some PropertyAccessors.GetSet
+            | kind -> failwithf "Unrecognised member kind: %+A" kind
+
+        match slotSig with
+        | SynValSig (attrs,
+                     SynIdent.SynIdent (ident, _),
+                     _typeParams,
+                     synType,
+                     _arity,
+                     isInline,
+                     isMutable,
+                     xmlDoc,
+                     accessibility,
+                     synExpr,
+                     _,
+                     _) ->
+
+            match synExpr with
+            | Some _ -> failwith "literal members are not supported"
+            | None -> ()
+
+            let attrs = attrs |> List.collect _.Attributes
+
+            let args, ret = getType synType
+
+            let args =
+                args
+                |> List.map (fun (args, hasParen) ->
+                    match args with
+                    | SynType.Tuple (false, path, _) -> extractTupledTypes path
+                    | SynType.SignatureParameter _ ->
+                        let arg, hasParen = convertSigParam args
+
+                        {
+                            HasParen = hasParen
+                            Args = [ arg ]
+                        }
+                    | SynType.LongIdent (SynLongIdent (ident, _, _)) ->
+                        {
+                            HasParen = false
+                            Args =
+                                {
+                                    Attributes = []
+                                    IsOptional = false
+                                    Id = None
+                                    Type = SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent ident)
+                                }
+                                |> List.singleton
+                        }
+                    | SynType.Var (typar, _) ->
+                        {
+                            HasParen = false
+                            Args =
+                                {
+                                    Attributes = []
+                                    IsOptional = false
+                                    Id = None
+                                    Type = SynType.Var (typar, range0)
+                                }
+                                |> List.singleton
+                        }
+                    | _ -> failwith $"Unrecognised args in interface method declaration: %+A{args}"
+                    |> fun ty ->
+                        { ty with
+                            HasParen = ty.HasParen || hasParen
+                        }
+                )
+
+            match propertyAccessors with
+            | None ->
+                {
+                    ReturnType = ret
+                    Args = args
+                    Identifier = ident
+                    Attributes = attrs
+                    XmlDoc = Some xmlDoc
+                    Accessibility = accessibility
+                    IsInline = isInline
+                    IsMutable = isMutable
+                }
+                |> Choice1Of2
+            | Some accessors ->
+                {
+                    Type = ret
+                    Accessibility = accessibility
+                    Attributes = attrs
+                    XmlDoc = Some xmlDoc
+                    Accessors = accessors
+                    IsInline = isInline
+                    Identifier = ident
+                }
+                |> Choice2Of2
+
     /// Assumes that the input type is an ObjectModel, i.e. a `type Foo = member ...`
     let parseInterface (interfaceType : SynTypeDefn) : InterfaceType =
         let (SynTypeDefn (SynComponentInfo (attrs, typars, _, interfaceName, _, _, accessibility, _),
@@ -242,104 +362,21 @@ module internal AstHelper =
 
         let attrs = attrs |> List.collect (fun s -> s.Attributes)
 
-        let members =
+        let members, properties =
             match synTypeDefnRepr with
             | SynTypeDefnRepr.ObjectModel (_kind, members, _) ->
                 members
                 |> List.map (fun defn ->
                     match defn with
-                    | SynMemberDefn.AbstractSlot (slotSig, flags, _, _) ->
-                        match flags.MemberKind with
-                        | SynMemberKind.Member -> ()
-                        | kind -> failwithf "Unrecognised member kind: %+A" kind
-
-                        if not flags.IsInstance then
-                            failwith "member was not an instance member"
-
-                        match slotSig with
-                        | SynValSig (attrs,
-                                     SynIdent.SynIdent (ident, _),
-                                     _typeParams,
-                                     synType,
-                                     arity,
-                                     isInline,
-                                     isMutable,
-                                     xmlDoc,
-                                     accessibility,
-                                     synExpr,
-                                     _,
-                                     _) ->
-
-                            match synExpr with
-                            | Some _ -> failwith "literal members are not supported"
-                            | None -> ()
-
-                            let attrs = attrs |> List.collect (fun attr -> attr.Attributes)
-
-                            let args, ret = getType synType
-
-                            let args =
-                                args
-                                |> List.map (fun (args, hasParen) ->
-                                    match args with
-                                    | SynType.Tuple (false, path, _) -> extractTupledTypes path
-                                    | SynType.SignatureParameter _ ->
-                                        let arg, hasParen = convertSigParam args
-
-                                        {
-                                            HasParen = hasParen
-                                            Args = [ arg ]
-                                        }
-                                    | SynType.LongIdent (SynLongIdent (ident, _, _)) ->
-                                        {
-                                            HasParen = false
-                                            Args =
-                                                {
-                                                    Attributes = []
-                                                    IsOptional = false
-                                                    Id = None
-                                                    Type =
-                                                        SynType.CreateLongIdent (
-                                                            SynLongIdent.CreateFromLongIdent ident
-                                                        )
-                                                }
-                                                |> List.singleton
-                                        }
-                                    | SynType.Var (typar, _) ->
-                                        {
-                                            HasParen = false
-                                            Args =
-                                                {
-                                                    Attributes = []
-                                                    IsOptional = false
-                                                    Id = None
-                                                    Type = SynType.Var (typar, range0)
-                                                }
-                                                |> List.singleton
-                                        }
-                                    | _ -> failwith $"Unrecognised args in interface method declaration: %+A{args}"
-                                    |> fun ty ->
-                                        { ty with
-                                            HasParen = ty.HasParen || hasParen
-                                        }
-                                )
-
-                            {
-                                ReturnType = ret
-                                Args = args
-                                Identifier = ident
-                                Attributes = attrs
-                                XmlDoc = Some xmlDoc
-                                Accessibility = accessibility
-                                IsInline = isInline
-                                IsMutable = isMutable
-                            }
+                    | SynMemberDefn.AbstractSlot (slotSig, flags, _, _) -> parseMember slotSig flags
                     | _ -> failwith $"Unrecognised member definition: %+A{defn}"
                 )
             | _ -> failwith $"Unrecognised SynTypeDefnRepr for an interface type: %+A{synTypeDefnRepr}"
+            |> List.partitionChoice
 
         {
             Members = members
+            Properties = properties
             Name = interfaceName
             Attributes = attrs
             Generics = typars

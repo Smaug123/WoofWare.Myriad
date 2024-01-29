@@ -125,3 +125,15 @@ type IApiWithBasePath =
 type IApiWithBasePathAndAddress =
     [<Get "endpoint/{param}">]
     abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<Header("Header-Name", "Header-Value")>]
+type IApiWithHeaders =
+    [<Header "X-Foo">]
+    abstract SomeHeader : string
+
+    [<Header "Authorization">]
+    abstract SomeOtherHeader : int
+
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
