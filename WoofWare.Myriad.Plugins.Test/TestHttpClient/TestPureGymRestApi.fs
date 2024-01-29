@@ -209,10 +209,7 @@ module TestPureGymRestApi =
 
     [<TestCaseSource(nameof sessionsCases)>]
     let ``Test GetSessions``
-        (
-            baseUri : Uri,
-            (startDate : DateOnly, (endDate : DateOnly, (json : string, expected : Sessions)))
-        )
+        (baseUri : Uri, (startDate : DateOnly, (endDate : DateOnly, (json : string, expected : Sessions))))
         =
         let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
             async {

@@ -462,12 +462,7 @@ module VaultClient =
     let make (client : System.Net.Http.HttpClient) : IVaultClient =
         { new IVaultClient with
             member _.GetSecret
-                (
-                    jwt : JwtVaultResponse,
-                    path : string,
-                    mountPoint : string,
-                    ct : CancellationToken option
-                )
+                (jwt : JwtVaultResponse, path : string, mountPoint : string, ct : CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
