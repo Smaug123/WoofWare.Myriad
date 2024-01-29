@@ -158,7 +158,8 @@ module internal HttpClientGenerator =
             | _ -> false
         )
 
-    let constructMember (info : MemberInfo) : SynMemberDefn =
+    /// Headers are a list of (headerName, selfPropertyToGetValueOf)
+    let constructMember (headers : (SynExpr * Ident) list) (info : MemberInfo) : SynMemberDefn =
         let valInfo =
             SynValInfo.SynValInfo (
                 [
@@ -217,7 +218,7 @@ module internal HttpClientGenerator =
 
         let headPat =
             SynPat.LongIdent (
-                SynLongIdent.CreateFromLongIdent [ Ident.Create "_" ; info.Identifier ],
+                SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; info.Identifier ],
                 None,
                 None,
                 argPats,
@@ -583,6 +584,27 @@ module internal HttpClientGenerator =
                     )
                 )
 
+            let setHeaders =
+                headers
+                |> List.map (fun (headerName, callToGetValue) ->
+                    Do (
+                        SynExpr.CreateApp (
+                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "httpMessage" ; "Headers" ; "Add" ]),
+                            SynExpr.CreateParenedTuple
+                                [
+                                    headerName
+                                    SynExpr.CreateApp (
+                                        SynExpr.CreateLongIdent (
+                                            SynLongIdent.CreateFromLongIdent
+                                                [ Ident.Create "this" ; callToGetValue ; Ident.Create "ToString" ]
+                                        ),
+                                        SynExpr.CreateConst SynConst.Unit
+                                    )
+                                ]
+                        )
+                    )
+                )
+
             [
                 yield LetBang ("ct", SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "CancellationToken" ]))
                 yield Let ("uri", requestUri)
@@ -600,6 +622,8 @@ module internal HttpClientGenerator =
                     )
 
                 yield! handleBodyParams
+
+                yield! setHeaders
 
                 yield
                     LetBang (
@@ -721,7 +745,16 @@ module internal HttpClientGenerator =
         let baseAddress = extractBaseAddress interfaceType.Attributes
         let basePath = extractBasePath interfaceType.Attributes
 
+        let properties =
+            interfaceType.Properties
+            |> List.map (fun pi ->
+                let headerInfo = extractHeaderInformation pi.Attributes
+                headerInfo, pi
+            )
+
         let nonPropertyMembers =
+            let properties = properties |> List.map (fun (header, pi) -> header, pi.Identifier)
+
             interfaceType.Members
             |> List.map (fun mem ->
                 let httpMethod, url = extractHttpInformation mem.Attributes
@@ -768,18 +801,11 @@ module internal HttpClientGenerator =
                     Accessibility = mem.Accessibility
                 }
             )
-            |> List.map constructMember
-
-        let properties =
-            interfaceType.Properties
-            |> List.map (fun pi ->
-                let headerInfo = extractHeaderInformation pi.Attributes
-                pi, headerInfo
-            )
+            |> List.map (constructMember properties)
 
         let propertyMembers =
             properties
-            |> List.map (fun (pi, headerName) ->
+            |> List.map (fun (_, pi) ->
                 SynMemberDefn.Member (
                     SynBinding.SynBinding (
                         pi.Accessibility,
@@ -842,7 +868,7 @@ module internal HttpClientGenerator =
 
         let headerArgs =
             properties
-            |> List.map (fun (pi, contents) ->
+            |> List.map (fun (_, pi) ->
                 SynPat.CreateTyped (
                     SynPat.CreateNamed (lowerFirstLetter pi.Identifier),
                     SynType.CreateFun (SynType.CreateLongIdent "unit", pi.Type)
@@ -889,7 +915,7 @@ module internal HttpClientGenerator =
 
         let moduleName : LongIdent =
             List.last interfaceType.Name
-            |> fun ident -> ident.idText
+            |> _.idText
             |> fun s ->
                 if s.StartsWith 'I' then
                     s.[1..]

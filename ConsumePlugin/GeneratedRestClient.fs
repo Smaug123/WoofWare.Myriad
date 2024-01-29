@@ -23,7 +23,7 @@ module PureGymApi =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IPureGymApi =
         { new IPureGymApi with
-            member _.GetGyms (ct : CancellationToken option) =
+            member this.GetGyms (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -53,7 +53,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetGymAttendance (gymId : int, ct : CancellationToken option) =
+            member this.GetGymAttendance (gymId : int, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -87,7 +87,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetMember (ct : CancellationToken option) =
+            member this.GetMember (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -117,7 +117,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetGym (gymId : int, ct : CancellationToken option) =
+            member this.GetGym (gymId : int, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -151,7 +151,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetMemberActivity (ct : CancellationToken option) =
+            member this.GetMemberActivity (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -181,7 +181,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetUrl (ct : CancellationToken option) =
+            member this.GetUrl (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -211,7 +211,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetSessions (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
+            member this.GetSessions (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -248,7 +248,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.CreateUserString (user : string, ct : CancellationToken option) =
+            member this.CreateUserString (user : string, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -275,7 +275,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.CreateUserStream (user : System.IO.Stream, ct : CancellationToken option) =
+            member this.CreateUserStream (user : System.IO.Stream, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -302,7 +302,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.CreateUserByteArr (user : byte[], ct : CancellationToken option) =
+            member this.CreateUserByteArr (user : byte[], ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -329,7 +329,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.CreateUserByteArr' (user : array<byte>, ct : CancellationToken option) =
+            member this.CreateUserByteArr' (user : array<byte>, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -356,7 +356,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.CreateUserByteArr'' (user : byte array, ct : CancellationToken option) =
+            member this.CreateUserByteArr'' (user : byte array, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -383,7 +383,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.CreateUserSerialisedBody (user : PureGym.Member, ct : CancellationToken option) =
+            member this.CreateUserSerialisedBody (user : PureGym.Member, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -414,7 +414,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.CreateUserSerialisedUrlBody (user : Uri, ct : CancellationToken option) =
+            member this.CreateUserSerialisedUrlBody (user : Uri, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -447,7 +447,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.CreateUserSerialisedIntBody (user : int, ct : CancellationToken option) =
+            member this.CreateUserSerialisedIntBody (user : int, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -480,7 +480,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.CreateUserHttpContent (user : System.Net.Http.HttpContent, ct : CancellationToken option) =
+            member this.CreateUserHttpContent (user : System.Net.Http.HttpContent, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -506,7 +506,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member this.GetPathParam (parameter : string, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -535,7 +535,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetStream (ct : CancellationToken option) =
+            member this.GetStream (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -560,7 +560,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetStream' (ct : CancellationToken option) =
+            member this.GetStream' (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -585,7 +585,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetStream'' (ct : CancellationToken option) =
+            member this.GetStream'' (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -610,7 +610,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetResponseMessage (ct : CancellationToken option) =
+            member this.GetResponseMessage (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -634,7 +634,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetResponseMessage' (ct : CancellationToken option) =
+            member this.GetResponseMessage' (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -658,7 +658,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetResponseMessage'' (ct : CancellationToken option) =
+            member this.GetResponseMessage'' (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -682,7 +682,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetResponseMessage''' (ct : CancellationToken option) =
+            member this.GetResponseMessage''' (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -706,7 +706,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetResponse (ct : CancellationToken option) =
+            member this.GetResponse (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -742,7 +742,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetResponse' (ct : CancellationToken option) =
+            member this.GetResponse' (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -778,7 +778,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetResponse'' (ct : CancellationToken option) =
+            member this.GetResponse'' (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -814,7 +814,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetResponse''' (ct : CancellationToken option) =
+            member this.GetResponse''' (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -850,7 +850,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetWithAnyReturnCode (ct : CancellationToken option) =
+            member this.GetWithAnyReturnCode (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -873,7 +873,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetWithoutAnyReturnCode (ct : CancellationToken option) =
+            member this.GetWithoutAnyReturnCode (ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -914,7 +914,7 @@ module internal ApiWithoutBaseAddress =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IApiWithoutBaseAddress =
         { new IApiWithoutBaseAddress with
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member this.GetPathParam (parameter : string, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -966,7 +966,7 @@ module ApiWithBasePath =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IApiWithBasePath =
         { new IApiWithBasePath with
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member this.GetPathParam (parameter : string, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -1018,7 +1018,7 @@ module ApiWithBasePathAndAddress =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IApiWithBasePathAndAddress =
         { new IApiWithBasePathAndAddress with
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member this.GetPathParam (parameter : string, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -1072,7 +1072,7 @@ module internal ApiWithHeaders =
             member _.SomeHeader : string = someHeader ()
             member _.SomeOtherHeader : int = someOtherHeader ()
 
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member this.GetPathParam (parameter : string, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -1100,6 +1100,8 @@ module internal ApiWithHeaders =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("X-Foo", this.SomeHeader.ToString ())
+                    do httpMessage.Headers.Add ("Authorization", this.SomeOtherHeader.ToString ())
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
