@@ -1047,3 +1047,63 @@ module ApiWithBasePathAndAddress =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
         }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess>]
+module internal ApiWithHeaders =
+    /// Create a REST client.
+    let make
+        (someHeader : unit -> string)
+        (someOtherHeader : unit -> int)
+        (client : System.Net.Http.HttpClient)
+        : IApiWithHeaders
+        =
+        { new IApiWithHeaders with
+            member _.SomeHeader : string = someHeader ()
+            member _.SomeOtherHeader : int = someOtherHeader ()
+
+            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }

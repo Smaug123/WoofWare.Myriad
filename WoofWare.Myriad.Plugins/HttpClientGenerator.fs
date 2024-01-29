@@ -2,7 +2,9 @@ namespace WoofWare.Myriad.Plugins
 
 open System
 open System.Net.Http
+open System.Text
 open Fantomas.FCS.Syntax
+open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
 
@@ -124,6 +126,26 @@ module internal HttpClientGenerator =
         | [] -> failwith "Required exactly one recognised RestEase attribute on member, but got none"
         | matchingAttrs ->
             failwith $"Required exactly one recognised RestEase attribute on member, but got %i{matchingAttrs.Length}"
+
+    /// Get the single arg associated with the single Header attribute within the list
+    let extractHeaderInformation (attrs : SynAttribute list) : SynExpr =
+        let args =
+            attrs
+            |> List.choose (fun attr ->
+                match attr.TypeName.AsString with
+                | "Header"
+                | "RestEase.Header" ->
+                    match attr.ArgExpr with
+                    | SynExpr.Paren (SynExpr.Tuple _, _, _, _) ->
+                        failwith "WoofWare.Myriad only supports Header attributes with a single argument."
+                    | e -> Some (SynExpr.stripOptionalParen e)
+                | _ -> None
+            )
+
+        match args with
+        | [] -> failwith "Expected exactly one Header attribute, but got none"
+        | _ :: _ :: _ -> failwith "Expected exactly one Header attribute, but got multiple"
+        | [ x ] -> x
 
     let shouldAllowAnyStatusCode (attrs : SynAttribute list) : bool =
         attrs
@@ -682,6 +704,12 @@ module internal HttpClientGenerator =
             | _ -> None
         )
 
+    let lowerFirstLetter (x : Ident) : Ident =
+        let result = StringBuilder x.idText.Length
+        result.Append (Char.ToLowerInvariant x.idText.[0]) |> ignore
+        result.Append x.idText.[1..] |> ignore
+        Ident.Create ((result : StringBuilder).ToString ())
+
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
@@ -693,7 +721,7 @@ module internal HttpClientGenerator =
         let baseAddress = extractBaseAddress interfaceType.Attributes
         let basePath = extractBasePath interfaceType.Attributes
 
-        let members =
+        let nonPropertyMembers =
             interfaceType.Members
             |> List.map (fun mem ->
                 let httpMethod, url = extractHttpInformation mem.Attributes
@@ -740,8 +768,64 @@ module internal HttpClientGenerator =
                     Accessibility = mem.Accessibility
                 }
             )
+            |> List.map constructMember
 
-        let constructed = members |> List.map constructMember
+        let properties =
+            interfaceType.Properties
+            |> List.map (fun pi ->
+                let headerInfo = extractHeaderInformation pi.Attributes
+                pi, headerInfo
+            )
+
+        let propertyMembers =
+            properties
+            |> List.map (fun (pi, headerName) ->
+                SynMemberDefn.Member (
+                    SynBinding.SynBinding (
+                        pi.Accessibility,
+                        SynBindingKind.Normal,
+                        pi.IsInline,
+                        false,
+                        [],
+                        PreXmlDoc.Empty,
+                        SynValData.SynValData (
+                            Some
+                                {
+                                    IsInstance = true
+                                    IsDispatchSlot = false
+                                    IsOverrideOrExplicitImpl = true
+                                    IsFinal = false
+                                    GetterOrSetterIsCompilerGenerated = false
+                                    MemberKind = SynMemberKind.Member
+                                },
+                            SynValInfo.SynValInfo ([ [ SynArgInfo.Empty ] ; [] ], SynArgInfo.Empty),
+                            None
+                        ),
+                        SynPat.CreateLongIdent (
+                            SynLongIdent.CreateFromLongIdent [ Ident.Create "_" ; pi.Identifier ],
+                            []
+                        ),
+                        Some (SynBindingReturnInfo.Create pi.Type),
+                        SynExpr.CreateApp (
+                            SynExpr.CreateLongIdent (
+                                SynLongIdent.CreateFromLongIdent [ lowerFirstLetter pi.Identifier ]
+                            ),
+                            SynExpr.CreateConst SynConst.Unit
+                        ),
+                        range0,
+                        DebugPointAtBinding.Yes range0,
+                        {
+                            LeadingKeyword = SynLeadingKeyword.Member range0
+                            InlineKeyword = if pi.IsInline then Some range0 else None
+                            EqualsRange = Some range0
+                        }
+                    ),
+                    range0
+                )
+            )
+
+        let members = propertyMembers @ nonPropertyMembers
+
         let docString = PreXmlDoc.Create " Module for constructing a REST client."
 
         let interfaceImpl =
@@ -750,11 +834,28 @@ module internal HttpClientGenerator =
                 None,
                 Some range0,
                 [],
-                constructed,
+                members,
                 [],
                 range0,
                 range0
             )
+
+        let headerArgs =
+            properties
+            |> List.map (fun (pi, contents) ->
+                SynPat.CreateTyped (
+                    SynPat.CreateNamed (lowerFirstLetter pi.Identifier),
+                    SynType.CreateFun (SynType.CreateLongIdent "unit", pi.Type)
+                )
+                |> SynPat.CreateParen
+            )
+
+        let clientCreationArg =
+            SynPat.CreateTyped (
+                SynPat.CreateNamed (Ident.Create "client"),
+                SynType.CreateLongIdent (SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "HttpClient" ])
+            )
+            |> SynPat.CreateParen
 
         let createFunc =
             SynBinding.SynBinding (
@@ -772,19 +873,7 @@ module internal HttpClientGenerator =
                     ),
                     None
                 ),
-                SynPat.CreateLongIdent (
-                    SynLongIdent.CreateString "make",
-                    [
-                        SynPat.CreateParen (
-                            SynPat.CreateTyped (
-                                SynPat.CreateNamed (Ident.Create "client"),
-                                SynType.CreateLongIdent (
-                                    SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "HttpClient" ]
-                                )
-                            )
-                        )
-                    ]
-                ),
+                SynPat.CreateLongIdent (SynLongIdent.CreateString "make", headerArgs @ [ clientCreationArg ]),
                 Some (
                     SynBindingReturnInfo.Create (
                         SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name)
