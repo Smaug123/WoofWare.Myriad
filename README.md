@@ -258,6 +258,10 @@ module PureGymApi =
 
 The motivating example is again ahead-of-time compilation: we wish to avoid the reflection which RestEase does.
 
+### Features
+
+* Variable header values are supported: see [the definition of `IApiWithHeaders`](./ConsumePlugin/RestApiExample.fs).
+
 ### Limitations
 
 RestEase is complex, and handles a lot of different stuff.
@@ -270,7 +274,6 @@ RestEase is complex, and handles a lot of different stuff.
   all body parameters must be types which have a suitable `toJsonNode : 'a -> JsonNode` method.
 * Deserialisation follows the same logic as the `JsonParse` generator,
   and it generally assumes you're using types which `JsonParse` is applied to.
-* Headers are not yet supported.
 * Anonymous parameters are currently forbidden.
 
 There are also some design decisions:
