@@ -338,8 +338,8 @@
   })
   (fetchNuGet {
     pname = "NUnit.Analyzers";
-    version = "3.10.0";
-    sha256 = "1zc6s7lmzw5avrnbbjwyzla9d6bafbpxgv62m4zlqxv14p85md0d";
+    version = "4.0.0";
+    sha256 = "01a2a7hx1dwkmdyy4dw7ipsj77dlbfidkzscwfmgyfdf197agd2d";
   })
   (fetchNuGet {
     pname = "NUnit3TestAdapter";
