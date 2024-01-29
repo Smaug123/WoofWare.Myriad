@@ -127,25 +127,19 @@ module internal HttpClientGenerator =
         | matchingAttrs ->
             failwith $"Required exactly one recognised RestEase attribute on member, but got %i{matchingAttrs.Length}"
 
-    /// Get the single arg associated with the single Header attribute within the list
-    let extractHeaderInformation (attrs : SynAttribute list) : SynExpr =
-        let args =
-            attrs
-            |> List.choose (fun attr ->
-                match attr.TypeName.AsString with
-                | "Header"
-                | "RestEase.Header" ->
-                    match attr.ArgExpr with
-                    | SynExpr.Paren (SynExpr.Tuple _, _, _, _) ->
-                        failwith "WoofWare.Myriad only supports Header attributes with a single argument."
-                    | e -> Some (SynExpr.stripOptionalParen e)
-                | _ -> None
-            )
-
-        match args with
-        | [] -> failwith "Expected exactly one Header attribute, but got none"
-        | _ :: _ :: _ -> failwith "Expected exactly one Header attribute, but got multiple"
-        | [ x ] -> x
+    /// Get the args associated with the Header attributes within the list.
+    let extractHeaderInformation (attrs : SynAttribute list) : SynExpr list list =
+        attrs
+        |> List.choose (fun attr ->
+            match attr.TypeName.AsString with
+            | "Header"
+            | "RestEase.Header" ->
+                match attr.ArgExpr with
+                | SynExpr.Paren (SynExpr.Tuple (_, [ v1 ; v2 ], _, _), _, _, _) ->
+                    Some [ SynExpr.stripOptionalParen v1 ; SynExpr.stripOptionalParen v2 ]
+                | e -> Some [ SynExpr.stripOptionalParen e ]
+            | _ -> None
+        )
 
     let shouldAllowAnyStatusCode (attrs : SynAttribute list) : bool =
         attrs
@@ -158,8 +152,14 @@ module internal HttpClientGenerator =
             | _ -> false
         )
 
-    /// Headers are a list of (headerName, selfPropertyToGetValueOf)
-    let constructMember (headers : (SynExpr * Ident) list) (info : MemberInfo) : SynMemberDefn =
+    /// constantHeaders are a list of (headerName, headerValue)
+    /// variableHeaders are a list of (headerName, selfPropertyToGetValueOf)
+    let constructMember
+        (constantHeaders : (SynExpr * SynExpr) list)
+        (variableHeaders : (SynExpr * Ident) list)
+        (info : MemberInfo)
+        : SynMemberDefn
+        =
         let valInfo =
             SynValInfo.SynValInfo (
                 [
@@ -217,7 +217,7 @@ module internal HttpClientGenerator =
             |> SynArgPats.Pats
 
         let headPat =
-            let thisIdent = if headers.IsEmpty then "_" else "this"
+            let thisIdent = if variableHeaders.IsEmpty then "_" else "this"
 
             SynPat.LongIdent (
                 SynLongIdent.CreateFromLongIdent [ Ident.Create thisIdent ; info.Identifier ],
@@ -586,8 +586,8 @@ module internal HttpClientGenerator =
                     )
                 )
 
-            let setHeaders =
-                headers
+            let setVariableHeaders =
+                variableHeaders
                 |> List.map (fun (headerName, callToGetValue) ->
                     Do (
                         SynExpr.CreateApp (
@@ -603,6 +603,17 @@ module internal HttpClientGenerator =
                                         SynExpr.CreateConst SynConst.Unit
                                     )
                                 ]
+                        )
+                    )
+                )
+
+            let setConstantHeaders =
+                constantHeaders
+                |> List.map (fun (headerName, headerValue) ->
+                    Do (
+                        SynExpr.CreateApp (
+                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "httpMessage" ; "Headers" ; "Add" ]),
+                            SynExpr.CreateParenedTuple [ headerName ; headerValue ]
                         )
                     )
                 )
@@ -625,7 +636,8 @@ module internal HttpClientGenerator =
 
                 yield! handleBodyParams
 
-                yield! setHeaders
+                yield! setVariableHeaders
+                yield! setConstantHeaders
 
                 yield
                     LetBang (
@@ -744,13 +756,42 @@ module internal HttpClientGenerator =
         =
         let interfaceType = AstHelper.parseInterface interfaceType
 
+        let constantHeaders =
+            interfaceType.Attributes
+            |> extractHeaderInformation
+            |> List.map (fun exprs ->
+                match exprs with
+                | [ key ; value ] -> key, value
+                | [] ->
+                    failwith
+                        "Expected constant header parameters to be of the form [<Header (key, value)>], but got no args"
+                | [ _ ] ->
+                    failwith
+                        "Expected constant header parameters to be of the form [<Header (key, value)>], but got only one arg"
+                | _ ->
+                    failwith
+                        "Expected constant header parameters to be of the form [<Header (key, value)>], but got more than two args"
+            )
+
         let baseAddress = extractBaseAddress interfaceType.Attributes
         let basePath = extractBasePath interfaceType.Attributes
 
         let properties =
             interfaceType.Properties
             |> List.map (fun pi ->
-                let headerInfo = extractHeaderInformation pi.Attributes
+                let headerInfo =
+                    match extractHeaderInformation pi.Attributes with
+                    | [ [ x ] ] -> x
+                    | [ xs ] ->
+                        failwith
+                            "Expected exactly one Header parameter on the member, with exactly one arg; got one Header parameter with non-1-many args"
+                    | [] ->
+                        failwith
+                            "Expected exactly one Header parameter on the member, with exactly one arg; got no Header parameters"
+                    | _ ->
+                        failwith
+                            "Expected exactly one Header parameter on the member, with exactly one arg; got multiple Header parameters"
+
                 headerInfo, pi
             )
 
@@ -803,7 +844,7 @@ module internal HttpClientGenerator =
                     Accessibility = mem.Accessibility
                 }
             )
-            |> List.map (constructMember properties)
+            |> List.map (constructMember constantHeaders properties)
 
         let propertyMembers =
             properties

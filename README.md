@@ -260,7 +260,8 @@ The motivating example is again ahead-of-time compilation: we wish to avoid the 
 
 ### Features
 
-* Variable header values are supported: see [the definition of `IApiWithHeaders`](./ConsumePlugin/RestApiExample.fs).
+* Variable and constant header values are supported:
+  see [the definition of `IApiWithHeaders`](./ConsumePlugin/RestApiExample.fs).
 
 ### Limitations
 

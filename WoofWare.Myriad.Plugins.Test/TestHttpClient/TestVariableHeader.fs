@@ -52,7 +52,7 @@ module TestVariableHeader =
 
         api.GetPathParam("param").Result.Split "\n"
         |> Array.sort
-        |> shouldEqual [| "Authorization: -99" ; "X-Foo: 11" |]
+        |> shouldEqual [| "Authorization: -99" ; "Header-Name: Header-Value" ; "X-Foo: 11" |]
 
         someHeaderCount.Value |> shouldEqual 11
         someOtherHeaderCount.Value |> shouldEqual -99
@@ -98,11 +98,11 @@ module TestVariableHeader =
 
         api.GetPathParam("param").Result.Split "\n"
         |> Array.sort
-        |> shouldEqual [| "Authorization: -99" ; "X-Foo: 11" |]
+        |> shouldEqual [| "Authorization: -99" ; "Header-Name: Header-Value" ; "X-Foo: 11" |]
 
         api.GetPathParam("param").Result.Split "\n"
         |> Array.sort
-        |> shouldEqual [| "Authorization: -98" ; "X-Foo: 12" |]
+        |> shouldEqual [| "Authorization: -98" ; "Header-Name: Header-Value" ; "X-Foo: 12" |]
 
         someHeaderCount.Value |> shouldEqual 12
         someOtherHeaderCount.Value |> shouldEqual -98
