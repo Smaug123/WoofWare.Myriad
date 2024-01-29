@@ -885,6 +885,12 @@ module internal HttpClientGenerator =
             )
             |> SynPat.CreateParen
 
+        let xmlDoc =
+            if properties.IsEmpty then
+                " Create a REST client."
+            else
+                " Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties."
+
         let createFunc =
             SynBinding.SynBinding (
                 None,
@@ -892,7 +898,7 @@ module internal HttpClientGenerator =
                 false,
                 false,
                 [],
-                PreXmlDoc.Create " Create a REST client.",
+                PreXmlDoc.Create xmlDoc,
                 SynValData.SynValData (
                     None,
                     SynValInfo.SynValInfo (

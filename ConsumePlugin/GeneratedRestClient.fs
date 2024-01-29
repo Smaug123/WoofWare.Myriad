@@ -1060,8 +1060,8 @@ open RestEase
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<RequireQualifiedAccess>]
-module internal ApiWithHeaders =
-    /// Create a REST client.
+module ApiWithHeaders =
+    /// Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties.
     let make
         (someHeader : unit -> string)
         (someOtherHeader : unit -> int)

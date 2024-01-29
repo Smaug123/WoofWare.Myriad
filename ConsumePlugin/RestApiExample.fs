@@ -127,7 +127,7 @@ type IApiWithBasePathAndAddress =
     abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
-type internal IApiWithHeaders =
+type IApiWithHeaders =
     [<Header "X-Foo">]
     abstract SomeHeader : string
 
