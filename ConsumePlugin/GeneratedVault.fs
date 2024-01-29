@@ -461,7 +461,7 @@ module VaultClient =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IVaultClient =
         { new IVaultClient with
-            member this.GetSecret
+            member _.GetSecret
                 (jwt : JwtVaultResponse, path : string, mountPoint : string, ct : CancellationToken option)
                 =
                 async {
@@ -507,7 +507,7 @@ module VaultClient =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member this.GetJwt (role : string, jwt : string, ct : CancellationToken option) =
+            member _.GetJwt (role : string, jwt : string, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 

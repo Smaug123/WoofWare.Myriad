@@ -217,8 +217,10 @@ module internal HttpClientGenerator =
             |> SynArgPats.Pats
 
         let headPat =
+            let thisIdent = if headers.IsEmpty then "_" else "this"
+
             SynPat.LongIdent (
-                SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; info.Identifier ],
+                SynLongIdent.CreateFromLongIdent [ Ident.Create thisIdent ; info.Identifier ],
                 None,
                 None,
                 argPats,
