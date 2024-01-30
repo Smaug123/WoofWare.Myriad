@@ -23,6 +23,7 @@
     <Compile Include="TestMockGenerator\TestMockGenerator.fs" />
     <Compile Include="TestRemoveOptions.fs"/>
     <Compile Include="TestSurface.fs"/>
+    <None Include="../.github/workflows/dotnet.yaml" />
   </ItemGroup>
 
   <ItemGroup>
