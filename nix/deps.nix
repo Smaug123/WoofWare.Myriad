@@ -13,8 +13,8 @@
   })
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.0.25";
-    sha256 = "0zjq8an9cr0l7wxdmm9n9s3iyq5m0zl4x0h0wmy5cz7am8y15qc4";
+    version = "4.0.27";
+    sha256 = "sha256-slhnqGc/oCX1PTndYbEn1Z0ImsUKd8mfTUBejz50NSg=";
   })
   (fetchNuGet {
     pname = "coverlet.collector";
@@ -335,11 +335,6 @@
     pname = "NUnit";
     version = "4.0.1";
     sha256 = "0jgiq3dbwli5r70j0bw7021d69r7bhr58s8kphlpjmf7k47l5pcd";
-  })
-  (fetchNuGet {
-    pname = "NUnit.Analyzers";
-    version = "4.0.0";
-    sha256 = "01a2a7hx1dwkmdyy4dw7ipsj77dlbfidkzscwfmgyfdf197agd2d";
   })
   (fetchNuGet {
     pname = "NUnit3TestAdapter";
