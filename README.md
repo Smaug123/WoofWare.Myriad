@@ -281,6 +281,7 @@ There are also some design decisions:
 
 * Every function must take an optional `CancellationToken` (which is good practice anyway);
   so arguments are forced to be tupled.
+* The `[<Optional>]` attribute is not supported and will probably not be supported, because I consider it to be cursed.
 
 ## `GenerateMock`
 
