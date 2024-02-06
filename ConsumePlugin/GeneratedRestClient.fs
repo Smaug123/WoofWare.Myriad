@@ -32,7 +32,7 @@ module PureGymApi =
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com"
                              | v -> v),
-                            System.Uri ("v1/gyms/", System.UriKind.Relative)
+                            System.Uri (("v1/gyms/"), System.UriKind.Relative)
                         )
 
                     let httpMessage =

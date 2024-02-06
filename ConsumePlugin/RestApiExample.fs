@@ -11,7 +11,7 @@ open RestEase
 [<WoofWare.Myriad.Plugins.HttpClient>]
 [<BaseAddress "https://whatnot.com">]
 type IPureGymApi =
-    [<Get "v1/gyms/">]
+    [<Get("v1/gyms/")>]
     abstract GetGyms : ?ct : CancellationToken -> Task<Gym list>
 
     [<Get "v1/gyms/{gym_id}/attendance">]
