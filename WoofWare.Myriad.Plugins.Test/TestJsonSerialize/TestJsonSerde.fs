@@ -19,7 +19,7 @@ module TestJsonSerde =
 
     let rec innerGen (count : int) : Gen<InnerTypeWithBoth> =
         gen {
-            let! s = Arb.generate<NonNull<string>>
+            let! guid = Arb.generate<Guid>
             let! mapKeys = Gen.listOf Arb.generate<NonNull<string>>
             let mapKeys = mapKeys |> List.map _.Get |> List.distinct
             let! mapValues = Gen.listOfLength mapKeys.Length uriGen
@@ -59,7 +59,7 @@ module TestJsonSerde =
 
             return
                 {
-                    Thing = s.Get
+                    Thing = guid
                     Map = map
                     ReadOnlyDict = readOnlyDict
                     Dict = dict
@@ -101,3 +101,23 @@ module TestJsonSerde =
             true
 
         property |> Prop.forAll (Arb.fromGen outerGen) |> Check.QuickThrowOnFailure
+
+    [<Test>]
+    let ``Guids are treated just like strings`` () =
+        let guidStr = "b1e7496e-6e79-4158-8579-a01de355d3b2"
+        let guid = Guid.Parse guidStr
+
+        let node =
+            {
+                Thing = guid
+                Map = Map.empty
+                ReadOnlyDict = readOnlyDict []
+                Dict = dict []
+                ConcreteDict = Dictionary ()
+            }
+            |> InnerTypeWithBoth.toJsonNode
+
+        node.ToJsonString ()
+        |> shouldEqual (
+            sprintf """{"it\u0027s-a-me":"%s","map":{},"readOnlyDict":{},"dict":{},"concreteDict":{}}""" guidStr
+        )

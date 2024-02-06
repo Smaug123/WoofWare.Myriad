@@ -21,7 +21,7 @@ module InnerTypeWithBothJsonSerializeExtension =
             let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add (("it's-a-me"), System.Text.Json.Nodes.JsonValue.Create<string> input.Thing)
+                node.Add (("it's-a-me"), System.Text.Json.Nodes.JsonValue.Create<Guid> input.Thing)
 
                 node.Add (
                     "map",
@@ -245,6 +245,7 @@ module InnerTypeWithBothJsonParseExtension =
                  | v -> v)
                     .AsValue()
                     .GetValue<string> ()
+                |> System.Guid.Parse
 
             {
                 Thing = Thing
