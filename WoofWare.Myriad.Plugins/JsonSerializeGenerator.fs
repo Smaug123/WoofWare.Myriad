@@ -43,8 +43,9 @@ module internal JsonSerializeGenerator =
         | DateTime
         | NumberType _
         | PrimitiveType _
+        | Guid
         | Uri ->
-            // JsonValue.Create<{type}>
+            // JsonValue.Create<type>
             SynExpr.TypeApp (
                 SynExpr.CreateLongIdent (
                     SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]

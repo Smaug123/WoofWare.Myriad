@@ -467,6 +467,15 @@ module internal SynTypePatterns =
             | _ -> None
         | _ -> None
 
+    let (|Guid|_|) (fieldType : SynType) : unit option =
+        match fieldType with
+        | SynType.LongIdent ident ->
+            match ident.LongIdent |> List.map (fun i -> i.idText) with
+            | [ "System" ; "Guid" ]
+            | [ "Guid" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
     let (|HttpResponseMessage|_|) (fieldType : SynType) : unit option =
         match fieldType with
         | SynType.LongIdent ident ->
