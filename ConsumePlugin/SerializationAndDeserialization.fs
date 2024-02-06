@@ -9,7 +9,7 @@ open System.Text.Json.Serialization
 type InnerTypeWithBoth =
     {
         [<JsonPropertyName("it's-a-me")>]
-        Thing : string
+        Thing : Guid
         Map : Map<string, Uri>
         ReadOnlyDict : IReadOnlyDictionary<string, char list>
         Dict : IDictionary<Uri, bool>
