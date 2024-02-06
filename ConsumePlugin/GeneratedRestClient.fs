@@ -211,6 +211,72 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
+            member _.PostStringToString (foo : Map<string, string> option, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("some/url", System.UriKind.Relative)
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams =
+                        new System.Net.Http.StringContent (
+                            foo
+                            |> (fun field ->
+                                match field with
+                                | None -> null :> System.Text.Json.Nodes.JsonNode
+                                | Some field ->
+                                    ((fun field ->
+                                        let ret = System.Text.Json.Nodes.JsonObject ()
+
+                                        for (KeyValue (key, value)) in field do
+                                            ret.Add (
+                                                key.ToString (),
+                                                System.Text.Json.Nodes.JsonValue.Create<string> value
+                                            )
+
+                                        ret
+                                    )
+                                        field)
+                                    :> System.Text.Json.Nodes.JsonNode
+                            )
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                        )
+
+                    do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return
+                        match jsonNode with
+                        | null -> None
+                        | v ->
+                            v.AsObject ()
+                            |> Seq.map (fun kvp ->
+                                let key = (kvp.Key)
+                                let value = (kvp.Value).AsValue().GetValue<string> ()
+                                key, value
+                            )
+                            |> Map.ofSeq
+                            |> Some
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
             member _.GetSessions (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
@@ -403,7 +469,9 @@ module PureGymApi =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                            user
+                            |> PureGym.Member.toJsonNode
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
                         )
 
                     do httpMessage.Content <- queryParams
@@ -436,7 +504,7 @@ module PureGymApi =
                         new System.Net.Http.StringContent (
                             user
                             |> System.Text.Json.Nodes.JsonValue.Create<Uri>
-                            |> (fun node -> node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
                         )
 
                     do httpMessage.Content <- queryParams
@@ -469,7 +537,7 @@ module PureGymApi =
                         new System.Net.Http.StringContent (
                             user
                             |> System.Text.Json.Nodes.JsonValue.Create<int>
-                            |> (fun node -> node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
                         )
 
                     do httpMessage.Content <- queryParams

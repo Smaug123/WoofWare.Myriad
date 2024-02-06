@@ -257,3 +257,37 @@ module TestPureGymRestApi =
         uri.ToString () |> shouldEqual "https://patrick@en.wikipedia.org/wiki/foo"
         uri.UserInfo |> shouldEqual "patrick"
         uri.Host |> shouldEqual "en.wikipedia.org"
+
+    [<TestCase false>]
+    [<TestCase true>]
+    let ``Map<string, string> option example`` (isSome : bool) =
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.Method |> shouldEqual HttpMethod.Post
+
+                message.RequestUri.ToString () |> shouldEqual "https://whatnot.com/some/url"
+                let! content = message.Content.ReadAsStringAsync () |> Async.AwaitTask
+
+                if isSome then
+                    content |> shouldEqual """{"hi":"bye"}"""
+                else
+                    content |> shouldEqual "null"
+
+                let content = new StringContent (content)
+
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- content
+                return resp
+            }
+
+        use client = HttpClientMock.makeNoUri proc
+        let api = PureGymApi.make client
+
+        let expected =
+            if isSome then
+                [ "hi", "bye" ] |> Map.ofList |> Some
+            else
+                None
+
+        let actual = api.PostStringToString(expected).Result
+        actual |> shouldEqual expected

@@ -29,6 +29,10 @@ type IPureGymApi =
     [<Get "some/url">]
     abstract GetUrl : ?ct : CancellationToken -> Task<UriThing>
 
+    [<Post "some/url">]
+    abstract PostStringToString :
+        [<Body>] foo : Map<string, string> option * ?ct : CancellationToken -> Task<Map<string, string> option>
+
     // We'll use this one to check handling of absolute URIs too
     [<Get "/v2/gymSessions/member">]
     abstract GetSessions :

@@ -65,11 +65,14 @@ module internal JsonSerializeGenerator =
                     SynMatchClause.Create (
                         SynPat.CreateLongIdent (SynLongIdent.CreateString "None", []),
                         None,
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (
-                                SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]
-                            ),
-                            SynExpr.CreateNull
+                        // The absolutely galaxy-brained implementation of JsonValue has `JsonValue.Parse "null"`
+                        // identically equal to null. We have to work around this later, but we might as well just
+                        // be efficient here and whip up the null directly.
+                        SynExpr.CreateNull
+                        |> SynExpr.upcast' (
+                            SynType.CreateLongIdent (
+                                SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
+                            )
                         )
                     )
 
@@ -80,6 +83,12 @@ module internal JsonSerializeGenerator =
                         ),
                         None,
                         SynExpr.CreateApp (serializeNode ty, SynExpr.CreateIdentString "field")
+                        |> SynExpr.CreateParen
+                        |> SynExpr.upcast' (
+                            SynType.CreateLongIdent (
+                                SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
+                            )
+                        )
                     )
                 ]
             )

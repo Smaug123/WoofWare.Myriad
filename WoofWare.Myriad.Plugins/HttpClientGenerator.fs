@@ -516,12 +516,18 @@ module internal HttpClientGenerator =
                                     |> SynExpr.pipeThroughFunction (
                                         SynExpr.createLambda
                                             "node"
-                                            (SynExpr.CreateApp (
-                                                SynExpr.CreateLongIdent (
-                                                    SynLongIdent.Create [ "node" ; "ToJsonString" ]
-                                                ),
-                                                SynExpr.CreateConst SynConst.Unit
-                                            ))
+                                            (SynExpr.ifThenElse
+                                                (SynExpr.CreateApp (
+                                                    SynExpr.CreateIdentString "isNull",
+                                                    SynExpr.CreateIdentString "node"
+                                                ))
+                                                (SynExpr.CreateApp (
+                                                    SynExpr.CreateLongIdent (
+                                                        SynLongIdent.Create [ "node" ; "ToJsonString" ]
+                                                    ),
+                                                    SynExpr.CreateConst SynConst.Unit
+                                                ))
+                                                (SynExpr.CreateConst (SynConst.CreateString "null")))
                                     )
                                 ),
                                 range0

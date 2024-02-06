@@ -2,6 +2,9 @@ namespace WoofWare.Myriad.Plugins.Test
 
 open System
 open System.Collections.Generic
+open System.IO
+open System.Text
+open System.Text.Json
 open System.Text.Json.Nodes
 open NUnit.Framework
 open FsCheck
