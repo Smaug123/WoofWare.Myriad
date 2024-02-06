@@ -54,8 +54,8 @@ module internal HttpClientGenerator =
         {
             /// E.g. HttpMethod.Get
             HttpMethod : HttpMethod
-            /// E.g. "v1/gyms/{gym_id}/attendance"
-            UrlTemplate : string
+            /// E.g. SynExpr.Const "v1/gyms/{gym_id}/attendance"
+            UrlTemplate : SynExpr
             TaskReturnType : SynType
             Args : Parameter list
             Identifier : Ident
@@ -76,8 +76,8 @@ module internal HttpClientGenerator =
         elif m = HttpMethod.Trace then "Trace"
         else failwith $"Unrecognised method: %+A{m}"
 
-    /// E.g. converts `[<Get "blah">]` to (HttpMethod.Get, "blah")
-    let extractHttpInformation (attrs : SynAttribute list) : HttpMethod * string =
+    /// E.g. converts `[<Get "blah">]` to (HttpMethod.Get, SynExpr.Const "blah")
+    let extractHttpInformation (attrs : SynAttribute list) : HttpMethod * SynExpr =
         let matchingAttrs =
             attrs
             |> List.choose (fun attr ->
@@ -118,11 +118,7 @@ module internal HttpClientGenerator =
             )
 
         match matchingAttrs with
-        | [ (meth, arg) ] ->
-            match arg with
-            | SynExpr.Const (SynConst.String (text, SynStringKind.Regular, _), _) -> meth, text
-            | arg ->
-                failwith $"Unrecognised AST member in attribute argument. Only regular strings are supported: %+A{arg}"
+        | [ (meth, arg) ] -> meth, arg
         | [] -> failwith "Required exactly one recognised RestEase attribute on member, but got none"
         | matchingAttrs ->
             failwith $"Required exactly one recognised RestEase attribute on member, but got %i{matchingAttrs.Length}"
@@ -229,7 +225,7 @@ module internal HttpClientGenerator =
             )
 
         let requestUriTrailer =
-            (SynExpr.CreateConstString info.UrlTemplate, info.Args)
+            (info.UrlTemplate, info.Args)
             ||> List.fold (fun template arg ->
                 (template, arg.Attributes)
                 ||> List.fold (fun template attr ->
