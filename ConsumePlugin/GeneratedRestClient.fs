@@ -211,6 +211,60 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
+            member _.GetStringToString (foo : Map<string, string> option, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri ("some/url", System.UriKind.Relative)
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams =
+                        new System.Net.Http.StringContent (
+                            foo
+                            |> (fun field ->
+                                match field with
+                                | None -> System.Text.Json.Nodes.JsonValue.Create null
+                                | Some field ->
+                                    (fun field ->
+                                        let ret = System.Text.Json.Nodes.JsonObject ()
+
+                                        for (KeyValue (key, value)) in field do
+                                            ret.Add (
+                                                key.ToString (),
+                                                System.Text.Json.Nodes.JsonValue.Create<string> value
+                                            )
+
+                                        ret
+                                    )
+                                        field
+                            )
+                            |> (fun node -> node.ToJsonString ())
+                        )
+
+                    do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return UriThing.jsonParse jsonNode
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
             member _.GetSessions (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
