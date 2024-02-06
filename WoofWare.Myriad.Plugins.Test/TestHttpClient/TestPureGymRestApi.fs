@@ -263,7 +263,7 @@ module TestPureGymRestApi =
     let ``Map<string, string> option example`` (isSome : bool) =
         let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
             async {
-                message.Method |> shouldEqual HttpMethod.Get
+                message.Method |> shouldEqual HttpMethod.Post
 
                 message.RequestUri.ToString () |> shouldEqual "https://whatnot.com/some/url"
                 let! content = message.Content.ReadAsStringAsync () |> Async.AwaitTask

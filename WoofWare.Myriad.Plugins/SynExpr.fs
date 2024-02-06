@@ -263,6 +263,8 @@ module internal SynExpr =
             |> callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-ddTHH:mm:ss")
         | _ -> callMethod "ToString" ident
 
+    let upcast' (ty : SynType) (e : SynExpr) = SynExpr.Upcast (e, ty, range0)
+
     let synBindingTriviaZero (isMember : bool) =
         {
             SynBindingTrivia.EqualsRange = Some range0
