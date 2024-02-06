@@ -117,7 +117,7 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetGym (gymId : int, ct : CancellationToken option) =
+            member _.GetGym (gym : int, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -127,8 +127,8 @@ module PureGymApi =
                              | null -> System.Uri "https://whatnot.com"
                              | v -> v),
                             System.Uri (
-                                "v1/gyms/{gym_id}"
-                                    .Replace ("{gym_id}", gymId.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                "v1/gyms/{gym}"
+                                    .Replace ("{gym}", gym.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
                         )

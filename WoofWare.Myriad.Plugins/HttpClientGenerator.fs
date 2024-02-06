@@ -20,10 +20,15 @@ module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range
     open Myriad.Core.Ast
 
+    [<RequireQualifiedAccess>]
+    type PathSpec =
+        | Verbatim of string
+        | MatchArgName
+
     type HttpAttribute =
         // TODO: Format parameter to these attrs
         | Query of string option
-        | Path of string
+        | Path of PathSpec
         | Body
 
     type Parameter =
@@ -230,18 +235,23 @@ module internal HttpClientGenerator =
                 (template, arg.Attributes)
                 ||> List.fold (fun template attr ->
                     match attr with
-                    | HttpAttribute.Path s ->
+                    | HttpAttribute.Path spec ->
                         let varName =
                             match arg.Id with
                             | None -> failwith "TODO: anonymous args"
                             | Some id -> id
+
+                        let substituteId =
+                            match spec with
+                            | PathSpec.Verbatim s -> s
+                            | PathSpec.MatchArgName -> varName.idText
 
                         template
                         |> SynExpr.callMethodArg
                             "Replace"
                             (SynExpr.CreateParenedTuple
                                 [
-                                    SynExpr.CreateConstString ("{" + s + "}")
+                                    SynExpr.CreateConstString ("{" + substituteId + "}")
                                     SynExpr.callMethod "ToString" (SynExpr.CreateIdent varName)
                                     |> SynExpr.pipeThroughFunction (
                                         SynExpr.CreateLongIdent (
@@ -710,7 +720,9 @@ module internal HttpClientGenerator =
             | "Path"
             | "PathAttribute" ->
                 match attr.ArgExpr with
-                | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) -> Some (HttpAttribute.Path s)
+                | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
+                    Some (HttpAttribute.Path (PathSpec.Verbatim s))
+                | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Path PathSpec.MatchArgName)
                 | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Path attribute: %+A{a}"
                 | _ -> None
             | "Body"
