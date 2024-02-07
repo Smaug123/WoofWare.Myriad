@@ -198,11 +198,11 @@ jobs:
           name: nuget-package-plugin
           path: packed-plugin
       - name: Publish to NuGet (plugin)
-        run: nix develop --command dotnet nuget push "packed-plugin/WoofWare.Myriad.Plugins.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: nix develop --command dotnet nuget push "packed-plugin/WoofWare.Myriad.Plugins.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Download NuGet artifact (attribute)
         uses: actions/download-artifact@v4
         with:
           name: nuget-package-attribute
           path: packed-attribute
       - name: Publish to NuGet (attribute)
-        run: nix develop --command dotnet nuget push "packed-attribute/WoofWare.Myriad.Plugins.Attributes.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: nix develop --command dotnet nuget push "packed-attribute/WoofWare.Myriad.Plugins.Attributes.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
