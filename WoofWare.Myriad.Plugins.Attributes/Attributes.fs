@@ -56,4 +56,3 @@ type JsonParseAttribute (isExtensionMethod : bool) =
 /// i.e. to stamp out HTTP REST clients from interfaces defining the API.
 type HttpClientAttribute () =
     inherit Attribute ()
-

@@ -7,76 +7,96 @@ namespace SomeNamespace
 
 /// Mock record type for an interface
 type internal PublicTypeMock =
-    { Mem1: string * int -> string list
-      Mem2: string -> int
-      Mem3: int * option<System.Threading.CancellationToken> -> string }
+    {
+        Mem1 : string * int -> string list
+        Mem2 : string -> int
+        Mem3 : int * option<System.Threading.CancellationToken> -> string
+    }
 
-    static member Empty: PublicTypeMock =
-        { Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-          Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-          Mem3 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function")) }
+    static member Empty : PublicTypeMock =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem3 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
 
     interface IPublicType with
-        member this.Mem1(arg_0_0, arg_0_1) = this.Mem1(arg_0_0, arg_0_1)
-        member this.Mem2(arg_0_0) = this.Mem2(arg_0_0)
-        member this.Mem3(arg_0_0, arg_0_1) = this.Mem3(arg_0_0, arg_0_1)
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
+        member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace
 
 /// Mock record type for an interface
 type internal InternalTypeMock =
-    { Mem1: string * int -> unit
-      Mem2: string -> int }
+    {
+        Mem1 : string * int -> unit
+        Mem2 : string -> int
+    }
 
-    static member Empty: InternalTypeMock =
-        { Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-          Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function")) }
+    static member Empty : InternalTypeMock =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
 
     interface InternalType with
-        member this.Mem1(arg_0_0, arg_0_1) = this.Mem1(arg_0_0, arg_0_1)
-        member this.Mem2(arg_0_0) = this.Mem2(arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
 /// Mock record type for an interface
 type private PrivateTypeMock =
-    { Mem1: string * int -> unit
-      Mem2: string -> int }
+    {
+        Mem1 : string * int -> unit
+        Mem2 : string -> int
+    }
 
-    static member Empty: PrivateTypeMock =
-        { Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-          Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function")) }
+    static member Empty : PrivateTypeMock =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
 
     interface PrivateType with
-        member this.Mem1(arg_0_0, arg_0_1) = this.Mem1(arg_0_0, arg_0_1)
-        member this.Mem2(arg_0_0) = this.Mem2(arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
 /// Mock record type for an interface
 type internal VeryPublicTypeMock<'a, 'b> =
-    { Mem1: 'a -> 'b }
+    {
+        Mem1 : 'a -> 'b
+    }
 
-    static member Empty() : VeryPublicTypeMock<'a, 'b> =
-        { Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function")) }
+    static member Empty () : VeryPublicTypeMock<'a, 'b> =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
 
     interface VeryPublicType<'a, 'b> with
-        member this.Mem1(arg_0_0) = this.Mem1(arg_0_0)
+        member this.Mem1 (arg_0_0) = this.Mem1 (arg_0_0)
 namespace SomeNamespace
 
 /// Mock record type for an interface
 type internal CurriedMock<'a> =
-    { Mem1: int -> 'a -> string
-      Mem2: int * string -> 'a -> string
-      Mem3: (int * string) -> 'a -> string
-      Mem4: (int * string) -> ('a * int) -> string
-      Mem5: int * string -> ('a * int) -> string
-      Mem6: int * string -> 'a * int -> string }
+    {
+        Mem1 : int -> 'a -> string
+        Mem2 : int * string -> 'a -> string
+        Mem3 : (int * string) -> 'a -> string
+        Mem4 : (int * string) -> ('a * int) -> string
+        Mem5 : int * string -> ('a * int) -> string
+        Mem6 : int * string -> 'a * int -> string
+    }
 
-    static member Empty() : CurriedMock<'a> =
-        { Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-          Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-          Mem3 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-          Mem4 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-          Mem5 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-          Mem6 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function")) }
+    static member Empty () : CurriedMock<'a> =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem3 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem4 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem5 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem6 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
 
     interface Curried<'a> with
         member this.Mem1 (arg_0_0) (arg_1_0) = this.Mem1 (arg_0_0) (arg_1_0)
@@ -91,7 +111,3 @@ type internal CurriedMock<'a> =
 
         member this.Mem6 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1) =
             this.Mem6 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
-
-
-
-

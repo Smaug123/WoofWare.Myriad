@@ -340,7 +340,7 @@ For example, [PureGymDto.fs](./ConsumePlugin/PureGymDto.fs) is a real-world set 
       <WoofWareMyriadPluginVersion>2.0.1</WoofWareMyriadPluginVersion>
     </PropertyGroup>
     ```
-* Take a reference on `WoofWare.Myriad.Plugins.Attributes`, to obtain access to the attributes which the generator will recognise:
+* Take a reference on `WoofWare.Myriad.Plugins.Attributes` (which has no other dependencies), to obtain access to the attributes which the generator will recognise:
     ```xml
     <ItemGroup>
         <PackageReference Include="WoofWare.Myriad.Plugins.Attributes" Version="2.0" />
