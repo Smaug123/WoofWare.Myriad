@@ -18,9 +18,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Myriad.Core" Version="0.8.3"/>
+    <PackageReference Include="Myriad.Core" Version="0.8.3" PrivateAssets="all"/>
     <!-- the lowest version allowed by Myriad.Core -->
-    <PackageReference Update="FSharp.Core" Version="6.0.1"/>
+    <PackageReference Update="FSharp.Core" Version="6.0.1" PrivateAssets="all"/>
   </ItemGroup>
 
   <ItemGroup>
