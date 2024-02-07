@@ -6,7 +6,7 @@ open ApiSurface
 
 [<TestFixture>]
 module TestSurface =
-    let assembly = typeof<RemoveOptionsAttribute>.Assembly
+    let assembly = typeof<RemoveOptionsGenerator>.Assembly
 
     [<Test>]
     let ``Ensure API surface has not been modified`` () = ApiSurface.assertIdentical assembly
