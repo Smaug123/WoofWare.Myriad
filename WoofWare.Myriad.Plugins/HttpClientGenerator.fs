@@ -8,13 +8,6 @@ open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
 
-/// Attribute indicating a record type to which the "create HTTP client" Myriad
-/// generator should apply during build.
-/// This generator is intended to replicate much of the functionality of RestEase,
-/// i.e. to stamp out HTTP REST clients from interfaces defining the API.
-type HttpClientAttribute () =
-    inherit Attribute ()
-
 [<RequireQualifiedAccess>]
 module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range

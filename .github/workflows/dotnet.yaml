@@ -142,23 +142,37 @@ jobs:
       run: nix develop --command dotnet build --no-restore --configuration Release
     - name: Pack
       run: nix develop --command dotnet pack --configuration Release
-    - name: Upload NuGet artifact
+    - name: Upload NuGet artifact (plugin)
       uses: actions/upload-artifact@v4
       with:
-        name: nuget-package
+        name: nuget-package-plugin
         path: WoofWare.Myriad.Plugins/bin/Release/WoofWare.Myriad.Plugins.*.nupkg
+    - name: Upload NuGet artifact (attributes)
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-package-attribute
+        path: WoofWare.Myriad.Plugins.Attributes/bin/Release/WoofWare.Myriad.Plugins.Attributes.*.nupkg
 
   expected-pack:
     needs: [nuget-pack]
     runs-on: ubuntu-latest
     steps:
-      - name: Download NuGet artifact
+      - name: Download NuGet artifact (plugin)
         uses: actions/download-artifact@v4
         with:
-          name: nuget-package
+          name: nuget-package-plugin
+          path: packed-plugin
       - name: Check NuGet contents
         # Verify that there is exactly one nupkg in the artifact that would be NuGet published
-        run: if [[ $(find . -maxdepth 1 -name 'WoofWare.Myriad.Plugins.*.nupkg' -printf c | wc -c) -ne "1" ]]; then exit 1; fi
+        run: if [[ $(find packed-plugin -maxdepth 1 -name 'WoofWare.Myriad.Plugins.*.nupkg' -printf c | wc -c) -ne "1" ]]; then exit 1; fi
+      - name: Download NuGet artifact (attributes)
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-attribute
+          path: packed-attribute
+      - name: Check NuGet contents
+        # Verify that there is exactly one nupkg in the artifact that would be NuGet published
+        run: if [[ $(find packed-attribute -maxdepth 1 -name 'WoofWare.Myriad.Plugins.Attributes.*.nupkg' -printf c | wc -c) -ne "1" ]]; then exit 1; fi
 
   all-required-checks-complete:
     needs: [check-dotnet-format, check-nix-format, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack]
@@ -178,9 +192,17 @@ jobs:
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - name: Download NuGet artifact
+      - name: Download NuGet artifact (plugin)
         uses: actions/download-artifact@v4
         with:
-          name: nuget-package
-      - name: Publish to NuGet
-        run: nix develop --command dotnet nuget push "WoofWare.Myriad.Plugins.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+          name: nuget-package-plugin
+          path: packed-plugin
+      - name: Publish to NuGet (plugin)
+        run: nix develop --command dotnet nuget push "packed-plugin/WoofWare.Myriad.Plugins.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      - name: Download NuGet artifact (attribute)
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-attribute
+          path: packed-attribute
+      - name: Publish to NuGet (attribute)
+        run: nix develop --command dotnet nuget push "packed-attribute/WoofWare.Myriad.Plugins.Attributes.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

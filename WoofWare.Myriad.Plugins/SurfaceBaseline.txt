@@ -1,22 +1,10 @@
-WoofWare.Myriad.Plugins.GenerateMockAttribute inherit System.Attribute
-WoofWare.Myriad.Plugins.GenerateMockAttribute..ctor [constructor]: unit
-WoofWare.Myriad.Plugins.HttpClientAttribute inherit System.Attribute
-WoofWare.Myriad.Plugins.HttpClientAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.HttpClientGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.HttpClientGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.InterfaceMockGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.InterfaceMockGenerator..ctor [constructor]: unit
-WoofWare.Myriad.Plugins.JsonParseAttribute inherit System.Attribute
-WoofWare.Myriad.Plugins.JsonParseAttribute..ctor [constructor]: bool
-WoofWare.Myriad.Plugins.JsonParseAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonParseGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.JsonParseGenerator..ctor [constructor]: unit
-WoofWare.Myriad.Plugins.JsonSerializeAttribute inherit System.Attribute
-WoofWare.Myriad.Plugins.JsonSerializeAttribute..ctor [constructor]: bool
-WoofWare.Myriad.Plugins.JsonSerializeAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonSerializeGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.JsonSerializeGenerator..ctor [constructor]: unit
-WoofWare.Myriad.Plugins.RemoveOptionsAttribute inherit System.Attribute
-WoofWare.Myriad.Plugins.RemoveOptionsAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RemoveOptionsGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.RemoveOptionsGenerator..ctor [constructor]: unit

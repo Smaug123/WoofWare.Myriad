@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>Patrick Stevens</Authors>
+    <Copyright>Copyright (c) Patrick Stevens 2024</Copyright>
+    <Description>Attributes to accompany the WoofWare.Myriad.Plugins source generator, so that you need take no runtime dependencies to use them.</Description>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Smaug123/WoofWare.Myriad</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>myriad;fsharp;source-generator;source-gen;json</PackageTags>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarnOn>FS3559</WarnOn>
+    <PackageId>WoofWare.Myriad.Plugins.Attributes</PackageId>
+    <PackageIcon>logo.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Attributes.fs"/>
+    <EmbeddedResource Include="version.json"/>
+    <EmbeddedResource Include="SurfaceBaseline.txt"/>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="../WoofWare.Myriad.Plugins/logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4"/>
+  </ItemGroup>
+
+</Project>

@@ -1,16 +1,9 @@
 namespace WoofWare.Myriad.Plugins
 
-open System
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
-
-/// Attribute indicating a record type to which the "Remove Options" Myriad
-/// generator should apply during build.
-/// The purpose of this generator is to strip the `option` modifier from types.
-type RemoveOptionsAttribute () =
-    inherit Attribute ()
 
 [<RequireQualifiedAccess>]
 module internal RemoveOptionsGenerator =

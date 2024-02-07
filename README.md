@@ -337,13 +337,20 @@ For example, [PureGymDto.fs](./ConsumePlugin/PureGymDto.fs) is a real-world set 
 * In your `.fsproj` file, define a helper variable so that subsequent steps don't all have to be kept in sync:
     ```xml
     <PropertyGroup>
-      <WoofWareMyriadPluginVersion>1.3.5</WoofWareMyriadPluginVersion>
+      <WoofWareMyriadPluginVersion>2.0.1</WoofWareMyriadPluginVersion>
     </PropertyGroup>
     ```
-* Take a reference on `WoofWare.Myriad.Plugins`:
+* Take a reference on `WoofWare.Myriad.Plugins.Attributes` (which has no other dependencies), to obtain access to the attributes which the generator will recognise:
     ```xml
     <ItemGroup>
-        <PackageReference Include="WoofWare.Myriad.Plugins" Version="$(WoofWareMyriadPluginVersion)" />
+        <PackageReference Include="WoofWare.Myriad.Plugins.Attributes" Version="2.0" />
+    </ItemGroup>
+    ```
+* Take a reference (with private assets, to prevent these from propagating to your own assembly) on `WoofWare.Myriad.Plugins`, to obtain the plugins which Myriad will run, and on `Myriad.Sdk`, to obtain the Myriad binary itself:
+    ```xml
+    <ItemGroup>
+        <PackageReference Include="WoofWare.Myriad.Plugins" Version="$(WoofWareMyriadPluginVersion)" PrivateAssets="all" />
+        <PackageReference Include="Myriad.Sdk" Version="0.8.3" PrivateAssets="all" />
     </ItemGroup>
     ```
 * Point Myriad to the DLL within the NuGet package which is the source of the plugins:
