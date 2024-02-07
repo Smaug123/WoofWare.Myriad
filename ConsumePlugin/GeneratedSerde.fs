@@ -17,72 +17,67 @@ module InnerTypeWithBothJsonSerializeExtension =
     type InnerTypeWithBoth with
 
         /// Serialize to a JSON node
-        static member toJsonNode (input : InnerTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject ()
+        static member toJsonNode(input: InnerTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject()
 
             do
-                node.Add (("it's-a-me"), System.Text.Json.Nodes.JsonValue.Create<Guid> input.Thing)
+                node.Add(("it's-a-me"), System.Text.Json.Nodes.JsonValue.Create<Guid> input.Thing)
 
-                node.Add (
+                node.Add(
                     "map",
                     (fun field ->
-                        let ret = System.Text.Json.Nodes.JsonObject ()
+                        let ret = System.Text.Json.Nodes.JsonObject()
 
-                        for (KeyValue (key, value)) in field do
-                            ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<Uri> value)
+                        for (KeyValue(key, value)) in field do
+                            ret.Add(key.ToString(), System.Text.Json.Nodes.JsonValue.Create<Uri> value)
 
-                        ret
-                    )
+                        ret)
                         input.Map
                 )
 
-                node.Add (
+                node.Add(
                     "readOnlyDict",
                     (fun field ->
-                        let ret = System.Text.Json.Nodes.JsonObject ()
+                        let ret = System.Text.Json.Nodes.JsonObject()
 
-                        for (KeyValue (key, value)) in field do
-                            ret.Add (
-                                key.ToString (),
+                        for (KeyValue(key, value)) in field do
+                            ret.Add(
+                                key.ToString(),
                                 (fun field ->
-                                    let arr = System.Text.Json.Nodes.JsonArray ()
+                                    let arr = System.Text.Json.Nodes.JsonArray()
 
                                     for mem in field do
-                                        arr.Add (System.Text.Json.Nodes.JsonValue.Create<char> mem)
+                                        arr.Add(System.Text.Json.Nodes.JsonValue.Create<char> mem)
 
-                                    arr
-                                )
+                                    arr)
                                     value
                             )
 
-                        ret
-                    )
+                        ret)
                         input.ReadOnlyDict
                 )
 
-                node.Add (
+                node.Add(
                     "dict",
                     (fun field ->
-                        let ret = System.Text.Json.Nodes.JsonObject ()
+                        let ret = System.Text.Json.Nodes.JsonObject()
 
-                        for (KeyValue (key, value)) in field do
-                            ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<bool> value)
+                        for (KeyValue(key, value)) in field do
+                            ret.Add(key.ToString(), System.Text.Json.Nodes.JsonValue.Create<bool> value)
 
-                        ret
-                    )
+                        ret)
                         input.Dict
                 )
 
-                node.Add (
+                node.Add(
                     "concreteDict",
                     (fun field ->
-                        let ret = System.Text.Json.Nodes.JsonObject ()
+                        let ret = System.Text.Json.Nodes.JsonObject()
 
-                        for (KeyValue (key, value)) in field do
-                            ret.Add (key.ToString (), InnerTypeWithBoth.toJsonNode value)
+                        for (KeyValue(key, value)) in field do
+                            ret.Add(key.ToString(), InnerTypeWithBoth.toJsonNode value)
 
-                        ret
-                    )
+                        ret)
                         input.ConcreteDict
                 )
 
@@ -100,51 +95,48 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
     type JsonRecordTypeWithBoth with
 
         /// Serialize to a JSON node
-        static member toJsonNode (input : JsonRecordTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject ()
+        static member toJsonNode(input: JsonRecordTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject()
 
             do
-                node.Add ("a", System.Text.Json.Nodes.JsonValue.Create<int> input.A)
-                node.Add ("b", System.Text.Json.Nodes.JsonValue.Create<string> input.B)
+                node.Add("a", System.Text.Json.Nodes.JsonValue.Create<int> input.A)
+                node.Add("b", System.Text.Json.Nodes.JsonValue.Create<string> input.B)
 
-                node.Add (
+                node.Add(
                     "c",
                     (fun field ->
-                        let arr = System.Text.Json.Nodes.JsonArray ()
+                        let arr = System.Text.Json.Nodes.JsonArray()
 
                         for mem in field do
-                            arr.Add (System.Text.Json.Nodes.JsonValue.Create<int> mem)
+                            arr.Add(System.Text.Json.Nodes.JsonValue.Create<int> mem)
 
-                        arr
-                    )
+                        arr)
                         input.C
                 )
 
-                node.Add ("d", InnerTypeWithBoth.toJsonNode input.D)
+                node.Add("d", InnerTypeWithBoth.toJsonNode input.D)
 
-                node.Add (
+                node.Add(
                     "e",
                     (fun field ->
-                        let arr = System.Text.Json.Nodes.JsonArray ()
+                        let arr = System.Text.Json.Nodes.JsonArray()
 
                         for mem in field do
-                            arr.Add (System.Text.Json.Nodes.JsonValue.Create<string> mem)
+                            arr.Add(System.Text.Json.Nodes.JsonValue.Create<string> mem)
 
-                        arr
-                    )
+                        arr)
                         input.E
                 )
 
-                node.Add (
+                node.Add(
                     "f",
                     (fun field ->
-                        let arr = System.Text.Json.Nodes.JsonArray ()
+                        let arr = System.Text.Json.Nodes.JsonArray()
 
                         for mem in field do
-                            arr.Add (System.Text.Json.Nodes.JsonValue.Create<int> mem)
+                            arr.Add(System.Text.Json.Nodes.JsonValue.Create<int> mem)
 
-                        arr
-                    )
+                        arr)
                         input.F
                 )
 
@@ -159,22 +151,21 @@ module InnerTypeWithBothJsonParseExtension =
     type InnerTypeWithBoth with
 
         /// Parse from a JSON node.
-        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerTypeWithBoth =
+        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : InnerTypeWithBoth =
             let ConcreteDict =
                 (match node.["concreteDict"] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" ("concreteDict")
                          )
                      )
                  | v -> v)
-                    .AsObject ()
+                    .AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key)
                     let value = InnerTypeWithBoth.jsonParse (kvp.Value)
-                    key, value
-                )
+                    key, value)
                 |> Seq.map System.Collections.Generic.KeyValuePair
                 |> System.Collections.Generic.Dictionary
 
@@ -182,78 +173,73 @@ module InnerTypeWithBothJsonParseExtension =
                 (match node.["dict"] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" ("dict")
                          )
                      )
                  | v -> v)
-                    .AsObject ()
+                    .AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key) |> System.Uri
-                    let value = (kvp.Value).AsValue().GetValue<bool> ()
-                    key, value
-                )
+                    let value = (kvp.Value).AsValue().GetValue<bool>()
+                    key, value)
                 |> dict
 
             let ReadOnlyDict =
                 (match node.["readOnlyDict"] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" ("readOnlyDict")
                          )
                      )
                  | v -> v)
-                    .AsObject ()
+                    .AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key)
 
                     let value =
-                        (kvp.Value).AsArray ()
-                        |> Seq.map (fun elt -> elt.AsValue().GetValue<char> ())
+                        (kvp.Value).AsArray()
+                        |> Seq.map (fun elt -> elt.AsValue().GetValue<char>())
                         |> List.ofSeq
 
-                    key, value
-                )
+                    key, value)
                 |> readOnlyDict
 
             let Map =
                 (match node.["map"] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" ("map")
                          )
                      )
                  | v -> v)
-                    .AsObject ()
+                    .AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key)
-                    let value = (kvp.Value).AsValue().GetValue<string> () |> System.Uri
-                    key, value
-                )
+                    let value = (kvp.Value).AsValue().GetValue<string>() |> System.Uri
+                    key, value)
                 |> Map.ofSeq
 
             let Thing =
                 (match node.[("it's-a-me")] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" (("it's-a-me"))
                          )
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<string>()
                 |> System.Guid.Parse
 
-            {
-                Thing = Thing
-                Map = Map
-                ReadOnlyDict = ReadOnlyDict
-                Dict = Dict
-                ConcreteDict = ConcreteDict
-            }
+            { Thing = Thing
+              Map = Map
+              ReadOnlyDict = ReadOnlyDict
+              Dict = Dict
+              ConcreteDict = ConcreteDict }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing extension members for the JsonRecordTypeWithBoth type
@@ -263,31 +249,31 @@ module JsonRecordTypeWithBothJsonParseExtension =
     type JsonRecordTypeWithBoth with
 
         /// Parse from a JSON node.
-        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
+        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
             let F =
                 (match node.["f"] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" ("f")
                          )
                      )
                  | v -> v)
-                    .AsArray ()
-                |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
+                    .AsArray()
+                |> Seq.map (fun elt -> elt.AsValue().GetValue<int>())
                 |> Array.ofSeq
 
             let E =
                 (match node.["e"] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" ("e")
                          )
                      )
                  | v -> v)
-                    .AsArray ()
-                |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+                    .AsArray()
+                |> Seq.map (fun elt -> elt.AsValue().GetValue<string>())
                 |> Array.ofSeq
 
             let D =
@@ -295,7 +281,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                     match node.["d"] with
                     | null ->
                         raise (
-                            System.Collections.Generic.KeyNotFoundException (
+                            System.Collections.Generic.KeyNotFoundException(
                                 sprintf "Required key '%s' not found on JSON object" ("d")
                             )
                         )
@@ -306,44 +292,44 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 (match node.["c"] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" ("c")
                          )
                      )
                  | v -> v)
-                    .AsArray ()
-                |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
+                    .AsArray()
+                |> Seq.map (fun elt -> elt.AsValue().GetValue<int>())
                 |> List.ofSeq
 
             let B =
                 (match node.["b"] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" ("b")
                          )
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<string>()
 
             let A =
                 (match node.["a"] with
                  | null ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException (
+                         System.Collections.Generic.KeyNotFoundException(
                              sprintf "Required key '%s' not found on JSON object" ("a")
                          )
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<int> ()
+                    .GetValue<int>()
 
-            {
-                A = A
-                B = B
-                C = C
-                D = D
-                E = E
-                F = F
-            }
+            { A = A
+              B = B
+              C = C
+              D = D
+              E = E
+              F = F }
+
+

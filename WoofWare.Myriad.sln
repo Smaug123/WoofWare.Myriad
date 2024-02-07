@@ -6,6 +6,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Myriad.Plugins", "
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Myriad.Plugins.Test", "WoofWare.Myriad.Plugins.Test\WoofWare.Myriad.Plugins.Test.fsproj", "{EBFFA5D3-7F74-4824-8795-B6194E6FE0CB}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Myriad.Plugins.Attributes", "WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj", "{17548737-9BAB-4B1E-B680-76D47C343AAC}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Myriad.Plugins.Attributes.Test", "WoofWare.Myriad.Plugins.Attributes\Test\WoofWare.Myriad.Plugins.Attributes.Test.fsproj", "{26DC0C94-85F2-45B4-8FA1-1B27201F7AFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{EBFFA5D3-7F74-4824-8795-B6194E6FE0CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBFFA5D3-7F74-4824-8795-B6194E6FE0CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBFFA5D3-7F74-4824-8795-B6194E6FE0CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17548737-9BAB-4B1E-B680-76D47C343AAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17548737-9BAB-4B1E-B680-76D47C343AAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17548737-9BAB-4B1E-B680-76D47C343AAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17548737-9BAB-4B1E-B680-76D47C343AAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26DC0C94-85F2-45B4-8FA1-1B27201F7AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26DC0C94-85F2-45B4-8FA1-1B27201F7AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26DC0C94-85F2-45B4-8FA1-1B27201F7AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26DC0C94-85F2-45B4-8FA1-1B27201F7AFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

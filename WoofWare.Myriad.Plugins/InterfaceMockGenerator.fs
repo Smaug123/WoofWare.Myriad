@@ -6,14 +6,6 @@ open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
 
-/// Attribute indicating an interface type for which the "Generate Mock" Myriad
-/// generator should apply during build.
-/// This generator creates a record which implements the interface,
-/// but where each method is represented as a record field, so you can use
-/// record update syntax to easily specify partially-implemented mock objects.
-type GenerateMockAttribute () =
-    inherit Attribute ()
-
 [<RequireQualifiedAccess>]
 module internal InterfaceMockGenerator =
     open Fantomas.FCS.Text.Range

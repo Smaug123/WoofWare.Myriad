@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="TestSurface.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ApiSurface" Version="4.0.28" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0"/>
+        <PackageReference Include="NUnit" Version="3.13.3"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes.fsproj" />
+    </ItemGroup>
+
+</Project>

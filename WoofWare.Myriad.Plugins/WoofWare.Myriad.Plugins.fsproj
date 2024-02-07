@@ -46,4 +46,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj" />
+  </ItemGroup>
+
 </Project>
