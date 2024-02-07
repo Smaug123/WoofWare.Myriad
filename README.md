@@ -343,7 +343,7 @@ For example, [PureGymDto.fs](./ConsumePlugin/PureGymDto.fs) is a real-world set 
 * Take a reference on `WoofWare.Myriad.Plugins.Attributes` (which has no other dependencies), to obtain access to the attributes which the generator will recognise:
     ```xml
     <ItemGroup>
-        <PackageReference Include="WoofWare.Myriad.Plugins.Attributes" Version="2.0" />
+        <PackageReference Include="WoofWare.Myriad.Plugins.Attributes" Version="2.0.2" />
     </ItemGroup>
     ```
 * Take a reference (with private assets, to prevent these from propagating to your own assembly) on `WoofWare.Myriad.Plugins`, to obtain the plugins which Myriad will run, and on `Myriad.Sdk`, to obtain the Myriad binary itself:
