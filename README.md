@@ -346,11 +346,11 @@ For example, [PureGymDto.fs](./ConsumePlugin/PureGymDto.fs) is a real-world set 
         <PackageReference Include="WoofWare.Myriad.Plugins.Attributes" Version="2.0" />
     </ItemGroup>
     ```
-* Take a reference with private assets on `WoofWare.Myriad.Plugins`, to obtain the plugins which Myriad will run, and on `Myriad.Sdk`, to obtain the Myriad binary itself:
+* Take a reference (with private assets, to prevent these from propagating to your own assembly) on `WoofWare.Myriad.Plugins`, to obtain the plugins which Myriad will run, and on `Myriad.Sdk`, to obtain the Myriad binary itself:
     ```xml
     <ItemGroup>
-        <PackageReference Include="WoofWare.Myriad.Plugins" Version="$(WoofWareMyriadPluginVersion)" />
-        <PackageReference Include="Myriad.Sdk" Version="0.8.3" />
+        <PackageReference Include="WoofWare.Myriad.Plugins" Version="$(WoofWareMyriadPluginVersion)" PrivateAssets="all" />
+        <PackageReference Include="Myriad.Sdk" Version="0.8.3" PrivateAssets="all" />
     </ItemGroup>
     ```
 * Point Myriad to the DLL within the NuGet package which is the source of the plugins:
