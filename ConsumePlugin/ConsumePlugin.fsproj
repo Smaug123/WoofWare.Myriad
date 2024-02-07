@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <PackageReference Include="RestEase" Version="1.6.4"/>
+    <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj" />
     <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj"/>
     <PackageReference Include="Myriad.Sdk" Version="0.8.3"/>
     <PackageReference Include="Myriad.Core" Version="0.8.3"/>

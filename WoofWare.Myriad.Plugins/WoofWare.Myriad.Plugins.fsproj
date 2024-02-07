@@ -24,14 +24,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="List.fs" />
+    <Compile Include="List.fs"/>
     <Compile Include="AstHelper.fs"/>
     <Compile Include="SynExpr.fs"/>
-    <Compile Include="SynType.fs" />
+    <Compile Include="SynType.fs"/>
     <Compile Include="SynAttribute.fs"/>
     <Compile Include="RemoveOptionsGenerator.fs"/>
-    <Compile Include="InterfaceMockGenerator.fs" />
-    <Compile Include="JsonSerializeGenerator.fs" />
+    <Compile Include="InterfaceMockGenerator.fs"/>
+    <Compile Include="JsonSerializeGenerator.fs"/>
     <Compile Include="JsonParseGenerator.fs"/>
     <Compile Include="HttpClientGenerator.fs"/>
     <EmbeddedResource Include="version.json"/>
@@ -47,7 +47,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj" />
+    <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj"/>
+    <!-- NuGet is such a clown package manager! Get the DLLs into the Nupkg artefact, I have no idea why this is needed,
+         but without this line, we don't get any dependency at all packaged into the resulting artefact. -->
+    <None Include="$(OutputPath)\WoofWare.Myriad.Plugins.Attributes.dll" Pack="true" PackagePath="lib\$(TargetFramework)"/>
   </ItemGroup>
 
 </Project>
