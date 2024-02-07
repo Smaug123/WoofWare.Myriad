@@ -54,8 +54,8 @@
             src = ./nix/fetchDeps.sh;
             pname = pname;
             binPath = pkgs.lib.makeBinPath [pkgs.coreutils dotnet-sdk (pkgs.nuget-to-nix.override {inherit dotnet-sdk;})];
-            projectFiles = toString ["./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj" "./ConsumePlugin/ConsumePlugin.fsproj"];
-            testProjectFiles = ["./WoofWare.Myriad.Plugins.Test/WoofWare.Myriad.Plugins.Test.fsproj"];
+            projectFiles = toString ["./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj" "./ConsumePlugin/ConsumePlugin.fsproj" "./WoofWare.Myriad.Plugins.Attributes/WoofWare.Myriad.Plugins.Attributes.fsproj"];
+            testProjectFiles = ["./WoofWare.Myriad.Plugins.Test/WoofWare.Myriad.Plugins.Test.fsproj" "./WoofWare.Myriad.Plugins.Attributes/Test/Woofware.Myriad.Plugins.Attributes.Test.fsproj"];
             rids = pkgs.lib.concatStringsSep "\" \"" runtimeIds;
             packages = dotnet-sdk.packages;
             storeSrc = pkgs.srcOnly {
