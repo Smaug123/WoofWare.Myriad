@@ -98,7 +98,7 @@ module internal InterfaceMockGenerator =
                     false,
                     false,
                     [],
-                    PreXmlDoc.Empty,
+                    PreXmlDoc.Create " An implementation where every method throws.",
                     SynValData.SynValData (Some synValData, SynValInfo.Empty, None),
                     constructorIdent,
                     Some constructorReturnType,

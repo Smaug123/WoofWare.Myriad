@@ -15,6 +15,7 @@ type internal PublicTypeMock =
         Mem3 : int * option<System.Threading.CancellationToken> -> string
     }
 
+    /// An implementation where every method throws.
     static member Empty : PublicTypeMock =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
@@ -38,6 +39,7 @@ type public PublicTypeInternalFalseMock =
         Mem3 : int * option<System.Threading.CancellationToken> -> string
     }
 
+    /// An implementation where every method throws.
     static member Empty : PublicTypeInternalFalseMock =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
@@ -60,6 +62,7 @@ type internal InternalTypeMock =
         Mem2 : string -> int
     }
 
+    /// An implementation where every method throws.
     static member Empty : InternalTypeMock =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
@@ -80,6 +83,7 @@ type private PrivateTypeMock =
         Mem2 : string -> int
     }
 
+    /// An implementation where every method throws.
     static member Empty : PrivateTypeMock =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
@@ -100,6 +104,7 @@ type private PrivateTypeInternalFalseMock =
         Mem2 : string -> int
     }
 
+    /// An implementation where every method throws.
     static member Empty : PrivateTypeInternalFalseMock =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
@@ -119,6 +124,7 @@ type internal VeryPublicTypeMock<'a, 'b> =
         Mem1 : 'a -> 'b
     }
 
+    /// An implementation where every method throws.
     static member Empty () : VeryPublicTypeMock<'a, 'b> =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
@@ -141,6 +147,7 @@ type internal CurriedMock<'a> =
         Mem6 : int * string -> 'a * int -> string
     }
 
+    /// An implementation where every method throws.
     static member Empty () : CurriedMock<'a> =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
