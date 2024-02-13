@@ -304,14 +304,19 @@ module internal InterfaceMockGenerator =
             SynFieldTrivia.Zero
         )
 
-    let createRecord (namespaceId : LongIdent) (interfaceType : SynTypeDefn) : SynModuleOrNamespace =
+    let createRecord
+        (namespaceId : LongIdent)
+        (opens : SynOpenDeclTarget list)
+        (interfaceType : SynTypeDefn)
+        : SynModuleOrNamespace
+        =
         let interfaceType = AstHelper.parseInterface interfaceType
         let fields = interfaceType.Members |> List.map constructMember
         let docString = PreXmlDoc.Create " Mock record type for an interface"
 
         let name =
             List.last interfaceType.Name
-            |> fun s -> s.idText
+            |> _.idText
             |> fun s ->
                 if s.StartsWith 'I' && s.Length > 1 && Char.IsUpper s.[1] then
                     s.[1..]
@@ -321,7 +326,11 @@ module internal InterfaceMockGenerator =
 
         let typeDecl = createType name interfaceType docString fields
 
-        SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ typeDecl ])
+
+        SynModuleOrNamespace.CreateNamespace (
+            namespaceId,
+            decls = (opens |> List.map SynModuleDecl.CreateOpen) @ [ typeDecl ]
+        )
 
 /// Myriad generator that creates a record which implements the given interface,
 /// but with every field mocked out.
@@ -349,6 +358,8 @@ type InterfaceMockGenerator () =
 
             let modules =
                 namespaceAndInterfaces
-                |> List.collect (fun (ns, records) -> records |> List.map (InterfaceMockGenerator.createRecord ns))
+                |> List.collect (fun (ns, records) ->
+                    records |> List.map (InterfaceMockGenerator.createRecord ns opens)
+                )
 
             Output.Ast modules

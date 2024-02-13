@@ -5,6 +5,8 @@
 
 namespace SomeNamespace
 
+open WoofWare.Myriad.Plugins
+
 /// Mock record type for an interface
 type internal PublicTypeMock =
     {
@@ -26,6 +28,8 @@ type internal PublicTypeMock =
         member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace
 
+open WoofWare.Myriad.Plugins
+
 /// Mock record type for an interface
 type internal InternalTypeMock =
     {
@@ -43,6 +47,8 @@ type internal InternalTypeMock =
         member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
         member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
 namespace SomeNamespace
+
+open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
 type private PrivateTypeMock =
@@ -62,6 +68,8 @@ type private PrivateTypeMock =
         member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
+open WoofWare.Myriad.Plugins
+
 /// Mock record type for an interface
 type internal VeryPublicTypeMock<'a, 'b> =
     {
@@ -76,6 +84,8 @@ type internal VeryPublicTypeMock<'a, 'b> =
     interface VeryPublicType<'a, 'b> with
         member this.Mem1 (arg_0_0) = this.Mem1 (arg_0_0)
 namespace SomeNamespace
+
+open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
 type internal CurriedMock<'a> =
