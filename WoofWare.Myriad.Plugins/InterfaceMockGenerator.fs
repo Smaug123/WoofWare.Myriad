@@ -6,6 +6,11 @@ open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
 
+type internal GenerateMockOutputSpec =
+    {
+        IsInternal : bool
+    }
+
 [<RequireQualifiedAccess>]
 module internal InterfaceMockGenerator =
     open Fantomas.FCS.Text.Range
@@ -17,6 +22,7 @@ module internal InterfaceMockGenerator =
         | Some id -> id
 
     let createType
+        (spec : GenerateMockOutputSpec)
         (name : string)
         (interfaceType : InterfaceType)
         (xmlDoc : PreXmlDoc)
@@ -249,13 +255,14 @@ module internal InterfaceMockGenerator =
 
             SynMemberDefn.Interface (interfaceName, Some range0, Some members, range0)
 
-        // TODO: allow an arg to the attribute, specifying a custom visibility
         let access =
-            match interfaceType.Accessibility with
-            | Some (SynAccess.Public _)
-            | Some (SynAccess.Internal _)
-            | None -> SynAccess.Internal range0
-            | Some (SynAccess.Private _) -> SynAccess.Private range0
+            match interfaceType.Accessibility, spec.IsInternal with
+            | Some (SynAccess.Public _), true
+            | None, true -> SynAccess.Internal range0
+            | Some (SynAccess.Public _), false -> SynAccess.Public range0
+            | None, false -> SynAccess.Public range0
+            | Some (SynAccess.Internal _), _ -> SynAccess.Internal range0
+            | Some (SynAccess.Private _), _ -> SynAccess.Private range0
 
         let record =
             {
@@ -307,7 +314,7 @@ module internal InterfaceMockGenerator =
     let createRecord
         (namespaceId : LongIdent)
         (opens : SynOpenDeclTarget list)
-        (interfaceType : SynTypeDefn)
+        (interfaceType : SynTypeDefn, spec : GenerateMockOutputSpec)
         : SynModuleOrNamespace
         =
         let interfaceType = AstHelper.parseInterface interfaceType
@@ -324,7 +331,7 @@ module internal InterfaceMockGenerator =
                     s
             |> fun s -> s + "Mock"
 
-        let typeDecl = createType name interfaceType docString fields
+        let typeDecl = createType spec name interfaceType docString fields
 
 
         SynModuleOrNamespace.CreateNamespace (
@@ -349,9 +356,29 @@ type InterfaceMockGenerator () =
             let namespaceAndInterfaces =
                 types
                 |> List.choose (fun (ns, types) ->
-                    match types |> List.filter Ast.hasAttribute<GenerateMockAttribute> with
-                    | [] -> None
-                    | types -> Some (ns, types)
+                    types
+                    |> List.choose (fun typeDef ->
+                        match Ast.getAttribute<GenerateMockAttribute> typeDef with
+                        | None -> None
+                        | Some attr ->
+                            let arg =
+                                match SynExpr.stripOptionalParen attr.ArgExpr with
+                                | SynExpr.Const (SynConst.Bool value, _) -> value
+                                | SynExpr.Const (SynConst.Unit, _) -> GenerateMockAttribute.DefaultIsInternal
+                                | arg ->
+                                    failwith
+                                        $"Unrecognised argument %+A{arg} to [<%s{nameof GenerateMockAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."
+
+                            let spec =
+                                {
+                                    IsInternal = arg
+                                }
+
+                            Some (typeDef, spec)
+                    )
+                    |> function
+                        | [] -> None
+                        | ty -> Some (ns, ty)
                 )
 
             let opens = AstHelper.extractOpens ast

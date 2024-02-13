@@ -8,6 +8,12 @@ type IPublicType =
     abstract Mem2 : string -> int
     abstract Mem3 : x : int * ?ct : System.Threading.CancellationToken -> string
 
+[<GenerateMock false>]
+type IPublicTypeInternalFalse =
+    abstract Mem1 : string * int -> string list
+    abstract Mem2 : string -> int
+    abstract Mem3 : x : int * ?ct : System.Threading.CancellationToken -> string
+
 [<GenerateMock>]
 type internal InternalType =
     abstract Mem1 : string * int -> unit
@@ -15,6 +21,11 @@ type internal InternalType =
 
 [<GenerateMock>]
 type private PrivateType =
+    abstract Mem1 : string * int -> unit
+    abstract Mem2 : string -> int
+
+[<GenerateMock false>]
+type private PrivateTypeInternalFalse =
     abstract Mem1 : string * int -> unit
     abstract Mem2 : string -> int
 

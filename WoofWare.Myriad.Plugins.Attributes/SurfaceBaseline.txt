@@ -1,5 +1,8 @@
 WoofWare.Myriad.Plugins.GenerateMockAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.GenerateMockAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.GenerateMockAttribute..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.GenerateMockAttribute.DefaultIsInternal [static property]: [read-only] bool
+WoofWare.Myriad.Plugins.GenerateMockAttribute.get_DefaultIsInternal [static method]: unit -> bool
 WoofWare.Myriad.Plugins.HttpClientAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.HttpClientAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonParseAttribute inherit System.Attribute
