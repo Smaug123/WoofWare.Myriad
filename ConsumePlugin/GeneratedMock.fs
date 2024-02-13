@@ -31,6 +31,29 @@ namespace SomeNamespace
 open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
+type public PublicTypeInternalFalseMock =
+    {
+        Mem1 : string * int -> string list
+        Mem2 : string -> int
+        Mem3 : int * option<System.Threading.CancellationToken> -> string
+    }
+
+    static member Empty : PublicTypeInternalFalseMock =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem3 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
+
+    interface IPublicTypeInternalFalse with
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
+        member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
+namespace SomeNamespace
+
+open WoofWare.Myriad.Plugins
+
+/// Mock record type for an interface
 type internal InternalTypeMock =
     {
         Mem1 : string * int -> unit
@@ -64,6 +87,26 @@ type private PrivateTypeMock =
         }
 
     interface PrivateType with
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
+namespace SomeNamespace
+
+open WoofWare.Myriad.Plugins
+
+/// Mock record type for an interface
+type private PrivateTypeInternalFalseMock =
+    {
+        Mem1 : string * int -> unit
+        Mem2 : string -> int
+    }
+
+    static member Empty : PrivateTypeInternalFalseMock =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
+
+    interface PrivateTypeInternalFalse with
         member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
         member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
 namespace SomeNamespace

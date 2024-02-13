@@ -13,8 +13,13 @@ type RemoveOptionsAttribute () =
 /// This generator creates a record which implements the interface,
 /// but where each method is represented as a record field, so you can use
 /// record update syntax to easily specify partially-implemented mock objects.
-type GenerateMockAttribute () =
+/// You may optionally specify `isInternal = false` to get a mock with the public visibility modifier.
+type GenerateMockAttribute (isInternal : bool) =
     inherit Attribute ()
+    static member DefaultIsInternal = true
+
+    /// Shorthand for the "isExtensionMethod = false" constructor; see documentation there for details.
+    new () = GenerateMockAttribute GenerateMockAttribute.DefaultIsInternal
 
 /// Attribute indicating a record type to which the "Add JSON serializer" Myriad
 /// generator should apply during build.
