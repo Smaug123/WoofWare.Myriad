@@ -16,6 +16,7 @@ type RemoveOptionsAttribute () =
 /// You may optionally specify `isInternal = false` to get a mock with the public visibility modifier.
 type GenerateMockAttribute (isInternal : bool) =
     inherit Attribute ()
+    /// The default value of `isInternal`, the optional argument to the GenerateMockAttribute constructor.
     static member DefaultIsInternal = true
 
     /// Shorthand for the "isExtensionMethod = false" constructor; see documentation there for details.
