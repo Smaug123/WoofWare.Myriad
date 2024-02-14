@@ -180,7 +180,7 @@ module internal SynExpr =
         SynExpr.CreateApp (SynExpr.CreateIdent (Ident.Create "reraise"), SynExpr.CreateConst SynConst.Unit)
 
     /// {body} |> fun a -> Async.StartAsTask (a, ?cancellationToken=ct)
-    let startAsTask (body : SynExpr) =
+    let startAsTask (ct : SynLongIdent) (body : SynExpr) =
         let lambda =
             SynExpr.CreateApp (
                 SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "StartAsTask" ]),
@@ -189,7 +189,7 @@ module internal SynExpr =
                         SynExpr.CreateLongIdent (SynLongIdent.CreateString "a")
                         equals
                             (SynExpr.LongIdent (true, SynLongIdent.CreateString "cancellationToken", None, range0))
-                            (SynExpr.CreateLongIdent (SynLongIdent.CreateString "ct"))
+                            (SynExpr.CreateLongIdent ct)
                     ]
             )
             |> createLambda "a"

@@ -121,7 +121,7 @@ type internal IApiWithoutBaseAddress =
 [<BasePath "foo">]
 type IApiWithBasePath =
     [<Get "endpoint/{param}">]
-    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+    abstract GetPathParam : [<Path "param">] parameter : string * ?cancellationToken : CancellationToken -> Task<string>
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
 [<BaseAddress "https://whatnot.com">]

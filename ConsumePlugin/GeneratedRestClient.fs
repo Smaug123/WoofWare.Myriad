@@ -1034,7 +1034,7 @@ module ApiWithBasePath =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IApiWithBasePath =
         { new IApiWithBasePath with
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member _.GetPathParam (parameter : string, cancellationToken : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -1067,7 +1067,7 @@ module ApiWithBasePath =
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = cancellationToken))
         }
 namespace PureGym
 
