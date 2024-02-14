@@ -322,10 +322,9 @@ The [Grug-brained developer](https://grugbrain.dev/) would prefer to do this wit
 But since F# does not let you partially update an interface definition, we instead stamp out a record,
 thereby allowing the programmer to use F#'s record-update syntax.
 
-### Limitations
+### Features
 
-* We make the resulting record type at most internal (never public), since this is intended only to be used in tests.
-  You will therefore need an `AssemblyInfo.fs` file [like the one in WoofWare.Myriad's own tests](./ConsumePlugin/AssemblyInfo.fs).
+* You may supply an `isInternal : bool` argument to the attribute. By default, we make the resulting record type at most internal (never public), since this is intended only to be used in tests; but you can instead make it public with `[<GenerateMock false>]`.
 
 # Detailed examples
 

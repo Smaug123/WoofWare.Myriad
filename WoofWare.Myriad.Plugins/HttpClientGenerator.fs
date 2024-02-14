@@ -183,27 +183,34 @@ module internal HttpClientGenerator =
                 None
             )
 
+        let args =
+            info.Args
+            |> List.map (fun arg ->
+                let argName =
+                    match arg.Id with
+                    | None -> failwith "TODO: create an arg name"
+                    | Some id -> id
+
+                let argType =
+                    if arg.IsOptional then
+                        SynType.CreateApp (
+                            SynType.CreateLongIdent (SynLongIdent.CreateString "option"),
+                            [ arg.Type ],
+                            isPostfix = true
+                        )
+                    else
+                        arg.Type
+
+                argName, SynPat.CreateTyped (SynPat.CreateNamed argName, argType)
+            )
+
+        let cancellationTokenArg =
+            match List.tryLast args with
+            | None -> failwith $"expected an optional cancellation token as final arg in %s{info.Identifier.idText}"
+            | Some (arg, _) -> arg
+
         let argPats =
-            let args =
-                info.Args
-                |> List.map (fun arg ->
-                    let argName =
-                        match arg.Id with
-                        | None -> failwith "TODO: create an arg name"
-                        | Some id -> id
-
-                    let argType =
-                        if arg.IsOptional then
-                            SynType.CreateApp (
-                                SynType.CreateLongIdent (SynLongIdent.CreateString "option"),
-                                [ arg.Type ],
-                                isPostfix = true
-                            )
-                        else
-                            arg.Type
-
-                    SynPat.CreateTyped (SynPat.CreateNamed argName, argType)
-                )
+            let args = args |> List.map snd
 
             SynPat.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
             |> SynPat.CreateParen
@@ -677,7 +684,7 @@ module internal HttpClientGenerator =
                     yield jsonNode
             ]
             |> SynExpr.createCompExpr "async" returnExpr
-            |> SynExpr.startAsTask
+            |> SynExpr.startAsTask (SynLongIdent.CreateFromLongIdent [ cancellationTokenArg ])
 
         SynMemberDefn.Member (
             SynBinding.SynBinding (
