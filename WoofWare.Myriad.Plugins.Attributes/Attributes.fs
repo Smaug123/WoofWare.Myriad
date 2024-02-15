@@ -62,3 +62,8 @@ type JsonParseAttribute (isExtensionMethod : bool) =
 /// i.e. to stamp out HTTP REST clients from interfaces defining the API.
 type HttpClientAttribute () =
     inherit Attribute ()
+
+/// Attribute indicating a DU type to which the "create catamorphism" Myriad
+/// generator should apply during build.
+type CreateCatamorphismAttribute () =
+    inherit Attribute ()

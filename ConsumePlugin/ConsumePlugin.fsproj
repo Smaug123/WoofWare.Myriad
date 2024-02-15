@@ -39,6 +39,10 @@
     <Compile Include="GeneratedSerde.fs">
       <MyriadFile>SerializationAndDeserialization.fs</MyriadFile>
     </Compile>
+    <Compile Include="Catamorphism.fs" />
+    <Compile Include="GeneratedCatamorphism.fs">
+      <MyriadFile>Catamorphism.fs</MyriadFile>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
