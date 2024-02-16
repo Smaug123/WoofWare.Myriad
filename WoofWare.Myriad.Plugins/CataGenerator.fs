@@ -1,7 +1,5 @@
 namespace WoofWare.Myriad.Plugins
 
-open System
-open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
@@ -165,6 +163,14 @@ module internal CataGenerator =
         match ty with
         | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (_, _, _, id, _, _, _, _), _, _, _, _, _) -> id
 
+    let getNameKey (ty : SynTypeDefn) : string =
+        getName ty |> List.map _.idText |> String.concat "/"
+
+    let getNameKeyUnion (unionType : SynType) : string =
+        match unionType with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (name, _, _)) -> name |> List.map _.idText |> String.concat "/"
+        | _ -> failwithf "unrecognised type: %+A" unionType
+
     type UnionField =
         {
             Type : SynType
@@ -199,38 +205,65 @@ module internal CataGenerator =
             )
         | _ -> failwithf "Failed to get union cases for type that was: %+A" repr
 
+    type FieldDescription =
+        | ListSelf of SynType
+        /// One of the union types itself
+        | Self of SynType
+        | NonRecursive of SynType
+
+    let analyse (allUnionTypes : SynTypeDefn list) (case : UnionCase) : FieldDescription list =
+        let rec go (ty : SynType) : FieldDescription =
+            let stripped = SynType.stripOptionalParen ty
+
+            match stripped with
+            | ListType child ->
+                let gone = go child
+
+                match gone with
+                | FieldDescription.NonRecursive ty -> FieldDescription.NonRecursive stripped
+                | FieldDescription.Self ty -> FieldDescription.ListSelf ty
+                | FieldDescription.ListSelf _ -> failwith "Deeply nested lists not currently supported"
+            | PrimitiveType _ -> NonRecursive stripped
+            | SynType.LongIdent (SynLongIdent.SynLongIdent (ty, _, _)) ->
+                let key = ty |> List.map _.idText |> String.concat "/"
+                let isSelf = allUnionTypes |> List.exists (fun unionTy -> getNameKey unionTy = key)
+
+                if isSelf then
+                    FieldDescription.Self stripped
+                else
+                    FieldDescription.NonRecursive stripped
+
+            | _ -> failwithf "Unrecognised type: %+A" stripped
+
+        case.Fields |> List.map _.Type |> List.map go
+
+    /// Returns whether this type recursively contains a Self, and the emitted TODO
+    let rec toInstructionCase (field : FieldDescription) : bool * SynType option =
+        match field with
+        | FieldDescription.NonRecursive ty -> false, Some ty
+        | FieldDescription.Self ty -> true, None
+        | FieldDescription.ListSelf ty ->
+            // store the length of the list
+            true, Some (SynType.Int ())
+
     /// Given the input `| Pair of Expr * Expr * PairOpKind`,
     /// strips out any members which contain recursive calls.
-    /// TODO: support lists and other compound types.
+    /// Stores a list as an int which is "the length of the list".
+    /// TODO: support other compound types.
     let createInstructionCases (allUnionTypes : SynTypeDefn list) (case : UnionCase) : UnionField list option =
+        let analysed = analyse allUnionTypes case
+
         let hasRecursion, cases =
-            ((false, []), case.Fields)
+            ((false, []), analysed)
             ||> List.fold (fun (hasRecursion, cases) field ->
-                match SynType.stripOptionalParen field.Type with
-                | ListType ty ->
-                    match ty with
-                    | SynType.LongIdent (SynLongIdent.SynLongIdent (ty, _, _)) ->
-                        let isListOfSelf =
-                            allUnionTypes
-                            |> List.exists (fun unionTy -> List.last(getName unionTy).idText = List.last(ty).idText)
+                let newHasRecursion, case = toInstructionCase field
 
-                        if isListOfSelf then
-                            // store an int which is the length of the list
-                            true, SynType.Int () :: cases
-                        else
-                            hasRecursion, field.Type :: cases
-                    | _ -> hasRecursion, field.Type :: cases
-                | PrimitiveType _ -> hasRecursion, field.Type :: cases
-                | SynType.LongIdent (SynLongIdent.SynLongIdent (ty, _, _)) ->
-                    let isSelf =
-                        allUnionTypes
-                        |> List.exists (fun unionTy -> List.last(getName unionTy).idText = List.last(ty).idText)
+                let cases =
+                    match case with
+                    | None -> cases
+                    | Some case -> case :: cases
 
-                    if isSelf then
-                        true, cases
-                    else
-                        hasRecursion, field.Type :: cases
-                | _ -> failwithf "Unrecognised type: %+A" field.Type
+                hasRecursion || newHasRecursion, cases
             )
 
         if hasRecursion then
@@ -306,6 +339,212 @@ module internal CataGenerator =
             }
         )
 
+    let createCataStructure (allUnionTypes : SynTypeDefn list) : SynTypeDefn list =
+        let generics =
+            allUnionTypes
+            |> List.map (fun defn ->
+                let name = getName defn |> List.map _.idText |> String.concat "" |> Ident.Create
+                SynTypar.SynTypar (name, TyparStaticReq.None, false)
+            )
+
+        let tyToGenericMap =
+            let names = allUnionTypes |> List.map getNameKey
+            List.zip names generics |> Map.ofList
+
+        allUnionTypes
+        |> List.map (fun unionType ->
+            let name =
+                match getName unionType |> List.rev with
+                | [] -> failwith "empty name"
+                | head :: rest -> Ident.Create (head.idText + "Cata") :: rest |> List.rev
+
+            let componentInfo =
+                let generics = generics |> List.map (fun ty -> SynTyparDecl.SynTyparDecl ([], ty))
+
+                SynComponentInfo.SynComponentInfo (
+                    [],
+                    Some (SynTyparDecls.PostfixList (generics, [], range0)),
+                    [],
+                    name,
+                    // TODO: better docstring
+                    PreXmlDoc.Create " Description of how to combine cases during a fold",
+                    false,
+                    None,
+                    range0
+                )
+
+            let slots =
+                let ourGenericName = tyToGenericMap.[getNameKey unionType]
+
+                let flags =
+                    {
+                        SynMemberFlags.IsInstance = true
+                        SynMemberFlags.IsDispatchSlot = true
+                        SynMemberFlags.IsOverrideOrExplicitImpl = false
+                        SynMemberFlags.IsFinal = false
+                        SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
+                        SynMemberFlags.MemberKind = SynMemberKind.Member
+                    }
+
+                getCases unionType
+                |> List.map (fun case ->
+                    let caseName =
+                        match case.Name with
+                        | SynIdent.SynIdent (name, _) -> name
+
+                    let arity =
+                        SynValInfo.SynValInfo (
+                            case.Fields |> List.map (fun field -> [ SynArgInfo.Empty ]),
+                            SynArgInfo.Empty
+                        )
+
+                    let ty =
+                        let analysed = analyse allUnionTypes case
+
+                        (SynType.Var (ourGenericName, range0), List.rev analysed)
+                        ||> List.fold (fun acc field ->
+                            let place : SynType =
+                                match field with
+                                | FieldDescription.Self ty ->
+                                    SynType.Var (tyToGenericMap.[getNameKeyUnion ty], range0)
+                                | FieldDescription.ListSelf ty ->
+                                    SynType.CreateApp (
+                                        SynType.CreateLongIdent "list",
+                                        [ SynType.Var (tyToGenericMap.[getNameKeyUnion ty], range0) ],
+                                        true
+                                    )
+                                | FieldDescription.NonRecursive ty -> ty
+
+                            SynType.Fun (
+                                place,
+                                acc,
+                                range0,
+                                {
+                                    ArrowRange = range0
+                                }
+                            )
+                        )
+
+                    let slot =
+                        SynValSig.SynValSig (
+                            [],
+                            case.Name,
+                            SynValTyparDecls.SynValTyparDecls (None, true),
+                            ty,
+                            arity,
+                            false,
+                            false,
+                            PreXmlDoc.Create $" How to operate on the %s{caseName.idText} case",
+                            None,
+                            None,
+                            range0,
+                            {
+                                EqualsRange = None
+                                WithKeyword = None
+                                InlineKeyword = None
+                                LeadingKeyword = SynLeadingKeyword.Abstract range0
+                            }
+                        )
+
+                    SynMemberDefn.AbstractSlot (
+                        slot,
+                        flags,
+                        range0,
+                        {
+                            GetSetKeywords = None
+                        }
+                    )
+                )
+
+            let repr = SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Unspecified, slots, range0)
+
+            SynTypeDefn.SynTypeDefn (
+                componentInfo,
+                repr,
+                [],
+                None,
+                range0,
+                {
+                    LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
+                    EqualsRange = Some range0
+                    WithKeyword = None
+                }
+            )
+        )
+
+    let createCataRecord (allUnionTypes : SynTypeDefn list) : SynTypeDefn =
+        let nameForDoc = List.last (getName allUnionTypes.[0]) |> _.idText
+
+        let generics =
+            allUnionTypes
+            |> List.map (fun defn ->
+                let name = getName defn |> List.map _.idText |> String.concat "" |> Ident.Create
+                SynTypar.SynTypar (name, TyparStaticReq.None, false)
+            )
+
+        let fields =
+            allUnionTypes
+            |> List.map (fun unionType ->
+                let doc = PreXmlDoc.Create " TODO: doc"
+                let name = getName unionType
+
+                let ty =
+                    SynType.App (
+                        SynType.CreateLongIdent (SynLongIdent.CreateString (List.last(name).idText + "Cata")),
+                        Some range0,
+                        generics |> List.map (fun v -> SynType.Var (v, range0)),
+                        List.replicate (generics.Length - 1) range0,
+                        Some range0,
+                        false,
+                        range0
+                    )
+
+                SynField.SynField (
+                    [],
+                    false,
+                    Some (List.last name),
+                    ty,
+                    false,
+                    doc,
+                    None,
+                    range0,
+                    {
+                        LeadingKeyword = None
+                    }
+                )
+            )
+
+        let componentInfo =
+            SynComponentInfo.SynComponentInfo (
+                [],
+                Some (
+                    SynTyparDecls.PostfixList (
+                        generics |> List.map (fun ty -> SynTyparDecl.SynTyparDecl ([], ty)),
+                        [],
+                        range0
+                    )
+                ),
+                [],
+                [ Ident.Create "Cata" ], // TODO: better name
+                PreXmlDoc.Create $" Specifies how to perform a fold (catamorphism) over the type %s{nameForDoc}.",
+                false,
+                None,
+                range0
+            )
+
+        SynTypeDefn.SynTypeDefn (
+            componentInfo,
+            SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (None, fields, range0), range0),
+            [],
+            None,
+            range0,
+            {
+                LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
+                WithKeyword = None
+                EqualsRange = Some range0
+            }
+        )
+
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
@@ -313,11 +552,8 @@ module internal CataGenerator =
         (allUnionTypes : SynTypeDefn list)
         : SynModuleOrNamespace
         =
-        let moduleName : LongIdent =
-            List.last (getName taggedType)
-            |> fun x -> x.idText + "Cata"
-            |> Ident.Create
-            |> List.singleton
+        let parentName = List.last (getName taggedType) |> _.idText
+        let moduleName : LongIdent = parentName + "Cata" |> Ident.Create |> List.singleton
 
         let attribs = [ SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ()) ]
 
@@ -325,15 +561,14 @@ module internal CataGenerator =
             SynComponentInfo.Create (
                 moduleName,
                 attributes = attribs,
-                xmldoc = PreXmlDoc.Create " Catamorphism" // TODO: better docstring
+                xmldoc = PreXmlDoc.Create $" Methods to perform a catamorphism over the type {parentName}"
             )
 
         let allTypars =
             allUnionTypes
             |> List.map (fun unionType ->
                 List.last (getName unionType)
-                |> fun x -> x.idText
-                |> fun s -> s + "Ret"
+                |> fun x -> x.idText + "Ret"
                 |> Ident.Create
                 |> fun x -> SynTypar.SynTypar (x, TyparStaticReq.None, false)
                 |> fun x -> SynType.Var (x, range0)
@@ -343,12 +578,20 @@ module internal CataGenerator =
             List.zip allUnionTypes allTypars
             |> List.map (fun (unionType, relevantTypar) -> createRunFunction allTypars relevantTypar unionType)
 
+        let cataStructures =
+            createCataStructure allUnionTypes
+            |> List.map (fun repr -> SynModuleDecl.Types ([ repr ], range0))
+
+        let cataRecord = SynModuleDecl.Types ([ createCataRecord allUnionTypes ], range0)
+
         SynModuleOrNamespace.CreateNamespace (
             ns,
             decls =
                 [
                     for openStatement in opens do
                         yield SynModuleDecl.CreateOpen openStatement
+                    yield! cataStructures
+                    yield cataRecord
                     yield
                         SynModuleDecl.CreateNestedModule (
                             modInfo,

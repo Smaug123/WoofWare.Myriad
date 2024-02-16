@@ -17,7 +17,7 @@ type Expr =
     | Sequential of Expr list
     | Builder of Expr * ExprBuilder
 
-and [<CreateCatamorphism>] ExprBuilder =
+and ExprBuilder =
     | Child of ExprBuilder
     | Parent of Expr
 

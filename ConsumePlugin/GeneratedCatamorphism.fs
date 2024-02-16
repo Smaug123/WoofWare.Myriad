@@ -11,6 +11,33 @@ namespace ConsumePlugin
 
 open WoofWare.Myriad.Plugins
 
+/// Description of how to combine cases during a fold
+type ExprCata<'Expr, 'ExprBuilder> =
+    /// How to operate on the Const case
+    abstract Const : Const -> 'Expr
+    /// How to operate on the Pair case
+    abstract Pair : 'Expr -> 'Expr -> PairOpKind -> 'Expr
+    /// How to operate on the Sequential case
+    abstract Sequential : 'Expr list -> 'Expr
+    /// How to operate on the Builder case
+    abstract Builder : 'Expr -> 'ExprBuilder -> 'Expr
+
+/// Description of how to combine cases during a fold
+type ExprBuilderCata<'Expr, 'ExprBuilder> =
+    /// How to operate on the Child case
+    abstract Child : 'ExprBuilder -> 'ExprBuilder
+    /// How to operate on the Parent case
+    abstract Parent : 'Expr -> 'ExprBuilder
+
+/// Specifies how to perform a fold (catamorphism) over the type Expr.
+type Cata<'Expr, 'ExprBuilder> =
+    {
+        /// TODO: doc
+        Expr : ExprCata<'Expr, 'ExprBuilder>
+        /// TODO: doc
+        ExprBuilder : ExprBuilderCata<'Expr, 'ExprBuilder>
+    }
+
 /// Catamorphism
 [<RequireQualifiedAccess>]
 module ExprCata =
