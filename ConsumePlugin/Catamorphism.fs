@@ -54,9 +54,9 @@ module Cata =
     let rec apply<'bret, 'ret> (cata : Cata<'bret, 'ret>) (e : Expr) : 'ret =
         match e with
         | Const c -> cata.Expr.Const c
-        | Pair(expr, expr1, pairOpKind) -> cata.Expr.Pair (apply cata expr) (apply cata expr1) pairOpKind
+        | Pair (expr, expr1, pairOpKind) -> cata.Expr.Pair (apply cata expr) (apply cata expr1) pairOpKind
         | Sequential exprs -> exprs |> List.map (apply cata) |> cata.Expr.Sequential
-        | Builder(expr, exprBuilder) -> cata.Expr.Builder (apply cata expr) (applyB cata exprBuilder)
+        | Builder (expr, exprBuilder) -> cata.Expr.Builder (apply cata expr) (applyB cata exprBuilder)
 
     and applyB<'bret, 'ret> (cata : Cata<'bret, 'ret>) (e : ExprBuilder) : 'bret =
         match e with
@@ -94,17 +94,17 @@ module TailRecCata =
                     instructions.Add (Instruction.ProcessExpr expr)
             | Instruction.ProcessExpr currentExpr ->
                 match currentExpr with
-                | Const c ->
-                    resultsStack.Add (cata.Expr.Const c)
-                | Pair(expr, expr1, pairOpKind) ->
+                | Const c -> resultsStack.Add (cata.Expr.Const c)
+                | Pair (expr, expr1, pairOpKind) ->
                     instructions.Add (Instruction.Pair pairOpKind)
                     instructions.Add (Instruction.ProcessExpr expr1)
                     instructions.Add (Instruction.ProcessExpr expr)
                 | Sequential exprs ->
                     instructions.Add (Instruction.Sequential (List.length exprs))
+
                     for expr in exprs do
                         instructions.Add (Instruction.ProcessExpr expr)
-                | Builder(expr, exprBuilder) ->
+                | Builder (expr, exprBuilder) ->
                     instructions.Add Instruction.Builder
                     instructions.Add (Instruction.ProcessExpr expr)
                     instructions.Add (Instruction.ProcessBuilder exprBuilder)
@@ -112,8 +112,7 @@ module TailRecCata =
                 let expr = resultsStack.[resultsStack.Count - 1]
                 let expr1 = resultsStack.[resultsStack.Count - 2]
                 resultsStack.RemoveRange (resultsStack.Count - 2, 2)
-                cata.Expr.Pair expr expr1 pairOpKind
-                |> resultsStack.Add
+                cata.Expr.Pair expr expr1 pairOpKind |> resultsStack.Add
             | Instruction.Sequential count ->
                 let values =
                     seq {
@@ -121,43 +120,61 @@ module TailRecCata =
                             yield resultsStack.[i]
                     }
                     |> Seq.toList
+
                 resultsStack.RemoveRange (resultsStack.Count - count, count)
-                cata.Expr.Sequential values
-                |> resultsStack.Add
+                cata.Expr.Sequential values |> resultsStack.Add
             | Instruction.Builder ->
                 let expr = resultsStack.[resultsStack.Count - 1]
                 resultsStack.RemoveAt (resultsStack.Count - 1)
                 let exprBuilder = builderResultsStack.[builderResultsStack.Count - 1]
                 builderResultsStack.RemoveAt (builderResultsStack.Count - 1)
-                cata.Expr.Builder expr exprBuilder
-                |> resultsStack.Add
+                cata.Expr.Builder expr exprBuilder |> resultsStack.Add
             | Instruction.Child ->
                 let exprBuilder = builderResultsStack.[builderResultsStack.Count - 1]
                 builderResultsStack.RemoveAt (builderResultsStack.Count - 1)
-                cata.Builder.Child exprBuilder
-                |> builderResultsStack.Add
+                cata.Builder.Child exprBuilder |> builderResultsStack.Add
             | Instruction.Parent ->
                 let expr = resultsStack.[resultsStack.Count - 1]
                 resultsStack.RemoveAt (resultsStack.Count - 1)
-                cata.Builder.Parent expr
-                |> builderResultsStack.Add
+                cata.Builder.Parent expr |> builderResultsStack.Add
 
         resultsStack, builderResultsStack
 
-    let go (cata : Cata<'bret, 'ret>) (e : Expr) : 'ret =
+    let run (cata : Cata<'bret, 'ret>) (e : Expr) : 'ret =
         let instructions = ResizeArray ()
         instructions.Add (Instruction.ProcessExpr e)
 
         let resultsStack, builderResultsStack = loop cata instructions
 
-        if builderResultsStack.Count > 0 then failwith "logic error"
+        if builderResultsStack.Count > 0 then
+            failwith "logic error"
+
         Seq.exactlyOne resultsStack
 
-    let goBuilder (cata : Cata<'bret, 'ret>) (e : ExprBuilder) : 'bret =
+    let runBuilder (cata : Cata<'bret, 'ret>) (e : ExprBuilder) : 'bret =
         let instructions = ResizeArray ()
         instructions.Add (Instruction.ProcessBuilder e)
 
         let resultsStack, builderResultsStack = loop cata instructions
 
-        if resultsStack.Count > 0 then failwith "logic error"
+        if resultsStack.Count > 0 then
+            failwith "logic error"
+
         Seq.exactlyOne builderResultsStack
+
+module CataExample =
+    let id =
+        {
+            Expr =
+                { new ExprCata<_, _> with
+                    member _.Const x = Const x
+                    member _.Pair x y z = Pair (x, y, z)
+                    member _.Sequential xs = Sequential xs
+                    member _.Builder x b = Builder (x, b)
+                }
+            Builder =
+                { new ExprBuilderCata<_, _> with
+                    member _.Child x = Child x
+                    member _.Parent x = Parent x
+                }
+        }

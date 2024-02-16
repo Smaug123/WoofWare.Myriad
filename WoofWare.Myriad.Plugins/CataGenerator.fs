@@ -12,843 +12,191 @@ module internal CataGenerator =
     open Fantomas.FCS.Text.Range
     open Myriad.Core.Ast
 
-    /// constantHeaders are a list of (headerName, headerValue)
-    /// variableHeaders are a list of (headerName, selfPropertyToGetValueOf)
-    let constructMember
-        (constantHeaders : (SynExpr * SynExpr) list)
-        (variableHeaders : (SynExpr * Ident) list)
-        (info : MemberInfo)
-        : SynMemberDefn
-        =
-        let valInfo =
-            SynValInfo.SynValInfo (
-                [
-                    [ SynArgInfo.Empty ]
-                    [
-                        for arg in info.Args do
-                            match arg.Id with
-                            | None -> yield SynArgInfo.CreateIdString (failwith "TODO: create an arg name")
-                            | Some id -> yield SynArgInfo.CreateId id
-                    ]
-                ],
-                SynArgInfo.Empty
+    /// Returns a function:
+    /// let run{Case} (cata : Cata<{typars}>) (x : {Case}) : {TyPar} =
+    ///     let instructions = ResizeArray ()
+    ///     instructions.Add (Instruction.Process{Case} e)
+    ///     let {typar1}Results, {typar2}Results, ... = loop cata instructions
+    ///     { for all non-relevant typars: }
+    ///     if {typar}Results.Count > 0 then failwith "logic error"
+    ///     Seq.exactlyOne {relevantTypar}Stack
+    let createRunFunction (allTypars : SynType list) (relevantTypar : SynType) (unionType : SynTypeDefn) : SynBinding =
+        let relevantTypeName =
+            match unionType with
+            | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (longId = id), _, _, _, _, _) -> List.last id
+
+        let allTyparNames =
+            allTypars
+            |> List.map (fun ty ->
+                match ty with
+                | SynType.Var (SynTypar.SynTypar (ident = ident), _) -> ident
+                | _ -> failwith "logic error in generator"
             )
 
-        let valData =
-            SynValData (
-                Some
-                    {
-                        IsInstance = true
-                        IsDispatchSlot = false
-                        IsOverrideOrExplicitImpl = true
-                        IsFinal = false
-                        GetterOrSetterIsCompilerGenerated = false
-                        MemberKind = SynMemberKind.Member
-                    },
-                valInfo,
+        let relevantTyparName =
+            match relevantTypar with
+            | SynType.Var (SynTypar.SynTypar (ident = ident), _) -> ident
+            | _ -> failwith "logic error in generator"
+
+        SynBinding.SynBinding (
+            None,
+            SynBindingKind.Normal,
+            false,
+            false,
+            [],
+            PreXmlDoc.Create " Execute the catamorphism.",
+            SynValData.SynValData (
+                None,
+                SynValInfo.SynValInfo (
+                    [ [ SynArgInfo.CreateIdString "cata" ] ; [ SynArgInfo.CreateIdString "x" ] ],
+                    SynArgInfo.SynArgInfo ([], false, None)
+                ),
                 None
-            )
-
-        let args =
-            info.Args
-            |> List.map (fun arg ->
-                let argName =
-                    match arg.Id with
-                    | None -> failwith "TODO: create an arg name"
-                    | Some id -> id
-
-                let argType =
-                    if arg.IsOptional then
-                        SynType.CreateApp (
-                            SynType.CreateLongIdent (SynLongIdent.CreateString "option"),
-                            [ arg.Type ],
-                            isPostfix = true
-                        )
-                    else
-                        arg.Type
-
-                argName, SynPat.CreateTyped (SynPat.CreateNamed argName, argType)
-            )
-
-        let cancellationTokenArg =
-            match List.tryLast args with
-            | None -> failwith $"expected an optional cancellation token as final arg in %s{info.Identifier.idText}"
-            | Some (arg, _) -> arg
-
-        let argPats =
-            let args = args |> List.map snd
-
-            SynPat.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
-            |> SynPat.CreateParen
-            |> List.singleton
-            |> SynArgPats.Pats
-
-        let headPat =
-            let thisIdent = if variableHeaders.IsEmpty then "_" else "this"
-
-            SynPat.LongIdent (
-                SynLongIdent.CreateFromLongIdent [ Ident.Create thisIdent ; info.Identifier ],
-                None,
-                None,
-                argPats,
-                None,
-                range0
-            )
-
-        let requestUriTrailer =
-            (info.UrlTemplate, info.Args)
-            ||> List.fold (fun template arg ->
-                (template, arg.Attributes)
-                ||> List.fold (fun template attr ->
-                    match attr with
-                    | HttpAttribute.Path spec ->
-                        let varName =
-                            match arg.Id with
-                            | None -> failwith "TODO: anonymous args"
-                            | Some id -> id
-
-                        let substituteId =
-                            match spec with
-                            | PathSpec.Verbatim s -> s
-                            | PathSpec.MatchArgName -> varName.idText
-
-                        template
-                        |> SynExpr.callMethodArg
-                            "Replace"
-                            (SynExpr.CreateParenedTuple
-                                [
-                                    SynExpr.CreateConstString ("{" + substituteId + "}")
-                                    SynExpr.callMethod "ToString" (SynExpr.CreateIdent varName)
-                                    |> SynExpr.pipeThroughFunction (
-                                        SynExpr.CreateLongIdent (
-                                            SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ]
-                                        )
-                                    )
-                                ])
-                    | _ -> template
-                )
-            )
-
-        /// List of (query-param-key, parameter-which-provides-value)
-        let queryParams =
-            info.Args
-            |> List.collect (fun arg ->
-                arg.Attributes
-                |> List.choose (fun attr ->
-                    match attr with
-                    | Query None ->
-                        let name =
-                            match arg.Id with
-                            | None ->
-                                failwith
-                                    "Expected a name for the argument we're trying to use as an anonymous query parameter"
-                            | Some name -> name.idText
-
-                        Some (name, arg)
-                    | Query (Some name) -> Some (name, arg)
-                    | _ -> None
-                )
-            )
-
-        let requestUriTrailer =
-            match queryParams with
-            | [] -> requestUriTrailer
-            | (firstKey, firstValue) :: queryParams ->
-                let firstValueId =
-                    match firstValue.Id with
-                    | None -> failwith "Unable to get parameter variable name from anonymous parameter"
-                    | Some id -> id
-
-                let prefix =
-                    SynExpr.CreateIdent firstValueId
-                    |> SynExpr.toString firstValue.Type
-                    |> SynExpr.CreateParen
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ])
-                    )
-                    |> SynExpr.CreateParen
-                    |> SynExpr.plus (SynExpr.CreateConstString ("?" + firstKey + "="))
-
-                (prefix, queryParams)
-                ||> List.fold (fun uri (paramKey, paramValue) ->
-                    let paramValueId =
-                        match paramValue.Id with
-                        | None -> failwith "Unable to get parameter variable name from anonymous parameter"
-                        | Some id -> id
-
-                    SynExpr.toString paramValue.Type (SynExpr.CreateIdent paramValueId)
-                    |> SynExpr.CreateParen
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.CreateLongIdent (
-                            SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ]
+            ),
+            SynPat.CreateLongIdent (
+                SynLongIdent.CreateString ("run" + relevantTypeName.idText),
+                [
+                    SynPat.CreateParen (
+                        SynPat.CreateTyped (
+                            SynPat.CreateNamed (Ident.Create "cata"),
+                            SynType.App (
+                                SynType.CreateLongIdent "Cata",
+                                Some range0,
+                                allTypars,
+                                List.replicate (allTypars.Length - 1) range0,
+                                Some range0,
+                                false,
+                                range0
+                            )
                         )
                     )
-                    |> SynExpr.CreateParen
-                    |> SynExpr.plus (SynExpr.plus uri (SynExpr.CreateConstString ("&" + paramKey + "=")))
-                )
-                |> SynExpr.plus requestUriTrailer
-                |> SynExpr.CreateParen
-
-        let requestUri =
-            let uriIdent = SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ])
-
-            let baseAddress =
-                SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "BaseAddress" ])
-
-            let baseAddress =
-                SynExpr.CreateMatch (
-                    baseAddress,
+                ]
+            ),
+            Some (SynBindingReturnInfo.Create relevantTypar),
+            SynExpr.CreateTyped (
+                SynExpr.LetOrUse (
+                    false,
+                    false,
                     [
-                        SynMatchClause.Create (
-                            SynPat.CreateNull,
-                            None,
-                            match info.BaseAddress with
-                            | None ->
+                        SynBinding.Let (
+                            valData = SynValData.SynValData (None, SynValInfo.Empty, None),
+                            pattern = SynPat.CreateNamed (Ident.Create "instructions"),
+                            expr =
                                 SynExpr.CreateApp (
-                                    SynExpr.CreateIdentString "raise",
-                                    SynExpr.CreateParen (
-                                        SynExpr.CreateApp (
-                                            SynExpr.CreateLongIdent (
-                                                SynLongIdent.Create [ "System" ; "ArgumentNullException" ]
-                                            ),
-                                            SynExpr.CreateParenedTuple
-                                                [
-                                                    SynExpr.CreateApp (
-                                                        SynExpr.CreateIdentString "nameof",
-                                                        SynExpr.CreateParen baseAddress
-                                                    )
-                                                    SynExpr.CreateConstString
-                                                        "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
-                                                ]
-                                        )
-                                    )
+                                    SynExpr.CreateIdentString "ResizeArray",
+                                    SynExpr.CreateConst SynConst.Unit
                                 )
-                            | Some expr -> SynExpr.CreateApp (uriIdent, expr)
-                        )
-                        SynMatchClause.Create (
-                            SynPat.CreateNamed (Ident.Create "v"),
-                            None,
-                            SynExpr.CreateIdentString "v"
-                        )
-                    ]
-                )
-                |> SynExpr.CreateParen
-
-            SynExpr.App (
-                ExprAtomicFlag.Atomic,
-                false,
-                uriIdent,
-                SynExpr.CreateParenedTuple
-                    [
-                        baseAddress
-                        SynExpr.CreateApp (
-                            uriIdent,
-                            SynExpr.CreateParenedTuple
-                                [
-                                    requestUriTrailer
-                                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "UriKind" ; "Relative" ])
-                                ]
                         )
                     ],
-                range0
-            )
-
-        let bodyParams =
-            info.Args
-            |> List.collect (fun arg ->
-                arg.Attributes
-                |> List.choose (fun attr ->
-                    match attr with
-                    | HttpAttribute.Body -> Some arg
-                    | _ -> None
-                )
-            )
-
-        let bodyParam =
-            match bodyParams with
-            | [] -> None
-            | [ x ] ->
-                // TODO: body serialisation method
-                let paramName =
-                    match x.Id with
-                    | None -> failwith "Anonymous [<Body>] parameter is unsupported"
-                    | Some id -> id
-
-                match x.Type with
-                | Stream -> Some (BodyParamMethods.StreamContent, paramName)
-                | String -> Some (BodyParamMethods.StringContent, paramName)
-                | ArrayType Byte -> Some (BodyParamMethods.ByteArrayContent, paramName)
-                | HttpContent -> Some (BodyParamMethods.HttpContent, paramName)
-                | ty -> Some (BodyParamMethods.Serialise ty, paramName)
-            | _ -> failwith "You can only have at most one [<Body>] parameter on a method."
-
-        let httpReqMessageConstructor =
-            [
-                SynExpr.equals
-                    (SynExpr.CreateIdentString "Method")
-                    (SynExpr.CreateLongIdent (
-                        SynLongIdent.Create
-                            [ "System" ; "Net" ; "Http" ; "HttpMethod" ; httpMethodString info.HttpMethod ]
-                    ))
-                SynExpr.equals (SynExpr.CreateIdentString "RequestUri") (SynExpr.CreateIdentString "uri")
-            ]
-            |> SynExpr.CreateParenedTuple
-
-        let returnExpr =
-            match info.TaskReturnType with
-            | HttpResponseMessage -> SynExpr.CreateIdentString "response"
-            | String -> SynExpr.CreateIdentString "responseString"
-            | Stream -> SynExpr.CreateIdentString "responseStream"
-            | RestEaseResponseType contents ->
-                let deserialiser =
-                    SynExpr.CreateLambda (
-                        [ SynPat.CreateConst SynConst.Unit ],
-                        SynExpr.CreateParen (
-                            JsonParseGenerator.parseNode
-                                None
-                                JsonParseGenerator.JsonParseOption.None
-                                contents
-                                (SynExpr.CreateIdentString "jsonNode")
-                        )
-                    )
-                // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
-                SynExpr.New (
-                    false,
-                    SynType.App (
-                        SynType.CreateLongIdent (SynLongIdent.Create [ "RestEase" ; "Response" ]),
-                        Some range0,
-                        [ SynType.Anon range0 ],
-                        [],
-                        Some range0,
-                        false,
-                        range0
-                    ),
-                    SynExpr.CreateParenedTuple
+                    SynExpr.CreateSequential
                         [
-                            SynExpr.CreateIdentString "responseString"
-                            SynExpr.CreateIdentString "response"
-                            SynExpr.CreateParen deserialiser
-                        ],
-                    range0
-                )
-            | retType ->
-                JsonParseGenerator.parseNode
-                    None
-                    JsonParseGenerator.JsonParseOption.None
-                    retType
-                    (SynExpr.CreateIdentString "jsonNode")
-
-        let handleBodyParams =
-            match bodyParam with
-            | None -> []
-            | Some (bodyParamType, bodyParamName) ->
-                match bodyParamType with
-                | BodyParamMethods.StreamContent
-                | BodyParamMethods.ByteArrayContent
-                | BodyParamMethods.StringContent ->
-                    [
-                        Let (
-                            "queryParams",
-                            SynExpr.New (
-                                false,
-                                SynType.CreateLongIdent (
-                                    SynLongIdent.Create
-                                        [ "System" ; "Net" ; "Http" ; (bodyParamType : BodyParamMethods).ToString () ]
-                                ),
-                                SynExpr.CreateParen (SynExpr.CreateIdent bodyParamName),
-                                range0
-                            )
-                        )
-                        Do (
-                            SynExpr.LongIdentSet (
-                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
-                                SynExpr.CreateIdentString "queryParams",
-                                range0
-                            )
-                        )
-                    ]
-                | BodyParamMethods.HttpContent ->
-                    [
-                        Do (
-                            SynExpr.LongIdentSet (
-                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
-                                SynExpr.CreateIdent bodyParamName,
-                                range0
-                            )
-                        )
-                    ]
-                | BodyParamMethods.Serialise ty ->
-                    [
-                        Let (
-                            "queryParams",
-                            SynExpr.New (
-                                false,
-                                SynType.CreateLongIdent (
-                                    SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "StringContent" ]
-                                ),
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Add" ]),
                                 SynExpr.CreateParen (
-                                    SynExpr.CreateIdent bodyParamName
-                                    |> SynExpr.pipeThroughFunction (JsonSerializeGenerator.serializeNode ty)
-                                    |> SynExpr.pipeThroughFunction (
-                                        SynExpr.createLambda
-                                            "node"
-                                            (SynExpr.ifThenElse
-                                                (SynExpr.CreateApp (
-                                                    SynExpr.CreateIdentString "isNull",
-                                                    SynExpr.CreateIdentString "node"
-                                                ))
-                                                (SynExpr.CreateApp (
-                                                    SynExpr.CreateLongIdent (
-                                                        SynLongIdent.Create [ "node" ; "ToJsonString" ]
-                                                    ),
-                                                    SynExpr.CreateConst SynConst.Unit
-                                                ))
-                                                (SynExpr.CreateConst (SynConst.CreateString "null")))
-                                    )
-                                ),
-                                range0
-                            )
-                        )
-                        Do (
-                            SynExpr.LongIdentSet (
-                                SynLongIdent.Create [ "httpMessage" ; "Content" ],
-                                SynExpr.CreateIdent (Ident.Create "queryParams"),
-                                range0
-                            )
-                        )
-                    ]
-
-        let implementation =
-            let responseString =
-                LetBang (
-                    "responseString",
-                    SynExpr.awaitTask (
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (
-                                SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStringAsync" ]
-                            ),
-                            SynExpr.CreateIdentString "ct"
-                        )
-                    )
-                )
-
-            let responseStream =
-                LetBang (
-                    "responseStream",
-                    SynExpr.awaitTask (
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (
-                                SynLongIdent.Create [ "response" ; "Content" ; "ReadAsStreamAsync" ]
-                            ),
-                            SynExpr.CreateIdentString "ct"
-                        )
-                    )
-                )
-
-            let jsonNode =
-                LetBang (
-                    "jsonNode",
-                    SynExpr.awaitTask (
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (
-                                SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "ParseAsync" ]
-                            ),
-                            SynExpr.CreateParenedTuple
-                                [
-                                    SynExpr.CreateIdentString "responseStream"
-                                    SynExpr.equals
-                                        (SynExpr.CreateIdentString "cancellationToken")
-                                        (SynExpr.CreateIdentString "ct")
-                                ]
-                        )
-                    )
-                )
-
-            let setVariableHeaders =
-                variableHeaders
-                |> List.map (fun (headerName, callToGetValue) ->
-                    Do (
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "httpMessage" ; "Headers" ; "Add" ]),
-                            SynExpr.CreateParenedTuple
-                                [
-                                    headerName
                                     SynExpr.CreateApp (
                                         SynExpr.CreateLongIdent (
-                                            SynLongIdent.CreateFromLongIdent
-                                                [ Ident.Create "this" ; callToGetValue ; Ident.Create "ToString" ]
+                                            SynLongIdent.Create [ "Instruction" ; "Process" + relevantTypeName.idText ]
                                         ),
-                                        SynExpr.CreateConst SynConst.Unit
+                                        SynExpr.CreateLongIdent (SynLongIdent.CreateString "x")
                                     )
-                                ]
-                        )
-                    )
-                )
-
-            let setConstantHeaders =
-                constantHeaders
-                |> List.map (fun (headerName, headerValue) ->
-                    Do (
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "httpMessage" ; "Headers" ; "Add" ]),
-                            SynExpr.CreateParenedTuple [ headerName ; headerValue ]
-                        )
-                    )
-                )
-
-            [
-                yield LetBang ("ct", SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "CancellationToken" ]))
-                yield Let ("uri", requestUri)
-                yield
-                    Use (
-                        "httpMessage",
-                        SynExpr.New (
-                            false,
-                            SynType.CreateLongIdent (
-                                SynLongIdent.Create [ "System" ; "Net" ; "Http" ; "HttpRequestMessage" ]
-                            ),
-                            httpReqMessageConstructor,
-                            range0
-                        )
-                    )
-
-                yield! handleBodyParams
-
-                yield! setVariableHeaders
-                yield! setConstantHeaders
-
-                yield
-                    LetBang (
-                        "response",
-                        SynExpr.awaitTask (
-                            SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "client" ; "SendAsync" ]),
-                                SynExpr.CreateParenedTuple
-                                    [ SynExpr.CreateIdentString "httpMessage" ; SynExpr.CreateIdentString "ct" ]
+                                )
                             )
-                        )
-                    )
-                if info.EnsureSuccessHttpCode then
-                    yield
-                        Let (
-                            "response",
-                            SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "response" ; "EnsureSuccessStatusCode" ]),
-                                SynExpr.CreateConst SynConst.Unit
+                            SynExpr.LetOrUse (
+                                false,
+                                false,
+                                [
+                                    SynBinding.Let (
+                                        valData = SynValData.SynValData (None, SynValInfo.Empty, None),
+                                        pattern =
+                                            SynPat.Tuple (
+                                                false,
+                                                List.map
+                                                    (fun (t : Ident) ->
+                                                        SynPat.CreateNamed (Ident.Create (t.idText + "Stack"))
+                                                    )
+                                                    allTyparNames,
+                                                List.replicate (allTypars.Length - 1) range0,
+                                                range0
+                                            ),
+                                        expr =
+                                            SynExpr.CreateApp (
+                                                SynExpr.CreateApp (
+                                                    SynExpr.CreateIdentString "loop",
+                                                    SynExpr.CreateIdentString "cata"
+                                                ),
+                                                SynExpr.CreateIdentString "instructions"
+                                            )
+                                    )
+                                ],
+                                // TODO: add the "all other stacks are empty" sanity checks
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "exactlyOne" ]),
+                                    SynExpr.CreateIdent (Ident.Create (relevantTyparName.idText + "Stack"))
+                                ),
+                                range0,
+                                {
+                                    SynExprLetOrUseTrivia.InKeyword = None
+                                }
                             )
-                        )
-                match info.TaskReturnType with
-                | HttpResponseMessage -> ()
-                | RestEaseResponseType _ ->
-                    yield responseString
-                    yield responseStream
-                    yield jsonNode
-                | String -> yield responseString
-                | Stream -> yield responseStream
-                | _ ->
-                    yield responseStream
-                    yield jsonNode
-            ]
-            |> SynExpr.createCompExpr "async" returnExpr
-            |> SynExpr.startAsTask (SynLongIdent.CreateFromLongIdent [ cancellationTokenArg ])
-
-        SynMemberDefn.Member (
-            SynBinding.SynBinding (
-                info.Accessibility,
-                SynBindingKind.Normal,
-                false,
-                false,
-                [],
-                PreXmlDoc.Empty,
-                valData,
-                headPat,
-                None,
-                implementation,
-                range0,
-                DebugPointAtBinding.Yes range0,
-                SynExpr.synBindingTriviaZero true
+                        ],
+                    range0,
+                    {
+                        InKeyword = None
+                    }
+                ),
+                relevantTypar
             ),
-            range0
+            range0,
+            DebugPointAtBinding.NoneAtLet,
+            {
+                LeadingKeyword = SynLeadingKeyword.Let range0
+                InlineKeyword = None
+                EqualsRange = Some range0
+            }
         )
-
-    let getHttpAttributes (attrs : SynAttribute list) : HttpAttribute list =
-        attrs
-        |> List.choose (fun attr ->
-            match attr.TypeName.AsString with
-            | "Query"
-            | "QueryAttribute" ->
-                match attr.ArgExpr with
-                | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Query None)
-                | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
-                    Some (HttpAttribute.Query (Some s))
-                | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Query attribute: %+A{a}"
-                | _ -> None
-            | "Path"
-            | "PathAttribute" ->
-                match attr.ArgExpr with
-                | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
-                    Some (HttpAttribute.Path (PathSpec.Verbatim s))
-                | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Path PathSpec.MatchArgName)
-                | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Path attribute: %+A{a}"
-                | _ -> None
-            | "Body"
-            | "BodyAttribute" ->
-                match attr.ArgExpr with
-                | SynExpr.Const (SynConst.Unit, _) -> Some HttpAttribute.Body
-                | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Body attribute: %+A{a}"
-                | _ -> None
-            | _ -> None
-        )
-
-    let extractBasePath (attrs : SynAttribute list) : SynExpr option =
-        attrs
-        |> List.tryPick (fun attr ->
-            match attr.TypeName.AsString with
-            | "BasePath"
-            | "RestEase.BasePath"
-            | "BasePathAttribute"
-            | "RestEase.BasePathAttribute" -> Some attr.ArgExpr
-            | _ -> None
-        )
-
-    let extractBaseAddress (attrs : SynAttribute list) : SynExpr option =
-        attrs
-        |> List.tryPick (fun attr ->
-            match attr.TypeName.AsString with
-            | "BaseAddress"
-            | "RestEase.BaseAddress"
-            | "BaseAddressAttribute"
-            | "RestEase.BaseAddressAttribute" -> Some attr.ArgExpr
-            | _ -> None
-        )
-
-    let lowerFirstLetter (x : Ident) : Ident =
-        let result = StringBuilder x.idText.Length
-        result.Append (Char.ToLowerInvariant x.idText.[0]) |> ignore
-        result.Append x.idText.[1..] |> ignore
-        Ident.Create ((result : StringBuilder).ToString ())
 
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
-        (interfaceType : SynTypeDefn)
+        (SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (_, _, _, taggedType, _, _, _, _), _, _, _, _, _))
+        (allUnionTypes : SynTypeDefn list)
         : SynModuleOrNamespace
         =
-        let interfaceType = AstHelper.parseInterface interfaceType
-
-        let constantHeaders =
-            interfaceType.Attributes
-            |> extractHeaderInformation
-            |> List.map (fun exprs ->
-                match exprs with
-                | [ key ; value ] -> key, value
-                | [] ->
-                    failwith
-                        "Expected constant header parameters to be of the form [<Header (key, value)>], but got no args"
-                | [ _ ] ->
-                    failwith
-                        "Expected constant header parameters to be of the form [<Header (key, value)>], but got only one arg"
-                | _ ->
-                    failwith
-                        "Expected constant header parameters to be of the form [<Header (key, value)>], but got more than two args"
-            )
-
-        let baseAddress = extractBaseAddress interfaceType.Attributes
-        let basePath = extractBasePath interfaceType.Attributes
-
-        let properties =
-            interfaceType.Properties
-            |> List.map (fun pi ->
-                let headerInfo =
-                    match extractHeaderInformation pi.Attributes with
-                    | [ [ x ] ] -> x
-                    | [ xs ] ->
-                        failwith
-                            "Expected exactly one Header parameter on the member, with exactly one arg; got one Header parameter with non-1-many args"
-                    | [] ->
-                        failwith
-                            "Expected exactly one Header parameter on the member, with exactly one arg; got no Header parameters"
-                    | _ ->
-                        failwith
-                            "Expected exactly one Header parameter on the member, with exactly one arg; got multiple Header parameters"
-
-                headerInfo, pi
-            )
-
-        let nonPropertyMembers =
-            let properties = properties |> List.map (fun (header, pi) -> header, pi.Identifier)
-
-            interfaceType.Members
-            |> List.map (fun mem ->
-                let httpMethod, url = extractHttpInformation mem.Attributes
-
-                let shouldEnsureSuccess = not (shouldAllowAnyStatusCode mem.Attributes)
-
-                let returnType =
-                    match mem.ReturnType with
-                    | Task ty -> ty
-                    | a -> failwith $"Method must return a generic Task; returned %+A{a}"
-
-                if mem.IsMutable then
-                    failwith $"mutable methods not supported (identifier: %+A{mem.Identifier})"
-
-                if mem.IsInline then
-                    failwith $"inline methods not supported (identifier: %+A{mem.Identifier})"
-
-                let args =
-                    match mem.Args with
-                    | [ args ] ->
-                        args.Args
-                        |> List.map (fun arg ->
-                            {
-                                Attributes = arg.Attributes |> getHttpAttributes
-                                IsOptional = arg.IsOptional
-                                Id = arg.Id
-                                Type = arg.Type
-                            }
-                        )
-                    | [] -> failwith $"Expected %+A{mem.Identifier} to have tupled args, but it had no args."
-                    | _ ->
-                        failwith
-                            $"Expected %+A{mem.Identifier} to have tupled args, but it was curried: %+A{mem.Args}."
-
-                {
-                    HttpMethod = httpMethod
-                    UrlTemplate = url
-                    TaskReturnType = returnType
-                    Args = args
-                    Identifier = mem.Identifier
-                    EnsureSuccessHttpCode = shouldEnsureSuccess
-                    BaseAddress = baseAddress
-                    BasePath = basePath
-                    Accessibility = mem.Accessibility
-                }
-            )
-            |> List.map (constructMember constantHeaders properties)
-
-        let propertyMembers =
-            properties
-            |> List.map (fun (_, pi) ->
-                SynMemberDefn.Member (
-                    SynBinding.SynBinding (
-                        pi.Accessibility,
-                        SynBindingKind.Normal,
-                        pi.IsInline,
-                        false,
-                        [],
-                        PreXmlDoc.Empty,
-                        SynValData.SynValData (
-                            Some
-                                {
-                                    IsInstance = true
-                                    IsDispatchSlot = false
-                                    IsOverrideOrExplicitImpl = true
-                                    IsFinal = false
-                                    GetterOrSetterIsCompilerGenerated = false
-                                    MemberKind = SynMemberKind.Member
-                                },
-                            SynValInfo.SynValInfo ([ [ SynArgInfo.Empty ] ; [] ], SynArgInfo.Empty),
-                            None
-                        ),
-                        SynPat.CreateLongIdent (
-                            SynLongIdent.CreateFromLongIdent [ Ident.Create "_" ; pi.Identifier ],
-                            []
-                        ),
-                        Some (SynBindingReturnInfo.Create pi.Type),
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (
-                                SynLongIdent.CreateFromLongIdent [ lowerFirstLetter pi.Identifier ]
-                            ),
-                            SynExpr.CreateConst SynConst.Unit
-                        ),
-                        range0,
-                        DebugPointAtBinding.Yes range0,
-                        {
-                            LeadingKeyword = SynLeadingKeyword.Member range0
-                            InlineKeyword = if pi.IsInline then Some range0 else None
-                            EqualsRange = Some range0
-                        }
-                    ),
-                    range0
-                )
-            )
-
-        let members = propertyMembers @ nonPropertyMembers
-
-        let docString = PreXmlDoc.Create " Module for constructing a REST client."
-
-        let interfaceImpl =
-            SynExpr.ObjExpr (
-                SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name),
-                None,
-                Some range0,
-                [],
-                members,
-                [],
-                range0,
-                range0
-            )
-
-        let xmlDoc =
-            if properties.IsEmpty then
-                " Create a REST client."
-            else
-                " Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties."
-
-        let createFunc =
-            SynBinding.SynBinding (
-                None,
-                SynBindingKind.Normal,
-                false,
-                false,
-                [],
-                PreXmlDoc.Create xmlDoc,
-                SynValData.SynValData (
-                    None,
-                    SynValInfo.SynValInfo (
-                        [ [ SynArgInfo.SynArgInfo ([], false, Some (Ident.Create "client")) ] ],
-                        SynArgInfo.Empty
-                    ),
-                    None
-                ),
-                SynPat.CreateLongIdent (SynLongIdent.CreateString "make", headerArgs @ [ clientCreationArg ]),
-                Some (
-                    SynBindingReturnInfo.Create (
-                        SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name)
-                    )
-                ),
-                interfaceImpl,
-                range0,
-                DebugPointAtBinding.NoneAtLet,
-                SynExpr.synBindingTriviaZero false
-            )
-            |> List.singleton
-            |> SynModuleDecl.CreateLet
-
         let moduleName : LongIdent =
-            List.last interfaceType.Name
-            |> _.idText
-            |> fun s ->
-                if s.StartsWith 'I' then
-                    s.[1..]
-                else
-                    failwith $"Expected interface type to start with 'I', but was: %s{s}"
+            List.last taggedType
+            |> fun x -> x.idText + "Cata"
             |> Ident.Create
             |> List.singleton
 
-        let attribs =
-            [
-                SynAttributeList.Create SynAttribute.compilationRepresentation
-                SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-            ]
+        let attribs = [ SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ()) ]
 
         let modInfo =
             SynComponentInfo.Create (
                 moduleName,
                 attributes = attribs,
-                xmldoc = docString,
-                access = interfaceType.Accessibility
+                xmldoc = PreXmlDoc.Create " Catamorphism" // TODO: better docstring
             )
+
+        let allTypars =
+            allUnionTypes
+            |> List.map (fun
+                             (SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (_, _, _, id, _, _, _, _),
+                                                       _,
+                                                       _,
+                                                       _,
+                                                       _,
+                                                       _)) ->
+                List.last id
+                |> fun x -> x.idText
+                |> fun s -> s + "Ret"
+                |> Ident.Create
+                |> fun x -> SynTypar.SynTypar (x, TyparStaticReq.None, false)
+                |> fun x -> SynType.Var (x, range0)
+            )
+
+        let runFunctions =
+            List.zip allUnionTypes allTypars
+            |> List.map (fun (unionType, relevantTypar) -> createRunFunction allTypars relevantTypar unionType)
 
         SynModuleOrNamespace.CreateNamespace (
             ns,
@@ -856,13 +204,13 @@ module internal CataGenerator =
                 [
                     for openStatement in opens do
                         yield SynModuleDecl.CreateOpen openStatement
-                    yield SynModuleDecl.CreateNestedModule (modInfo, [ createFunc ])
+                    yield SynModuleDecl.CreateNestedModule (modInfo, [ SynModuleDecl.CreateLet runFunctions ])
                 ]
         )
 
 /// Myriad generator that provides an HTTP client for an interface type using RestEase annotations.
-[<MyriadGenerator("http-client")>]
-type HttpClientGenerator () =
+[<MyriadGenerator("create-catamorphism")>]
+type CreateCatamorphismGenerator () =
 
     interface IMyriadGenerator with
         member _.ValidInputExtensions = [ ".fs" ]
@@ -878,13 +226,26 @@ type HttpClientGenerator () =
             let namespaceAndTypes =
                 types
                 |> List.choose (fun (ns, types) ->
-                    match types |> List.filter Ast.hasAttribute<CreateCatamorphismAttribute> with
-                    | [] -> None
-                    | types -> Some (ns, types)
+                    match types |> List.tryFind Ast.hasAttribute<CreateCatamorphismAttribute> with
+                    | Some taggedType ->
+                        let anyNonUnion =
+                            types
+                            |> List.exists (fun (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) ->
+                                match repr with
+                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union _, _) -> false
+                                | _ -> true
+                            )
+
+                        if anyNonUnion then
+                            failwith
+                                "Error: all types recursively defined together with a CreateCatamorphism type must be discriminated unions"
+
+                        Some (ns, taggedType, types)
+                    | _ -> None
                 )
 
             let modules =
                 namespaceAndTypes
-                |> List.collect (fun (ns, types) -> types |> List.map (CataGenerator.createModule opens ns))
+                |> List.map (fun (ns, taggedType, types) -> CataGenerator.createModule opens ns taggedType types)
 
             Output.Ast modules
