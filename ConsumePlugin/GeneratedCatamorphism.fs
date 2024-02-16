@@ -14,28 +14,28 @@ open WoofWare.Myriad.Plugins
 /// Description of how to combine cases during a fold
 type ExprCata<'Expr, 'ExprBuilder> =
     /// How to operate on the Const case
-    abstract Const : Const -> 'Expr
+    abstract Const: Const -> 'Expr
     /// How to operate on the Pair case
-    abstract Pair : 'Expr -> 'Expr -> PairOpKind -> 'Expr
+    abstract Pair: 'Expr -> 'Expr -> PairOpKind -> 'Expr
     /// How to operate on the Sequential case
-    abstract Sequential : 'Expr list -> 'Expr
+    abstract Sequential: 'Expr list -> 'Expr
     /// How to operate on the Builder case
-    abstract Builder : 'Expr -> 'ExprBuilder -> 'Expr
+    abstract Builder: 'Expr -> 'ExprBuilder -> 'Expr
 
 /// Description of how to combine cases during a fold
 type ExprBuilderCata<'Expr, 'ExprBuilder> =
     /// How to operate on the Child case
-    abstract Child : 'ExprBuilder -> 'ExprBuilder
+    abstract Child: 'ExprBuilder -> 'ExprBuilder
     /// How to operate on the Parent case
-    abstract Parent : 'Expr -> 'ExprBuilder
+    abstract Parent: 'Expr -> 'ExprBuilder
 
 /// Specifies how to perform a fold (catamorphism) over the type Expr.
 type Cata<'Expr, 'ExprBuilder> =
     {
         /// TODO: doc
-        Expr : ExprCata<'Expr, 'ExprBuilder>
+        Expr: ExprCata<'Expr, 'ExprBuilder>
         /// TODO: doc
-        ExprBuilder : ExprBuilderCata<'Expr, 'ExprBuilder>
+        ExprBuilder: ExprBuilderCata<'Expr, 'ExprBuilder>
     }
 
 /// Methods to perform a catamorphism over the type Expr
@@ -51,21 +51,30 @@ module ExprCata =
         | ExprBuilderChild
         | ExprBuilderParent
 
-    let private loop (cata : Cata<_, _>) (instructions : ResizeArray<Instruction>) =
-        let ExprBuilderStack = ResizeArray ()
-        let ExprStack = ResizeArray ()
+    let private loop (cata: Cata<_, _>) (instructions: ResizeArray<Instruction>) =
+        let ExprBuilderStack = ResizeArray()
+        let ExprStack = ResizeArray()
+
+        while instructions.Count > 0 do
+            let currentInstruction = instructions.[instructions.Count - 1]
+            instructions.RemoveAt(instructions.Count - 1)
+
+            match currentInstruction with
+
+
         ExprStack, ExprBuilderStack
 
     /// Execute the catamorphism.
-    let runExpr (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : Expr) : 'ExprRet =
-        let instructions = ResizeArray ()
-        instructions.Add (Instruction.ProcessExpr x)
+    let runExpr (cata: Cata<'ExprRet, 'ExprBuilderRet>) (x: Expr) : 'ExprRet =
+        let instructions = ResizeArray()
+        instructions.Add(Instruction.ProcessExpr x)
         let ExprRetStack, ExprBuilderRetStack = loop cata instructions
         Seq.exactlyOne ExprRetStack
 
     /// Execute the catamorphism.
-    let runExprBuilder (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : ExprBuilder) : 'ExprBuilderRet =
-        let instructions = ResizeArray ()
-        instructions.Add (Instruction.ProcessExprBuilder x)
+    let runExprBuilder (cata: Cata<'ExprRet, 'ExprBuilderRet>) (x: ExprBuilder) : 'ExprBuilderRet =
+        let instructions = ResizeArray()
+        instructions.Add(Instruction.ProcessExprBuilder x)
         let ExprRetStack, ExprBuilderRetStack = loop cata instructions
         Seq.exactlyOne ExprBuilderRetStack
+

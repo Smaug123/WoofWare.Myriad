@@ -546,6 +546,21 @@ module internal CataGenerator =
             }
         )
 
+    let minusN (ident : SynLongIdent) (n : int) : SynExpr =
+        SynExpr.CreateApp (
+            SynExpr.CreateAppInfix (
+                SynExpr.CreateLongIdent (
+                    SynLongIdent.SynLongIdent (
+                        [ Ident.Create "op_Subtraction" ],
+                        [],
+                        [ Some (IdentTrivia.OriginalNotation "-") ]
+                    )
+                ),
+                SynExpr.CreateLongIdent ident
+            ),
+            SynExpr.CreateConst (SynConst.Int32 n)
+        )
+
     let createLoopFunction (allUnionTypes : SynTypeDefn list) : SynBinding =
         let valData =
             SynValData.SynValData (
@@ -608,9 +623,79 @@ module internal CataGenerator =
                 List.last(getName ty).idText + "Stack" |> Ident.Create
             )
 
+        let matchStatement =
+            SynExpr.CreateMatch (SynExpr.CreateIdentString "currentInstruction", [])
+
         let body =
             SynExpr.CreateSequential
                 [
+                    SynExpr.CreateApp (
+                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "RemoveAt" ]),
+                        SynExpr.CreateParen (minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1)
+                    )
+                    matchStatement
+                ]
+
+        let body =
+            SynExpr.LetOrUse (
+                false,
+                false,
+                [
+                    SynBinding.SynBinding (
+                        None,
+                        SynBindingKind.Normal,
+                        false,
+                        false,
+                        [],
+                        PreXmlDoc.Empty,
+                        SynValData.SynValData (None, SynValInfo.SynValInfo ([], SynArgInfo.Empty), None),
+                        SynPat.CreateNamed (Ident.Create "currentInstruction"),
+                        None,
+                        SynExpr.DotIndexedGet (
+                            SynExpr.CreateIdentString "instructions",
+                            minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1,
+                            range0,
+                            range0
+                        ),
+                        range0,
+                        DebugPointAtBinding.Yes range0,
+
+                        {
+                            LeadingKeyword = SynLeadingKeyword.Let range0
+                            InlineKeyword = None
+                            EqualsRange = Some range0
+                        }
+                    )
+                ],
+                body,
+                range0,
+                {
+                    InKeyword = None
+                }
+            )
+
+        let body =
+            SynExpr.CreateSequential
+                [
+                    SynExpr.While (
+                        DebugPointAtWhile.Yes range0,
+                        SynExpr.CreateApp (
+                            SynExpr.CreateAppInfix (
+                                SynExpr.CreateLongIdent (
+                                    SynLongIdent.SynLongIdent (
+                                        [ Ident.Create "op_GreaterThan" ],
+                                        [],
+                                        [ Some (IdentTrivia.OriginalNotation ">") ]
+                                    )
+                                ),
+                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Count" ])
+                            ),
+                            SynExpr.CreateConst (SynConst.Int32 0)
+
+                        ),
+                        body,
+                        range0
+                    )
                     SynExpr.CreateTuple (
                         stackNames
                         |> List.map (List.singleton >> SynLongIdent.CreateFromLongIdent >> SynExpr.CreateLongIdent)
