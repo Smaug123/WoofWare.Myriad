@@ -14,15 +14,25 @@ open WoofWare.Myriad.Plugins
 /// Catamorphism
 [<RequireQualifiedAccess>]
 module ExprCata =
+    [<RequireQualifiedAccess>]
+    type private Instruction =
+        | ProcessExpr of Expr
+        | ProcessExprBuilder of ExprBuilder
+        | ExprPair of PairOpKind
+        | ExprSequential of int
+        | ExprBuilder
+        | ExprBuilderChild
+        | ExprBuilderParent
+
     /// Execute the catamorphism.
-    let runExpr (cata : Cata<'ExprRet, 'ExprBuilderRet>) : 'ExprRet =
+    let runExpr (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : Expr) : 'ExprRet =
         let instructions = ResizeArray ()
         instructions.Add (Instruction.ProcessExpr x)
         let ExprRetStack, ExprBuilderRetStack = loop cata instructions
         Seq.exactlyOne ExprRetStack
 
     /// Execute the catamorphism.
-    let runExprBuilder (cata : Cata<'ExprRet, 'ExprBuilderRet>) : 'ExprBuilderRet =
+    let runExprBuilder (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : ExprBuilder) : 'ExprBuilderRet =
         let instructions = ResizeArray ()
         instructions.Add (Instruction.ProcessExprBuilder x)
         let ExprRetStack, ExprBuilderRetStack = loop cata instructions

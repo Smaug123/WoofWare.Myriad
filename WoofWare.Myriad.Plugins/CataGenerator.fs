@@ -70,6 +70,12 @@ module internal CataGenerator =
                             )
                         )
                     )
+                    SynPat.CreateParen (
+                        SynPat.CreateTyped (
+                            SynPat.CreateNamed (Ident.Create "x"),
+                            SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ relevantTypeName ])
+                        )
+                    )
                 ]
             ),
             Some (SynBindingReturnInfo.Create relevantTypar),
@@ -155,15 +161,160 @@ module internal CataGenerator =
             }
         )
 
+    let getName (ty : SynTypeDefn) : LongIdent =
+        match ty with
+        | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (_, _, _, id, _, _, _, _), _, _, _, _, _) -> id
+
+    type UnionField =
+        {
+            Type : SynType
+            Name : Ident option
+        }
+
+    type UnionCase =
+        {
+            Name : SynIdent
+            Fields : UnionField list
+        }
+
+    let getCases (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) : UnionCase list =
+        match repr with
+        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_, cases, _), range0) ->
+            cases
+            |> List.map (fun (SynUnionCase.SynUnionCase (_, ident, kind, _, _, _, _)) ->
+                match kind with
+                | SynUnionCaseKind.FullType _ -> failwith "FullType union cases not supported"
+                | SynUnionCaseKind.Fields fields ->
+                    {
+                        Name = ident
+                        Fields =
+                            fields
+                            |> List.map (fun (SynField.SynField (_, _, id, ty, _, _, _, _, _)) ->
+                                {
+                                    Type = ty
+                                    Name = id
+                                }
+                            )
+                    }
+            )
+        | _ -> failwithf "Failed to get union cases for type that was: %+A" repr
+
+    /// Given the input `| Pair of Expr * Expr * PairOpKind`,
+    /// strips out any members which contain recursive calls.
+    /// TODO: support lists and other compound types.
+    let createInstructionCases (allUnionTypes : SynTypeDefn list) (case : UnionCase) : UnionField list option =
+        let hasRecursion, cases =
+            ((false, []), case.Fields)
+            ||> List.fold (fun (hasRecursion, cases) field ->
+                match SynType.stripOptionalParen field.Type with
+                | ListType ty ->
+                    match ty with
+                    | SynType.LongIdent (SynLongIdent.SynLongIdent (ty, _, _)) ->
+                        let isListOfSelf =
+                            allUnionTypes
+                            |> List.exists (fun unionTy -> List.last(getName unionTy).idText = List.last(ty).idText)
+
+                        if isListOfSelf then
+                            // store an int which is the length of the list
+                            true, SynType.Int () :: cases
+                        else
+                            hasRecursion, field.Type :: cases
+                    | _ -> hasRecursion, field.Type :: cases
+                | PrimitiveType _ -> hasRecursion, field.Type :: cases
+                | SynType.LongIdent (SynLongIdent.SynLongIdent (ty, _, _)) ->
+                    let isSelf =
+                        allUnionTypes
+                        |> List.exists (fun unionTy -> List.last(getName unionTy).idText = List.last(ty).idText)
+
+                    if isSelf then
+                        true, cases
+                    else
+                        hasRecursion, field.Type :: cases
+                | _ -> failwithf "Unrecognised type: %+A" field.Type
+            )
+
+        if hasRecursion then
+            cases
+            |> List.rev
+            |> List.map (fun ty ->
+                {
+                    Name = None
+                    Type = ty
+                }
+            )
+            |> Some
+        else
+            None
+
+    let createInstructionType (allUnionTypes : SynTypeDefn list) : SynTypeDefn =
+        // One union case for each union type, and then
+        // a union case for each union case which contains a recursive reference.
+        let casesFromProcess : SynUnionCase list =
+            allUnionTypes
+            |> List.map (fun unionType ->
+                let name = getName unionType
+
+                SynUnionCase.Create (
+                    Ident.Create ("Process" + (List.last name).idText),
+                    [
+                        SynField.Create (SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent name))
+                    ]
+                )
+            )
+
+        let casesFromCases =
+            allUnionTypes
+            |> List.collect (fun unionType ->
+                getCases unionType
+                |> List.choose (fun case ->
+                    let fields = createInstructionCases allUnionTypes case
+
+                    match fields with
+                    | None -> None
+                    | Some fields ->
+                        let name =
+                            match case.Name with
+                            | SynIdent.SynIdent (ident, _) ->
+                                (List.last (getName unionType)).idText + ident.idText |> Ident.Create
+
+                        SynUnionCase.Create (name, fields |> List.map (fun field -> SynField.Create field.Type))
+                        |> Some
+                )
+            )
+
+        let cases = casesFromProcess @ casesFromCases
+
+        SynTypeDefn.SynTypeDefn (
+            SynComponentInfo.SynComponentInfo (
+                [ SynAttributeList.Create [ SynAttribute.RequireQualifiedAccess () ] ],
+                None,
+                [],
+                [ Ident.Create "Instruction" ],
+                PreXmlDoc.Empty,
+                false,
+                Some (SynAccess.Private range0),
+                range0
+            ),
+            SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (None, cases, range0), range0),
+            [],
+            None,
+            range0,
+            {
+                LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
+                EqualsRange = Some range0
+                WithKeyword = None
+            }
+        )
+
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
-        (SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (_, _, _, taggedType, _, _, _, _), _, _, _, _, _))
+        (taggedType : SynTypeDefn)
         (allUnionTypes : SynTypeDefn list)
         : SynModuleOrNamespace
         =
         let moduleName : LongIdent =
-            List.last taggedType
+            List.last (getName taggedType)
             |> fun x -> x.idText + "Cata"
             |> Ident.Create
             |> List.singleton
@@ -179,14 +330,8 @@ module internal CataGenerator =
 
         let allTypars =
             allUnionTypes
-            |> List.map (fun
-                             (SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (_, _, _, id, _, _, _, _),
-                                                       _,
-                                                       _,
-                                                       _,
-                                                       _,
-                                                       _)) ->
-                List.last id
+            |> List.map (fun unionType ->
+                List.last (getName unionType)
                 |> fun x -> x.idText
                 |> fun s -> s + "Ret"
                 |> Ident.Create
@@ -204,7 +349,14 @@ module internal CataGenerator =
                 [
                     for openStatement in opens do
                         yield SynModuleDecl.CreateOpen openStatement
-                    yield SynModuleDecl.CreateNestedModule (modInfo, [ SynModuleDecl.CreateLet runFunctions ])
+                    yield
+                        SynModuleDecl.CreateNestedModule (
+                            modInfo,
+                            [
+                                SynModuleDecl.Types ([ createInstructionType allUnionTypes ], range0)
+                                SynModuleDecl.CreateLet runFunctions
+                            ]
+                        )
                 ]
         )
 
