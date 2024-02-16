@@ -75,7 +75,7 @@ module TailRecCata =
         | Child
         | Parent
 
-    let private loop (cata : Cata<_, _>) (instructions : ResizeArray<_>) =
+    let private loop (cata : Cata<_, _>) (instructions : ResizeArray<Instruction>) =
         let resultsStack = ResizeArray ()
         let builderResultsStack = ResizeArray ()
 

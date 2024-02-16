@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
+open System.Transactions
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
@@ -545,6 +546,136 @@ module internal CataGenerator =
             }
         )
 
+    let createLoopFunction (allUnionTypes : SynTypeDefn list) : SynBinding =
+        let valData =
+            SynValData.SynValData (
+                None,
+                SynValInfo.SynValInfo (
+                    [
+                        [ SynArgInfo.SynArgInfo ([], false, Some (Ident.Create "cata")) ]
+                        [ SynArgInfo.SynArgInfo ([], false, Some (Ident.Create "instructions")) ]
+                    ],
+                    SynArgInfo.Empty
+                ),
+                None
+            )
+
+        let headPat =
+            SynPat.LongIdent (
+                SynLongIdent.CreateString "loop",
+                None,
+                None,
+                SynArgPats.Pats
+                    [
+                        SynPat.CreateParen (
+                            SynPat.CreateTyped (
+                                SynPat.CreateNamed (Ident.Create "cata"),
+                                SynType.App (
+                                    // TODO: better type name
+                                    SynType.CreateLongIdent "Cata",
+                                    Some range0,
+                                    List.replicate allUnionTypes.Length (SynType.Anon range0),
+                                    List.replicate (allUnionTypes.Length - 1) range0,
+                                    Some range0,
+                                    false,
+                                    range0
+                                )
+                            )
+                        )
+                        SynPat.CreateParen (
+                            SynPat.CreateTyped (
+                                SynPat.CreateNamed (Ident.Create "instructions"),
+                                SynType.App (
+                                    SynType.CreateLongIdent "ResizeArray",
+                                    Some range0,
+                                    [ SynType.CreateLongIdent "Instruction" ],
+                                    [],
+                                    Some range0,
+                                    false,
+                                    range0
+                                )
+                            )
+                        )
+                    ],
+                Some (SynAccess.Private range0),
+                range0
+            )
+
+        let stackNames =
+            allUnionTypes
+            |> List.map (fun ty ->
+                // TODO this is jank
+                List.last(getName ty).idText + "Stack" |> Ident.Create
+            )
+
+        let body =
+            SynExpr.CreateSequential
+                [
+                    SynExpr.CreateTuple (
+                        stackNames
+                        |> List.map (List.singleton >> SynLongIdent.CreateFromLongIdent >> SynExpr.CreateLongIdent)
+                    )
+                ]
+
+        let body =
+            (body, List.zip stackNames allUnionTypes)
+            ||> List.fold (fun body (stackName, unionType) ->
+                SynExpr.LetOrUse (
+                    false,
+                    false,
+                    [
+                        SynBinding.SynBinding (
+                            None,
+                            SynBindingKind.Normal,
+                            false,
+                            false,
+                            [],
+                            PreXmlDoc.Empty,
+                            SynValData.SynValData (None, SynValInfo.Empty, None),
+                            SynPat.Named (SynIdent.SynIdent (stackName, None), false, None, range0),
+                            None,
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "ResizeArray"),
+                                SynExpr.CreateConst SynConst.Unit
+                            ),
+                            range0,
+                            DebugPointAtBinding.Yes range0,
+                            {
+                                LeadingKeyword = SynLeadingKeyword.Let range0
+                                InlineKeyword = None
+                                EqualsRange = Some range0
+                            }
+                        )
+                    ],
+                    body,
+                    range0,
+                    {
+                        SynExprLetOrUseTrivia.InKeyword = None
+                    }
+                )
+            )
+
+        SynBinding.SynBinding (
+            Some (SynAccess.Private range0),
+            SynBindingKind.Normal,
+            false,
+            false,
+            [],
+            PreXmlDoc.Empty,
+            valData,
+            headPat,
+            None,
+            body,
+            range0,
+            DebugPointAtBinding.NoneAtLet,
+            trivia =
+                {
+                    LeadingKeyword = SynLeadingKeyword.Let range0
+                    InlineKeyword = None
+                    EqualsRange = Some range0
+                }
+        )
+
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
@@ -582,6 +713,8 @@ module internal CataGenerator =
             createCataStructure allUnionTypes
             |> List.map (fun repr -> SynModuleDecl.Types ([ repr ], range0))
 
+        let loopFunction = createLoopFunction allUnionTypes
+
         let cataRecord = SynModuleDecl.Types ([ createCataRecord allUnionTypes ], range0)
 
         SynModuleOrNamespace.CreateNamespace (
@@ -597,7 +730,7 @@ module internal CataGenerator =
                             modInfo,
                             [
                                 SynModuleDecl.Types ([ createInstructionType allUnionTypes ], range0)
-                                SynModuleDecl.CreateLet runFunctions
+                                SynModuleDecl.CreateLet (loopFunction :: runFunctions)
                             ]
                         )
                 ]

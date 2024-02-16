@@ -38,7 +38,7 @@ type Cata<'Expr, 'ExprBuilder> =
         ExprBuilder : ExprBuilderCata<'Expr, 'ExprBuilder>
     }
 
-/// Catamorphism
+/// Methods to perform a catamorphism over the type Expr
 [<RequireQualifiedAccess>]
 module ExprCata =
     [<RequireQualifiedAccess>]
@@ -50,6 +50,11 @@ module ExprCata =
         | ExprBuilder
         | ExprBuilderChild
         | ExprBuilderParent
+
+    let private loop (cata : Cata<_, _>) (instructions : ResizeArray<Instruction>) =
+        let ExprBuilderStack = ResizeArray ()
+        let ExprStack = ResizeArray ()
+        ExprStack, ExprBuilderStack
 
     /// Execute the catamorphism.
     let runExpr (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : Expr) : 'ExprRet =
