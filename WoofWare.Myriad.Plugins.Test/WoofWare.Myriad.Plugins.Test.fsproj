@@ -45,4 +45,8 @@
     <Compile Include="TestJsonSerialize\TestJsonSerde.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="TestCataGenerator\TestCataGenerator.fs" />
+  </ItemGroup>
+
 </Project>

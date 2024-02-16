@@ -21,6 +21,7 @@ and ExprBuilder =
     | Child of ExprBuilder
     | Parent of Expr
 
+(*
 // Say that CreateCatamorphism-tagged types form the set T.
 // Assert that each U in T is a discriminated union.
 // For each type U in T, assign a generic parameter 'ret<U>.
@@ -178,3 +179,5 @@ module CataExample =
                     member _.Parent x = Parent x
                 }
         }
+
+*)
