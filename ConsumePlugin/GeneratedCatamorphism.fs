@@ -43,46 +43,51 @@ type Cata<'Expr, 'ExprBuilder> =
 module ExprCata =
     [<RequireQualifiedAccess>]
     type private Instruction =
-        | ProcessExpr of Expr
-        | ProcessExprBuilder of ExprBuilder
-        | ExprPair of PairOpKind
-        | ExprSequential of int
-        | ExprBuilder
-        | ExprBuilderChild
-        | ExprBuilderParent
+        | Process__Expr of Expr
+        | Process__ExprBuilder of ExprBuilder
+        | Expr_Pair of PairOpKind
+        | Expr_Sequential of int
+        | Expr_Builder
+        | ExprBuilder_Child
+        | ExprBuilder_Parent
 
     let private loop (cata : Cata<_, _>) (instructions : ResizeArray<Instruction>) =
-        let ExprBuilderStack = ResizeArray ()
-        let ExprStack = ResizeArray ()
+        let exprBuilderStack = ResizeArray ()
+        let exprStack = ResizeArray ()
 
         while instructions.Count > 0 do
             let currentInstruction = instructions.[instructions.Count - 1]
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.ProcessExpr x ->
+            | Instruction.Process__Expr x ->
                 match x with
-                | Expr.Const (arg0) -> ()
+                | Expr.Const (arg0) -> cata.Expr.Const arg0 |> exprStack.Add
                 | Expr.Pair (arg0, arg1, arg2) -> ()
                 | Expr.Sequential (arg0) -> ()
                 | Expr.Builder (arg0, arg1) -> ()
-            | Instruction.ProcessExprBuilder x ->
+            | Instruction.Process__ExprBuilder x ->
                 match x with
                 | ExprBuilder.Child (arg0) -> ()
                 | ExprBuilder.Parent (arg0) -> ()
+            | Instruction.Expr_Pair (arg2) -> ()
+            | Instruction.Expr_Sequential (n) -> ()
+            | Instruction.Expr_Builder -> ()
+            | Instruction.ExprBuilder_Child -> ()
+            | Instruction.ExprBuilder_Parent -> ()
 
-        ExprStack, ExprBuilderStack
+        exprStack, exprBuilderStack
 
     /// Execute the catamorphism.
     let runExpr (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : Expr) : 'ExprRet =
         let instructions = ResizeArray ()
-        instructions.Add (Instruction.ProcessExpr x)
-        let ExprRetStack, ExprBuilderRetStack = loop cata instructions
-        Seq.exactlyOne ExprRetStack
+        instructions.Add (Instruction.Process__Expr x)
+        let exprRetStack, exprBuilderRetStack = loop cata instructions
+        Seq.exactlyOne exprRetStack
 
     /// Execute the catamorphism.
     let runExprBuilder (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : ExprBuilder) : 'ExprBuilderRet =
         let instructions = ResizeArray ()
-        instructions.Add (Instruction.ProcessExprBuilder x)
-        let ExprRetStack, ExprBuilderRetStack = loop cata instructions
-        Seq.exactlyOne ExprBuilderRetStack
+        instructions.Add (Instruction.Process__ExprBuilder x)
+        let exprRetStack, exprBuilderRetStack = loop cata instructions
+        Seq.exactlyOne exprBuilderRetStack

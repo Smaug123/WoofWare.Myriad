@@ -100,7 +100,8 @@ module internal CataGenerator =
                                 SynExpr.CreateParen (
                                     SynExpr.CreateApp (
                                         SynExpr.CreateLongIdent (
-                                            SynLongIdent.Create [ "Instruction" ; "Process" + relevantTypeName.idText ]
+                                            SynLongIdent.Create
+                                                [ "Instruction" ; "Process__" + relevantTypeName.idText ]
                                         ),
                                         SynExpr.CreateLongIdent (SynLongIdent.CreateString "x")
                                     )
@@ -117,7 +118,9 @@ module internal CataGenerator =
                                                 false,
                                                 List.map
                                                     (fun (t : Ident) ->
-                                                        SynPat.CreateNamed (Ident.Create (t.idText + "Stack"))
+                                                        SynPat.CreateNamed (
+                                                            Ident.Create (t.idText + "Stack") |> Ident.lowerFirstLetter
+                                                        )
                                                     )
                                                     allTyparNames,
                                                 List.replicate (allTypars.Length - 1) range0,
@@ -136,7 +139,9 @@ module internal CataGenerator =
                                 // TODO: add the "all other stacks are empty" sanity checks
                                 SynExpr.CreateApp (
                                     SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "exactlyOne" ]),
-                                    SynExpr.CreateIdent (Ident.Create (relevantTyparName.idText + "Stack"))
+                                    SynExpr.CreateIdent (
+                                        Ident.Create (relevantTyparName.idText + "Stack") |> Ident.lowerFirstLetter
+                                    )
                                 ),
                                 range0,
                                 {
@@ -153,11 +158,7 @@ module internal CataGenerator =
             ),
             range0,
             DebugPointAtBinding.NoneAtLet,
-            {
-                LeadingKeyword = SynLeadingKeyword.Let range0
-                InlineKeyword = None
-                EqualsRange = Some range0
-            }
+            SynExpr.synBindingTriviaZero false
         )
 
     let getName (ty : SynTypeDefn) : LongIdent =
@@ -172,47 +173,13 @@ module internal CataGenerator =
         | SynType.LongIdent (SynLongIdent.SynLongIdent (name, _, _)) -> name |> List.map _.idText |> String.concat "/"
         | _ -> failwithf "unrecognised type: %+A" unionType
 
-    type UnionField =
-        {
-            Type : SynType
-            Name : Ident option
-        }
-
-    type UnionCase =
-        {
-            Name : SynIdent
-            Fields : UnionField list
-        }
-
-    let getCases (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) : UnionCase list =
-        match repr with
-        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_, cases, _), range0) ->
-            cases
-            |> List.map (fun (SynUnionCase.SynUnionCase (_, ident, kind, _, _, _, _)) ->
-                match kind with
-                | SynUnionCaseKind.FullType _ -> failwith "FullType union cases not supported"
-                | SynUnionCaseKind.Fields fields ->
-                    {
-                        Name = ident
-                        Fields =
-                            fields
-                            |> List.map (fun (SynField.SynField (_, _, id, ty, _, _, _, _, _)) ->
-                                {
-                                    Type = ty
-                                    Name = id
-                                }
-                            )
-                    }
-            )
-        | _ -> failwithf "Failed to get union cases for type that was: %+A" repr
-
     type FieldDescription =
         | ListSelf of SynType
         /// One of the union types itself
         | Self of SynType
         | NonRecursive of SynType
 
-    let analyse (allUnionTypes : SynTypeDefn list) (case : UnionCase) : FieldDescription list =
+    let analyse (allUnionTypes : SynTypeDefn list) (case : UnionCase) : (Ident option * FieldDescription) list =
         let rec go (ty : SynType) : FieldDescription =
             let stripped = SynType.stripOptionalParen ty
 
@@ -236,7 +203,7 @@ module internal CataGenerator =
 
             | _ -> failwithf "Unrecognised type: %+A" stripped
 
-        case.Fields |> List.map _.Type |> List.map go
+        case.Fields |> List.map (fun x -> x.Name, go x.Type)
 
     /// Returns whether this type recursively contains a Self, and the emitted TODO
     let rec toInstructionCase (field : FieldDescription) : bool * SynType option =
@@ -247,73 +214,102 @@ module internal CataGenerator =
             // store the length of the list
             true, Some (SynType.Int ())
 
+    type InstructionCase =
+        {
+            Name : Ident
+            Fields : UnionField list
+        }
+
+    let getInstructionCaseName (thisUnionType : SynTypeDefn) (case : UnionCase) =
+        match case.Name with
+        | SynIdent.SynIdent (ident, _) ->
+            (List.last (getName thisUnionType)).idText + "_" + ident.idText |> Ident.Create
+
     /// Given the input `| Pair of Expr * Expr * PairOpKind`,
     /// strips out any members which contain recursive calls.
     /// Stores a list as an int which is "the length of the list".
     /// TODO: support other compound types.
-    let createInstructionCases (allUnionTypes : SynTypeDefn list) (case : UnionCase) : UnionField list option =
+    let getRecursiveInstruction
+        (allUnionTypes : SynTypeDefn list)
+        (thisUnionType : SynTypeDefn)
+        (case : UnionCase)
+        : InstructionCase option
+        =
         let analysed = analyse allUnionTypes case
 
         let hasRecursion, cases =
             ((false, []), analysed)
-            ||> List.fold (fun (hasRecursion, cases) field ->
+            ||> List.fold (fun (hasRecursion, cases) (fieldName, field) ->
                 let newHasRecursion, case = toInstructionCase field
 
                 let cases =
                     match case with
                     | None -> cases
-                    | Some case -> case :: cases
+                    | Some case -> (fieldName, case) :: cases
 
                 hasRecursion || newHasRecursion, cases
             )
 
+        let name = getInstructionCaseName thisUnionType case
+
         if hasRecursion then
-            cases
-            |> List.rev
-            |> List.map (fun ty ->
-                {
-                    Name = None
-                    Type = ty
-                }
-            )
+            let fields =
+                cases
+                |> List.rev
+                |> List.map (fun (name, ty) ->
+                    {
+                        Name = name
+                        Type = ty
+                    }
+                )
+
+            {
+                Name = name
+                Fields = fields
+            }
             |> Some
         else
             None
+
+    /// The instruction to "process an Expr"; the loop will have to descend
+    /// into this Expr and break it down to discover what recursive calls
+    /// and calls to the cata this will imply making.
+    let baseCases (allUnionTypes : SynTypeDefn list) : InstructionCase list =
+        allUnionTypes
+        |> List.map (fun unionType ->
+            let name = getName unionType
+
+            {
+                Name = Ident.Create ("Process__" + (List.last name).idText)
+                Fields =
+                    {
+                        Name = None
+                        Type = SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent (getName unionType))
+                    }
+                    |> List.singleton
+            }
+        )
+
+    let recursiveCases (allUnionTypes : SynTypeDefn list) : InstructionCase list =
+        allUnionTypes
+        |> List.collect (fun unionType ->
+            AstHelper.getUnionCases unionType
+            |> List.choose (fun case -> getRecursiveInstruction allUnionTypes unionType case)
+        )
 
     let createInstructionType (allUnionTypes : SynTypeDefn list) : SynTypeDefn =
         // One union case for each union type, and then
         // a union case for each union case which contains a recursive reference.
         let casesFromProcess : SynUnionCase list =
-            allUnionTypes
-            |> List.map (fun unionType ->
-                let name = getName unionType
-
-                SynUnionCase.Create (
-                    Ident.Create ("Process" + (List.last name).idText),
-                    [
-                        SynField.Create (SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent name))
-                    ]
-                )
+            baseCases allUnionTypes
+            |> List.map (fun unionCase ->
+                SynUnionCase.Create (unionCase.Name, unionCase.Fields |> List.map (fun f -> SynField.Create f.Type))
             )
 
         let casesFromCases =
-            allUnionTypes
-            |> List.collect (fun unionType ->
-                getCases unionType
-                |> List.choose (fun case ->
-                    let fields = createInstructionCases allUnionTypes case
-
-                    match fields with
-                    | None -> None
-                    | Some fields ->
-                        let name =
-                            match case.Name with
-                            | SynIdent.SynIdent (ident, _) ->
-                                (List.last (getName unionType)).idText + ident.idText |> Ident.Create
-
-                        SynUnionCase.Create (name, fields |> List.map (fun field -> SynField.Create field.Type))
-                        |> Some
-                )
+            recursiveCases allUnionTypes
+            |> List.map (fun case ->
+                SynUnionCase.Create (case.Name, case.Fields |> List.map (fun field -> SynField.Create field.Type))
             )
 
         let cases = casesFromProcess @ casesFromCases
@@ -387,7 +383,7 @@ module internal CataGenerator =
                         SynMemberFlags.MemberKind = SynMemberKind.Member
                     }
 
-                getCases unionType
+                AstHelper.getUnionCases unionType
                 |> List.map (fun case ->
                     let caseName =
                         match case.Name with
@@ -400,10 +396,12 @@ module internal CataGenerator =
                         )
 
                     let ty =
+                        // TODO: we should only have called this once; pass the resulting
+                        // data structure in, rather than rederiving it
                         let analysed = analyse allUnionTypes case
 
                         (SynType.Var (ourGenericName, range0), List.rev analysed)
-                        ||> List.fold (fun acc field ->
+                        ||> List.fold (fun acc (_name, field) ->
                             let place : SynType =
                                 match field with
                                 | FieldDescription.Self ty ->
@@ -546,21 +544,6 @@ module internal CataGenerator =
             }
         )
 
-    let minusN (ident : SynLongIdent) (n : int) : SynExpr =
-        SynExpr.CreateApp (
-            SynExpr.CreateAppInfix (
-                SynExpr.CreateLongIdent (
-                    SynLongIdent.SynLongIdent (
-                        [ Ident.Create "op_Subtraction" ],
-                        [],
-                        [ Some (IdentTrivia.OriginalNotation "-") ]
-                    )
-                ),
-                SynExpr.CreateLongIdent ident
-            ),
-            SynExpr.CreateConst (SynConst.Int32 n)
-        )
-
     let createLoopFunction (allUnionTypes : SynTypeDefn list) : SynBinding =
         let valData =
             SynValData.SynValData (
@@ -620,14 +603,14 @@ module internal CataGenerator =
             allUnionTypes
             |> List.map (fun ty ->
                 // TODO this is jank
-                List.last(getName ty).idText + "Stack" |> Ident.Create
+                List.last(getName ty).idText + "Stack" |> Ident.Create |> Ident.lowerFirstLetter
             )
 
         // A clause for each type, splitting it into its cases:
         let baseMatchClauses =
             List.zip stackNames allUnionTypes
             |> List.map (fun (stackName, unionType) ->
-                let cases = getCases unionType
+                let cases = AstHelper.getUnionCases unionType
 
                 let bodyMatch =
                     SynExpr.CreateMatch (
@@ -645,7 +628,7 @@ module internal CataGenerator =
                                     analysis
                                     |> List.forall (
                                         function
-                                        | FieldDescription.NonRecursive ty -> true
+                                        | _, FieldDescription.NonRecursive ty -> true
                                         | _ -> false
                                     )
                                 then
@@ -675,7 +658,8 @@ module internal CataGenerator =
                                 else
                                     // there's a recursive type in here, so we'll have to make some calls
                                     // and then come back.
-                                    failwith "TODO"
+                                    // TODO
+                                    SynExpr.CreateConst SynConst.Unit
 
                             SynMatchClause.SynMatchClause (
                                 SynPat.CreateLongIdent (
@@ -714,7 +698,7 @@ module internal CataGenerator =
                 SynMatchClause.SynMatchClause (
                     SynPat.LongIdent (
                         // TODO this is also jank; should unify with DU generator
-                        SynLongIdent.Create [ "Instruction" ; "Process" + (List.last (getName unionType)).idText ],
+                        SynLongIdent.Create [ "Instruction" ; "Process__" + (List.last (getName unionType)).idText ],
                         None,
                         None,
                         SynArgPats.Pats [ SynPat.CreateNamed (Ident.Create "x") ],
@@ -733,7 +717,79 @@ module internal CataGenerator =
             )
 
         // And a clause for each case with a recursive reference.
-        let recMatchClauses = []
+        let recMatchClauses : SynMatchClause list =
+            allUnionTypes
+            |> List.collect (fun unionType ->
+                let cases = AstHelper.getUnionCases unionType
+
+                cases
+                |> List.choose (fun case ->
+                    let analysis = analyse allUnionTypes case
+                    // We already know there is a recursive reference somewhere
+                    // in `analysis`.
+                    if
+                        analysis
+                        |> List.exists (fun (_, ty) ->
+                            match ty with
+                            | NonRecursive _ -> false
+                            | _ -> true
+                        )
+                    then
+                        Some (case, analysis)
+                    else
+                        None
+                )
+                |> List.map (fun (case, analysis) ->
+                    let lhsNames =
+                        analysis
+                        |> Seq.mapi (fun i x -> (i, x))
+                        |> Seq.choose (fun (i, (name, desc)) ->
+                            match desc with
+                            | FieldDescription.NonRecursive _ ->
+                                match name with
+                                | None -> Ident.Create $"arg%i{i}"
+                                | Some name -> name
+                                |> SynPat.CreateNamed
+                                |> Some
+                            | FieldDescription.ListSelf _ -> Ident.Create "n" |> SynPat.CreateNamed |> Some
+                            | FieldDescription.Self _ -> None
+                        )
+                        |> Seq.toList
+
+                    let lhs =
+                        match lhsNames with
+                        | [] -> []
+                        | lhsNames ->
+                            SynPat.Tuple (false, lhsNames, List.replicate (lhsNames.Length - 1) range0, range0)
+                            |> SynPat.CreateParen
+                            |> List.singleton
+
+                    let pat =
+                        SynPat.LongIdent (
+                            SynLongIdent.CreateFromLongIdent
+                                [ Ident.Create "Instruction" ; getInstructionCaseName unionType case ],
+                            None,
+                            None,
+                            SynArgPats.Pats lhs,
+                            None,
+                            range0
+                        )
+
+                    let body = [ SynExpr.CreateConst SynConst.Unit ] |> SynExpr.CreateSequential
+
+                    SynMatchClause.SynMatchClause (
+                        pat,
+                        None,
+                        body,
+                        range0,
+                        DebugPointAtTarget.Yes,
+                        {
+                            ArrowRange = Some range0
+                            BarRange = Some range0
+                        }
+                    )
+                )
+            )
 
         let matchStatement =
             SynExpr.CreateMatch (SynExpr.CreateIdentString "currentInstruction", baseMatchClauses @ recMatchClauses)
@@ -743,7 +799,7 @@ module internal CataGenerator =
                 [
                     SynExpr.CreateApp (
                         SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "RemoveAt" ]),
-                        SynExpr.CreateParen (minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1)
+                        SynExpr.CreateParen (SynExpr.minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1)
                     )
                     matchStatement
                 ]
@@ -765,18 +821,13 @@ module internal CataGenerator =
                         None,
                         SynExpr.DotIndexedGet (
                             SynExpr.CreateIdentString "instructions",
-                            minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1,
+                            SynExpr.minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1,
                             range0,
                             range0
                         ),
                         range0,
                         DebugPointAtBinding.Yes range0,
-
-                        {
-                            LeadingKeyword = SynLeadingKeyword.Let range0
-                            InlineKeyword = None
-                            EqualsRange = Some range0
-                        }
+                        SynExpr.synBindingTriviaZero false
                     )
                 ],
                 body,
@@ -837,11 +888,7 @@ module internal CataGenerator =
                             ),
                             range0,
                             DebugPointAtBinding.Yes range0,
-                            {
-                                LeadingKeyword = SynLeadingKeyword.Let range0
-                                InlineKeyword = None
-                                EqualsRange = Some range0
-                            }
+                            SynExpr.synBindingTriviaZero false
                         )
                     ],
                     body,
@@ -865,12 +912,7 @@ module internal CataGenerator =
             body,
             range0,
             DebugPointAtBinding.NoneAtLet,
-            trivia =
-                {
-                    LeadingKeyword = SynLeadingKeyword.Let range0
-                    InlineKeyword = None
-                    EqualsRange = Some range0
-                }
+            trivia = SynExpr.synBindingTriviaZero false
         )
 
     let createModule

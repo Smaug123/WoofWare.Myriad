@@ -70,6 +70,18 @@ type internal RecordType =
         Accessibility : SynAccess option
     }
 
+type UnionField =
+    {
+        Type : SynType
+        Name : Ident option
+    }
+
+type UnionCase =
+    {
+        Name : SynIdent
+        Fields : UnionField list
+    }
+
 [<RequireQualifiedAccess>]
 module internal AstHelper =
 
@@ -383,6 +395,27 @@ module internal AstHelper =
             Accessibility = accessibility
         }
 
+    let getUnionCases (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) : UnionCase list =
+        match repr with
+        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_, cases, _), _) ->
+            cases
+            |> List.map (fun (SynUnionCase.SynUnionCase (_, ident, kind, _, _, _, _)) ->
+                match kind with
+                | SynUnionCaseKind.FullType _ -> failwith "FullType union cases not supported"
+                | SynUnionCaseKind.Fields fields ->
+                    {
+                        Name = ident
+                        Fields =
+                            fields
+                            |> List.map (fun (SynField.SynField (_, _, id, ty, _, _, _, _, _)) ->
+                                {
+                                    Type = ty
+                                    Name = id
+                                }
+                            )
+                    }
+            )
+        | _ -> failwithf "Failed to get union cases for type that was: %+A" repr
 
 [<AutoOpen>]
 module internal SynTypePatterns =
