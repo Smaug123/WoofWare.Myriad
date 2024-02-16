@@ -84,14 +84,6 @@ module TailRecCata =
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.ProcessBuilder builder ->
-                match builder with
-                | Child exprBuilder ->
-                    instructions.Add Instruction.Child
-                    instructions.Add (Instruction.ProcessBuilder exprBuilder)
-                | Parent expr ->
-                    instructions.Add Instruction.Parent
-                    instructions.Add (Instruction.ProcessExpr expr)
             | Instruction.ProcessExpr currentExpr ->
                 match currentExpr with
                 | Const c -> resultsStack.Add (cata.Expr.Const c)
@@ -106,8 +98,16 @@ module TailRecCata =
                         instructions.Add (Instruction.ProcessExpr expr)
                 | Builder (expr, exprBuilder) ->
                     instructions.Add Instruction.Builder
-                    instructions.Add (Instruction.ProcessExpr expr)
                     instructions.Add (Instruction.ProcessBuilder exprBuilder)
+                    instructions.Add (Instruction.ProcessExpr expr)
+            | Instruction.ProcessBuilder builder ->
+                match builder with
+                | Child exprBuilder ->
+                    instructions.Add Instruction.Child
+                    instructions.Add (Instruction.ProcessBuilder exprBuilder)
+                | Parent expr ->
+                    instructions.Add Instruction.Parent
+                    instructions.Add (Instruction.ProcessExpr expr)
             | Instruction.Pair pairOpKind ->
                 let expr = resultsStack.[resultsStack.Count - 1]
                 let expr1 = resultsStack.[resultsStack.Count - 2]
