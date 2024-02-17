@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins.Test
 
+open System.Threading
 open NUnit.Framework
 open FsUnitTyped
 open ConsumePlugin
@@ -33,5 +34,14 @@ module TestCataGenerator =
 
     [<Test>]
     let ``Cata works`` () =
-        let property (x : Expr) = ExprCata.runExpr idCata x = x
+        let builderCases = ref 0
+
+        let property (x : Expr) =
+            match x with
+            | Expr.Builder _ -> Interlocked.Increment builderCases |> ignore
+            | _ -> ()
+
+            ExprCata.runExpr idCata x = x
+
         Check.QuickThrowOnFailure property
+        builderCases.Value |> shouldBeGreaterThan 10
