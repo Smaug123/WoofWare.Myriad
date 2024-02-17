@@ -10,13 +10,13 @@ type PairOpKind =
     | NormalSeq
     | ThenDoSeq
 
-[<CreateCatamorphism>]
-type Expr =
+[<CreateCatamorphism "TreeCata">]
+type Tree =
     | Const of Const
-    | Pair of Expr * Expr * PairOpKind
-    | Sequential of Expr list
-    | Builder of Expr * ExprBuilder
+    | Pair of Tree * Tree * PairOpKind
+    | Sequential of Tree list
+    | Builder of Tree * TreeBuilder
 
-and ExprBuilder =
-    | Child of ExprBuilder
-    | Parent of Expr
+and TreeBuilder =
+    | Child of TreeBuilder
+    | Parent of Tree

@@ -12,123 +12,123 @@ namespace ConsumePlugin
 open WoofWare.Myriad.Plugins
 
 /// Description of how to combine cases during a fold
-type ExprCata<'Expr, 'ExprBuilder> =
-    /// How to operate on the Const case
-    abstract Const : Const -> 'Expr
-    /// How to operate on the Pair case
-    abstract Pair : 'Expr -> 'Expr -> PairOpKind -> 'Expr
-    /// How to operate on the Sequential case
-    abstract Sequential : 'Expr list -> 'Expr
-    /// How to operate on the Builder case
-    abstract Builder : 'Expr -> 'ExprBuilder -> 'Expr
+type TreeBuilderCataCase<'TreeBuilder, 'Tree> =
+    /// How to operate on the Child case
+    abstract Child : 'TreeBuilder -> 'TreeBuilder
+    /// How to operate on the Parent case
+    abstract Parent : 'Tree -> 'TreeBuilder
 
 /// Description of how to combine cases during a fold
-type ExprBuilderCata<'Expr, 'ExprBuilder> =
-    /// How to operate on the Child case
-    abstract Child : 'ExprBuilder -> 'ExprBuilder
-    /// How to operate on the Parent case
-    abstract Parent : 'Expr -> 'ExprBuilder
+type TreeCataCase<'TreeBuilder, 'Tree> =
+    /// How to operate on the Const case
+    abstract Const : Const -> 'Tree
+    /// How to operate on the Pair case
+    abstract Pair : 'Tree -> 'Tree -> PairOpKind -> 'Tree
+    /// How to operate on the Sequential case
+    abstract Sequential : 'Tree list -> 'Tree
+    /// How to operate on the Builder case
+    abstract Builder : 'Tree -> 'TreeBuilder -> 'Tree
 
-/// Specifies how to perform a fold (catamorphism) over the type Expr and its friends.
-type Cata<'Expr, 'ExprBuilder> =
+/// Specifies how to perform a fold (catamorphism) over the type Tree and its friends.
+type TreeCata<'TreeBuilder, 'Tree> =
     {
-        /// How to perform a fold (catamorphism) over the type Expr
-        Expr : ExprCata<'Expr, 'ExprBuilder>
-        /// How to perform a fold (catamorphism) over the type ExprBuilder
-        ExprBuilder : ExprBuilderCata<'Expr, 'ExprBuilder>
+        /// How to perform a fold (catamorphism) over the type TreeBuilder
+        TreeBuilder : TreeBuilderCataCase<'TreeBuilder, 'Tree>
+        /// How to perform a fold (catamorphism) over the type Tree
+        Tree : TreeCataCase<'TreeBuilder, 'Tree>
     }
 
-/// Methods to perform a catamorphism over the type Expr
+/// Methods to perform a catamorphism over the type Tree
 [<RequireQualifiedAccess>]
-module ExprCata =
+module TreeCata =
     [<RequireQualifiedAccess>]
     type private Instruction =
-        | Process__Expr of Expr
-        | Process__ExprBuilder of ExprBuilder
-        | Expr_Pair of PairOpKind
-        | Expr_Sequential of int
-        | Expr_Builder
-        | ExprBuilder_Child
-        | ExprBuilder_Parent
+        | Process__TreeBuilder of TreeBuilder
+        | Process__Tree of Tree
+        | TreeBuilder_Child
+        | TreeBuilder_Parent
+        | Tree_Pair of PairOpKind
+        | Tree_Sequential of int
+        | Tree_Builder
 
-    let private loop (cata : Cata<_, _>) (instructions : ResizeArray<Instruction>) =
-        let exprBuilderStack = ResizeArray ()
-        let exprStack = ResizeArray ()
+    let private loop (cata : TreeCata<_, _>) (instructions : ResizeArray<Instruction>) =
+        let treeStack = ResizeArray ()
+        let treeBuilderStack = ResizeArray ()
 
         while instructions.Count > 0 do
             let currentInstruction = instructions.[instructions.Count - 1]
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.Process__Expr x ->
+            | Instruction.Process__TreeBuilder x ->
                 match x with
-                | Expr.Const (arg0) -> cata.Expr.Const arg0 |> exprStack.Add
-                | Expr.Pair (arg0, arg1, arg2) ->
-                    instructions.Add (Instruction.Expr_Pair (arg2))
-                    instructions.Add (Instruction.Process__Expr arg0)
-                    instructions.Add (Instruction.Process__Expr arg1)
-                | Expr.Sequential (n0) ->
-                    instructions.Add (Instruction.Expr_Sequential ((List.length n0)))
+                | TreeBuilder.Child (arg0) ->
+                    instructions.Add Instruction.TreeBuilder_Child
+                    instructions.Add (Instruction.Process__TreeBuilder arg0)
+                | TreeBuilder.Parent (arg0) ->
+                    instructions.Add Instruction.TreeBuilder_Parent
+                    instructions.Add (Instruction.Process__Tree arg0)
+            | Instruction.Process__Tree x ->
+                match x with
+                | Tree.Const (arg0) -> cata.Tree.Const arg0 |> treeStack.Add
+                | Tree.Pair (arg0, arg1, arg2) ->
+                    instructions.Add (Instruction.Tree_Pair (arg2))
+                    instructions.Add (Instruction.Process__Tree arg0)
+                    instructions.Add (Instruction.Process__Tree arg1)
+                | Tree.Sequential (n0) ->
+                    instructions.Add (Instruction.Tree_Sequential ((List.length n0)))
 
                     for elt in n0 do
-                        instructions.Add (Instruction.Process__Expr elt)
-                | Expr.Builder (arg0, arg1) ->
-                    instructions.Add Instruction.Expr_Builder
-                    instructions.Add (Instruction.Process__Expr arg0)
-                    instructions.Add (Instruction.Process__ExprBuilder arg1)
-            | Instruction.Process__ExprBuilder x ->
-                match x with
-                | ExprBuilder.Child (arg0) ->
-                    instructions.Add Instruction.ExprBuilder_Child
-                    instructions.Add (Instruction.Process__ExprBuilder arg0)
-                | ExprBuilder.Parent (arg0) ->
-                    instructions.Add Instruction.ExprBuilder_Parent
-                    instructions.Add (Instruction.Process__Expr arg0)
-            | Instruction.Expr_Pair (arg2) ->
-                let arg0 = exprStack.[exprStack.Count - 1]
-                exprStack.RemoveAt (exprStack.Count - 1)
-                let arg1 = exprStack.[exprStack.Count - 1]
-                exprStack.RemoveAt (exprStack.Count - 1)
-                cata.Expr.Pair arg0 arg1 arg2 |> exprStack.Add
-            | Instruction.Expr_Sequential (n0) ->
+                        instructions.Add (Instruction.Process__Tree elt)
+                | Tree.Builder (arg0, arg1) ->
+                    instructions.Add Instruction.Tree_Builder
+                    instructions.Add (Instruction.Process__Tree arg0)
+                    instructions.Add (Instruction.Process__TreeBuilder arg1)
+            | Instruction.TreeBuilder_Child ->
+                let arg0 = treeBuilderStack.[treeBuilderStack.Count - 1]
+                treeBuilderStack.RemoveAt (treeBuilderStack.Count - 1)
+                cata.TreeBuilder.Child arg0 |> treeBuilderStack.Add
+            | Instruction.TreeBuilder_Parent ->
+                let arg0 = treeStack.[treeStack.Count - 1]
+                treeStack.RemoveAt (treeStack.Count - 1)
+                cata.TreeBuilder.Parent arg0 |> treeBuilderStack.Add
+            | Instruction.Tree_Pair (arg2) ->
+                let arg0 = treeStack.[treeStack.Count - 1]
+                treeStack.RemoveAt (treeStack.Count - 1)
+                let arg1 = treeStack.[treeStack.Count - 1]
+                treeStack.RemoveAt (treeStack.Count - 1)
+                cata.Tree.Pair arg0 arg1 arg2 |> treeStack.Add
+            | Instruction.Tree_Sequential (n0) ->
                 let n0_len = n0
 
                 let n0 =
                     seq {
-                        for i = exprStack.Count - 1 downto exprStack.Count - n0 do
-                            yield exprStack.[i]
+                        for i = treeStack.Count - 1 downto treeStack.Count - n0 do
+                            yield treeStack.[i]
                     }
                     |> Seq.toList
 
-                exprStack.RemoveRange (exprStack.Count - n0_len, n0_len)
-                cata.Expr.Sequential n0 |> exprStack.Add
-            | Instruction.Expr_Builder ->
-                let arg0 = exprStack.[exprStack.Count - 1]
-                exprStack.RemoveAt (exprStack.Count - 1)
-                let arg1 = exprBuilderStack.[exprBuilderStack.Count - 1]
-                exprBuilderStack.RemoveAt (exprBuilderStack.Count - 1)
-                cata.Expr.Builder arg0 arg1 |> exprStack.Add
-            | Instruction.ExprBuilder_Child ->
-                let arg0 = exprBuilderStack.[exprBuilderStack.Count - 1]
-                exprBuilderStack.RemoveAt (exprBuilderStack.Count - 1)
-                cata.ExprBuilder.Child arg0 |> exprBuilderStack.Add
-            | Instruction.ExprBuilder_Parent ->
-                let arg0 = exprStack.[exprStack.Count - 1]
-                exprStack.RemoveAt (exprStack.Count - 1)
-                cata.ExprBuilder.Parent arg0 |> exprBuilderStack.Add
+                treeStack.RemoveRange (treeStack.Count - n0_len, n0_len)
+                cata.Tree.Sequential n0 |> treeStack.Add
+            | Instruction.Tree_Builder ->
+                let arg0 = treeStack.[treeStack.Count - 1]
+                treeStack.RemoveAt (treeStack.Count - 1)
+                let arg1 = treeBuilderStack.[treeBuilderStack.Count - 1]
+                treeBuilderStack.RemoveAt (treeBuilderStack.Count - 1)
+                cata.Tree.Builder arg0 arg1 |> treeStack.Add
 
-        exprStack, exprBuilderStack
+        treeBuilderStack, treeStack
 
     /// Execute the catamorphism.
-    let runExpr (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : Expr) : 'ExprRet =
+    let runTreeBuilder (cata : TreeCata<'TreeBuilderRet, 'TreeRet>) (x : TreeBuilder) : 'TreeBuilderRet =
         let instructions = ResizeArray ()
-        instructions.Add (Instruction.Process__Expr x)
-        let exprRetStack, exprBuilderRetStack = loop cata instructions
-        Seq.exactlyOne exprRetStack
+        instructions.Add (Instruction.Process__TreeBuilder x)
+        let treeBuilderRetStack, treeRetStack = loop cata instructions
+        Seq.exactlyOne treeBuilderRetStack
 
     /// Execute the catamorphism.
-    let runExprBuilder (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : ExprBuilder) : 'ExprBuilderRet =
+    let runTree (cata : TreeCata<'TreeBuilderRet, 'TreeRet>) (x : Tree) : 'TreeRet =
         let instructions = ResizeArray ()
-        instructions.Add (Instruction.Process__ExprBuilder x)
-        let exprRetStack, exprBuilderRetStack = loop cata instructions
-        Seq.exactlyOne exprBuilderRetStack
+        instructions.Add (Instruction.Process__Tree x)
+        let treeBuilderRetStack, treeRetStack = loop cata instructions
+        Seq.exactlyOne treeRetStack

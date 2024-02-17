@@ -8,17 +8,17 @@ open FsCheck
 
 [<TestFixture>]
 module TestCataGenerator =
-    let idCata : Cata<_, _> =
+    let idCata : TreeCata<_, _> =
         {
-            Expr =
-                { new ExprCata<_, _> with
+            Tree =
+                { new TreeCataCase<_, _> with
                     member _.Const x = Const x
                     member _.Pair x y z = Pair (x, y, z)
                     member _.Sequential xs = Sequential xs
                     member _.Builder x b = Builder (x, b)
                 }
-            ExprBuilder =
-                { new ExprBuilderCata<_, _> with
+            TreeBuilder =
+                { new TreeBuilderCataCase<_, _> with
                     member _.Child x = Child x
                     member _.Parent x = Parent x
                 }
@@ -27,21 +27,21 @@ module TestCataGenerator =
     [<Test>]
     let ``Example`` () =
         let x =
-            Expr.Pair (Expr.Const (Const.Int 0), Expr.Const (Const.String ""), PairOpKind.ThenDoSeq)
+            Tree.Pair (Tree.Const (Const.Int 0), Tree.Const (Const.String ""), PairOpKind.ThenDoSeq)
 
-        ExprCata.runExpr idCata x |> shouldEqual x
+        TreeCata.runTree idCata x |> shouldEqual x
 
 
     [<Test>]
     let ``Cata works`` () =
         let builderCases = ref 0
 
-        let property (x : Expr) =
+        let property (x : Tree) =
             match x with
-            | Expr.Builder _ -> Interlocked.Increment builderCases |> ignore
+            | Tree.Builder _ -> Interlocked.Increment builderCases |> ignore
             | _ -> ()
 
-            ExprCata.runExpr idCata x = x
+            TreeCata.runTree idCata x = x
 
         Check.QuickThrowOnFailure property
         builderCases.Value |> shouldBeGreaterThan 10

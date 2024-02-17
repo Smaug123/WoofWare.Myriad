@@ -46,7 +46,7 @@ module internal CataGenerator =
             /// to pull recursive results from the stack and execute the cata directly"
             InstructionName : Ident
             /// This user-provided DU case
-            Case : UnionCase
+            Case : AdtProduct
             /// The fields of this user-provided DU
             Fields : CataUnionField list
             /// The corresponding method of the appropriate cata, fully-qualified as a call
@@ -89,14 +89,20 @@ module internal CataGenerator =
 
 
     /// Returns a function:
-    /// let run{Case} (cata : Cata<{typars}>) (x : {Case}) : {TyPar} =
+    /// let run{Case} (cata : {cataName}<{typars}>) (x : {Case}) : {TyPar} =
     ///     let instructions = ResizeArray ()
     ///     instructions.Add (Instruction.Process{Case} e)
     ///     let {typar1}Results, {typar2}Results, ... = loop cata instructions
     ///     { for all non-relevant typars: }
     ///     if {typar}Results.Count > 0 then failwith "logic error"
     ///     Seq.exactlyOne {relevantTypar}Stack
-    let createRunFunction (allTypars : SynType list) (relevantTypar : SynType) (unionType : SynTypeDefn) : SynBinding =
+    let createRunFunction
+        (cataName : Ident)
+        (allTypars : SynType list)
+        (relevantTypar : SynType)
+        (unionType : SynTypeDefn)
+        : SynBinding
+        =
         let relevantTypeName =
             match unionType with
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (longId = id), _, _, _, _, _) -> List.last id
@@ -136,7 +142,7 @@ module internal CataGenerator =
                         SynPat.CreateTyped (
                             SynPat.CreateNamed (Ident.Create "cata"),
                             SynType.App (
-                                SynType.CreateLongIdent "Cata",
+                                SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ cataName ]),
                                 Some range0,
                                 allTypars,
                                 List.replicate (allTypars.Length - 1) range0,
@@ -242,10 +248,10 @@ module internal CataGenerator =
         match ty with
         | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (_, _, _, id, _, _, _, _), _, _, _, _, _) -> id
 
-    let getNameUnion (unionType : SynType) : LongIdent =
+    let getNameUnion (unionType : SynType) : LongIdent option =
         match unionType with
-        | SynType.LongIdent (SynLongIdent.SynLongIdent (name, _, _)) -> name
-        | _ -> failwithf "unrecognised type: %+A" unionType
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (name, _, _)) -> Some name
+        | _ -> None
 
     let getNameKey (ty : SynTypeDefn) : string =
         getName ty |> List.map _.idText |> String.concat "/"
@@ -258,7 +264,12 @@ module internal CataGenerator =
 
     /// Get the fields of this particular union case, and describe their relation to the
     /// recursive knot of user-provided DUs for which we are creating a cata.
-    let analyse (allUnionTypes : SynTypeDefn list) (case : UnionCase) : (Ident option * FieldDescription) list =
+    let analyse
+        (allRecordTypes : SynTypeDefn list)
+        (allUnionTypes : SynTypeDefn list)
+        (case : AdtProduct)
+        : (Ident option * FieldDescription) list
+        =
         let rec go (ty : SynType) : FieldDescription =
             let stripped = SynType.stripOptionalParen ty
 
@@ -273,9 +284,14 @@ module internal CataGenerator =
             | PrimitiveType _ -> NonRecursive stripped
             | SynType.LongIdent (SynLongIdent.SynLongIdent (ty, _, _)) ->
                 let key = ty |> List.map _.idText |> String.concat "/"
-                let isSelf = allUnionTypes |> List.exists (fun unionTy -> getNameKey unionTy = key)
 
-                if isSelf then
+                let isKnownUnion =
+                    allUnionTypes |> List.exists (fun unionTy -> getNameKey unionTy = key)
+
+                let isKnownRecord =
+                    allRecordTypes |> List.exists (fun recordTy -> getNameKey recordTy = key)
+
+                if isKnownUnion then
                     FieldDescription.Self stripped
                 else
                     FieldDescription.NonRecursive stripped
@@ -300,10 +316,10 @@ module internal CataGenerator =
     type InstructionCase =
         {
             Name : Ident
-            Fields : UnionField list
+            Fields : AdtNode list
         }
 
-    let getInstructionCaseName (thisUnionType : SynTypeDefn) (case : UnionCase) =
+    let getInstructionCaseName (thisUnionType : SynTypeDefn) (case : AdtProduct) : Ident =
         match case.Name with
         | SynIdent.SynIdent (ident, _) ->
             (List.last (getName thisUnionType)).idText + "_" + ident.idText |> Ident.Create
@@ -337,7 +353,7 @@ module internal CataGenerator =
             |> List.rev
             |> List.map (fun (name, ty) ->
                 {
-                    Name = name
+                    Name = name |> Option.map Ident.lowerFirstLetter
                     Type = ty
                 }
             )
@@ -489,7 +505,13 @@ module internal CataGenerator =
                                 | FieldDescription.NonRecursive ty -> ty
 
                             SynType.Fun (
-                                place,
+                                SynType.SignatureParameter (
+                                    [],
+                                    false,
+                                    field.FieldName |> Option.map Ident.lowerFirstLetter,
+                                    place,
+                                    range0
+                                ),
                                 acc,
                                 range0,
                                 {
@@ -549,7 +571,7 @@ module internal CataGenerator =
     /// That is, define a type Cata<{'ret<U> for U in T}>
     /// with one member for each U, namely of type [U]Cata<{'ret<U> for U in T}>.
     // TODO: this should take an analysis instead
-    let createCataRecord (doc : PreXmlDoc) (allUnionTypes : SynTypeDefn list) : SynTypeDefn =
+    let createCataRecord (cataName : Ident) (doc : PreXmlDoc) (allUnionTypes : SynTypeDefn list) : SynTypeDefn =
         let generics =
             allUnionTypes
             |> List.map (fun defn ->
@@ -569,7 +591,7 @@ module internal CataGenerator =
 
                 let ty =
                     SynType.App (
-                        SynType.CreateLongIdent (SynLongIdent.CreateString (List.last(name).idText + "Cata")),
+                        SynType.CreateLongIdent (SynLongIdent.CreateString (List.last(name).idText + "CataCase")),
                         Some range0,
                         generics |> List.map (fun v -> SynType.Var (v, range0)),
                         List.replicate (generics.Length - 1) range0,
@@ -604,7 +626,7 @@ module internal CataGenerator =
                     )
                 ),
                 [],
-                [ Ident.Create "Cata" ], // TODO: better name
+                [ cataName ],
                 doc,
                 false,
                 None,
@@ -624,10 +646,38 @@ module internal CataGenerator =
             }
         )
 
-    let makeUnionAnalyses (cataVarName : Ident) (allUnionTypes : SynTypeDefn list) : UnionAnalysis list =
+    let makeUnionAnalyses
+        (cataVarName : Ident)
+        (allRecordTypes : SynTypeDefn list)
+        (allUnionTypes : SynTypeDefn list)
+        : UnionAnalysis list
+        =
+        let recordTypes =
+            allRecordTypes
+            |> List.map (fun ty -> List.last(getName ty).idText, AstHelper.getRecordFields ty)
+            |> Map.ofList
+
         allUnionTypes
         |> List.map (fun unionType ->
-            let cases = AstHelper.getUnionCases unionType
+            let cases =
+                AstHelper.getUnionCases unionType
+                |> List.map (fun prod ->
+                    {
+                        AdtProduct.Name = prod.Name
+                        Fields =
+                            prod.Fields
+                            |> List.collect (fun node ->
+                                match getNameUnion node.Type with
+                                | None -> [ node ]
+                                | Some name ->
+
+                                match Map.tryFind (List.last(name).idText) recordTypes with
+                                | None -> [ node ]
+                                | Some fields -> fields
+                            )
+                    }
+                )
+
             let unionTypeName = getName unionType
 
             {
@@ -639,13 +689,13 @@ module internal CataGenerator =
                     cases
                     |> List.map (fun case ->
                         let analysis =
-                            analyse allUnionTypes case
+                            analyse allRecordTypes allUnionTypes case
                             |> List.mapi (fun i (name, desc) ->
                                 {
                                     FieldName = name
                                     ArgName =
                                         match name with
-                                        | Some n -> n
+                                        | Some n -> Ident.lowerFirstLetter n
                                         | None ->
                                             match desc with
                                             | ListSelf synType -> Ident.Create $"n%i{i}"
@@ -682,7 +732,7 @@ module internal CataGenerator =
                         ]
                 ParentTypeName = getName unionType
                 GenericName = getName unionType |> List.map _.idText |> String.concat "" |> Ident.Create
-                CataTypeName = List.last(getName unionType).idText + "Cata" |> Ident.Create
+                CataTypeName = List.last(getName unionType).idText + "CataCase" |> Ident.Create
             }
         )
 
@@ -799,7 +849,10 @@ module internal CataGenerator =
                                                     SynLongIdent.Create
                                                         [
                                                             "Instruction"
-                                                            "Process" + "__" + List.last(getNameUnion synType).idText
+                                                            // TODO wonky domain
+                                                            "Process"
+                                                            + "__"
+                                                            + List.last(getNameUnion(synType).Value).idText
                                                         ]
                                                 ),
                                                 SynExpr.CreateIdent caseDesc.ArgName
@@ -816,7 +869,10 @@ module internal CataGenerator =
                             SynPat.CreateParen (
                                 SynPat.Tuple (
                                     false,
-                                    unionCase.Fields |> List.mapi (fun i case -> SynPat.CreateNamed case.ArgName),
+                                    unionCase.Fields
+                                    |> List.mapi (fun i case ->
+                                        SynPat.CreateNamed (Ident.lowerFirstLetter case.ArgName)
+                                    ),
                                     List.replicate (unionCase.Fields.Length - 1) range0,
                                     range0
                                 )
@@ -919,7 +975,7 @@ module internal CataGenerator =
                             // let {field.ArgName} = {appropriateStack}.[SynExpr.minusN {appropriateStack.Count} 1]
                             // {appropriateStack}.RemoveRange (SynExpr.minusN {appropriateStack.Count} 1)
                             // TODO: this is jank
-                            let stackName = inputStacks.[List.last(getNameUnion synType).idText]
+                            let stackName = inputStacks.[List.last(getNameUnion(synType).Value).idText]
 
                             SynExpr.LetOrUse (
                                 false,
@@ -967,7 +1023,7 @@ module internal CataGenerator =
                             |> Some
                         | ListSelf synType ->
                             // TODO: also jank
-                            let stackName = inputStacks.[List.last(getNameUnion synType).idText]
+                            let stackName = inputStacks.[List.last(getNameUnion(synType).Value).idText]
 
                             let vals =
                                 SynBinding.SynBinding (
@@ -1092,10 +1148,7 @@ module internal CataGenerator =
             )
         )
 
-    let createLoopFunction (cataVarName : Ident) (analysis : UnionAnalysis list) : SynBinding =
-        // TODO: better type name
-        let cataTypeName = "Cata"
-
+    let createLoopFunction (cataTypeName : Ident) (cataVarName : Ident) (analysis : UnionAnalysis list) : SynBinding =
         let valData =
             SynValData.SynValData (
                 None,
@@ -1120,7 +1173,7 @@ module internal CataGenerator =
                             SynPat.CreateTyped (
                                 SynPat.CreateNamed cataVarName,
                                 SynType.App (
-                                    SynType.Create cataTypeName,
+                                    SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ cataTypeName ]),
                                     Some range0,
                                     List.replicate analysis.Length (SynType.Anon range0),
                                     List.replicate (analysis.Length - 1) range0,
@@ -1273,10 +1326,16 @@ module internal CataGenerator =
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
-        (taggedType : SynTypeDefn)
+        (cataName : SynExpr, taggedType : SynTypeDefn)
         (allUnionTypes : SynTypeDefn list)
+        (allRecordTypes : SynTypeDefn list)
         : SynModuleOrNamespace
         =
+        let cataName =
+            match cataName |> SynExpr.stripOptionalParen with
+            | SynExpr.Const (SynConst.String (name, _, _), _) -> Ident.Create name
+            | _ -> failwith "Cata name in attribute must be literally a string, sorry"
+
         let parentName = List.last (getName taggedType) |> _.idText
         let moduleName : LongIdent = parentName + "Cata" |> Ident.Create |> List.singleton
 
@@ -1301,23 +1360,23 @@ module internal CataGenerator =
 
         let runFunctions =
             List.zip allUnionTypes allTypars
-            |> List.map (fun (unionType, relevantTypar) -> createRunFunction allTypars relevantTypar unionType)
+            |> List.map (fun (unionType, relevantTypar) -> createRunFunction cataName allTypars relevantTypar unionType)
 
         let cataVarName = Ident.Create "cata"
-        let analysis = makeUnionAnalyses cataVarName allUnionTypes
+        let analysis = makeUnionAnalyses cataVarName allRecordTypes allUnionTypes
 
         let cataStructures =
             createCataStructure analysis
             |> List.map (fun repr -> SynModuleDecl.Types ([ repr ], range0))
 
-        let loopFunction = createLoopFunction cataVarName analysis
+        let loopFunction = createLoopFunction cataName cataVarName analysis
 
         let recordDoc =
             PreXmlDoc.Create
                 $" Specifies how to perform a fold (catamorphism) over the type %s{parentName} and its friends."
 
         let cataRecord =
-            SynModuleDecl.Types ([ createCataRecord recordDoc allUnionTypes ], range0)
+            SynModuleDecl.Types ([ createCataRecord cataName recordDoc allUnionTypes ], range0)
 
         SynModuleOrNamespace.CreateNamespace (
             ns,
@@ -1338,7 +1397,7 @@ module internal CataGenerator =
                 ]
         )
 
-/// Myriad generator that provides an HTTP client for an interface type using RestEase annotations.
+/// Myriad generator that provides a catamorphism for an algebraic data type.
 [<MyriadGenerator("create-catamorphism")>]
 type CreateCatamorphismGenerator () =
 
@@ -1356,26 +1415,41 @@ type CreateCatamorphismGenerator () =
             let namespaceAndTypes =
                 types
                 |> List.choose (fun (ns, types) ->
-                    match types |> List.tryFind Ast.hasAttribute<CreateCatamorphismAttribute> with
+                    let typeWithAttr =
+                        types
+                        |> List.tryPick (fun ty ->
+                            match Ast.getAttribute<CreateCatamorphismAttribute> ty with
+                            | None -> None
+                            | Some attr -> Some (attr.ArgExpr, ty)
+                        )
+
+                    match typeWithAttr with
                     | Some taggedType ->
-                        let anyNonUnion =
-                            types
-                            |> List.exists (fun (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) ->
+                        let unions, records, others =
+                            (([], [], []), types)
+                            ||> List.fold (fun
+                                               (unions, records, others)
+                                               (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _) as ty) ->
                                 match repr with
-                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union _, _) -> false
-                                | _ -> true
+                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union _, _) ->
+                                    ty :: unions, records, others
+                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record _, range) ->
+                                    unions, ty :: records, others
+                                | _ -> unions, records, ty :: others
                             )
 
-                        if anyNonUnion then
+                        if not others.IsEmpty then
                             failwith
-                                "Error: all types recursively defined together with a CreateCatamorphism type must be discriminated unions"
+                                $"Error: all types recursively defined together with a CreateCatamorphism type must be discriminated unions or records. %+A{others}"
 
-                        Some (ns, taggedType, types)
+                        Some (ns, taggedType, unions, records)
                     | _ -> None
                 )
 
             let modules =
                 namespaceAndTypes
-                |> List.map (fun (ns, taggedType, types) -> CataGenerator.createModule opens ns taggedType types)
+                |> List.map (fun (ns, taggedType, unions, records) ->
+                    CataGenerator.createModule opens ns taggedType unions records
+                )
 
             Output.Ast modules

@@ -23,6 +23,7 @@
     <Compile Include="TestMockGenerator\TestMockGenerator.fs" />
     <Compile Include="TestJsonSerialize\TestJsonSerde.fs" />
     <Compile Include="TestCataGenerator\TestCataGenerator.fs" />
+    <Compile Include="TestCataGenerator\TestDirectory.fs" />
     <Compile Include="TestRemoveOptions.fs"/>
     <Compile Include="TestSurface.fs"/>
     <None Include="../.github/workflows/dotnet.yaml" />

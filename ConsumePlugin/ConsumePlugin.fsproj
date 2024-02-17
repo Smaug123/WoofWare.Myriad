@@ -43,6 +43,10 @@
     <Compile Include="GeneratedCatamorphism.fs">
       <MyriadFile>Catamorphism.fs</MyriadFile>
     </Compile>
+    <Compile Include="FSharpForFunAndProfitCata.fs" />
+    <Compile Include="GeneratedFileSystem.fs">
+      <MyriadFile>FSharpForFunAndProfitCata.fs</MyriadFile>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
