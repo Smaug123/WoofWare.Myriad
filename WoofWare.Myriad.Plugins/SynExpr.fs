@@ -291,3 +291,19 @@ module internal SynExpr =
             ),
             SynExpr.CreateConst (SynConst.Int32 n)
         )
+
+    /// {y} > {x}
+    let greaterThan (x : SynExpr) (y : SynExpr) : SynExpr =
+        SynExpr.CreateApp (
+            SynExpr.CreateAppInfix (
+                SynExpr.CreateLongIdent (
+                    SynLongIdent.SynLongIdent (
+                        [ Ident.Create "op_GreaterThan" ],
+                        [],
+                        [ Some (IdentTrivia.OriginalNotation ">") ]
+                    )
+                ),
+                y
+            ),
+            x
+        )
