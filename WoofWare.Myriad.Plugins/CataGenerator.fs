@@ -278,7 +278,7 @@ module internal CataGenerator =
 
     /// Get the fields of this particular union case, and describe their relation to the
     /// recursive knot of user-provided DUs for which we are creating a cata.
-    let rec analyse
+    let analyse
         (allRecordTypes : SynTypeDefn list)
         (allUnionTypes : SynTypeDefn list)
         (argIndex : int)
