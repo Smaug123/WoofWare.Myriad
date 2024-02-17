@@ -23,6 +23,7 @@ Currently implemented:
 * `RemoveOptions` (to strip `option` modifiers from a type).
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
 * `GenerateMock` (to stamp out a record type corresponding to an interface).
+* `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
 
 ## `JsonParse`
 
@@ -325,6 +326,66 @@ thereby allowing the programmer to use F#'s record-update syntax.
 ### Features
 
 * You may supply an `isInternal : bool` argument to the attribute. By default, we make the resulting record type at most internal (never public), since this is intended only to be used in tests; but you can instead make it public with `[<GenerateMock false>]`.
+
+## `CreateCatamorphism`
+
+Takes a collection of mutually recursive discriminated unions:
+
+```fsharp
+[<CreateCatamorphism>]
+type Expr =
+    | Const of Const
+    | Pair of Expr * Expr * PairOpKind
+    | Sequential of Expr list
+    | Builder of Expr * ExprBuilder
+
+and ExprBuilder =
+    | Child of ExprBuilder
+    | Parent of Expr
+```
+
+and stamps out a type like this:
+```fsharp
+type ExprCata<'Expr, 'ExprBuilder> =
+    abstract Const : Const -> 'Expr
+    abstract Pair : 'Expr -> 'Expr -> PairOpKind -> 'Expr
+    abstract Sequential : 'Expr list -> 'Expr
+    abstract Builder : 'Expr -> 'ExprBuilder -> 'Expr
+
+type ExprBuilderCata<'Expr, 'ExprBuilder> =
+    abstract Child : 'ExprBuilder -> 'ExprBuilder
+    abstract Parent : 'Expr -> 'ExprBuilder
+
+type Cata<'Expr, 'ExprBuilder> =
+    {
+        Expr : ExprCata<'Expr, 'ExprBuilder>
+        ExprBuilder : ExprBuilderCata<'Expr, 'ExprBuilder>
+    }
+
+[<RequireQualifiedAccess>]
+module ExprCata =
+    let runExpr (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : Expr) : 'ExprRet =
+        failwith "this is implemented"
+
+    let runExprBuilder (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : ExprBuilder) : 'ExprBuilderRet =
+        failwith "this is implemented"
+```
+
+### What's the point?
+Recursing over a tree is not easy to get right, especially if you want to avoid stack overflows.
+Instead of writing the recursion many times, it's better to do it once,
+and then each time you only plug in what you want to do.
+
+### Features
+
+* Mutually recursive DUs are supported (as in the example above).
+  Every DU in a recursive `type Foo... and Bar...` knot will be given an appropriate cata, as long as any one of those DUs has the `[<CreateCatamorphism>]` attribute.
+
+### Limitations
+
+* This is a particularly half-baked generator which has so far seen no real-world use. It likely has a bunch of [80/20](https://en.wikipedia.org/wiki/Pareto_principle) low-hanging fruit remaining, but it also likely has impossible problems to solve which I don't know about yet.
+* Only a very few kinds of DU field are currently implemented. For example, this generator can't see through a record type or an interface, so the generated cata will simply grant you access to the record (rather than attempting to descend into it to discover recursive references).
+* This generator does not try to solve the "exponential diamond dependency" problem. If you have a case of the form `type Expr = | Branch of Expr * Expr`, the cata will walk into both `Expr`s separately. If the `Expr`s happen to be equal, the cata will nevertheless traverse them individually (that is, it will traverse the same `Expr` twice). Your type may represent a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph), but we will always effectively expand it into a tree of paths and operate on each of the exponentially-many paths.
 
 # Detailed examples
 
