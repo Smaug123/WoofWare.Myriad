@@ -549,6 +549,272 @@ module internal CataGenerator =
             }
         )
 
+    type RenderedUnionCase =
+        {
+            InstructionName : Ident
+            Case : UnionCase
+            Fields : (Ident option * FieldDescription) list
+        }
+
+    type UnionAnalysis =
+        {
+            /// TODO: get the right info so we can delete this
+            AllUnionTypes : SynTypeDefn list
+            /// The name of the stack we'll use for the results
+            /// of returning from a descent into this union type,
+            /// when performing the cata
+            StackName : Ident
+            UnionCases : RenderedUnionCase list
+            /// TODO: get rid of this
+            UnionType : SynTypeDefn
+        }
+
+    let makeUnionAnalyses (allUnionTypes : SynTypeDefn list) : UnionAnalysis list =
+        allUnionTypes
+        |> List.map (fun unionType ->
+            let cases = AstHelper.getUnionCases unionType
+
+            {
+                AllUnionTypes = allUnionTypes
+                StackName =
+                    List.last(getName unionType).idText + "Stack"
+                    |> Ident.Create
+                    |> Ident.lowerFirstLetter
+                UnionCases =
+                    cases
+                    |> List.map (fun case ->
+                        let analysis = analyse allUnionTypes case
+                        let instructionName = getInstructionCaseName unionType case
+
+                        {
+                            InstructionName = instructionName
+                            Fields = analysis
+                            Case = case
+                        }
+                    )
+                UnionType = unionType
+            }
+        )
+
+    let createBaseMatchClauses (analyses : UnionAnalysis list) : SynMatchClause list =
+        analyses
+        |> List.map (fun analysis ->
+            let unionTypeName = getName analysis.UnionType
+
+            let matchCases =
+                analysis.UnionCases
+                |> List.map (fun unionCase ->
+                    let name =
+                        match unionCase.Case.Name with
+                        | SynIdent (ident, _) -> ident
+
+                    let _, nonRecursiveArgs, selfArgs, listSelfArgs =
+                        ((0, [], [], []), unionCase.Fields)
+                        ||> List.fold (fun (i, nonRec, self, listSelf) (name, desc) ->
+                            let name =
+                                match name with
+                                | Some n -> n
+                                | None -> Ident.Create $"arg%i{i}"
+
+                            match desc with
+                            | FieldDescription.NonRecursive ty -> i + 1, (i, name, ty) :: nonRec, self, listSelf
+                            | FieldDescription.Self ty -> i + 1, nonRec, (i, name, ty) :: self, listSelf
+                            | FieldDescription.ListSelf ty -> i + 1, nonRec, self, (i, name, ty) :: listSelf
+                        )
+
+                    let matchBody =
+                        if nonRecursiveArgs.Length = unionCase.Fields.Length then
+                            // directly call the cata
+                            ((0,
+                              SynExpr.CreateLongIdent (
+                                  SynLongIdent.CreateFromLongIdent (Ident.Create "cata" :: unionTypeName @ [ name ])
+                              )),
+                             List.rev unionCase.Fields)
+                            ||> List.fold (fun (i, body) (name, _) ->
+                                let fieldName =
+                                    match name with
+                                    | Some n -> n
+                                    | None -> Ident.Create $"arg%i{i}"
+
+                                let body = SynExpr.CreateApp (body, SynExpr.CreateIdent fieldName)
+                                (i + 1, body)
+                            )
+                            |> snd
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.CreateLongIdent (
+                                    SynLongIdent.CreateFromLongIdent (analysis.StackName :: [ Ident.Create "Add" ])
+                                )
+                            )
+                        else
+                        // There's a recursive type in here, so we'll have to make some calls
+                        // and then come back.
+
+                        // The instruction to process us again once our inputs are ready:
+                        let reprocessCommand =
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Add" ]),
+                                if selfArgs.Length = unionCase.Fields.Length then
+                                    SynExpr.CreateLongIdent (
+                                        SynLongIdent.Create
+                                            [ "Instruction" ; List.last(unionTypeName).idText + "_" + name.idText ]
+                                    )
+                                else
+                                    // We need to tell ourselves each non-rec arg, and the length of each input list.
+                                    SynExpr.CreateApp (
+                                        SynExpr.CreateLongIdent (
+                                            SynLongIdent.Create
+                                                [
+                                                    "Instruction"
+                                                    List.last(unionTypeName).idText + "_" + name.idText
+                                                ]
+                                        ),
+                                        SynExpr.CreateParenedTuple (
+                                            listSelfArgs
+                                            |> List.map (fun (i, argName, _) ->
+                                                i,
+                                                SynExpr.CreateParen (
+                                                    SynExpr.CreateApp (
+                                                        SynExpr.CreateLongIdent (
+                                                            SynLongIdent.Create [ "List" ; "length" ]
+                                                        ),
+                                                        SynExpr.CreateIdent argName
+                                                    )
+                                                )
+                                            )
+                                            |> List.append (
+                                                nonRecursiveArgs
+                                                |> List.map (fun (i, arg, _) -> i, SynExpr.CreateIdent arg)
+                                            )
+                                            |> List.sortBy fst
+                                            |> List.map snd
+                                        )
+                                    )
+                                    |> SynExpr.CreateParen
+                            )
+
+                        [
+                            yield reprocessCommand
+
+                            for i, (argName, arg) in Seq.indexed unionCase.Fields do
+                                let argName =
+                                    match argName with
+                                    | Some n -> n
+                                    | None -> Ident.Create $"arg%i{i}"
+
+                                match arg with
+                                | NonRecursive synType ->
+                                    // Nothing to do, because we're not calling the cata yet
+                                    ()
+                                | ListSelf synType ->
+                                    // Tell our future self to process the list elements first.
+                                    yield
+                                        SynExpr.ForEach (
+                                            DebugPointAtFor.Yes range0,
+                                            DebugPointAtInOrTo.Yes range0,
+                                            SeqExprOnly.SeqExprOnly false,
+                                            true,
+                                            SynPat.CreateNamed (SynIdent.SynIdent (Ident.Create "elt", None)),
+                                            SynExpr.CreateIdent argName,
+                                            SynExpr.CreateApp (
+                                                SynExpr.CreateLongIdent (
+                                                    SynLongIdent.Create [ "instructions" ; "Add" ]
+                                                ),
+                                                SynExpr.CreateParen (
+                                                    SynExpr.CreateApp (
+                                                        SynExpr.CreateLongIdent (
+                                                            SynLongIdent.Create
+                                                                [
+                                                                    "Instruction"
+                                                                    "Process__" + List.last(unionTypeName).idText
+                                                                ]
+                                                        ),
+                                                        SynExpr.CreateIdentString "elt"
+                                                    )
+                                                )
+                                            ),
+                                            range0
+                                        )
+                                | Self synType ->
+                                    // And push the instruction to process each recursive call
+                                    // onto the stack.
+                                    yield
+                                        SynExpr.CreateApp (
+                                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Add" ]),
+                                            SynExpr.CreateParen (
+                                                SynExpr.CreateApp (
+                                                    SynExpr.CreateLongIdent (
+                                                        SynLongIdent.Create
+                                                            [
+                                                                "Instruction"
+                                                                "Process"
+                                                                + "__"
+                                                                + List.last(getNameUnion synType).idText
+                                                            ]
+                                                    ),
+                                                    SynExpr.CreateIdent argName
+                                                )
+                                            )
+                                        )
+                        ]
+                        |> SynExpr.CreateSequential
+
+                    SynMatchClause.SynMatchClause (
+                        SynPat.CreateLongIdent (
+                            SynLongIdent.CreateFromLongIdent (unionTypeName @ [ name ]),
+                            [
+                                SynPat.CreateParen (
+                                    SynPat.Tuple (
+                                        false,
+                                        unionCase.Fields
+                                        |> List.mapi (fun i (name, _) ->
+                                            let name =
+                                                match name with
+                                                | None -> Ident.Create $"arg%i{i}"
+                                                | Some n -> n
+
+                                            SynPat.CreateNamed name
+                                        ),
+                                        List.replicate (unionCase.Fields.Length - 1) range0,
+                                        range0
+                                    )
+                                )
+                            ]
+                        ),
+                        None,
+                        matchBody,
+                        range0,
+                        DebugPointAtTarget.Yes,
+                        {
+                            ArrowRange = Some range0
+                            BarRange = Some range0
+                        }
+                    )
+                )
+
+            let bodyMatch = SynExpr.CreateMatch (SynExpr.CreateIdentString "x", matchCases)
+
+            SynMatchClause.SynMatchClause (
+                SynPat.LongIdent (
+                    // TODO this is also jank; should unify with DU generator
+                    SynLongIdent.Create [ "Instruction" ; "Process__" + (List.last (unionTypeName)).idText ],
+                    None,
+                    None,
+                    SynArgPats.Pats [ SynPat.CreateNamed (Ident.Create "x") ],
+                    None,
+                    range0
+                ),
+                None,
+                bodyMatch,
+                range0,
+                DebugPointAtTarget.Yes,
+                {
+                    ArrowRange = Some range0
+                    BarRange = Some range0
+                }
+            )
+        )
+
+
     let createLoopFunction (allUnionTypes : SynTypeDefn list) : SynBinding =
         let valData =
             SynValData.SynValData (
@@ -604,268 +870,34 @@ module internal CataGenerator =
                 range0
             )
 
-        let stackNames =
-            allUnionTypes
-            |> List.map (fun ty ->
-                // TODO this is jank
-                List.last(getName ty).idText + "Stack" |> Ident.Create |> Ident.lowerFirstLetter
-            )
+        let analysis = makeUnionAnalyses allUnionTypes
+
+        let baseMatchClauses = createBaseMatchClauses analysis
 
         // A clause for each type, splitting it into its cases:
-        let baseMatchClauses =
-            List.zip stackNames allUnionTypes
-            |> List.map (fun (stackName, unionType) ->
-                let cases = AstHelper.getUnionCases unionType
-                let unionTypeName = getName unionType
-
-                let matchCases =
-                    cases
-                    |> List.map (fun case ->
-                        let name =
-                            match case.Name with
-                            | SynIdent (ident, _) -> ident
-
-                        let analysis = analyse allUnionTypes case
-
-                        let _, nonRecursiveArgs, selfArgs, listSelfArgs =
-                            ((0, [], [], []), analysis)
-                            ||> List.fold (fun (i, nonRec, self, listSelf) (name, desc) ->
-                                let name =
-                                    match name with
-                                    | Some n -> n
-                                    | None -> Ident.Create $"arg%i{i}"
-
-                                match desc with
-                                | FieldDescription.NonRecursive ty -> i + 1, (i, name, ty) :: nonRec, self, listSelf
-                                | FieldDescription.Self ty -> i + 1, nonRec, (i, name, ty) :: self, listSelf
-                                | FieldDescription.ListSelf ty -> i + 1, nonRec, self, (i, name, ty) :: listSelf
-                            )
-
-                        let matchBody =
-                            if nonRecursiveArgs.Length = analysis.Length then
-                                // directly call the cata
-                                ((0,
-                                  SynExpr.CreateLongIdent (
-                                      SynLongIdent.CreateFromLongIdent (
-                                          Ident.Create "cata" :: unionTypeName @ [ name ]
-                                      )
-                                  )),
-                                 List.rev case.Fields)
-                                ||> List.fold (fun (i, body) field ->
-                                    let fieldName =
-                                        match field.Name with
-                                        | Some n -> n
-                                        | None -> Ident.Create $"arg%i{i}"
-
-                                    let body = SynExpr.CreateApp (body, SynExpr.CreateIdent fieldName)
-                                    (i + 1, body)
-                                )
-                                |> snd
-                                |> SynExpr.pipeThroughFunction (
-                                    SynExpr.CreateLongIdent (
-                                        SynLongIdent.CreateFromLongIdent (stackName :: [ Ident.Create "Add" ])
-                                    )
-                                )
-                            else
-                            // There's a recursive type in here, so we'll have to make some calls
-                            // and then come back.
-
-                            // The instruction to process us again once our inputs are ready:
-                            let reprocessCommand =
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Add" ]),
-                                    if selfArgs.Length = analysis.Length then
-                                        SynExpr.CreateLongIdent (
-                                            SynLongIdent.Create
-                                                [
-                                                    "Instruction"
-                                                    List.last(unionTypeName).idText + "_" + name.idText
-                                                ]
-                                        )
-                                    else
-                                        // We need to tell ourselves each non-rec arg, and the length of each input list.
-                                        SynExpr.CreateApp (
-                                            SynExpr.CreateLongIdent (
-                                                SynLongIdent.Create
-                                                    [
-                                                        "Instruction"
-                                                        List.last(unionTypeName).idText + "_" + name.idText
-                                                    ]
-                                            ),
-                                            SynExpr.CreateParenedTuple (
-                                                listSelfArgs
-                                                |> List.map (fun (i, argName, _) ->
-                                                    i,
-                                                    SynExpr.CreateParen (
-                                                        SynExpr.CreateApp (
-                                                            SynExpr.CreateLongIdent (
-                                                                SynLongIdent.Create [ "List" ; "length" ]
-                                                            ),
-                                                            SynExpr.CreateIdent argName
-                                                        )
-                                                    )
-                                                )
-                                                |> List.append (
-                                                    nonRecursiveArgs
-                                                    |> List.map (fun (i, arg, _) -> i, SynExpr.CreateIdent arg)
-                                                )
-                                                |> List.sortBy fst
-                                                |> List.map snd
-                                            )
-                                        )
-                                        |> SynExpr.CreateParen
-                                )
-
-                            [
-                                yield reprocessCommand
-
-                                for i, (argName, arg) in Seq.rev (Seq.indexed analysis) do
-                                    let argName =
-                                        match argName with
-                                        | Some n -> n
-                                        | None -> Ident.Create $"arg%i{i}"
-
-                                    match arg with
-                                    | NonRecursive synType ->
-                                        // Nothing to do, because we're not calling the cata yet
-                                        ()
-                                    | ListSelf synType ->
-                                        // Tell our future self to process the list elements first.
-                                        yield
-                                            SynExpr.ForEach (
-                                                DebugPointAtFor.Yes range0,
-                                                DebugPointAtInOrTo.Yes range0,
-                                                SeqExprOnly.SeqExprOnly false,
-                                                true,
-                                                SynPat.CreateNamed (SynIdent.SynIdent (Ident.Create "elt", None)),
-                                                SynExpr.CreateIdent argName,
-                                                SynExpr.CreateApp (
-                                                    SynExpr.CreateLongIdent (
-                                                        SynLongIdent.Create [ "instructions" ; "Add" ]
-                                                    ),
-                                                    SynExpr.CreateParen (
-                                                        SynExpr.CreateApp (
-                                                            SynExpr.CreateLongIdent (
-                                                                SynLongIdent.Create
-                                                                    [
-                                                                        "Instruction"
-                                                                        "Process__" + List.last(unionTypeName).idText
-                                                                    ]
-                                                            ),
-                                                            SynExpr.CreateIdentString "elt"
-                                                        )
-                                                    )
-                                                ),
-                                                range0
-                                            )
-                                    | Self synType ->
-                                        // And push the instruction to process each recursive call
-                                        // onto the stack.
-                                        yield
-                                            SynExpr.CreateApp (
-                                                SynExpr.CreateLongIdent (
-                                                    SynLongIdent.Create [ "instructions" ; "Add" ]
-                                                ),
-                                                SynExpr.CreateParen (
-                                                    SynExpr.CreateApp (
-                                                        SynExpr.CreateLongIdent (
-                                                            SynLongIdent.Create
-                                                                [
-                                                                    "Instruction"
-                                                                    "Process"
-                                                                    + "__"
-                                                                    + List.last(getNameUnion synType).idText
-                                                                ]
-                                                        ),
-                                                        SynExpr.CreateIdent argName
-                                                    )
-                                                )
-                                            )
-                            ]
-                            |> SynExpr.CreateSequential
-
-                        SynMatchClause.SynMatchClause (
-                            SynPat.CreateLongIdent (
-                                SynLongIdent.CreateFromLongIdent (unionTypeName @ [ name ]),
-                                [
-                                    SynPat.CreateParen (
-                                        SynPat.Tuple (
-                                            false,
-                                            case.Fields
-                                            |> List.mapi (fun i field ->
-                                                let name =
-                                                    match field.Name with
-                                                    | None -> Ident.Create $"arg%i{i}"
-                                                    | Some n -> n
-
-                                                SynPat.CreateNamed name
-                                            ),
-                                            List.replicate (case.Fields.Length - 1) range0,
-                                            range0
-                                        )
-                                    )
-                                ]
-                            ),
-                            None,
-                            matchBody,
-                            range0,
-                            DebugPointAtTarget.Yes,
-                            {
-                                ArrowRange = Some range0
-                                BarRange = Some range0
-                            }
-                        )
-                    )
-
-                let bodyMatch = SynExpr.CreateMatch (SynExpr.CreateIdentString "x", matchCases)
-
-                SynMatchClause.SynMatchClause (
-                    SynPat.LongIdent (
-                        // TODO this is also jank; should unify with DU generator
-                        SynLongIdent.Create [ "Instruction" ; "Process__" + (List.last (unionTypeName)).idText ],
-                        None,
-                        None,
-                        SynArgPats.Pats [ SynPat.CreateNamed (Ident.Create "x") ],
-                        None,
-                        range0
-                    ),
-                    None,
-                    bodyMatch,
-                    range0,
-                    DebugPointAtTarget.Yes,
-                    {
-                        ArrowRange = Some range0
-                        BarRange = Some range0
-                    }
-                )
-            )
-
         // And a clause for each case with a recursive reference.
         let recMatchClauses : SynMatchClause list =
-            allUnionTypes
+            analysis
             |> List.collect (fun unionType ->
-                let cases = AstHelper.getUnionCases unionType
-
-                cases
-                |> List.choose (fun case ->
-                    let analysis = analyse allUnionTypes case
+                unionType.UnionCases
+                |> List.choose (fun unionCase ->
                     // We already know there is a recursive reference somewhere
                     // in `analysis`.
                     if
-                        analysis
+                        unionCase.Fields
                         |> List.exists (fun (_, ty) ->
                             match ty with
                             | NonRecursive _ -> false
                             | _ -> true
                         )
                     then
-                        Some (case, analysis)
+                        Some unionCase
                     else
                         None
                 )
-                |> List.map (fun (case, analysis) ->
+                |> List.map (fun unionCase ->
                     let lhsNames =
-                        analysis
+                        unionCase.Fields
                         |> Seq.mapi (fun i x -> (i, x))
                         |> Seq.choose (fun (i, (name, desc)) ->
                             match desc with
@@ -891,7 +923,7 @@ module internal CataGenerator =
                     let pat =
                         SynPat.LongIdent (
                             SynLongIdent.CreateFromLongIdent
-                                [ Ident.Create "Instruction" ; getInstructionCaseName unionType case ],
+                                [ Ident.Create "Instruction" ; unionCase.InstructionName ],
                             None,
                             None,
                             SynArgPats.Pats lhs,
@@ -984,14 +1016,18 @@ module internal CataGenerator =
                         range0
                     )
                     SynExpr.CreateTuple (
-                        stackNames
-                        |> List.map (List.singleton >> SynLongIdent.CreateFromLongIdent >> SynExpr.CreateLongIdent)
+                        analysis
+                        |> List.map (fun unionAnalysis ->
+                            [ unionAnalysis.StackName ]
+                            |> SynLongIdent.CreateFromLongIdent
+                            |> SynExpr.CreateLongIdent
+                        )
                     )
                 ]
 
         let body =
-            (body, List.zip stackNames allUnionTypes)
-            ||> List.fold (fun body (stackName, unionType) ->
+            (body, analysis)
+            ||> List.fold (fun body unionCase ->
                 SynExpr.LetOrUse (
                     false,
                     false,
@@ -1004,7 +1040,7 @@ module internal CataGenerator =
                             [],
                             PreXmlDoc.Empty,
                             SynValData.SynValData (None, SynValInfo.Empty, None),
-                            SynPat.Named (SynIdent.SynIdent (stackName, None), false, None, range0),
+                            SynPat.Named (SynIdent.SynIdent (unionCase.StackName, None), false, None, range0),
                             None,
                             SynExpr.CreateApp (
                                 SynExpr.CreateLongIdent (SynLongIdent.CreateString "ResizeArray"),

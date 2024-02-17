@@ -65,8 +65,8 @@ module ExprCata =
                 | Expr.Const (arg0) -> cata.Expr.Const arg0 |> exprStack.Add
                 | Expr.Pair (arg0, arg1, arg2) ->
                     instructions.Add (Instruction.Expr_Pair (arg2))
-                    instructions.Add (Instruction.Process__Expr arg1)
                     instructions.Add (Instruction.Process__Expr arg0)
+                    instructions.Add (Instruction.Process__Expr arg1)
                 | Expr.Sequential (arg0) ->
                     instructions.Add (Instruction.Expr_Sequential ((List.length arg0)))
 
@@ -74,8 +74,8 @@ module ExprCata =
                         instructions.Add (Instruction.Process__Expr elt)
                 | Expr.Builder (arg0, arg1) ->
                     instructions.Add Instruction.Expr_Builder
-                    instructions.Add (Instruction.Process__ExprBuilder arg1)
                     instructions.Add (Instruction.Process__Expr arg0)
+                    instructions.Add (Instruction.Process__ExprBuilder arg1)
             | Instruction.Process__ExprBuilder x ->
                 match x with
                 | ExprBuilder.Child (arg0) ->

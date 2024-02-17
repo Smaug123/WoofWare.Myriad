@@ -1,6 +1,7 @@
 namespace WoofWare.Myriad.Plugins.Test
 
 open NUnit.Framework
+open FsUnitTyped
 open ConsumePlugin
 open FsCheck
 
@@ -21,6 +22,14 @@ module TestCataGenerator =
                     member _.Parent x = Parent x
                 }
         }
+
+    [<Test>]
+    let ``Example`` () =
+        let x =
+            Expr.Pair (Expr.Const (Const.Int 0), Expr.Const (Const.String ""), PairOpKind.ThenDoSeq)
+
+        ExprCata.runExpr idCata x |> shouldEqual x
+
 
     [<Test>]
     let ``Cata works`` () =
