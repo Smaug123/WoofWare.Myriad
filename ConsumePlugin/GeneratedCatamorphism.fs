@@ -29,12 +29,12 @@ type ExprBuilderCata<'Expr, 'ExprBuilder> =
     /// How to operate on the Parent case
     abstract Parent : 'Expr -> 'ExprBuilder
 
-/// Specifies how to perform a fold (catamorphism) over the type Expr.
+/// Specifies how to perform a fold (catamorphism) over the type Expr and its friends.
 type Cata<'Expr, 'ExprBuilder> =
     {
-        /// TODO: doc
+        /// How to perform a fold (catamorphism) over the type Expr
         Expr : ExprCata<'Expr, 'ExprBuilder>
-        /// TODO: doc
+        /// How to perform a fold (catamorphism) over the type ExprBuilder
         ExprBuilder : ExprBuilderCata<'Expr, 'ExprBuilder>
     }
 

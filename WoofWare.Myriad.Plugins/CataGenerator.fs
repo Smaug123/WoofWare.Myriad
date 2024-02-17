@@ -414,6 +414,15 @@ module internal CataGenerator =
 
     /// Build the cata interfaces, which a user will instantiate to specify a particular
     /// catamorphism. This produces one interface per input union type.
+    ///
+    /// Say that CreateCatamorphism-tagged types form the set T.
+    /// Assert that each U in T is a discriminated union.
+    /// For each type U in T, assign a generic parameter 'ret<U>.
+    /// For each U:
+    ///   * Define the type [U]Cata, generic on all the parameters {'ret<U> : U in T}.
+    ///   * For each DU case C in type U:
+    ///     * create a method in [U]Cata, whose return value is 'ret<U> and whose args are the fields of the case C
+    ///     * any occurrence in a field of an input value of type equal to any element of T (say type V) is replaced by 'ret<V>
     let createCataStructure (analyses : UnionAnalysis list) : SynTypeDefn list =
         // Obtain the generic parameter for a UnionAnalysis by dotting into this
         // with `case.GenericName.idText`.
@@ -537,10 +546,10 @@ module internal CataGenerator =
         )
 
     /// Build a record which contains one of every cata type.
-    /// TODO: this should take an analysis instead
-    let createCataRecord (allUnionTypes : SynTypeDefn list) : SynTypeDefn =
-        let nameForDoc = List.last (getName allUnionTypes.[0]) |> _.idText
-
+    /// That is, define a type Cata<{'ret<U> for U in T}>
+    /// with one member for each U, namely of type [U]Cata<{'ret<U> for U in T}>.
+    // TODO: this should take an analysis instead
+    let createCataRecord (doc : PreXmlDoc) (allUnionTypes : SynTypeDefn list) : SynTypeDefn =
         let generics =
             allUnionTypes
             |> List.map (fun defn ->
@@ -551,7 +560,11 @@ module internal CataGenerator =
         let fields =
             allUnionTypes
             |> List.map (fun unionType ->
-                let doc = PreXmlDoc.Create " TODO: doc"
+                let nameForDoc = List.last (getName unionType) |> _.idText
+
+                let doc =
+                    PreXmlDoc.Create $" How to perform a fold (catamorphism) over the type %s{nameForDoc}"
+
                 let name = getName unionType
 
                 let ty =
@@ -592,7 +605,7 @@ module internal CataGenerator =
                 ),
                 [],
                 [ Ident.Create "Cata" ], // TODO: better name
-                PreXmlDoc.Create $" Specifies how to perform a fold (catamorphism) over the type %s{nameForDoc}.",
+                doc,
                 false,
                 None,
                 range0
@@ -669,6 +682,10 @@ module internal CataGenerator =
             }
         )
 
+    /// Create the state-machine matches which deal with receiving the instruction
+    /// to "process one of the user-specified DU cases, pushing recursion instructions onto
+    /// the instruction stack".
+    /// It very rarely involves invoking the cata; that happens only if there's no recursion.
     let createBaseMatchClauses (analyses : UnionAnalysis list) : SynMatchClause list =
         analyses
         |> List.map (fun analysis ->
@@ -845,6 +862,66 @@ module internal CataGenerator =
             )
         )
 
+    /// Create the state-machine matches which deal with receiving the instruction
+    /// to "pull recursive results from the result stacks, and invoke the cata".
+    let createRecursiveMatchClauses (analyses : UnionAnalysis list) : SynMatchClause list =
+        analyses
+        |> List.collect (fun unionType ->
+            unionType.UnionCases
+            |> List.choose (fun unionCase ->
+                // We already know there is a recursive reference somewhere
+                // in `analysis`.
+                if
+                    unionCase.Fields
+                    |> List.exists (fun case ->
+                        match case.Description with
+                        | NonRecursive _ -> false
+                        | _ -> true
+                    )
+                then
+                    Some unionCase
+                else
+                    None
+            )
+            |> List.map (fun unionCase ->
+                let lhsNames =
+                    unionCase.Fields
+                    |> Seq.mapi (fun i x -> (i, x))
+                    |> Seq.choose (fun (i, case) ->
+                        match case.Description with
+                        | FieldDescription.NonRecursive _ -> SynPat.CreateNamed case.ArgName |> Some
+                        | FieldDescription.ListSelf _ -> Ident.Create "n" |> SynPat.CreateNamed |> Some
+                        | FieldDescription.Self _ -> None
+                    )
+                    |> Seq.toList
+
+                let lhs =
+                    match lhsNames with
+                    | [] -> []
+                    | lhsNames ->
+                        SynPat.Tuple (false, lhsNames, List.replicate (lhsNames.Length - 1) range0, range0)
+                        |> SynPat.CreateParen
+                        |> List.singleton
+
+                let pat =
+                    SynPat.LongIdent (unionCase.AssociatedInstruction, None, None, SynArgPats.Pats lhs, None, range0)
+
+                let body = [ SynExpr.CreateConst SynConst.Unit ] |> SynExpr.CreateSequential
+
+                SynMatchClause.SynMatchClause (
+                    pat,
+                    None,
+                    body,
+                    range0,
+                    DebugPointAtTarget.Yes,
+                    {
+                        ArrowRange = Some range0
+                        BarRange = Some range0
+                    }
+                )
+            )
+        )
+
     let createLoopFunction (cataVarName : Ident) (analysis : UnionAnalysis list) : SynBinding =
         // TODO: better type name
         let cataTypeName = "Cata"
@@ -904,72 +981,7 @@ module internal CataGenerator =
 
         let baseMatchClauses = createBaseMatchClauses analysis
 
-        // A clause for each type, splitting it into its cases:
-        // And a clause for each case with a recursive reference.
-        let recMatchClauses : SynMatchClause list =
-            analysis
-            |> List.collect (fun unionType ->
-                unionType.UnionCases
-                |> List.choose (fun unionCase ->
-                    // We already know there is a recursive reference somewhere
-                    // in `analysis`.
-                    if
-                        unionCase.Fields
-                        |> List.exists (fun case ->
-                            match case.Description with
-                            | NonRecursive _ -> false
-                            | _ -> true
-                        )
-                    then
-                        Some unionCase
-                    else
-                        None
-                )
-                |> List.map (fun unionCase ->
-                    let lhsNames =
-                        unionCase.Fields
-                        |> Seq.mapi (fun i x -> (i, x))
-                        |> Seq.choose (fun (i, case) ->
-                            match case.Description with
-                            | FieldDescription.NonRecursive _ -> SynPat.CreateNamed case.ArgName |> Some
-                            | FieldDescription.ListSelf _ -> Ident.Create "n" |> SynPat.CreateNamed |> Some
-                            | FieldDescription.Self _ -> None
-                        )
-                        |> Seq.toList
-
-                    let lhs =
-                        match lhsNames with
-                        | [] -> []
-                        | lhsNames ->
-                            SynPat.Tuple (false, lhsNames, List.replicate (lhsNames.Length - 1) range0, range0)
-                            |> SynPat.CreateParen
-                            |> List.singleton
-
-                    let pat =
-                        SynPat.LongIdent (
-                            unionCase.AssociatedInstruction,
-                            None,
-                            None,
-                            SynArgPats.Pats lhs,
-                            None,
-                            range0
-                        )
-
-                    let body = [ SynExpr.CreateConst SynConst.Unit ] |> SynExpr.CreateSequential
-
-                    SynMatchClause.SynMatchClause (
-                        pat,
-                        None,
-                        body,
-                        range0,
-                        DebugPointAtTarget.Yes,
-                        {
-                            ArrowRange = Some range0
-                            BarRange = Some range0
-                        }
-                    )
-                )
-            )
+        let recMatchClauses = createRecursiveMatchClauses analysis
 
         let matchStatement =
             SynExpr.CreateMatch (SynExpr.CreateIdentString "currentInstruction", baseMatchClauses @ recMatchClauses)
@@ -1130,7 +1142,12 @@ module internal CataGenerator =
 
         let loopFunction = createLoopFunction cataVarName analysis
 
-        let cataRecord = SynModuleDecl.Types ([ createCataRecord allUnionTypes ], range0)
+        let recordDoc =
+            PreXmlDoc.Create
+                $" Specifies how to perform a fold (catamorphism) over the type %s{parentName} and its friends."
+
+        let cataRecord =
+            SynModuleDecl.Types ([ createCataRecord recordDoc allUnionTypes ], range0)
 
         SynModuleOrNamespace.CreateNamespace (
             ns,

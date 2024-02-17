@@ -22,16 +22,6 @@ and ExprBuilder =
     | Parent of Expr
 
 (*
-// Say that CreateCatamorphism-tagged types form the set T.
-// Assert that each U in T is a discriminated union.
-// For each type U in T, assign a generic parameter 'ret<U>.
-// For each U:
-//   * Define the type [U]Cata, generic on all the parameters {'ret<U> : U in T}.
-//   * For each DU case C in type U:
-//     * create a method in [U]Cata, whose return value is 'ret<U> and whose args are the fields of the case C
-//     * any occurrence in a field of an input value of type equal to any element of T (say type V) is replaced by 'ret<V>
-// Finally, define a type Cata<{'ret<U> for U in T}>
-// with one member for each U, namely of type [U]Cata<{'ret<U> for U in T}>.
 type ExprCata<'builderRet, 'ret> =
     abstract Const : Const -> 'ret
     abstract Pair : 'ret -> 'ret -> PairOpKind -> 'ret
@@ -140,43 +130,4 @@ module TailRecCata =
                 cata.Builder.Parent expr |> builderResultsStack.Add
 
         resultsStack, builderResultsStack
-
-    let run (cata : Cata<'bret, 'ret>) (e : Expr) : 'ret =
-        let instructions = ResizeArray ()
-        instructions.Add (Instruction.ProcessExpr e)
-
-        let resultsStack, builderResultsStack = loop cata instructions
-
-        if builderResultsStack.Count > 0 then
-            failwith "logic error"
-
-        Seq.exactlyOne resultsStack
-
-    let runBuilder (cata : Cata<'bret, 'ret>) (e : ExprBuilder) : 'bret =
-        let instructions = ResizeArray ()
-        instructions.Add (Instruction.ProcessBuilder e)
-
-        let resultsStack, builderResultsStack = loop cata instructions
-
-        if resultsStack.Count > 0 then
-            failwith "logic error"
-
-        Seq.exactlyOne builderResultsStack
-
-module CataExample =
-    let id =
-        {
-            Expr =
-                { new ExprCata<_, _> with
-                    member _.Const x = Const x
-                    member _.Pair x y z = Pair (x, y, z)
-                    member _.Sequential xs = Sequential xs
-                    member _.Builder x b = Builder (x, b)
-                }
-            Builder =
-                { new ExprBuilderCata<_, _> with
-                    member _.Child x = Child x
-                    member _.Parent x = Parent x
-                }
-        }
 *)
