@@ -682,6 +682,13 @@ module internal CataGenerator =
             }
         )
 
+    let callCataAndPushResult (resultStackName : Ident) (unionCase : RenderedUnionCase) : SynExpr =
+        (SynExpr.CreateLongIdent unionCase.CataMethodName, unionCase.Fields)
+        ||> List.fold (fun body caseDesc -> SynExpr.CreateApp (body, SynExpr.CreateIdent caseDesc.ArgName))
+        |> SynExpr.pipeThroughFunction (
+            SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (resultStackName :: [ Ident.Create "Add" ]))
+        )
+
     /// Create the state-machine matches which deal with receiving the instruction
     /// to "process one of the user-specified DU cases, pushing recursion instructions onto
     /// the instruction stack".
@@ -707,17 +714,7 @@ module internal CataGenerator =
                 let matchBody =
                     if nonRecursiveArgs.Length = unionCase.Fields.Length then
                         // directly call the cata
-                        ((0, SynExpr.CreateLongIdent unionCase.CataMethodName), List.rev unionCase.Fields)
-                        ||> List.fold (fun (i, body) caseDesc ->
-                            let body = SynExpr.CreateApp (body, SynExpr.CreateIdent caseDesc.ArgName)
-                            (i + 1, body)
-                        )
-                        |> snd
-                        |> SynExpr.pipeThroughFunction (
-                            SynExpr.CreateLongIdent (
-                                SynLongIdent.CreateFromLongIdent (analysis.StackName :: [ Ident.Create "Add" ])
-                            )
-                        )
+                        callCataAndPushResult analysis.StackName unionCase
                     else
                     // There's a recursive type in here, so we'll have to make some calls
                     // and then come back.
@@ -857,9 +854,17 @@ module internal CataGenerator =
     /// Create the state-machine matches which deal with receiving the instruction
     /// to "pull recursive results from the result stacks, and invoke the cata".
     let createRecursiveMatchClauses (analyses : UnionAnalysis list) : SynMatchClause list =
+        let inputStacks =
+            analyses
+            |> Seq.map (fun a ->
+                // TODO this is jank
+                (List.last a.ParentTypeName).idText, a.StackName
+            )
+            |> Map.ofSeq
+
         analyses
-        |> List.collect (fun unionType ->
-            unionType.UnionCases
+        |> List.collect (fun analysis ->
+            analysis.UnionCases
             |> List.choose (fun unionCase ->
                 // We already know there is a recursive reference somewhere
                 // in `analysis`.
@@ -898,7 +903,70 @@ module internal CataGenerator =
                 let pat =
                     SynPat.LongIdent (unionCase.AssociatedInstruction, None, None, SynArgPats.Pats lhs, None, range0)
 
-                let body = [ SynExpr.CreateConst SynConst.Unit ] |> SynExpr.CreateSequential
+                let body =
+                    [
+                        for field in unionCase.Fields do
+                            match field.Description with
+                            | NonRecursive _ ->
+                                // this was passed in already in the match
+                                ()
+                            | Self synType ->
+                                // pull the one entry from the stack
+                                // let {field.ArgName} = {appropriateStack}.[SynExpr.minusN {appropriateStack.Count} 1]
+                                // {appropriateStack}.RemoveRange (SynExpr.minusN {appropriateStack.Count} 1)
+                                // TODO: this is jank
+                                let stackName = inputStacks.[List.last(getNameUnion synType).idText]
+
+                                yield
+                                    SynExpr.LetOrUse (
+                                        false,
+                                        false,
+                                        [
+                                            SynBinding.SynBinding (
+                                                None,
+                                                SynBindingKind.Normal,
+                                                false,
+                                                false,
+                                                [],
+                                                PreXmlDoc.Empty,
+                                                SynValData.SynValData (None, SynValInfo.Empty, None),
+                                                SynPat.CreateNamed field.ArgName,
+                                                None,
+                                                SynExpr.DotIndexedGet (
+                                                    SynExpr.CreateIdent stackName,
+                                                    SynExpr.minusN
+                                                        (SynLongIdent.CreateFromLongIdent
+                                                            [ stackName ; Ident.Create "Count" ])
+                                                        1,
+                                                    range0,
+                                                    range0
+                                                ),
+                                                range0,
+                                                DebugPointAtBinding.Yes range0,
+                                                SynExpr.synBindingTriviaZero false
+                                            )
+                                        ],
+                                        SynExpr.CreateApp (
+                                            SynExpr.CreateLongIdent (
+                                                SynLongIdent.CreateFromLongIdent
+                                                    [ stackName ; Ident.Create "RemoveAt" ]
+                                            ),
+                                            SynExpr.CreateParen (
+                                                SynExpr.minusN
+                                                    (SynLongIdent.CreateFromLongIdent
+                                                        [ stackName ; Ident.Create "Count" ])
+                                                    1
+                                            )
+                                        ),
+                                        range0,
+                                        {
+                                            InKeyword = None
+                                        }
+                                    )
+                            | ListSelf synType -> yield SynExpr.CreateConst SynConst.Unit
+                        yield callCataAndPushResult analysis.StackName unionCase
+                    ]
+                    |> SynExpr.CreateSequential
 
                 SynMatchClause.SynMatchClause (
                     pat,

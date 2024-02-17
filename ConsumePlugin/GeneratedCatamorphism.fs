@@ -84,11 +84,29 @@ module ExprCata =
                 | ExprBuilder.Parent (arg0) ->
                     instructions.Add Instruction.ExprBuilder_Parent
                     instructions.Add (Instruction.Process__Expr arg0)
-            | Instruction.Expr_Pair (arg2) -> ()
-            | Instruction.Expr_Sequential (n) -> ()
-            | Instruction.Expr_Builder -> ()
-            | Instruction.ExprBuilder_Child -> ()
-            | Instruction.ExprBuilder_Parent -> ()
+            | Instruction.Expr_Pair (arg2) ->
+                let arg0 = exprStack.[exprStack.Count - 1]
+                exprStack.RemoveAt (exprStack.Count - 1)
+                let arg1 = exprStack.[exprStack.Count - 1]
+                exprStack.RemoveAt (exprStack.Count - 1)
+                cata.Expr.Pair arg0 arg1 arg2 |> exprStack.Add
+            | Instruction.Expr_Sequential (n) ->
+                ()
+                cata.Expr.Sequential arg0 |> exprStack.Add
+            | Instruction.Expr_Builder ->
+                let arg0 = exprStack.[exprStack.Count - 1]
+                exprStack.RemoveAt (exprStack.Count - 1)
+                let arg1 = exprBuilderStack.[exprBuilderStack.Count - 1]
+                exprBuilderStack.RemoveAt (exprBuilderStack.Count - 1)
+                cata.Expr.Builder arg0 arg1 |> exprStack.Add
+            | Instruction.ExprBuilder_Child ->
+                let arg0 = exprBuilderStack.[exprBuilderStack.Count - 1]
+                exprBuilderStack.RemoveAt (exprBuilderStack.Count - 1)
+                cata.ExprBuilder.Child arg0 |> exprBuilderStack.Add
+            | Instruction.ExprBuilder_Parent ->
+                let arg0 = exprStack.[exprStack.Count - 1]
+                exprStack.RemoveAt (exprStack.Count - 1)
+                cata.ExprBuilder.Parent arg0 |> exprBuilderStack.Add
 
         exprStack, exprBuilderStack
 
