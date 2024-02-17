@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Compile Include="List.fs"/>
+    <Compile Include="Ident.fs" />
     <Compile Include="AstHelper.fs"/>
     <Compile Include="SynExpr.fs"/>
     <Compile Include="SynType.fs"/>
@@ -34,6 +35,7 @@
     <Compile Include="JsonSerializeGenerator.fs"/>
     <Compile Include="JsonParseGenerator.fs"/>
     <Compile Include="HttpClientGenerator.fs"/>
+    <Compile Include="CataGenerator.fs" />
     <EmbeddedResource Include="version.json"/>
     <EmbeddedResource Include="SurfaceBaseline.txt"/>
     <None Include="..\README.md">

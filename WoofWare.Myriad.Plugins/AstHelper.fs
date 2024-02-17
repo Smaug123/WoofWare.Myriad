@@ -70,6 +70,23 @@ type internal RecordType =
         Accessibility : SynAccess option
     }
 
+/// Anything that is part of an ADT.
+/// A record is a product of stuff; this type represents one of those stuffs.
+type internal AdtNode =
+    {
+        Type : SynType
+        Name : Ident option
+    }
+
+/// A DU is a sum of products (e.g. `type Thing = Foo of a * b`);
+/// similarly a record is a product.
+/// This type represents a product in that sense.
+type internal AdtProduct =
+    {
+        Name : SynIdent
+        Fields : AdtNode list
+    }
+
 [<RequireQualifiedAccess>]
 module internal AstHelper =
 
@@ -383,6 +400,39 @@ module internal AstHelper =
             Accessibility = accessibility
         }
 
+    let getUnionCases (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) : AdtProduct list =
+        match repr with
+        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_, cases, _), _) ->
+            cases
+            |> List.map (fun (SynUnionCase.SynUnionCase (_, ident, kind, _, _, _, _)) ->
+                match kind with
+                | SynUnionCaseKind.FullType _ -> failwith "FullType union cases not supported"
+                | SynUnionCaseKind.Fields fields ->
+                    {
+                        Name = ident
+                        Fields =
+                            fields
+                            |> List.map (fun (SynField.SynField (_, _, id, ty, _, _, _, _, _)) ->
+                                {
+                                    Type = ty
+                                    Name = id
+                                }
+                            )
+                    }
+            )
+        | _ -> failwithf "Failed to get union cases for type that was: %+A" repr
+
+    let getRecordFields (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) : AdtNode list =
+        match repr with
+        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_, fields, _), _) ->
+            fields
+            |> List.map (fun (SynField.SynField (_, _, ident, ty, _, _, _, _, _)) ->
+                {
+                    Name = ident
+                    Type = ty
+                }
+            )
+        | _ -> failwithf "Failed to get record elements for type that was: %+A" repr
 
 [<AutoOpen>]
 module internal SynTypePatterns =

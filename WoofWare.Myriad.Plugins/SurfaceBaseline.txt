@@ -1,3 +1,5 @@
+WoofWare.Myriad.Plugins.CreateCatamorphismGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
+WoofWare.Myriad.Plugins.CreateCatamorphismGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.HttpClientGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.HttpClientGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.InterfaceMockGenerator inherit obj, implements Myriad.Core.IMyriadGenerator

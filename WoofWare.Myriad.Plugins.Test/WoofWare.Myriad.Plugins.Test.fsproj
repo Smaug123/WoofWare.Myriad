@@ -21,6 +21,10 @@
     <Compile Include="TestHttpClient\TestVaultClient.fs" />
     <Compile Include="TestHttpClient\TestVariableHeader.fs" />
     <Compile Include="TestMockGenerator\TestMockGenerator.fs" />
+    <Compile Include="TestJsonSerialize\TestJsonSerde.fs" />
+    <Compile Include="TestCataGenerator\TestCataGenerator.fs" />
+    <Compile Include="TestCataGenerator\TestDirectory.fs" />
+    <Compile Include="TestCataGenerator\TestGift.fs" />
     <Compile Include="TestRemoveOptions.fs"/>
     <Compile Include="TestSurface.fs"/>
     <None Include="../.github/workflows/dotnet.yaml" />
@@ -39,10 +43,6 @@
   <ItemGroup>
     <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj"/>
     <ProjectReference Include="..\ConsumePlugin\ConsumePlugin.fsproj"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="TestJsonSerialize\TestJsonSerde.fs" />
   </ItemGroup>
 
 </Project>

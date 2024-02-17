@@ -756,12 +756,6 @@ module internal HttpClientGenerator =
             | _ -> None
         )
 
-    let lowerFirstLetter (x : Ident) : Ident =
-        let result = StringBuilder x.idText.Length
-        result.Append (Char.ToLowerInvariant x.idText.[0]) |> ignore
-        result.Append x.idText.[1..] |> ignore
-        Ident.Create ((result : StringBuilder).ToString ())
-
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
@@ -891,7 +885,7 @@ module internal HttpClientGenerator =
                         Some (SynBindingReturnInfo.Create pi.Type),
                         SynExpr.CreateApp (
                             SynExpr.CreateLongIdent (
-                                SynLongIdent.CreateFromLongIdent [ lowerFirstLetter pi.Identifier ]
+                                SynLongIdent.CreateFromLongIdent [ Ident.lowerFirstLetter pi.Identifier ]
                             ),
                             SynExpr.CreateConst SynConst.Unit
                         ),
@@ -927,7 +921,7 @@ module internal HttpClientGenerator =
             properties
             |> List.map (fun (_, pi) ->
                 SynPat.CreateTyped (
-                    SynPat.CreateNamed (lowerFirstLetter pi.Identifier),
+                    SynPat.CreateNamed (Ident.lowerFirstLetter pi.Identifier),
                     SynType.CreateFun (SynType.CreateLongIdent "unit", pi.Type)
                 )
                 |> SynPat.CreateParen

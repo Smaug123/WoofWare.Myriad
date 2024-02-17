@@ -275,3 +275,39 @@ module internal SynExpr =
                 else
                     SynLeadingKeyword.Let range0
         }
+
+    /// {ident} - {rhs}
+    let minus (ident : SynLongIdent) (rhs : SynExpr) : SynExpr =
+        SynExpr.CreateApp (
+            SynExpr.CreateAppInfix (
+                SynExpr.CreateLongIdent (
+                    SynLongIdent.SynLongIdent (
+                        [ Ident.Create "op_Subtraction" ],
+                        [],
+                        [ Some (IdentTrivia.OriginalNotation "-") ]
+                    )
+                ),
+                SynExpr.CreateLongIdent ident
+            ),
+            rhs
+        )
+
+    /// {ident} - {n}
+    let minusN (ident : SynLongIdent) (n : int) : SynExpr =
+        minus ident (SynExpr.CreateConst (SynConst.Int32 n))
+
+    /// {y} > {x}
+    let greaterThan (x : SynExpr) (y : SynExpr) : SynExpr =
+        SynExpr.CreateApp (
+            SynExpr.CreateAppInfix (
+                SynExpr.CreateLongIdent (
+                    SynLongIdent.SynLongIdent (
+                        [ Ident.Create "op_GreaterThan" ],
+                        [],
+                        [ Some (IdentTrivia.OriginalNotation ">") ]
+                    )
+                ),
+                y
+            ),
+            x
+        )
