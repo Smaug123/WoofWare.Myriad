@@ -1286,7 +1286,7 @@ module internal CataGenerator =
             SynComponentInfo.Create (
                 moduleName,
                 attributes = attribs,
-                xmldoc = PreXmlDoc.Create $" Methods to perform a catamorphism over the type {parentName}"
+                xmldoc = PreXmlDoc.Create $" Methods to perform a catamorphism over the type %s{parentName}"
             )
 
         let allTypars =
