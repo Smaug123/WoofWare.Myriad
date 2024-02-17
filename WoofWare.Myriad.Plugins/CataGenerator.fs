@@ -73,6 +73,8 @@ module internal CataGenerator =
             /// The state machine interprets this instruction as "break me apart and
             /// descend recursively if necessary before coming back to me".
             AssociatedProcessInstruction : SynLongIdent
+            /// Name of the parent type: e.g. in `type Foo = | Blah`, this is `Foo`.
+            ParentTypeName : LongIdent
         }
 
 
@@ -293,28 +295,19 @@ module internal CataGenerator =
     /// strips out any members which contain recursive calls.
     /// Stores a list as an int which is "the length of the list".
     /// TODO: support other compound types.
-    let getRecursiveInstruction
-        (allUnionTypes : SynTypeDefn list)
-        (thisUnionType : SynTypeDefn)
-        (case : UnionCase)
-        : InstructionCase option
-        =
-        let analysed = analyse allUnionTypes case
-
+    let getRecursiveInstruction (case : RenderedUnionCase) : InstructionCase option =
         let hasRecursion, cases =
-            ((false, []), analysed)
-            ||> List.fold (fun (hasRecursion, cases) (fieldName, field) ->
-                let newHasRecursion, case = toInstructionCase field
+            ((false, []), case.Fields)
+            ||> List.fold (fun (hasRecursion, cases) field ->
+                let newHasRecursion, case = toInstructionCase field.Description
 
                 let cases =
                     match case with
                     | None -> cases
-                    | Some case -> (fieldName, case) :: cases
+                    | Some case -> (field.FieldName, case) :: cases
 
                 hasRecursion || newHasRecursion, cases
             )
-
-        let name = getInstructionCaseName thisUnionType case
 
         if hasRecursion then
             let fields =
@@ -328,7 +321,7 @@ module internal CataGenerator =
                 )
 
             {
-                Name = name
+                Name = case.InstructionName
                 Fields = fields
             }
             |> Some
@@ -338,40 +331,37 @@ module internal CataGenerator =
     /// The instruction to "process an Expr"; the loop will have to descend
     /// into this Expr and break it down to discover what recursive calls
     /// and calls to the cata this will imply making.
-    let baseCases (allUnionTypes : SynTypeDefn list) : InstructionCase list =
-        allUnionTypes
-        |> List.map (fun unionType ->
-            let name = getName unionType
-
+    let baseCases (unions : UnionAnalysis list) : InstructionCase list =
+        unions
+        |> List.map (fun union ->
             {
-                Name = Ident.Create ("Process__" + (List.last name).idText)
+                Name =
+                    match union.AssociatedProcessInstruction with
+                    | SynLongIdent.SynLongIdent (i, _, _) -> List.last i
                 Fields =
                     {
                         Name = None
-                        Type = SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent (getName unionType))
+                        Type = SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent union.ParentTypeName)
                     }
                     |> List.singleton
             }
         )
 
-    let recursiveCases (allUnionTypes : SynTypeDefn list) : InstructionCase list =
+    let recursiveCases (allUnionTypes : UnionAnalysis list) : InstructionCase list =
         allUnionTypes
-        |> List.collect (fun unionType ->
-            AstHelper.getUnionCases unionType
-            |> List.choose (fun case -> getRecursiveInstruction allUnionTypes unionType case)
-        )
+        |> List.collect (fun union -> union.UnionCases |> List.choose (fun case -> getRecursiveInstruction case))
 
-    let createInstructionType (allUnionTypes : SynTypeDefn list) : SynTypeDefn =
+    let createInstructionType (analysis : UnionAnalysis list) : SynTypeDefn =
         // One union case for each union type, and then
         // a union case for each union case which contains a recursive reference.
         let casesFromProcess : SynUnionCase list =
-            baseCases allUnionTypes
+            baseCases analysis
             |> List.map (fun unionCase ->
                 SynUnionCase.Create (unionCase.Name, unionCase.Fields |> List.map (fun f -> SynField.Create f.Type))
             )
 
         let casesFromCases =
-            recursiveCases allUnionTypes
+            recursiveCases analysis
             |> List.map (fun case ->
                 SynUnionCase.Create (case.Name, case.Fields |> List.map (fun field -> SynField.Create field.Type))
             )
@@ -658,6 +648,7 @@ module internal CataGenerator =
                             // such jank!
                             "Process__" + List.last(unionTypeName).idText
                         ]
+                ParentTypeName = getName unionType
             }
         )
 
@@ -848,8 +839,7 @@ module internal CataGenerator =
         )
 
 
-    let createLoopFunction (allUnionTypes : SynTypeDefn list) : SynBinding =
-        let cataVarName = Ident.Create "cata"
+    let createLoopFunction (cataVarName : Ident) (analysis : UnionAnalysis list) : SynBinding =
         // TODO: better type name
         let cataTypeName = "Cata"
 
@@ -879,8 +869,8 @@ module internal CataGenerator =
                                 SynType.App (
                                     SynType.Create cataTypeName,
                                     Some range0,
-                                    List.replicate allUnionTypes.Length (SynType.Anon range0),
-                                    List.replicate (allUnionTypes.Length - 1) range0,
+                                    List.replicate analysis.Length (SynType.Anon range0),
+                                    List.replicate (analysis.Length - 1) range0,
                                     Some range0,
                                     false,
                                     range0
@@ -905,8 +895,6 @@ module internal CataGenerator =
                 Some (SynAccess.Private range0),
                 range0
             )
-
-        let analysis = makeUnionAnalyses cataVarName allUnionTypes
 
         let baseMatchClauses = createBaseMatchClauses analysis
 
@@ -1132,7 +1120,10 @@ module internal CataGenerator =
             createCataStructure allUnionTypes
             |> List.map (fun repr -> SynModuleDecl.Types ([ repr ], range0))
 
-        let loopFunction = createLoopFunction allUnionTypes
+        let cataVarName = Ident.Create "cata"
+        let analysis = makeUnionAnalyses cataVarName allUnionTypes
+
+        let loopFunction = createLoopFunction cataVarName analysis
 
         let cataRecord = SynModuleDecl.Types ([ createCataRecord allUnionTypes ], range0)
 
@@ -1148,7 +1139,7 @@ module internal CataGenerator =
                         SynModuleDecl.CreateNestedModule (
                             modInfo,
                             [
-                                SynModuleDecl.Types ([ createInstructionType allUnionTypes ], range0)
+                                SynModuleDecl.Types ([ createInstructionType analysis ], range0)
                                 SynModuleDecl.CreateLet (loopFunction :: runFunctions)
                             ]
                         )
