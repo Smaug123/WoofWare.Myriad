@@ -1,3 +1,5 @@
+WoofWare.Myriad.Plugins.CreateCatamorphismAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.CreateCatamorphismAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.GenerateMockAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.GenerateMockAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.GenerateMockAttribute..ctor [constructor]: unit

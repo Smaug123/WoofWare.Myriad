@@ -67,10 +67,10 @@ module ExprCata =
                     instructions.Add (Instruction.Expr_Pair (arg2))
                     instructions.Add (Instruction.Process__Expr arg0)
                     instructions.Add (Instruction.Process__Expr arg1)
-                | Expr.Sequential (arg0) ->
-                    instructions.Add (Instruction.Expr_Sequential ((List.length arg0)))
+                | Expr.Sequential (n0) ->
+                    instructions.Add (Instruction.Expr_Sequential ((List.length n0)))
 
-                    for elt in arg0 do
+                    for elt in n0 do
                         instructions.Add (Instruction.Process__Expr elt)
                 | Expr.Builder (arg0, arg1) ->
                     instructions.Add Instruction.Expr_Builder
@@ -91,8 +91,17 @@ module ExprCata =
                 exprStack.RemoveAt (exprStack.Count - 1)
                 cata.Expr.Pair arg0 arg1 arg2 |> exprStack.Add
             | Instruction.Expr_Sequential (n0) ->
-                ()
-                cata.Expr.Sequential arg0 |> exprStack.Add
+                let n0_len = n0
+
+                let n0 =
+                    seq {
+                        for i = exprStack.Count - 1 downto exprStack.Count - n0 do
+                            yield exprStack.[i]
+                    }
+                    |> Seq.toList
+
+                exprStack.RemoveRange (exprStack.Count - n0_len, n0_len)
+                cata.Expr.Sequential n0 |> exprStack.Add
             | Instruction.Expr_Builder ->
                 let arg0 = exprStack.[exprStack.Count - 1]
                 exprStack.RemoveAt (exprStack.Count - 1)

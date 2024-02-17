@@ -646,7 +646,11 @@ module internal CataGenerator =
                                     ArgName =
                                         match name with
                                         | Some n -> n
-                                        | None -> Ident.Create $"arg%i{i}"
+                                        | None ->
+                                            match desc with
+                                            | ListSelf synType -> Ident.Create $"n%i{i}"
+                                            | Self synType
+                                            | NonRecursive synType -> Ident.Create $"arg%i{i}"
                                     Description = desc
                                 }
                             )
@@ -887,7 +891,7 @@ module internal CataGenerator =
                     |> Seq.choose (fun (i, case) ->
                         match case.Description with
                         | FieldDescription.NonRecursive _ -> SynPat.CreateNamed case.ArgName |> Some
-                        | FieldDescription.ListSelf _ -> Ident.Create $"n%i{i}" |> SynPat.CreateNamed |> Some
+                        | FieldDescription.ListSelf _ -> SynPat.CreateNamed case.ArgName |> Some
                         | FieldDescription.Self _ -> None
                     )
                     |> Seq.toList
@@ -961,7 +965,117 @@ module internal CataGenerator =
                                 }
                             )
                             |> Some
-                        | ListSelf synType -> SynExpr.CreateConst SynConst.Unit |> Some
+                        | ListSelf synType ->
+                            // TODO: also jank
+                            let stackName = inputStacks.[List.last(getNameUnion synType).idText]
+
+                            let vals =
+                                SynBinding.SynBinding (
+                                    None,
+                                    SynBindingKind.Normal,
+                                    false,
+                                    false,
+                                    [],
+                                    PreXmlDoc.Empty,
+                                    SynValData.SynValData (None, SynValInfo.Empty, None),
+                                    SynPat.CreateNamed field.ArgName,
+                                    None,
+                                    SynExpr.pipeThroughFunction
+                                        (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "toList" ]))
+                                        (SynExpr.CreateApp (
+                                            SynExpr.CreateIdentString "seq",
+                                            SynExpr.ComputationExpr (
+                                                false,
+                                                SynExpr.For (
+                                                    DebugPointAtFor.Yes range0,
+                                                    DebugPointAtInOrTo.Yes range0,
+                                                    Ident.Create "i",
+                                                    Some range0,
+                                                    SynExpr.minusN
+                                                        (SynLongIdent.CreateFromLongIdent
+                                                            [ stackName ; Ident.Create "Count" ])
+                                                        1,
+                                                    false,
+                                                    SynExpr.minus
+                                                        (SynLongIdent.CreateFromLongIdent
+                                                            [ stackName ; Ident.Create "Count" ])
+                                                        (SynExpr.CreateIdent field.ArgName),
+                                                    SynExpr.YieldOrReturn (
+                                                        (true, false),
+                                                        SynExpr.DotIndexedGet (
+                                                            SynExpr.CreateIdent stackName,
+                                                            SynExpr.CreateIdentString "i",
+                                                            range0,
+                                                            range0
+                                                        ),
+                                                        range0
+                                                    ),
+                                                    range0
+                                                ),
+                                                range0
+                                            )
+                                        )),
+                                    range0,
+                                    DebugPointAtBinding.Yes range0,
+                                    SynExpr.synBindingTriviaZero false
+                                )
+
+                            let shadowedIdent = Ident.Create (field.ArgName.idText + "_len")
+
+                            SynExpr.LetOrUse (
+                                false,
+                                false,
+                                [
+                                    SynBinding.SynBinding (
+                                        None,
+                                        SynBindingKind.Normal,
+                                        false,
+                                        false,
+                                        [],
+                                        PreXmlDoc.Empty,
+                                        SynValData.SynValData (None, SynValInfo.Empty, None),
+                                        SynPat.CreateNamed shadowedIdent,
+                                        None,
+                                        SynExpr.CreateIdent field.ArgName,
+                                        range0,
+                                        DebugPointAtBinding.Yes range0,
+                                        SynExpr.synBindingTriviaZero false
+                                    )
+
+                                ],
+                                SynExpr.CreateSequential
+                                    [
+                                        SynExpr.LetOrUse (
+                                            false,
+                                            false,
+                                            [ vals ],
+                                            SynExpr.CreateApp (
+                                                SynExpr.CreateLongIdent (
+                                                    SynLongIdent.CreateFromLongIdent
+                                                        [ stackName ; Ident.Create "RemoveRange" ]
+                                                ),
+                                                SynExpr.CreateParenedTuple
+                                                    [
+                                                        SynExpr.minus
+                                                            (SynLongIdent.CreateFromLongIdent
+                                                                [ stackName ; Ident.Create "Count" ])
+                                                            (SynExpr.CreateIdent shadowedIdent)
+                                                        SynExpr.CreateIdent shadowedIdent
+                                                    ]
+                                            ),
+                                            range0,
+                                            {
+                                                InKeyword = None
+                                            }
+                                        )
+                                    ],
+
+                                range0,
+                                {
+                                    InKeyword = None
+                                }
+                            )
+                            |> Some
                     )
 
                 SynMatchClause.SynMatchClause (

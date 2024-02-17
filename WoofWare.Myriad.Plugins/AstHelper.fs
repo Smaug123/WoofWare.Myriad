@@ -70,13 +70,13 @@ type internal RecordType =
         Accessibility : SynAccess option
     }
 
-type UnionField =
+type internal UnionField =
     {
         Type : SynType
         Name : Ident option
     }
 
-type UnionCase =
+type internal UnionCase =
     {
         Name : SynIdent
         Fields : UnionField list
