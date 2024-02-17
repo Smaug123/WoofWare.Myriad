@@ -380,12 +380,24 @@ and then each time you only plug in what you want to do.
 
 * Mutually recursive DUs are supported (as in the example above).
   Every DU in a recursive `type Foo... and Bar...` knot will be given an appropriate cata, as long as any one of those DUs has the `[<CreateCatamorphism>]` attribute.
+* There is *limited* support for records and for lists.
 
 ### Limitations
 
-* This is a particularly half-baked generator which has so far seen no real-world use. It likely has a bunch of [80/20](https://en.wikipedia.org/wiki/Pareto_principle) low-hanging fruit remaining, but it also likely has impossible problems to solve which I don't know about yet.
-* Only a very few kinds of DU field are currently implemented. For example, this generator can't see through a record type or an interface, so the generated cata will simply grant you access to the record (rather than attempting to descend into it to discover recursive references).
-* This generator does not try to solve the "exponential diamond dependency" problem. If you have a case of the form `type Expr = | Branch of Expr * Expr`, the cata will walk into both `Expr`s separately. If the `Expr`s happen to be equal, the cata will nevertheless traverse them individually (that is, it will traverse the same `Expr` twice). Your type may represent a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph), but we will always effectively expand it into a tree of paths and operate on each of the exponentially-many paths.
+**I am not at all convinced of the correctness of this generator**, and I know it is very incomplete (in the sense that there are many possible DUs you could write for which the generator will bail out).
+I *strongly* recommend implementing the identity catamorphism for your type and using property-based tests ([as I do](./WoofWare.Myriad.Plugins.Test/TestCataGenerator/TestDirectory.fs)) to assert that the correct thing happens.
+Feel free to raise GitHub issues with code I can copy-paste to reproduce a case where the wrong thing happens (though I can't promise to look at them).
+
+* This is a particularly half-baked generator which has so far seen no real-world use.
+  It likely has a bunch of [80/20](https://en.wikipedia.org/wiki/Pareto_principle) low-hanging fruit remaining, but it also likely has impossible problems to solve which I don't know about yet.
+* Only a very few kinds of DU field are currently implemented.
+  For example, this generator can't see through an interface (e.g. the kind of interface one would use to implement the [crate pattern](https://www.patrickstevens.co.uk/posts/2021-10-19-crates/) to represent a [GADT](https://en.wikipedia.org/wiki/Generalized_algebraic_data_type)),
+  so the generated cata will simply grant you access to the interface (rather than attempting to descend into it to discover recursive references).
+  You can't nest lists deeply. All sorts of other cases are unaddressed.
+* This generator does not try to solve the "exponential diamond dependency" problem.
+  If you have a case of the form `type Expr = | Branch of Expr * Expr`, the cata will walk into both `Expr`s separately.
+  If the `Expr`s happen to be equal, the cata will nevertheless traverse them individually (that is, it will traverse the same `Expr` twice).
+  Your type may represent a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph), but we will always effectively expand it into a tree of paths and operate on each of the exponentially-many paths.
 
 # Detailed examples
 

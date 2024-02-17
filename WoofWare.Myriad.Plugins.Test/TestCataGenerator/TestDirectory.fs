@@ -23,9 +23,15 @@ module TestDirectory =
 
         }
 
+    // Note: this file is preserved as an example of writing an identity cata.
+    // Don't add anything else to this file, because that will muddy the example.
+
     [<Test>]
     let ``Cata works`` () =
         let property (x : FileSystemItem) =
             FileSystemItemCata.runFileSystemItem idCata x = x
 
         Check.QuickThrowOnFailure property
+
+// Note: this file is preserved as an example of writing an identity cata.
+// Don't add anything else to this file, because that will muddy the example.
