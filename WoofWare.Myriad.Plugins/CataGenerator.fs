@@ -887,7 +887,7 @@ module internal CataGenerator =
                     |> Seq.choose (fun (i, case) ->
                         match case.Description with
                         | FieldDescription.NonRecursive _ -> SynPat.CreateNamed case.ArgName |> Some
-                        | FieldDescription.ListSelf _ -> Ident.Create "n" |> SynPat.CreateNamed |> Some
+                        | FieldDescription.ListSelf _ -> Ident.Create $"n%i{i}" |> SynPat.CreateNamed |> Some
                         | FieldDescription.Self _ -> None
                     )
                     |> Seq.toList
@@ -903,75 +903,71 @@ module internal CataGenerator =
                 let pat =
                     SynPat.LongIdent (unionCase.AssociatedInstruction, None, None, SynArgPats.Pats lhs, None, range0)
 
-                let body =
-                    [
-                        for field in unionCase.Fields do
-                            match field.Description with
-                            | NonRecursive _ ->
-                                // this was passed in already in the match
-                                ()
-                            | Self synType ->
-                                // pull the one entry from the stack
-                                // let {field.ArgName} = {appropriateStack}.[SynExpr.minusN {appropriateStack.Count} 1]
-                                // {appropriateStack}.RemoveRange (SynExpr.minusN {appropriateStack.Count} 1)
-                                // TODO: this is jank
-                                let stackName = inputStacks.[List.last(getNameUnion synType).idText]
+                let populateArgs =
+                    unionCase.Fields
+                    |> List.choose (fun field ->
+                        match field.Description with
+                        | NonRecursive _ ->
+                            // this was passed in already in the match
+                            None
+                        | Self synType ->
+                            // pull the one entry from the stack
+                            // let {field.ArgName} = {appropriateStack}.[SynExpr.minusN {appropriateStack.Count} 1]
+                            // {appropriateStack}.RemoveRange (SynExpr.minusN {appropriateStack.Count} 1)
+                            // TODO: this is jank
+                            let stackName = inputStacks.[List.last(getNameUnion synType).idText]
 
-                                yield
-                                    SynExpr.LetOrUse (
+                            SynExpr.LetOrUse (
+                                false,
+                                false,
+                                [
+                                    SynBinding.SynBinding (
+                                        None,
+                                        SynBindingKind.Normal,
                                         false,
                                         false,
-                                        [
-                                            SynBinding.SynBinding (
-                                                None,
-                                                SynBindingKind.Normal,
-                                                false,
-                                                false,
-                                                [],
-                                                PreXmlDoc.Empty,
-                                                SynValData.SynValData (None, SynValInfo.Empty, None),
-                                                SynPat.CreateNamed field.ArgName,
-                                                None,
-                                                SynExpr.DotIndexedGet (
-                                                    SynExpr.CreateIdent stackName,
-                                                    SynExpr.minusN
-                                                        (SynLongIdent.CreateFromLongIdent
-                                                            [ stackName ; Ident.Create "Count" ])
-                                                        1,
-                                                    range0,
-                                                    range0
-                                                ),
-                                                range0,
-                                                DebugPointAtBinding.Yes range0,
-                                                SynExpr.synBindingTriviaZero false
-                                            )
-                                        ],
-                                        SynExpr.CreateApp (
-                                            SynExpr.CreateLongIdent (
-                                                SynLongIdent.CreateFromLongIdent
-                                                    [ stackName ; Ident.Create "RemoveAt" ]
-                                            ),
-                                            SynExpr.CreateParen (
-                                                SynExpr.minusN
-                                                    (SynLongIdent.CreateFromLongIdent
-                                                        [ stackName ; Ident.Create "Count" ])
-                                                    1
-                                            )
+                                        [],
+                                        PreXmlDoc.Empty,
+                                        SynValData.SynValData (None, SynValInfo.Empty, None),
+                                        SynPat.CreateNamed field.ArgName,
+                                        None,
+                                        SynExpr.DotIndexedGet (
+                                            SynExpr.CreateIdent stackName,
+                                            SynExpr.minusN
+                                                (SynLongIdent.CreateFromLongIdent
+                                                    [ stackName ; Ident.Create "Count" ])
+                                                1,
+                                            range0,
+                                            range0
                                         ),
                                         range0,
-                                        {
-                                            InKeyword = None
-                                        }
+                                        DebugPointAtBinding.Yes range0,
+                                        SynExpr.synBindingTriviaZero false
                                     )
-                            | ListSelf synType -> yield SynExpr.CreateConst SynConst.Unit
-                        yield callCataAndPushResult analysis.StackName unionCase
-                    ]
-                    |> SynExpr.CreateSequential
+                                ],
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateLongIdent (
+                                        SynLongIdent.CreateFromLongIdent [ stackName ; Ident.Create "RemoveAt" ]
+                                    ),
+                                    SynExpr.CreateParen (
+                                        SynExpr.minusN
+                                            (SynLongIdent.CreateFromLongIdent [ stackName ; Ident.Create "Count" ])
+                                            1
+                                    )
+                                ),
+                                range0,
+                                {
+                                    InKeyword = None
+                                }
+                            )
+                            |> Some
+                        | ListSelf synType -> SynExpr.CreateConst SynConst.Unit |> Some
+                    )
 
                 SynMatchClause.SynMatchClause (
                     pat,
                     None,
-                    body,
+                    SynExpr.CreateSequential (populateArgs @ [ callCataAndPushResult analysis.StackName unionCase ]),
                     range0,
                     DebugPointAtTarget.Yes,
                     {

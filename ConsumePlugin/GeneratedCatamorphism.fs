@@ -90,7 +90,7 @@ module ExprCata =
                 let arg1 = exprStack.[exprStack.Count - 1]
                 exprStack.RemoveAt (exprStack.Count - 1)
                 cata.Expr.Pair arg0 arg1 arg2 |> exprStack.Add
-            | Instruction.Expr_Sequential (n) ->
+            | Instruction.Expr_Sequential (n0) ->
                 ()
                 cata.Expr.Sequential arg0 |> exprStack.Add
             | Instruction.Expr_Builder ->
