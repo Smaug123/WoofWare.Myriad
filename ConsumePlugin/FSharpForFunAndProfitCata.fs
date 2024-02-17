@@ -16,5 +16,5 @@ type Directory =
     }
 
 and [<CreateCatamorphism "FileSystemCata">] FileSystemItem =
-    | File of File
     | Directory of Directory
+    | File of File

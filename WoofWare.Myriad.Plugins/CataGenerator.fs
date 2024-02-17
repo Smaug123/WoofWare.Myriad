@@ -24,7 +24,7 @@ module internal CataGenerator =
     /// (The name is "CataUnionField" merely to distinguish it from the more general
     /// `UnionField` notion we already have in this library; it's got more information
     /// in it that is unique to this source generator.)
-    type CataUnionField =
+    type CataUnionBasicField =
         {
             /// The name of this field as the user originally wrote, if available.
             /// For example, `| Foo of blah : int` would give `Some "blah"`.
@@ -37,6 +37,13 @@ module internal CataGenerator =
             Description : FieldDescription
         }
 
+    type CataUnionRecordField = (Ident * CataUnionBasicField) list
+
+    [<RequireQualifiedAccess>]
+    type CataUnionField =
+        | Record of CataUnionRecordField
+        | Basic of CataUnionBasicField
+
     /// Everything we'll need to know about a single union case within the
     /// user-provided DU.
     type RenderedUnionCase =
@@ -46,7 +53,7 @@ module internal CataGenerator =
             /// to pull recursive results from the stack and execute the cata directly"
             InstructionName : Ident
             /// This user-provided DU case
-            Case : AdtProduct
+            CaseName : SynIdent
             /// The fields of this user-provided DU
             Fields : CataUnionField list
             /// The corresponding method of the appropriate cata, fully-qualified as a call
@@ -61,6 +68,14 @@ module internal CataGenerator =
             /// left-hand side (and give appropriate field arguments), you will enter this union case.
             Match : SynLongIdent
         }
+
+        member this.FlattenedFields : CataUnionBasicField list =
+            this.Fields
+            |> List.collect (fun f ->
+                match f with
+                | CataUnionField.Basic x -> [ x ]
+                | CataUnionField.Record r -> r |> List.map snd
+            )
 
     /// For a single user-provided DU (which is possibly one of several within a
     /// recursive knot), this is everything we need to know about it for the cata.
@@ -86,7 +101,6 @@ module internal CataGenerator =
             /// The name of the Cata type which represents "operate on this union case".
             CataTypeName : Ident
         }
-
 
     /// Returns a function:
     /// let run{Case} (cata : {cataName}<{typars}>) (x : {Case}) : {TyPar} =
@@ -264,41 +278,82 @@ module internal CataGenerator =
 
     /// Get the fields of this particular union case, and describe their relation to the
     /// recursive knot of user-provided DUs for which we are creating a cata.
-    let analyse
+    let rec analyse
         (allRecordTypes : SynTypeDefn list)
         (allUnionTypes : SynTypeDefn list)
-        (case : AdtProduct)
-        : (Ident option * FieldDescription) list
+        (argIndex : int)
+        (fields : AdtNode list)
+        : CataUnionBasicField list
         =
-        let rec go (ty : SynType) : FieldDescription =
+        let rec go (prefix : string) (name : Ident option) (ty : SynType) =
             let stripped = SynType.stripOptionalParen ty
 
             match stripped with
             | ListType child ->
-                let gone = go child
+                let gone = go (prefix + "_") None child
 
-                match gone with
-                | FieldDescription.NonRecursive ty -> FieldDescription.NonRecursive stripped
-                | FieldDescription.Self ty -> FieldDescription.ListSelf ty
+                match gone.Description with
+                | FieldDescription.NonRecursive ty ->
+                    // Great, no recursion, just treat it as atomic
+                    {
+                        FieldName = name
+                        ArgName =
+                            match name with
+                            | Some n -> Ident.lowerFirstLetter n
+                            | None -> Ident.Create $"arg%s{prefix}"
+                        Description = FieldDescription.NonRecursive stripped
+                    }
+                | FieldDescription.Self ty ->
+                    {
+                        FieldName = name
+                        ArgName =
+                            match name with
+                            | Some n -> Ident.lowerFirstLetter n
+                            | None -> Ident.Create $"arg%s{prefix}"
+                        Description = FieldDescription.ListSelf ty
+                    }
                 | FieldDescription.ListSelf _ -> failwith "Deeply nested lists not currently supported"
-            | PrimitiveType _ -> NonRecursive stripped
+            | PrimitiveType _ ->
+                {
+                    FieldName = name
+                    ArgName =
+                        match name with
+                        | Some n -> Ident.lowerFirstLetter n
+                        | None -> Ident.Create $"arg%s{prefix}"
+                    Description = FieldDescription.NonRecursive stripped
+                }
             | SynType.LongIdent (SynLongIdent.SynLongIdent (ty, _, _)) ->
                 let key = ty |> List.map _.idText |> String.concat "/"
 
                 let isKnownUnion =
                     allUnionTypes |> List.exists (fun unionTy -> getNameKey unionTy = key)
 
-                let isKnownRecord =
-                    allRecordTypes |> List.exists (fun recordTy -> getNameKey recordTy = key)
+                let knownRecord =
+                    allRecordTypes
+                    |> List.tryPick (fun recordTy -> if getNameKey recordTy = key then Some recordTy else None)
 
                 if isKnownUnion then
-                    FieldDescription.Self stripped
+                    {
+                        FieldName = name
+                        ArgName =
+                            match name with
+                            | Some n -> Ident.lowerFirstLetter n
+                            | None -> Ident.Create $"arg%s{prefix}"
+                        Description = FieldDescription.Self stripped
+                    }
                 else
-                    FieldDescription.NonRecursive stripped
+                    {
+                        FieldName = name
+                        ArgName =
+                            match name with
+                            | Some n -> Ident.lowerFirstLetter n
+                            | None -> Ident.Create $"arg%s{prefix}"
+                        Description = FieldDescription.NonRecursive stripped
+                    }
 
             | _ -> failwithf "Unrecognised type: %+A" stripped
 
-        case.Fields |> List.map (fun x -> x.Name, go x.Type)
+        fields |> List.mapi (fun i x -> go $"%i{argIndex}_%i{i}" x.Name x.Type)
 
     /// Returns whether this type recursively contains a Self, and the type which
     /// the Instruction case is going to have to store to obtain this field.
@@ -319,8 +374,8 @@ module internal CataGenerator =
             Fields : AdtNode list
         }
 
-    let getInstructionCaseName (thisUnionType : SynTypeDefn) (case : AdtProduct) : Ident =
-        match case.Name with
+    let getInstructionCaseName (thisUnionType : SynTypeDefn) (caseName : SynIdent) : Ident =
+        match caseName with
         | SynIdent.SynIdent (ident, _) ->
             (List.last (getName thisUnionType)).idText + "_" + ident.idText |> Ident.Create
 
@@ -330,7 +385,7 @@ module internal CataGenerator =
     /// TODO: support other compound types.
     let getRecursiveInstruction (case : RenderedUnionCase) : InstructionCase option =
         let hasRecursion, cases =
-            ((false, []), case.Fields)
+            ((false, []), case.FlattenedFields)
             ||> List.fold (fun (hasRecursion, cases) field ->
                 let newHasRecursion, case = toInstructionCase field.Description
 
@@ -491,7 +546,7 @@ module internal CataGenerator =
                         )
 
                     let ty =
-                        (SynType.Var (ourGenericName, range0), List.rev case.Fields)
+                        (SynType.Var (ourGenericName, range0), List.rev case.FlattenedFields)
                         ||> List.fold (fun acc field ->
                             let place : SynType =
                                 match field.Description with
@@ -662,20 +717,26 @@ module internal CataGenerator =
             let cases =
                 AstHelper.getUnionCases unionType
                 |> List.map (fun prod ->
-                    {
-                        AdtProduct.Name = prod.Name
-                        Fields =
-                            prod.Fields
-                            |> List.collect (fun node ->
-                                match getNameUnion node.Type with
-                                | None -> [ node ]
-                                | Some name ->
+                    let fields =
+                        prod.Fields
+                        |> List.indexed
+                        |> List.collect (fun (i, node) ->
+                            match getNameUnion node.Type with
+                            | None ->
+                                analyse allRecordTypes allUnionTypes i [ node ] |> List.map CataUnionField.Basic
+                            | Some name ->
 
-                                match Map.tryFind (List.last(name).idText) recordTypes with
-                                | None -> [ node ]
-                                | Some fields -> fields
-                            )
-                    }
+                            match Map.tryFind (List.last(name).idText) recordTypes with
+                            | None ->
+                                analyse allRecordTypes allUnionTypes i [ node ] |> List.map CataUnionField.Basic
+                            | Some fields ->
+                                List.zip fields (analyse allRecordTypes allUnionTypes i fields)
+                                |> List.map (fun (field, analysis) -> Option.get field.Name, analysis)
+                                |> CataUnionField.Record
+                                |> List.singleton
+                        )
+
+                    prod.Name, fields
                 )
 
             let unionTypeName = getName unionType
@@ -687,34 +748,17 @@ module internal CataGenerator =
                     |> Ident.lowerFirstLetter
                 UnionCases =
                     cases
-                    |> List.map (fun case ->
-                        let analysis =
-                            analyse allRecordTypes allUnionTypes case
-                            |> List.mapi (fun i (name, desc) ->
-                                {
-                                    FieldName = name
-                                    ArgName =
-                                        match name with
-                                        | Some n -> Ident.lowerFirstLetter n
-                                        | None ->
-                                            match desc with
-                                            | ListSelf synType -> Ident.Create $"n%i{i}"
-                                            | Self synType
-                                            | NonRecursive synType -> Ident.Create $"arg%i{i}"
-                                    Description = desc
-                                }
-                            )
-
-                        let instructionName = getInstructionCaseName unionType case
+                    |> List.map (fun (name, analysis) ->
+                        let instructionName = getInstructionCaseName unionType name
 
                         let unionCaseName =
-                            match case.Name with
+                            match name with
                             | SynIdent (ident, _) -> ident
 
                         {
                             InstructionName = instructionName
                             Fields = analysis
-                            Case = case
+                            CaseName = name
                             CataMethodName =
                                 SynLongIdent.CreateFromLongIdent (cataVarName :: unionTypeName @ [ unionCaseName ])
                             CataMethodIdent = SynIdent.SynIdent (unionCaseName, None)
@@ -737,7 +781,7 @@ module internal CataGenerator =
         )
 
     let callCataAndPushResult (resultStackName : Ident) (unionCase : RenderedUnionCase) : SynExpr =
-        (SynExpr.CreateLongIdent unionCase.CataMethodName, unionCase.Fields)
+        (SynExpr.CreateLongIdent unionCase.CataMethodName, unionCase.FlattenedFields)
         ||> List.fold (fun body caseDesc -> SynExpr.CreateApp (body, SynExpr.CreateIdent caseDesc.ArgName))
         |> SynExpr.pipeThroughFunction (
             SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (resultStackName :: [ Ident.Create "Add" ]))
@@ -752,11 +796,11 @@ module internal CataGenerator =
             analysis.UnionCases
             |> List.map (fun unionCase ->
                 let name =
-                    match unionCase.Case.Name with
+                    match unionCase.CaseName with
                     | SynIdent (ident, _) -> ident
 
                 let _, nonRecursiveArgs, selfArgs, listSelfArgs =
-                    ((0, [], [], []), unionCase.Fields)
+                    ((0, [], [], []), unionCase.FlattenedFields)
                     ||> List.fold (fun (i, nonRec, self, listSelf) caseDesc ->
                         match caseDesc.Description with
                         | FieldDescription.NonRecursive ty ->
@@ -810,7 +854,7 @@ module internal CataGenerator =
                     [
                         yield reprocessCommand
 
-                        for i, caseDesc in Seq.indexed unionCase.Fields do
+                        for i, caseDesc in Seq.indexed unionCase.FlattenedFields do
                             match caseDesc.Description with
                             | NonRecursive synType ->
                                 // Nothing to do, because we're not calling the cata yet
@@ -871,7 +915,19 @@ module internal CataGenerator =
                                     false,
                                     unionCase.Fields
                                     |> List.mapi (fun i case ->
-                                        SynPat.CreateNamed (Ident.lowerFirstLetter case.ArgName)
+                                        match case with
+                                        | CataUnionField.Basic case ->
+                                            SynPat.CreateNamed (Ident.lowerFirstLetter case.ArgName)
+                                        | CataUnionField.Record fields ->
+                                            let fields =
+                                                fields
+                                                |> List.map (fun (name, field) ->
+                                                    ([], name),
+                                                    range0,
+                                                    SynPat.CreateNamed (Ident.lowerFirstLetter name)
+                                                )
+
+                                            SynPat.Record (fields, range0)
                                     ),
                                     List.replicate (unionCase.Fields.Length - 1) range0,
                                     range0
@@ -929,7 +985,7 @@ module internal CataGenerator =
                 // We already know there is a recursive reference somewhere
                 // in `analysis`.
                 if
-                    unionCase.Fields
+                    unionCase.FlattenedFields
                     |> List.exists (fun case ->
                         match case.Description with
                         | NonRecursive _ -> false
@@ -942,7 +998,7 @@ module internal CataGenerator =
             )
             |> List.map (fun unionCase ->
                 let lhsNames =
-                    unionCase.Fields
+                    unionCase.FlattenedFields
                     |> Seq.mapi (fun i x -> (i, x))
                     |> Seq.choose (fun (i, case) ->
                         match case.Description with
@@ -964,7 +1020,7 @@ module internal CataGenerator =
                     SynPat.LongIdent (unionCase.AssociatedInstruction, None, None, SynArgPats.Pats lhs, None, range0)
 
                 let populateArgs =
-                    unionCase.Fields
+                    unionCase.FlattenedFields
                     |> List.choose (fun field ->
                         match field.Description with
                         | NonRecursive _ ->
@@ -1433,7 +1489,7 @@ type CreateCatamorphismGenerator () =
                                 match repr with
                                 | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union _, _) ->
                                     ty :: unions, records, others
-                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record _, range) ->
+                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record _, _) ->
                                     unions, ty :: records, others
                                 | _ -> unions, records, ty :: others
                             )

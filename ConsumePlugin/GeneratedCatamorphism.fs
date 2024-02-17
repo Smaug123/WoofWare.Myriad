@@ -62,60 +62,60 @@ module TreeCata =
             match currentInstruction with
             | Instruction.Process__TreeBuilder x ->
                 match x with
-                | TreeBuilder.Child (arg0) ->
+                | TreeBuilder.Child (arg0_0) ->
                     instructions.Add Instruction.TreeBuilder_Child
-                    instructions.Add (Instruction.Process__TreeBuilder arg0)
-                | TreeBuilder.Parent (arg0) ->
+                    instructions.Add (Instruction.Process__TreeBuilder arg0_0)
+                | TreeBuilder.Parent (arg0_0) ->
                     instructions.Add Instruction.TreeBuilder_Parent
-                    instructions.Add (Instruction.Process__Tree arg0)
+                    instructions.Add (Instruction.Process__Tree arg0_0)
             | Instruction.Process__Tree x ->
                 match x with
-                | Tree.Const (arg0) -> cata.Tree.Const arg0 |> treeStack.Add
-                | Tree.Pair (arg0, arg1, arg2) ->
-                    instructions.Add (Instruction.Tree_Pair (arg2))
-                    instructions.Add (Instruction.Process__Tree arg0)
-                    instructions.Add (Instruction.Process__Tree arg1)
-                | Tree.Sequential (n0) ->
-                    instructions.Add (Instruction.Tree_Sequential ((List.length n0)))
+                | Tree.Const (arg0_0) -> cata.Tree.Const arg0_0 |> treeStack.Add
+                | Tree.Pair (arg0_0, arg1_0, arg2_0) ->
+                    instructions.Add (Instruction.Tree_Pair (arg2_0))
+                    instructions.Add (Instruction.Process__Tree arg0_0)
+                    instructions.Add (Instruction.Process__Tree arg1_0)
+                | Tree.Sequential (arg0_0) ->
+                    instructions.Add (Instruction.Tree_Sequential ((List.length arg0_0)))
 
-                    for elt in n0 do
+                    for elt in arg0_0 do
                         instructions.Add (Instruction.Process__Tree elt)
-                | Tree.Builder (arg0, arg1) ->
+                | Tree.Builder (arg0_0, arg1_0) ->
                     instructions.Add Instruction.Tree_Builder
-                    instructions.Add (Instruction.Process__Tree arg0)
-                    instructions.Add (Instruction.Process__TreeBuilder arg1)
+                    instructions.Add (Instruction.Process__Tree arg0_0)
+                    instructions.Add (Instruction.Process__TreeBuilder arg1_0)
             | Instruction.TreeBuilder_Child ->
-                let arg0 = treeBuilderStack.[treeBuilderStack.Count - 1]
+                let arg0_0 = treeBuilderStack.[treeBuilderStack.Count - 1]
                 treeBuilderStack.RemoveAt (treeBuilderStack.Count - 1)
-                cata.TreeBuilder.Child arg0 |> treeBuilderStack.Add
+                cata.TreeBuilder.Child arg0_0 |> treeBuilderStack.Add
             | Instruction.TreeBuilder_Parent ->
-                let arg0 = treeStack.[treeStack.Count - 1]
+                let arg0_0 = treeStack.[treeStack.Count - 1]
                 treeStack.RemoveAt (treeStack.Count - 1)
-                cata.TreeBuilder.Parent arg0 |> treeBuilderStack.Add
-            | Instruction.Tree_Pair (arg2) ->
-                let arg0 = treeStack.[treeStack.Count - 1]
+                cata.TreeBuilder.Parent arg0_0 |> treeBuilderStack.Add
+            | Instruction.Tree_Pair (arg2_0) ->
+                let arg0_0 = treeStack.[treeStack.Count - 1]
                 treeStack.RemoveAt (treeStack.Count - 1)
-                let arg1 = treeStack.[treeStack.Count - 1]
+                let arg1_0 = treeStack.[treeStack.Count - 1]
                 treeStack.RemoveAt (treeStack.Count - 1)
-                cata.Tree.Pair arg0 arg1 arg2 |> treeStack.Add
-            | Instruction.Tree_Sequential (n0) ->
-                let n0_len = n0
+                cata.Tree.Pair arg0_0 arg1_0 arg2_0 |> treeStack.Add
+            | Instruction.Tree_Sequential (arg0_0) ->
+                let arg0_0_len = arg0_0
 
-                let n0 =
+                let arg0_0 =
                     seq {
-                        for i = treeStack.Count - 1 downto treeStack.Count - n0 do
+                        for i = treeStack.Count - 1 downto treeStack.Count - arg0_0 do
                             yield treeStack.[i]
                     }
                     |> Seq.toList
 
-                treeStack.RemoveRange (treeStack.Count - n0_len, n0_len)
-                cata.Tree.Sequential n0 |> treeStack.Add
+                treeStack.RemoveRange (treeStack.Count - arg0_0_len, arg0_0_len)
+                cata.Tree.Sequential arg0_0 |> treeStack.Add
             | Instruction.Tree_Builder ->
-                let arg0 = treeStack.[treeStack.Count - 1]
+                let arg0_0 = treeStack.[treeStack.Count - 1]
                 treeStack.RemoveAt (treeStack.Count - 1)
-                let arg1 = treeBuilderStack.[treeBuilderStack.Count - 1]
+                let arg1_0 = treeBuilderStack.[treeBuilderStack.Count - 1]
                 treeBuilderStack.RemoveAt (treeBuilderStack.Count - 1)
-                cata.Tree.Builder arg0 arg1 |> treeStack.Add
+                cata.Tree.Builder arg0_0 arg1_0 |> treeStack.Add
 
         treeBuilderStack, treeStack
 
