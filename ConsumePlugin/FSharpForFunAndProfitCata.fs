@@ -61,3 +61,8 @@ and ConsCase =
         Head : int
         Tail : MyList
     }
+
+[<CreateCatamorphism "MyList2Cata">]
+type MyList2 =
+    | Nil
+    | Cons of int * MyList2
