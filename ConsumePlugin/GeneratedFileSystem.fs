@@ -150,3 +150,59 @@ module GiftCata =
         instructions.Add (Instruction.Process__Gift x)
         let giftRetStack = loop cata instructions
         Seq.exactlyOne giftRetStack
+namespace ConsumePlugin
+
+open WoofWare.Myriad.Plugins
+
+/// Description of how to combine cases during a fold
+type MyListCataCase<'MyList> =
+    /// How to operate on the Nil case
+    abstract Nil : 'MyList
+    /// How to operate on the Cons case
+    abstract Cons : head : int -> tail : 'MyList -> 'MyList
+
+/// Specifies how to perform a fold (catamorphism) over the type MyList and its friends.
+type MyListCata<'MyList> =
+    {
+        /// How to perform a fold (catamorphism) over the type MyList
+        MyList : MyListCataCase<'MyList>
+    }
+
+/// Methods to perform a catamorphism over the type MyList
+[<RequireQualifiedAccess>]
+module MyListCata =
+    [<RequireQualifiedAccess>]
+    type private Instruction =
+        | Process__MyList of MyList
+        | MyList_Cons of int
+
+    let private loop (cata : MyListCata<_>) (instructions : ResizeArray<Instruction>) =
+        let myListStack = ResizeArray ()
+
+        while instructions.Count > 0 do
+            let currentInstruction = instructions.[instructions.Count - 1]
+            instructions.RemoveAt (instructions.Count - 1)
+
+            match currentInstruction with
+            | Instruction.Process__MyList x ->
+                match x with
+                | MyList.Nil -> cata.MyList.Nil |> myListStack.Add
+                | MyList.Cons ({
+                                   Head = head
+                                   Tail = tail
+                               }) ->
+                    instructions.Add (Instruction.MyList_Cons (head))
+                    instructions.Add (Instruction.Process__MyList tail)
+            | Instruction.MyList_Cons (head) ->
+                let tail = myListStack.[myListStack.Count - 1]
+                myListStack.RemoveAt (myListStack.Count - 1)
+                cata.MyList.Cons head tail |> myListStack.Add
+
+        myListStack
+
+    /// Execute the catamorphism.
+    let runMyList (cata : MyListCata<'MyListRet>) (x : MyList) : 'MyListRet =
+        let instructions = ResizeArray ()
+        instructions.Add (Instruction.Process__MyList x)
+        let myListRetStack = loop cata instructions
+        Seq.exactlyOne myListRetStack

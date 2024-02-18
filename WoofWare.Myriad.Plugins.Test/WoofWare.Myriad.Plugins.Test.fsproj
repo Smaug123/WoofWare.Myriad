@@ -25,6 +25,7 @@
     <Compile Include="TestCataGenerator\TestCataGenerator.fs" />
     <Compile Include="TestCataGenerator\TestDirectory.fs" />
     <Compile Include="TestCataGenerator\TestGift.fs" />
+    <Compile Include="TestCataGenerator\TestMyList.fs" />
     <Compile Include="TestRemoveOptions.fs"/>
     <Compile Include="TestSurface.fs"/>
     <None Include="../.github/workflows/dotnet.yaml" />
