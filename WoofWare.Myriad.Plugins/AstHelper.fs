@@ -400,26 +400,47 @@ module internal AstHelper =
             Accessibility = accessibility
         }
 
-    let getUnionCases (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) : AdtProduct list =
+    let getUnionCases
+        (SynTypeDefn.SynTypeDefn (info, repr, _, _, _, _))
+        : AdtProduct list * SynTyparDecl list * SynAccess option
+        =
+        let typars, access =
+            match info with
+            | SynComponentInfo (_, typars, _, _, _, _, access, _) -> typars, access
+
+        let typars =
+            match typars with
+            | None -> []
+            | Some (SynTyparDecls.PrefixList (decls, _)) -> decls
+            | Some (SynTyparDecls.SinglePrefix (l, _)) -> [ l ]
+            | Some (SynTyparDecls.PostfixList (decls, constraints, _)) ->
+                if not constraints.IsEmpty then
+                    failwith "Constrained type parameters not currently supported"
+
+                decls
+
         match repr with
         | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_, cases, _), _) ->
-            cases
-            |> List.map (fun (SynUnionCase.SynUnionCase (_, ident, kind, _, _, _, _)) ->
-                match kind with
-                | SynUnionCaseKind.FullType _ -> failwith "FullType union cases not supported"
-                | SynUnionCaseKind.Fields fields ->
-                    {
-                        Name = ident
-                        Fields =
-                            fields
-                            |> List.map (fun (SynField.SynField (_, _, id, ty, _, _, _, _, _)) ->
-                                {
-                                    Type = ty
-                                    Name = id
-                                }
-                            )
-                    }
-            )
+            let cases =
+                cases
+                |> List.map (fun (SynUnionCase.SynUnionCase (_, ident, kind, _, _, _, _)) ->
+                    match kind with
+                    | SynUnionCaseKind.FullType _ -> failwith "FullType union cases not supported"
+                    | SynUnionCaseKind.Fields fields ->
+                        {
+                            Name = ident
+                            Fields =
+                                fields
+                                |> List.map (fun (SynField.SynField (_, _, id, ty, _, _, _, _, _)) ->
+                                    {
+                                        Type = ty
+                                        Name = id
+                                    }
+                                )
+                        }
+                )
+
+            cases, typars, access
         | _ -> failwithf "Failed to get union cases for type that was: %+A" repr
 
     let getRecordFields (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) : AdtNode list =

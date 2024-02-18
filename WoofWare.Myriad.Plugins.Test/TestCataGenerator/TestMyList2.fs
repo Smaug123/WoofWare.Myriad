@@ -8,10 +8,10 @@ open ConsumePlugin
 [<TestFixture>]
 module TestMyList2 =
 
-    let idCata : MyList2Cata<_> =
+    let idCata<'a> : MyList2Cata<'a, _> =
         {
             MyList2 =
-                { new MyList2CataCase<_> with
+                { new MyList2CataCase<'a, _> with
                     member _.Nil = MyList2.Nil
 
                     member _.Cons head tail = MyList2.Cons (head, tail)
@@ -21,6 +21,6 @@ module TestMyList2 =
 
     [<Test>]
     let ``Cata works`` () =
-        let property (x : MyList2) = MyList2Cata.runMyList2 idCata x = x
+        let property (x : MyList2<int>) = MyList2Cata.runMyList2 idCata x = x
 
         Check.QuickThrowOnFailure property

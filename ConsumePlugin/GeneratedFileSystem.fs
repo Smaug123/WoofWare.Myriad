@@ -155,28 +155,28 @@ namespace ConsumePlugin
 open WoofWare.Myriad.Plugins
 
 /// Description of how to combine cases during a fold
-type MyListCataCase<'MyList> =
+type MyListCataCase<'a, 'MyList> =
     /// How to operate on the Nil case
     abstract Nil : 'MyList
     /// How to operate on the Cons case
-    abstract Cons : head : int -> tail : 'MyList -> 'MyList
+    abstract Cons : head : 'a -> tail : 'MyList -> 'MyList
 
 /// Specifies how to perform a fold (catamorphism) over the type MyList and its friends.
-type MyListCata<'MyList> =
+type MyListCata<'a, 'MyList> =
     {
         /// How to perform a fold (catamorphism) over the type MyList
-        MyList : MyListCataCase<'MyList>
+        MyList : MyListCataCase<'a, 'MyList>
     }
 
 /// Methods to perform a catamorphism over the type MyList
 [<RequireQualifiedAccess>]
 module MyListCata =
     [<RequireQualifiedAccess>]
-    type private Instruction =
-        | Process__MyList of MyList
-        | MyList_Cons of int
+    type private Instruction<'a> =
+        | Process__MyList of MyList<'a>
+        | MyList_Cons of 'a
 
-    let private loop (cata : MyListCata<_>) (instructions : ResizeArray<Instruction>) =
+    let private loop (cata : MyListCata<_, _>) (instructions : ResizeArray<Instruction<_>>) =
         let myListStack = ResizeArray ()
 
         while instructions.Count > 0 do
@@ -201,7 +201,7 @@ module MyListCata =
         myListStack
 
     /// Execute the catamorphism.
-    let runMyList (cata : MyListCata<'MyListRet>) (x : MyList) : 'MyListRet =
+    let runMyList (cata : MyListCata<'a, 'MyListRet>) (x : MyList<'a>) : 'MyListRet =
         let instructions = ResizeArray ()
         instructions.Add (Instruction.Process__MyList x)
         let myListRetStack = loop cata instructions
@@ -211,28 +211,28 @@ namespace ConsumePlugin
 open WoofWare.Myriad.Plugins
 
 /// Description of how to combine cases during a fold
-type MyList2CataCase<'MyList2> =
+type MyList2CataCase<'a, 'MyList2> =
     /// How to operate on the Nil case
     abstract Nil : 'MyList2
     /// How to operate on the Cons case
-    abstract Cons : int -> 'MyList2 -> 'MyList2
+    abstract Cons : 'a -> 'MyList2 -> 'MyList2
 
 /// Specifies how to perform a fold (catamorphism) over the type MyList2 and its friends.
-type MyList2Cata<'MyList2> =
+type MyList2Cata<'a, 'MyList2> =
     {
         /// How to perform a fold (catamorphism) over the type MyList2
-        MyList2 : MyList2CataCase<'MyList2>
+        MyList2 : MyList2CataCase<'a, 'MyList2>
     }
 
 /// Methods to perform a catamorphism over the type MyList2
 [<RequireQualifiedAccess>]
 module MyList2Cata =
     [<RequireQualifiedAccess>]
-    type private Instruction =
-        | Process__MyList2 of MyList2
-        | MyList2_Cons of int
+    type private Instruction<'a> =
+        | Process__MyList2 of MyList2<'a>
+        | MyList2_Cons of 'a
 
-    let private loop (cata : MyList2Cata<_>) (instructions : ResizeArray<Instruction>) =
+    let private loop (cata : MyList2Cata<_, _>) (instructions : ResizeArray<Instruction<_>>) =
         let myList2Stack = ResizeArray ()
 
         while instructions.Count > 0 do
@@ -254,7 +254,7 @@ module MyList2Cata =
         myList2Stack
 
     /// Execute the catamorphism.
-    let runMyList2 (cata : MyList2Cata<'MyList2Ret>) (x : MyList2) : 'MyList2Ret =
+    let runMyList2 (cata : MyList2Cata<'a, 'MyList2Ret>) (x : MyList2<'a>) : 'MyList2Ret =
         let instructions = ResizeArray ()
         instructions.Add (Instruction.Process__MyList2 x)
         let myList2RetStack = loop cata instructions

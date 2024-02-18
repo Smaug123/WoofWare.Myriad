@@ -52,17 +52,17 @@ type Gift =
     | WithACard of Gift * message : string
 
 [<CreateCatamorphism "MyListCata">]
-type MyList =
+type MyList<'a> =
     | Nil
-    | Cons of ConsCase
+    | Cons of ConsCase<'a>
 
-and ConsCase =
+and ConsCase<'a> =
     {
-        Head : int
-        Tail : MyList
+        Head : 'a
+        Tail : MyList<'a>
     }
 
 [<CreateCatamorphism "MyList2Cata">]
-type MyList2 =
+type MyList2<'a> =
     | Nil
-    | Cons of int * MyList2
+    | Cons of 'a * MyList2<'a>
