@@ -285,7 +285,7 @@ module internal CataGenerator =
         (fields : AdtNode list)
         : CataUnionBasicField list
         =
-        let rec go (prefix : string) (name : Ident option) (ty : SynType) =
+        let rec go (prefix : string) (name : Ident option) (ty : SynType) : CataUnionBasicField =
             let stripped = SynType.stripOptionalParen ty
 
             match stripped with
