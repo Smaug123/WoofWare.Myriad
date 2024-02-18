@@ -810,7 +810,7 @@ module internal CataGenerator =
                     )
 
                 let matchBody =
-                    if nonRecursiveArgs.Length = unionCase.Fields.Length then
+                    if nonRecursiveArgs.Length = unionCase.FlattenedFields.Length then
                         // directly call the cata
                         callCataAndPushResult analysis.StackName unionCase
                     else
@@ -821,7 +821,7 @@ module internal CataGenerator =
                     let reprocessCommand =
                         SynExpr.CreateApp (
                             SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Add" ]),
-                            if selfArgs.Length = unionCase.Fields.Length then
+                            if selfArgs.Length = unionCase.FlattenedFields.Length then
                                 SynExpr.CreateLongIdent unionCase.AssociatedInstruction
                             else
                                 // We need to tell ourselves each non-rec arg, and the length of each input list.
@@ -906,35 +906,35 @@ module internal CataGenerator =
                     ]
                     |> SynExpr.CreateSequential
 
-                SynMatchClause.SynMatchClause (
-                    SynPat.CreateLongIdent (
-                        unionCase.Match,
-                        [
-                            SynPat.CreateParen (
-                                SynPat.Tuple (
-                                    false,
-                                    unionCase.Fields
-                                    |> List.mapi (fun i case ->
-                                        match case with
-                                        | CataUnionField.Basic case ->
-                                            SynPat.CreateNamed (Ident.lowerFirstLetter case.ArgName)
-                                        | CataUnionField.Record fields ->
-                                            let fields =
-                                                fields
-                                                |> List.map (fun (name, field) ->
-                                                    ([], name),
-                                                    range0,
-                                                    SynPat.CreateNamed (Ident.lowerFirstLetter name)
-                                                )
+                let matchLhs =
+                    if unionCase.Fields.Length > 0 then
+                        SynPat.CreateParen (
+                            SynPat.Tuple (
+                                false,
+                                unionCase.Fields
+                                |> List.mapi (fun i case ->
+                                    match case with
+                                    | CataUnionField.Basic case ->
+                                        SynPat.CreateNamed (Ident.lowerFirstLetter case.ArgName)
+                                    | CataUnionField.Record fields ->
+                                        let fields =
+                                            fields
+                                            |> List.map (fun (name, field) ->
+                                                ([], name), range0, SynPat.CreateNamed (Ident.lowerFirstLetter name)
+                                            )
 
-                                            SynPat.Record (fields, range0)
-                                    ),
-                                    List.replicate (unionCase.Fields.Length - 1) range0,
-                                    range0
-                                )
+                                        SynPat.Record (fields, range0)
+                                ),
+                                List.replicate (unionCase.Fields.Length - 1) range0,
+                                range0
                             )
-                        ]
-                    ),
+                        )
+                        |> List.singleton
+                    else
+                        []
+
+                SynMatchClause.SynMatchClause (
+                    SynPat.CreateLongIdent (unionCase.Match, matchLhs),
                     None,
                     matchBody,
                     range0,
