@@ -21,7 +21,7 @@ type TreeBuilderCataCase<'a, 'TreeBuilder, 'Tree> =
 /// Description of how to combine cases during a fold
 type TreeCataCase<'a, 'TreeBuilder, 'Tree> =
     /// How to operate on the Const case
-    abstract Const : Const -> 'Tree
+    abstract Const : Const<'a> -> 'Tree
     /// How to operate on the Pair case
     abstract Pair : 'Tree -> 'Tree -> PairOpKind -> 'Tree
     /// How to operate on the Sequential case

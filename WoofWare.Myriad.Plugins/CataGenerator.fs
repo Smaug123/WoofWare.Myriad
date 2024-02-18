@@ -35,8 +35,10 @@ module internal CataGenerator =
             /// The relationship this field has with the parent type (or the
             /// recursive knot of parent types)
             Description : FieldDescription
-            /// Any generic parameters this field consumes
-            RequiredGenerics : SynType list option
+            /// Any generic parameters this field consumes.
+            /// This only makes sense in the context of a UnionAnalysis:
+            /// it is an index into the parent Union's collection of generic parameters.
+            RequiredGenerics : int list option
         }
 
     type CataUnionRecordField = (Ident * CataUnionBasicField) list
@@ -303,14 +305,19 @@ module internal CataGenerator =
     /// Get the fields of this particular union case, and describe their relation to the
     /// recursive knot of user-provided DUs for which we are creating a cata.
     let analyse
+        (availableGenerics : SynTyparDecl list)
         (allRecordTypes : SynTypeDefn list)
         (allUnionTypes : SynTypeDefn list)
         (argIndex : int)
         (fields : AdtNode list)
         : CataUnionBasicField list
         =
+        let availableGenerics =
+            availableGenerics
+            |> List.map (fun (SynTyparDecl.SynTyparDecl (_, SynTypar.SynTypar (ident, _, _))) -> ident)
+
         let rec go (prefix : string) (name : Ident option) (ty : SynType) : CataUnionBasicField =
-            let dealWithPrimitive (typeArgs : SynType list option) (ty : SynType) (typeName : LongIdent) =
+            let dealWithPrimitive (typeArgs : int list option) (ty : SynType) (typeName : LongIdent) =
                 let key = typeName |> List.map _.idText |> String.concat "/"
 
                 let isKnownUnion =
@@ -341,7 +348,7 @@ module internal CataGenerator =
                         RequiredGenerics = typeArgs
                     }
 
-            let rec dealWithType (typeArgs : SynType list option) (stripped : SynType) =
+            let rec dealWithType (typeArgs : int list option) (stripped : SynType) =
                 match stripped with
                 | ListType child ->
                     let gone = go (prefix + "_") None child
@@ -382,7 +389,20 @@ module internal CataGenerator =
                 | SynType.App (ty, _, childTypeArgs, _, _, _, _) ->
                     match typeArgs with
                     | Some _ -> failwithf "Nested applications of types not supported in %+A" ty
-                    | None -> dealWithType (Some childTypeArgs) (SynType.stripOptionalParen ty)
+                    | None ->
+                        let childTypeArgs =
+                            childTypeArgs
+                            |> List.map (fun generic ->
+                                let generic =
+                                    match generic with
+                                    | SynType.Var (SynTypar.SynTypar (name, _, _), _) -> name
+                                    | _ -> failwithf "Unrecognised generic arg: %+A" generic
+
+                                availableGenerics
+                                |> List.findIndex (fun knownGeneric -> knownGeneric.idText = generic.idText)
+                            )
+
+                        dealWithType (Some childTypeArgs) (SynType.stripOptionalParen ty)
                 | SynType.LongIdent (SynLongIdent.SynLongIdent (ty, _, _)) -> dealWithPrimitive typeArgs stripped ty
                 | SynType.Var (typar, _) ->
                     {
@@ -633,7 +653,26 @@ module internal CataGenerator =
                                         [ SynType.Var (generics.[getNameKeyUnion ty], range0) ],
                                         true
                                     )
-                                | FieldDescription.NonRecursive ty -> ty
+                                | FieldDescription.NonRecursive ty ->
+                                    match field.RequiredGenerics with
+                                    | None -> ty
+                                    | Some generics ->
+                                        let generics =
+                                            generics
+                                            |> List.map (fun i ->
+                                                let (SynTyparDecl.SynTyparDecl (_, typar)) = analysis.Typars.[i]
+                                                SynType.Var (typar, range0)
+                                            )
+
+                                        SynType.App (
+                                            ty,
+                                            Some range0,
+                                            generics,
+                                            List.replicate (generics.Length - 1) range0,
+                                            Some range0,
+                                            false,
+                                            range0
+                                        )
 
                             SynType.Fun (
                                 SynType.SignatureParameter (
@@ -806,21 +845,18 @@ module internal CataGenerator =
                         prod.Fields
                         |> List.indexed
                         |> List.collect (fun (i, node) ->
-                            let availableGenerics =
-                                match node.Type with
-                                | SynType.App (_, _, vars, _, _, _, _) -> vars
-                                | _ -> []
-
                             match getNameUnion node.Type with
                             | None ->
-                                analyse allRecordTypes allUnionTypes i [ node ] |> List.map CataUnionField.Basic
+                                analyse typars allRecordTypes allUnionTypes i [ node ]
+                                |> List.map CataUnionField.Basic
                             | Some name ->
 
                             match Map.tryFind (List.last(name).idText) recordTypes with
                             | None ->
-                                analyse allRecordTypes allUnionTypes i [ node ] |> List.map CataUnionField.Basic
+                                analyse typars allRecordTypes allUnionTypes i [ node ]
+                                |> List.map CataUnionField.Basic
                             | Some fields ->
-                                List.zip fields (analyse allRecordTypes allUnionTypes i fields)
+                                List.zip fields (analyse typars allRecordTypes allUnionTypes i fields)
                                 |> List.map (fun (field, analysis) -> Option.get field.Name, analysis)
                                 |> CataUnionField.Record
                                 |> List.singleton
