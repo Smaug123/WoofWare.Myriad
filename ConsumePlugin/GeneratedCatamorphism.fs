@@ -12,14 +12,14 @@ namespace ConsumePlugin
 open WoofWare.Myriad.Plugins
 
 /// Description of how to combine cases during a fold
-type TreeBuilderCataCase<'TreeBuilder, 'Tree> =
+type TreeBuilderCataCase<'a, 'TreeBuilder, 'Tree> =
     /// How to operate on the Child case
     abstract Child : 'TreeBuilder -> 'TreeBuilder
     /// How to operate on the Parent case
     abstract Parent : 'Tree -> 'TreeBuilder
 
 /// Description of how to combine cases during a fold
-type TreeCataCase<'TreeBuilder, 'Tree> =
+type TreeCataCase<'a, 'TreeBuilder, 'Tree> =
     /// How to operate on the Const case
     abstract Const : Const -> 'Tree
     /// How to operate on the Pair case
@@ -30,28 +30,28 @@ type TreeCataCase<'TreeBuilder, 'Tree> =
     abstract Builder : 'Tree -> 'TreeBuilder -> 'Tree
 
 /// Specifies how to perform a fold (catamorphism) over the type Tree and its friends.
-type TreeCata<'TreeBuilder, 'Tree> =
+type TreeCata<'a, 'a, 'TreeBuilder, 'Tree> =
     {
         /// How to perform a fold (catamorphism) over the type TreeBuilder
-        TreeBuilder : TreeBuilderCataCase<'TreeBuilder, 'Tree>
+        TreeBuilder : TreeBuilderCataCase<'a, 'TreeBuilder, 'Tree>
         /// How to perform a fold (catamorphism) over the type Tree
-        Tree : TreeCataCase<'TreeBuilder, 'Tree>
+        Tree : TreeCataCase<'a, 'TreeBuilder, 'Tree>
     }
 
 /// Methods to perform a catamorphism over the type Tree
 [<RequireQualifiedAccess>]
 module TreeCata =
     [<RequireQualifiedAccess>]
-    type private Instruction =
-        | Process__TreeBuilder of TreeBuilder
-        | Process__Tree of Tree
+    type private Instruction<'a, 'a> =
+        | Process__TreeBuilder of TreeBuilder<'a>
+        | Process__Tree of Tree<'a>
         | TreeBuilder_Child
         | TreeBuilder_Parent
         | Tree_Pair of PairOpKind
         | Tree_Sequential of int
         | Tree_Builder
 
-    let private loop (cata : TreeCata<_, _>) (instructions : ResizeArray<Instruction>) =
+    let private loop (cata : TreeCata<_, _, _, _>) (instructions : ResizeArray<Instruction<_, _>>) =
         let treeStack = ResizeArray ()
         let treeBuilderStack = ResizeArray ()
 
@@ -120,14 +120,18 @@ module TreeCata =
         treeBuilderStack, treeStack
 
     /// Execute the catamorphism.
-    let runTreeBuilder (cata : TreeCata<'TreeBuilderRet, 'TreeRet>) (x : TreeBuilder) : 'TreeBuilderRet =
+    let runTreeBuilder
+        (cata : TreeCata<'a, 'a, 'TreeBuilderRet, 'TreeRet>)
+        (x : TreeBuilder<'a, 'a>)
+        : 'TreeBuilderRet
+        =
         let instructions = ResizeArray ()
         instructions.Add (Instruction.Process__TreeBuilder x)
         let treeBuilderRetStack, treeRetStack = loop cata instructions
         Seq.exactlyOne treeBuilderRetStack
 
     /// Execute the catamorphism.
-    let runTree (cata : TreeCata<'TreeBuilderRet, 'TreeRet>) (x : Tree) : 'TreeRet =
+    let runTree (cata : TreeCata<'a, 'a, 'TreeBuilderRet, 'TreeRet>) (x : Tree<'a, 'a>) : 'TreeRet =
         let instructions = ResizeArray ()
         instructions.Add (Instruction.Process__Tree x)
         let treeBuilderRetStack, treeRetStack = loop cata instructions
