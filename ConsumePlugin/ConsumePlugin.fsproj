@@ -47,6 +47,10 @@
     <Compile Include="GeneratedFileSystem.fs">
       <MyriadFile>FSharpForFunAndProfitCata.fs</MyriadFile>
     </Compile>
+    <Compile Include="List.fs" />
+    <Compile Include="ListCata.fs">
+      <MyriadFile>List.fs</MyriadFile>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

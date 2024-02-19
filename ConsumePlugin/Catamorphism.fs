@@ -2,8 +2,8 @@ namespace ConsumePlugin
 
 open WoofWare.Myriad.Plugins
 
-type Const =
-    | Int of int
+type Const<'a> =
+    | Verbatim of 'a
     | String of string
 
 type PairOpKind =
@@ -11,12 +11,12 @@ type PairOpKind =
     | ThenDoSeq
 
 [<CreateCatamorphism "TreeCata">]
-type Tree =
-    | Const of Const
-    | Pair of Tree * Tree * PairOpKind
-    | Sequential of Tree list
-    | Builder of Tree * TreeBuilder
+type Tree<'a, 'b> =
+    | Const of Const<'a> * 'b
+    | Pair of Tree<'a, 'b> * Tree<'a, 'b> * PairOpKind
+    | Sequential of Tree<'a, 'b> list
+    | Builder of Tree<'a, 'b> * TreeBuilder<'b, 'a>
 
-and TreeBuilder =
-    | Child of TreeBuilder
-    | Parent of Tree
+and TreeBuilder<'b, 'a> =
+    | Child of TreeBuilder<'b, 'a>
+    | Parent of Tree<'a, 'b>

@@ -332,7 +332,7 @@ thereby allowing the programmer to use F#'s record-update syntax.
 Takes a collection of mutually recursive discriminated unions:
 
 ```fsharp
-[<CreateCatamorphism>]
+[<CreateCatamorphism "MyCata">]
 type Expr =
     | Const of Const
     | Pair of Expr * Expr * PairOpKind
@@ -356,7 +356,7 @@ type ExprBuilderCata<'Expr, 'ExprBuilder> =
     abstract Child : 'ExprBuilder -> 'ExprBuilder
     abstract Parent : 'Expr -> 'ExprBuilder
 
-type Cata<'Expr, 'ExprBuilder> =
+type MyCata<'Expr, 'ExprBuilder> =
     {
         Expr : ExprCata<'Expr, 'ExprBuilder>
         ExprBuilder : ExprBuilderCata<'Expr, 'ExprBuilder>
@@ -364,10 +364,10 @@ type Cata<'Expr, 'ExprBuilder> =
 
 [<RequireQualifiedAccess>]
 module ExprCata =
-    let runExpr (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : Expr) : 'ExprRet =
+    let runExpr (cata : MyCata<'ExprRet, 'ExprBuilderRet>) (x : Expr) : 'ExprRet =
         failwith "this is implemented"
 
-    let runExprBuilder (cata : Cata<'ExprRet, 'ExprBuilderRet>) (x : ExprBuilder) : 'ExprBuilderRet =
+    let runExprBuilder (cata : MyCata<'ExprRet, 'ExprBuilderRet>) (x : ExprBuilder) : 'ExprBuilderRet =
         failwith "this is implemented"
 ```
 
@@ -381,6 +381,10 @@ and then each time you only plug in what you want to do.
 * Mutually recursive DUs are supported (as in the example above).
   Every DU in a recursive `type Foo... and Bar...` knot will be given an appropriate cata, as long as any one of those DUs has the `[<CreateCatamorphism>]` attribute.
 * There is *limited* support for records and for lists.
+* There is *extremely brittle* support for generics in the DUs you are cata'ing over.
+  It is based on the names of the generic parameters, so you must ensure that generic parameters with the same name have the same meaning across the various cases in your recursive knot of DUs.
+  (If you overstep the bounds of what this generator can do, you will get compile-time errors, e.g. with generics being constrained to each other's values.)
+  See the [List tests](./WoofWare.Myriad.Plugins.Test/TestCataGenerator/TestMyList2.fs) for an example, where we re-implement `FSharpList<'a>`.
 
 ### Limitations
 

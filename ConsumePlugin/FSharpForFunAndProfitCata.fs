@@ -50,19 +50,3 @@ type Gift =
     | Wrapped of Gift * WrappingPaperStyle
     | Boxed of Gift
     | WithACard of Gift * message : string
-
-[<CreateCatamorphism "MyListCata">]
-type MyList =
-    | Nil
-    | Cons of ConsCase
-
-and ConsCase =
-    {
-        Head : int
-        Tail : MyList
-    }
-
-[<CreateCatamorphism "MyList2Cata">]
-type MyList2 =
-    | Nil
-    | Cons of int * MyList2

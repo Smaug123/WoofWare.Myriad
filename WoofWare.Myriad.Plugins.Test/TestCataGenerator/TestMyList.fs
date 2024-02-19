@@ -8,10 +8,10 @@ open ConsumePlugin
 [<TestFixture>]
 module TestMyList =
 
-    let idCata : MyListCata<_> =
+    let idCata<'a> : MyListCata<'a, _> =
         {
             MyList =
-                { new MyListCataCase<_> with
+                { new MyListCataCase<'a, _> with
                     member _.Nil = MyList.Nil
 
                     member _.Cons head tail =
@@ -21,36 +21,32 @@ module TestMyList =
                                 Tail = tail
                             }
                 }
-
         }
 
     [<Test>]
     let ``Cata works`` () =
-        let property (x : MyList) = MyListCata.runMyList idCata x = x
+        let property (x : MyList<int>) = MyListCata.runMyList idCata x = x
 
         Check.QuickThrowOnFailure property
 
-    let toListCata =
+    let toListCata<'a> =
         {
             MyList =
-                { new MyListCataCase<int list> with
+                { new MyListCataCase<'a, 'a list> with
                     member _.Nil = []
-                    member _.Cons (head : int) (tail : int list) = head :: tail
+                    member _.Cons (head : 'a) (tail : 'a list) = head :: tail
                 }
         }
 
-    let toListViaCata (l : MyList) : int list = MyListCata.runMyList toListCata l
+    let toListViaCata<'a> (l : MyList<'a>) : 'a list = MyListCata.runMyList toListCata l
 
 
     [<Test>]
     let ``Example of a fold converting to a new data structure`` () =
-        let rec toListNaive (l : MyList) : int list =
+        let rec toListNaive (l : MyList<int>) : int list =
             match l with
             | MyList.Nil -> []
-            | MyList.Cons {
-                              Head = head
-                              Tail = tail
-                          } -> head :: toListNaive tail
+            | MyList.Cons consCell -> consCell.Head :: toListNaive consCell.Tail
 
         Check.QuickThrowOnFailure (fun l -> toListNaive l = toListViaCata l)
 
@@ -62,20 +58,20 @@ module TestMyList =
         let sumCata =
             {
                 MyList =
-                    { new MyListCataCase<int64> with
+                    { new MyListCataCase<int, int64> with
                         member _.Nil = baseCase
                         member _.Cons (head : int) (tail : int64) = atLeaf head tail
                     }
             }
 
-        let viaCata (l : MyList) : int64 = MyListCata.runMyList sumCata l
+        let viaCata (l : MyList<int>) : int64 = MyListCata.runMyList sumCata l
 
-        let viaFold (l : MyList) : int64 =
+        let viaFold (l : MyList<int>) : int64 =
             // choose your favourite "to list" method - here I use the cata
             // but that could have been done naively
             (toListViaCata l, baseCase)
             ||> List.foldBack (fun elt state -> atLeaf elt state)
 
-        let property (l : MyList) = viaCata l = viaFold l
+        let property (l : MyList<int>) = viaCata l = viaFold l
 
         Check.QuickThrowOnFailure property

@@ -8,17 +8,17 @@ open FsCheck
 
 [<TestFixture>]
 module TestCataGenerator =
-    let idCata : TreeCata<_, _> =
+    let idCata<'a, 'b> : TreeCata<'a, 'b, _, _> =
         {
             Tree =
-                { new TreeCataCase<_, _> with
-                    member _.Const x = Const x
+                { new TreeCataCase<_, _, _, _> with
+                    member _.Const x y = Const (x, y)
                     member _.Pair x y z = Pair (x, y, z)
                     member _.Sequential xs = Sequential xs
                     member _.Builder x b = Builder (x, b)
                 }
             TreeBuilder =
-                { new TreeBuilderCataCase<_, _> with
+                { new TreeBuilderCataCase<_, _, _, _> with
                     member _.Child x = Child x
                     member _.Parent x = Parent x
                 }
@@ -27,7 +27,7 @@ module TestCataGenerator =
     [<Test>]
     let ``Example`` () =
         let x =
-            Tree.Pair (Tree.Const (Const.Int 0), Tree.Const (Const.String ""), PairOpKind.ThenDoSeq)
+            Tree.Pair (Tree.Const (Const.Verbatim 0, "hi"), Tree.Const (Const.String "", "bye"), PairOpKind.ThenDoSeq)
 
         TreeCata.runTree idCata x |> shouldEqual x
 
@@ -36,7 +36,7 @@ module TestCataGenerator =
     let ``Cata works`` () =
         let builderCases = ref 0
 
-        let property (x : Tree) =
+        let property (x : Tree<int, string>) =
             match x with
             | Tree.Builder _ -> Interlocked.Increment builderCases |> ignore
             | _ -> ()
