@@ -21,7 +21,6 @@ module TestMyList =
                                 Tail = tail
                             }
                 }
-
         }
 
     [<Test>]

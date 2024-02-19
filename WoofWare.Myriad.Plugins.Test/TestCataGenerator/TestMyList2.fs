@@ -14,9 +14,8 @@ module TestMyList2 =
                 { new MyList2CataCase<'a, _> with
                     member _.Nil = MyList2.Nil
 
-                    member _.Cons head tail = MyList2.Cons (head, tail)
+                    member _.Cons (head : 'a) (tail : MyList2<'a>) = MyList2.Cons (head, tail)
                 }
-
         }
 
     [<Test>]

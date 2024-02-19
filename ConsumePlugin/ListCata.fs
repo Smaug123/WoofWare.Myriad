@@ -33,8 +33,8 @@ module MyListCata =
         | Process__MyList of MyList<'a>
         | MyList_Cons of 'a
 
-    let private loop (cata : MyListCata<_, _>) (instructions : ResizeArray<Instruction<_>>) =
-        let myListStack = ResizeArray ()
+    let private loop (cata : MyListCata<'a, 'MyList>) (instructions : ResizeArray<Instruction<'a>>) =
+        let myListStack = ResizeArray<'MyList> ()
 
         while instructions.Count > 0 do
             let currentInstruction = instructions.[instructions.Count - 1]
@@ -89,8 +89,8 @@ module MyList2Cata =
         | Process__MyList2 of MyList2<'a>
         | MyList2_Cons of 'a
 
-    let private loop (cata : MyList2Cata<_, _>) (instructions : ResizeArray<Instruction<_>>) =
-        let myList2Stack = ResizeArray ()
+    let private loop (cata : MyList2Cata<'a, 'MyList2>) (instructions : ResizeArray<Instruction<'a>>) =
+        let myList2Stack = ResizeArray<'MyList2> ()
 
         while instructions.Count > 0 do
             let currentInstruction = instructions.[instructions.Count - 1]

@@ -33,8 +33,8 @@ module FileSystemItemCata =
         | Process__FileSystemItem of FileSystemItem
         | FileSystemItem_Directory of string * int * int
 
-    let private loop (cata : FileSystemCata<_>) (instructions : ResizeArray<Instruction>) =
-        let fileSystemItemStack = ResizeArray ()
+    let private loop (cata : FileSystemCata<'FileSystemItem>) (instructions : ResizeArray<Instruction>) =
+        let fileSystemItemStack = ResizeArray<'FileSystemItem> ()
 
         while instructions.Count > 0 do
             let currentInstruction = instructions.[instructions.Count - 1]
@@ -108,8 +108,8 @@ module GiftCata =
         | Gift_Boxed
         | Gift_WithACard of string
 
-    let private loop (cata : GiftCata<_>) (instructions : ResizeArray<Instruction>) =
-        let giftStack = ResizeArray ()
+    let private loop (cata : GiftCata<'Gift>) (instructions : ResizeArray<Instruction>) =
+        let giftStack = ResizeArray<'Gift> ()
 
         while instructions.Count > 0 do
             let currentInstruction = instructions.[instructions.Count - 1]

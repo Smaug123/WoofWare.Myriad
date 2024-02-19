@@ -11,12 +11,12 @@ type PairOpKind =
     | ThenDoSeq
 
 [<CreateCatamorphism "TreeCata">]
-type Tree<'a> =
-    | Const of Const<'a>
-    | Pair of Tree<'a> * Tree<'a> * PairOpKind
-    | Sequential of Tree<'a> list
-    | Builder of Tree<'a> * TreeBuilder<'a>
+type Tree<'a, 'b> =
+    | Const of Const<'a> * 'b
+    | Pair of Tree<'a, 'b> * Tree<'a, 'b> * PairOpKind
+    | Sequential of Tree<'a, 'b> list
+    | Builder of Tree<'a, 'b> * TreeBuilder<'b, 'a>
 
-and TreeBuilder<'a> =
-    | Child of TreeBuilder<'a>
-    | Parent of Tree<'a>
+and TreeBuilder<'b, 'a> =
+    | Child of TreeBuilder<'b, 'a>
+    | Parent of Tree<'a, 'b>

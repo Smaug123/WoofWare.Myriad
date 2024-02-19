@@ -121,12 +121,10 @@ module internal CataGenerator =
         (userProvidedTypars : SynTyparDecl list)
         (allArtificialTypars : SynType list)
         (relevantTypar : SynType)
-        (unionType : SynTypeDefn)
+        (analysis : UnionAnalysis)
         : SynBinding
         =
-        let relevantTypeName =
-            match unionType with
-            | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (longId = id), _, _, _, _, _) -> List.last id
+        let relevantTypeName = analysis.ParentTypeName
 
         let allArtificialTyparNames =
             allArtificialTypars
@@ -136,7 +134,11 @@ module internal CataGenerator =
                 | _ -> failwith "logic error in generator"
             )
 
-        let userProvidedTypars =
+        let userProvidedTyparsForCase =
+            analysis.Typars
+            |> List.map (fun (SynTyparDecl.SynTyparDecl (_, ty)) -> SynType.Var (ty, range0))
+
+        let userProvidedTyparsForCata =
             userProvidedTypars
             |> List.map (fun (SynTyparDecl.SynTyparDecl (_, ty)) -> SynType.Var (ty, range0))
 
@@ -147,7 +149,7 @@ module internal CataGenerator =
 
         let inputObjectType =
             let baseType =
-                SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ relevantTypeName ])
+                SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent relevantTypeName)
 
             if userProvidedTypars.Length = 0 then
                 baseType
@@ -155,7 +157,7 @@ module internal CataGenerator =
                 SynType.App (
                     baseType,
                     Some range0,
-                    userProvidedTypars,
+                    userProvidedTyparsForCase,
                     List.replicate (userProvidedTypars.Length - 1) range0,
                     Some range0,
                     false,
@@ -172,7 +174,7 @@ module internal CataGenerator =
                 SynType.App (
                     SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ cataName ]),
                     Some range0,
-                    userProvidedTypars @ allArtificialTypars,
+                    userProvidedTyparsForCata @ allArtificialTypars,
                     List.replicate (userProvidedTypars.Length + allArtificialTypars.Length - 1) range0,
                     Some range0,
                     false,
@@ -196,8 +198,8 @@ module internal CataGenerator =
                 None
             ),
             SynPat.CreateLongIdent (
-                SynLongIdent.CreateString ("run" + relevantTypeName.idText),
-                [ SynPat.CreateParen (cataObject) ; SynPat.CreateParen inputObject ]
+                SynLongIdent.CreateString ("run" + List.last(relevantTypeName).idText),
+                [ SynPat.CreateParen cataObject ; SynPat.CreateParen inputObject ]
             ),
             Some (SynBindingReturnInfo.Create relevantTypar),
             SynExpr.CreateTyped (
@@ -221,10 +223,7 @@ module internal CataGenerator =
                                 SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Add" ]),
                                 SynExpr.CreateParen (
                                     SynExpr.CreateApp (
-                                        SynExpr.CreateLongIdent (
-                                            SynLongIdent.Create
-                                                [ "Instruction" ; "Process__" + relevantTypeName.idText ]
-                                        ),
+                                        SynExpr.CreateLongIdent analysis.AssociatedProcessInstruction,
                                         SynExpr.CreateLongIdent (SynLongIdent.CreateString "x")
                                     )
                                 )
@@ -477,6 +476,8 @@ module internal CataGenerator =
                 {
                     Name = name |> Option.map Ident.lowerFirstLetter
                     Type = ty
+                    // TODO this is definitely wrong
+                    GenericsOfParent = []
                 }
             )
 
@@ -519,6 +520,7 @@ module internal CataGenerator =
                                     false,
                                     range0
                                 )
+                        GenericsOfParent = union.Typars
                     }
                     |> List.singleton
             }
@@ -531,12 +533,28 @@ module internal CataGenerator =
 
     /// Build the DU which defines the states our state machine can be in.
     let createInstructionType (analysis : UnionAnalysis list) : SynTypeDefn =
+        let parentGenerics =
+            analysis
+            |> List.collect _.Typars
+            |> List.map (fun (SynTyparDecl.SynTyparDecl (_, SynTypar.SynTypar (ident, _, _))) -> ident.idText)
+            |> List.distinct
+            |> List.map (fun i ->
+                SynTyparDecl.SynTyparDecl ([], SynTypar.SynTypar (Ident.Create i, TyparStaticReq.None, false))
+            )
+
         // One union case for each union type, and then
         // a union case for each union case which contains a recursive reference.
         let casesFromProcess : SynUnionCase list =
             baseCases analysis
             |> List.map (fun unionCase ->
-                SynUnionCase.Create (unionCase.Name, unionCase.Fields |> List.map (fun f -> SynField.Create f.Type))
+                let fields =
+                    unionCase.Fields
+                    |> List.map (fun field ->
+                        // TODO: adjust type parameters
+                        SynField.Create field.Type
+                    )
+
+                SynUnionCase.Create (unionCase.Name, fields)
             )
 
         let casesFromCases =
@@ -548,14 +566,22 @@ module internal CataGenerator =
         let cases = casesFromProcess @ casesFromCases
 
         let typars =
-            // TODO: deduplicate names where we have the same generic across multiple DUs
-            analysis
-            |> List.collect _.Typars
-            |> fun x ->
-                if x.IsEmpty then
-                    None
-                else
-                    Some (SynTyparDecls.PostfixList (x, [], range0))
+            let count = analysis |> List.map (fun x -> List.length x.Typars) |> List.max
+
+            if analysis |> List.forall (fun x -> x.Typars.IsEmpty) then
+                None
+            else
+
+            let typars =
+                analysis
+                |> List.collect _.Typars
+                |> List.map (fun (SynTyparDecl.SynTyparDecl (_, SynTypar.SynTypar (ident, _, _))) -> ident.idText)
+                |> List.distinct
+                |> List.map (fun i ->
+                    SynTyparDecl.SynTyparDecl ([], SynTypar.SynTypar (Ident.Create i, TyparStaticReq.None, false))
+                )
+
+            Some (SynTyparDecls.PostfixList (typars, [], range0))
 
         SynTypeDefn.SynTypeDefn (
             SynComponentInfo.SynComponentInfo (
@@ -759,7 +785,11 @@ module internal CataGenerator =
 
                 let userInputGenerics =
                     analysis.Typars
-                    |> List.map (fun (SynTyparDecl.SynTyparDecl (_, typar)) -> SynType.Var (typar, range0))
+                    |> List.map (fun (SynTyparDecl.SynTyparDecl (_, SynTypar.SynTypar (ident, _, _))) -> ident.idText)
+                    |> List.distinct
+                    |> List.map (fun i ->
+                        SynType.Var (SynTypar.SynTypar (Ident.Create i, TyparStaticReq.None, false), range0)
+                    )
 
                 let ty =
                     SynType.App (
@@ -790,9 +820,11 @@ module internal CataGenerator =
         // A "real" generic for each generic in the user-provided type
         let genericsFromUserInput =
             analysis
-            |> List.collect (fun analysis ->
-                // TODO: deduplicate generics with the same name from different cases
-                analysis.Typars
+            |> List.collect _.Typars
+            |> List.map (fun (SynTyparDecl.SynTyparDecl (_, SynTypar.SynTypar (ident, _, _))) -> ident.idText)
+            |> List.distinct
+            |> List.map (fun i ->
+                SynTyparDecl.SynTyparDecl ([], SynTypar.SynTypar (Ident.Create i, TyparStaticReq.None, false))
             )
 
         let genericsFromCata =
@@ -1346,22 +1378,34 @@ module internal CataGenerator =
                 None
             )
 
-        // A generic for each DU case, and a generic for each generic in the DU
-        let genericCount = analysis.Length + (analysis |> List.sumBy _.Typars.Length)
+        let userSuppliedGenerics =
+            analysis
+            |> List.collect _.Typars
+            |> List.map (fun (SynTyparDecl.SynTyparDecl (_, SynTypar.SynTypar (ident, _, _))) -> ident.idText)
+            |> List.distinct
+            |> List.map (fun i -> SynTypar.SynTypar (Ident.Create i, TyparStaticReq.None, false))
 
         let instructionsArrType =
-            if genericCount > analysis.Length then
+            if not userSuppliedGenerics.IsEmpty then
                 SynType.App (
                     SynType.CreateLongIdent "Instruction",
                     Some range0,
-                    List.replicate (genericCount - analysis.Length) (SynType.Anon range0),
-                    List.replicate (genericCount - analysis.Length - 1) range0,
+                    userSuppliedGenerics |> List.map (fun x -> SynType.Var (x, range0)),
+                    List.replicate (userSuppliedGenerics.Length - 1) range0,
                     Some range0,
                     false,
                     range0
                 )
             else
                 SynType.CreateLongIdent "Instruction"
+
+        let cataGenerics =
+            [
+                for generic in userSuppliedGenerics do
+                    yield SynType.Var (generic, range0)
+                for case in analysis do
+                    yield SynType.Var (SynTypar.SynTypar (case.GenericName, TyparStaticReq.None, false), range0)
+            ]
 
         let headPat =
             SynPat.LongIdent (
@@ -1376,8 +1420,8 @@ module internal CataGenerator =
                                 SynType.App (
                                     SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ cataTypeName ]),
                                     Some range0,
-                                    List.replicate genericCount (SynType.Anon range0),
-                                    List.replicate (genericCount - 1) range0,
+                                    cataGenerics,
+                                    List.replicate (cataGenerics.Length - 1) range0,
                                     Some range0,
                                     false,
                                     range0
@@ -1492,7 +1536,20 @@ module internal CataGenerator =
                             SynPat.Named (SynIdent.SynIdent (unionCase.StackName, None), false, None, range0),
                             None,
                             SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "ResizeArray"),
+                                SynExpr.TypeApp (
+                                    SynExpr.CreateIdent (Ident.Create "ResizeArray"),
+                                    range0,
+                                    [
+                                        SynType.Var (
+                                            SynTypar.SynTypar (unionCase.GenericName, TyparStaticReq.None, false),
+                                            range0
+                                        )
+                                    ],
+                                    [],
+                                    Some range0,
+                                    range0,
+                                    range0
+                                ),
                                 SynExpr.CreateConst SynConst.Unit
                             ),
                             range0,
@@ -1562,14 +1619,20 @@ module internal CataGenerator =
                 |> fun x -> SynType.Var (x, range0)
             )
 
-        let userProvidedGenerics = analysis |> List.collect (fun x -> x.Typars)
-
-        let runFunctions =
-            List.zip allUnionTypes allTypars
-            |> List.map (fun (unionType, relevantTypar) ->
-                createRunFunction cataName userProvidedGenerics allTypars relevantTypar unionType
+        let userProvidedGenerics =
+            analysis
+            |> List.collect _.Typars
+            |> List.map (fun (SynTyparDecl (_, SynTypar.SynTypar (ident, _, _))) -> ident.idText)
+            |> List.distinct
+            |> List.map (fun x ->
+                SynTyparDecl.SynTyparDecl ([], SynTypar.SynTypar (Ident.Create x, TyparStaticReq.None, false))
             )
 
+        let runFunctions =
+            List.zip analysis allTypars
+            |> List.map (fun (analysis, relevantTypar) ->
+                createRunFunction cataName userProvidedGenerics allTypars relevantTypar analysis
+            )
 
         let cataStructures =
             createCataStructure analysis
