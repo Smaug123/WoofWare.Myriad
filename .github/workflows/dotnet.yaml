@@ -27,8 +27,6 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0 # so that NerdBank.GitVersioning has access to history
-    - name: thing
-      run: sh ./.github/workflows/tag.sh
     - name: Install Nix
       uses: cachix/install-nix-action@v25
       with:
@@ -210,12 +208,7 @@ jobs:
         run: nix develop --command dotnet nuget push "packed-attribute/WoofWare.Myriad.Plugins.Attributes.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
   github-release-plugin:
-    runs-on: ubuntu-latest
-    if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
     needs: [all-required-checks-complete]
-    environment: main-deploy
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Download NuGet artifact (plugin)
