@@ -206,3 +206,24 @@ jobs:
           path: packed-attribute
       - name: Publish to NuGet (attribute)
         run: nix develop --command dotnet nuget push "packed-attribute/WoofWare.Myriad.Plugins.Attributes.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+  github-release-plugin:
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
+    needs: [all-required-checks-complete]
+    environment: main-deploy
+    permissions:
+      contents: write
+    steps:
+      - name: Download NuGet artifact (plugin)
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-plugin
+      - name: Download NuGet artifact (attribute)
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-attribute
+      - name: Tag and release plugin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: sh .github/workflows/tag.sh
