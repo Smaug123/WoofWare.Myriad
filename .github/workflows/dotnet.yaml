@@ -209,6 +209,7 @@ jobs:
 
   github-release-plugin:
     needs: [all-required-checks-complete]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Download NuGet artifact (plugin)
