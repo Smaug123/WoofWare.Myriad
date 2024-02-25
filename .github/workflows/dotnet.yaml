@@ -226,5 +226,4 @@ jobs:
       - name: Tag and release plugin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # target_commitish empty indicates the repo default branch
         run: sh .github/workflows/tag.sh
