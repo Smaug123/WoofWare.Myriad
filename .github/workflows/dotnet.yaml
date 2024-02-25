@@ -208,8 +208,12 @@ jobs:
         run: nix develop --command dotnet nuget push "packed-attribute/WoofWare.Myriad.Plugins.Attributes.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
   github-release-plugin:
-    needs: [all-required-checks-complete]
     runs-on: ubuntu-latest
+    if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
+    needs: [all-required-checks-complete]
+    environment: main-deploy
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Download NuGet artifact (plugin)
