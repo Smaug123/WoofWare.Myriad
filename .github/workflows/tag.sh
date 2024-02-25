@@ -1,5 +1,7 @@
 #!/bin/sh
 
+find . -maxdepth 1 -type f -name '*.nupkg' -exec sh -c 'tag=$(basename "$1" .nupkg); git tag "$tag"; git push origin "$tag"' shell {} \;
+
 export TAG
 TAG=$(find . -maxdepth 1 -type f -name 'WoofWare.Myriad.Plugins.*.nupkg' -exec sh -c 'basename "$1" .nupkg' shell {} \;)
 

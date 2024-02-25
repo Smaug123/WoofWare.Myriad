@@ -223,9 +223,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nuget-package-attribute
-      - name: Tag
-        run: find . -maxdepth 1 -type f -name '*.nupkg' -exec sh -c 'tag=$(basename "{}" .nupkg); git tag "$tag"; git push origin "$tag"' \;
-      - name: Release plugin
+      - name: Tag and release plugin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # target_commitish empty indicates the repo default branch
