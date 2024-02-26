@@ -17,11 +17,6 @@
     sha256 = "0khbp0dx87m4kx1a5b9vgh1pp88vr9w8vpqvxf6afrpcyynwrrcr";
   })
   (fetchNuGet {
-    pname = "coverlet.collector";
-    version = "6.0.0";
-    sha256 = "12j34vrkmph8lspbafnqmfnj2qvysz1jcrks2khw798s6dwv0j90";
-  })
-  (fetchNuGet {
     pname = "Fantomas.Core";
     version = "6.1.1";
     sha256 = "1h2wsiy4fzwsg9vrlpk6w7zsvx6bc4wg4x25zqc48akg04fwpi0m";
@@ -298,11 +293,6 @@
   })
   (fetchNuGet {
     pname = "NETStandard.Library";
-    version = "2.0.0";
-    sha256 = "1bc4ba8ahgk15m8k4nd7x406nhi0kwqzbgjk2dmw52ss553xz7iy";
-  })
-  (fetchNuGet {
-    pname = "NETStandard.Library";
     version = "2.0.3";
     sha256 = "1fn9fxppfcg4jgypp2pmrpr6awl3qz1xmnri0cygpkwvyx27df1y";
   })
@@ -348,13 +338,13 @@
   })
   (fetchNuGet {
     pname = "NUnit";
-    version = "3.13.3";
-    sha256 = "0wdzfkygqnr73s6lpxg5b1pwaqz9f414fxpvpdmf72bvh4jaqzv6";
+    version = "4.0.1";
+    sha256 = "0jgiq3dbwli5r70j0bw7021d69r7bhr58s8kphlpjmf7k47l5pcd";
   })
   (fetchNuGet {
     pname = "NUnit";
-    version = "4.0.1";
-    sha256 = "0jgiq3dbwli5r70j0bw7021d69r7bhr58s8kphlpjmf7k47l5pcd";
+    version = "4.1.0";
+    sha256 = "0fj6xwgqaxq3mrai86bklclfmjkzf038mrslwfqf4ignaz9f7g5j";
   })
   (fetchNuGet {
     pname = "NUnit3TestAdapter";
