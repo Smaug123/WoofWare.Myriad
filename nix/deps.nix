@@ -8,13 +8,13 @@
   })
   (fetchNuGet {
     pname = "fantomas";
-    version = "6.3.0-alpha-007";
-    sha256 = "sha256-uZw6h6k/DS4BcYtK9cv8TLS0H8MZDO3WBaPPTdtTgu0=";
+    version = "6.3.0-alpha-008";
+    sha256 = "sha256-rI/4upuj8JBy2C9gl2lwI/JXmBD7UHKxCoSpd+bstRw=";
   })
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.0.30";
-    sha256 = "0khbp0dx87m4kx1a5b9vgh1pp88vr9w8vpqvxf6afrpcyynwrrcr";
+    version = "4.0.33";
+    sha256 = "0mmsa5gxfd3bbgacip0c1hljwd958zcx1012qdh033sx6nfz3v36";
   })
   (fetchNuGet {
     pname = "Fantomas.Core";
@@ -335,11 +335,6 @@
     pname = "NuGet.Versioning";
     version = "6.9.1";
     sha256 = "0xrs82dydy9cgxf0qypr01wawwnq1nf6fc7rwisb4y5v4r259fdm";
-  })
-  (fetchNuGet {
-    pname = "NUnit";
-    version = "4.0.1";
-    sha256 = "0jgiq3dbwli5r70j0bw7021d69r7bhr58s8kphlpjmf7k47l5pcd";
   })
   (fetchNuGet {
     pname = "NUnit";
