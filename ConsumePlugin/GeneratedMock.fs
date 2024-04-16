@@ -188,7 +188,7 @@ type internal TypeWithInterfaceMock =
     {
         /// Implementation of IDisposable.Dispose
         Dispose : unit -> unit
-        Mem1 : int -> string
+        Mem1 : string option -> string[] Async
     }
 
     /// An implementation where every method throws.

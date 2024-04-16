@@ -343,7 +343,18 @@ module internal AstHelper =
                                 }
                                 |> List.singleton
                         }
-                    | _ -> failwith $"Unrecognised args in interface method declaration: %+A{args}"
+                    | arg ->
+                        {
+                            HasParen = false
+                            Args =
+                                {
+                                    Attributes = []
+                                    IsOptional = false
+                                    Id = None
+                                    Type = arg
+                                }
+                                |> List.singleton
+                        }
                     |> fun ty ->
                         { ty with
                             HasParen = ty.HasParen || hasParen
