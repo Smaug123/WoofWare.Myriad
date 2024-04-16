@@ -764,6 +764,10 @@ module internal HttpClientGenerator =
         =
         let interfaceType = AstHelper.parseInterface interfaceType
 
+        if not (List.isEmpty interfaceType.Inherits) then
+            failwith
+                "HttpClientGenerator does not support inheritance. Remove the `inherit` keyword if you want to use this generator."
+
         let constantHeaders =
             interfaceType.Attributes
             |> extractHeaderInformation

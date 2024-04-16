@@ -21,6 +21,9 @@ module internal InterfaceMockGenerator =
         | None -> failwith "Expected record field to have a name, but it was somehow anonymous"
         | Some id -> id
 
+    [<RequireQualifiedAccess>]
+    type private KnownInheritance = | IDisposable
+
     let createType
         (spec : GenerateMockOutputSpec)
         (name : string)
@@ -29,6 +32,20 @@ module internal InterfaceMockGenerator =
         (fields : SynField list)
         : SynModuleDecl
         =
+        let inherits =
+            interfaceType.Inherits
+            |> Seq.map (fun ty ->
+                match ty with
+                | SynType.LongIdent (SynLongIdent.SynLongIdent (name, _, _)) ->
+                    match name |> List.map _.idText with
+                    | [] -> failwith "Unexpected empty identifier in inheritance declaration"
+                    | [ "IDisposable" ]
+                    | [ "System" ; "IDisposable" ] -> KnownInheritance.IDisposable
+                    | _ -> failwithf "Unrecognised inheritance identifier: %+A" name
+                | x -> failwithf "Unrecognised type in inheritance: %+A" x
+            )
+            |> Set.ofSeq
+
         let synValData =
             {
                 SynMemberFlags.IsInstance = false
@@ -264,11 +281,115 @@ module internal InterfaceMockGenerator =
             | Some (SynAccess.Internal _), _ -> SynAccess.Internal range0
             | Some (SynAccess.Private _), _ -> SynAccess.Private range0
 
+        let fields =
+            let extras =
+                if inherits.Contains KnownInheritance.IDisposable then
+                    [
+                        SynField.Create (
+                            SynType.CreateFun (SynType.CreateUnit, SynType.CreateUnit),
+                            Ident.Create "Dispose",
+                            xmldoc = PreXmlDoc.Create " Implementation of IDisposable.Dispose"
+                        )
+                    ]
+                else
+                    []
+
+            extras @ fields
+
+        let extraInterfaces =
+            inherits
+            |> Seq.map (fun inheritance ->
+                match inheritance with
+                | KnownInheritance.IDisposable ->
+                    let valData =
+                        SynValData.SynValData (
+                            Some
+                                {
+                                    IsInstance = true
+                                    IsDispatchSlot = false
+                                    IsOverrideOrExplicitImpl = true
+                                    IsFinal = false
+                                    GetterOrSetterIsCompilerGenerated = false
+                                    MemberKind = SynMemberKind.Member
+                                },
+                            valInfo =
+                                SynValInfo.SynValInfo (
+                                    curriedArgInfos =
+                                        [
+                                            yield
+                                                [
+                                                    SynArgInfo.SynArgInfo (
+                                                        attributes = [],
+                                                        optional = false,
+                                                        ident = None
+                                                    )
+                                                ]
+                                        ],
+                                    returnInfo =
+                                        SynArgInfo.SynArgInfo (attributes = [], optional = false, ident = None)
+                                ),
+                            thisIdOpt = None
+                        )
+
+                    let headArgs = [ SynPat.Const (SynConst.Unit, range0) ]
+
+                    let headPat =
+                        SynPat.LongIdent (
+                            SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; Ident.Create "Dispose" ],
+                            None,
+                            None,
+                            SynArgPats.Pats headArgs,
+                            None,
+                            range0
+                        )
+
+                    let binding =
+                        SynBinding.SynBinding (
+                            None,
+                            SynBindingKind.Normal,
+                            false,
+                            false,
+                            [],
+                            PreXmlDoc.Empty,
+                            valData,
+                            headPat,
+                            Some (
+                                SynBindingReturnInfo.SynBindingReturnInfo (
+                                    SynType.Unit (),
+                                    range0,
+                                    [],
+                                    SynBindingReturnInfoTrivia.Zero
+                                )
+                            ),
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "this" ; "Dispose" ]),
+                                SynExpr.CreateUnit
+                            ),
+                            range0,
+                            DebugPointAtBinding.Yes range0,
+                            {
+                                LeadingKeyword = SynLeadingKeyword.Member range0
+                                InlineKeyword = None
+                                EqualsRange = Some range0
+                            }
+                        )
+
+                    let mem = SynMemberDefn.Member (binding, range0)
+
+                    SynMemberDefn.Interface (
+                        SynType.CreateLongIdent (SynLongIdent.Create [ "System" ; "IDisposable" ]),
+                        Some range0,
+                        Some [ mem ],
+                        range0
+                    )
+            )
+            |> Seq.toList
+
         let record =
             {
                 Name = Ident.Create name
                 Fields = fields
-                Members = Some [ constructor ; interfaceMembers ]
+                Members = Some ([ constructor ; interfaceMembers ] @ extraInterfaces)
                 XmlDoc = Some xmlDoc
                 Generics = interfaceType.Generics
                 Accessibility = Some access

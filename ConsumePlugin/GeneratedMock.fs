@@ -186,6 +186,8 @@ open WoofWare.Myriad.Plugins
 /// Mock record type for an interface
 type internal TypeWithInterfaceMock =
     {
+        /// Implementation of IDisposable.Dispose
+        Dispose : unit -> unit
         Mem1 : int -> string
     }
 
@@ -197,3 +199,6 @@ type internal TypeWithInterfaceMock =
 
     interface TypeWithInterface with
         member this.Mem1 (arg_0_0) = this.Mem1 (arg_0_0)
+
+    interface System.IDisposable with
+        member this.Dispose () : unit = this.Dispose ()
