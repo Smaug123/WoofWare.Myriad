@@ -1,5 +1,6 @@
 namespace SomeNamespace
 
+open System
 open WoofWare.Myriad.Plugins
 
 [<GenerateMock>]
@@ -41,3 +42,8 @@ type Curried<'a> =
     abstract Mem4 : (int * string) -> ('a * int) -> string
     abstract Mem5 : x : int * string -> ('a * int) -> string
     abstract Mem6 : int * string -> y : 'a * int -> string
+
+[<GenerateMock>]
+type TypeWithInterface =
+    inherit IDisposable
+    abstract Mem1 : int -> string

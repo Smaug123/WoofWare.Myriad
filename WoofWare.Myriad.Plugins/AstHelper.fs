@@ -54,6 +54,7 @@ type internal InterfaceType =
     {
         Attributes : SynAttribute list
         Name : LongIdent
+        Inherits : SynType list
         Members : MemberInfo list
         Properties : PropertyInfo list
         Generics : SynTyparDecls option
@@ -386,22 +387,26 @@ module internal AstHelper =
 
         let attrs = attrs |> List.collect (fun s -> s.Attributes)
 
-        let members, properties =
+        let members, inherits =
             match synTypeDefnRepr with
             | SynTypeDefnRepr.ObjectModel (_kind, members, _) ->
                 members
                 |> List.map (fun defn ->
                     match defn with
-                    | SynMemberDefn.AbstractSlot (slotSig, flags, _, _) -> parseMember slotSig flags
+                    | SynMemberDefn.AbstractSlot (slotSig, flags, _, _) -> Choice1Of2 (parseMember slotSig flags)
+                    | SynMemberDefn.Inherit (baseType, _asIdent, _) -> Choice2Of2 baseType
                     | _ -> failwith $"Unrecognised member definition: %+A{defn}"
                 )
             | _ -> failwith $"Unrecognised SynTypeDefnRepr for an interface type: %+A{synTypeDefnRepr}"
             |> List.partitionChoice
 
+        let members, properties = members |> List.partitionChoice
+
         {
             Members = members
             Properties = properties
             Name = interfaceName
+            Inherits = inherits
             Attributes = attrs
             Generics = typars
             Accessibility = accessibility
