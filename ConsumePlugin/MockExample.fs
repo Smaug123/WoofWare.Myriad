@@ -46,4 +46,4 @@ type Curried<'a> =
 [<GenerateMock>]
 type TypeWithInterface =
     inherit IDisposable
-    abstract Mem1 : int -> string
+    abstract Mem1 : string option -> string[] Async
