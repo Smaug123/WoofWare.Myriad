@@ -5,6 +5,7 @@
 
 namespace SomeNamespace
 
+open System
 open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
@@ -29,6 +30,7 @@ type internal PublicTypeMock =
         member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace
 
+open System
 open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
@@ -53,6 +55,7 @@ type public PublicTypeInternalFalseMock =
         member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace
 
+open System
 open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
@@ -74,6 +77,7 @@ type internal InternalTypeMock =
         member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
+open System
 open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
@@ -95,6 +99,7 @@ type private PrivateTypeMock =
         member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
+open System
 open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
@@ -116,6 +121,7 @@ type private PrivateTypeInternalFalseMock =
         member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
+open System
 open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
@@ -134,6 +140,7 @@ type internal VeryPublicTypeMock<'a, 'b> =
         member this.Mem1 (arg_0_0) = this.Mem1 (arg_0_0)
 namespace SomeNamespace
 
+open System
 open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
@@ -171,3 +178,22 @@ type internal CurriedMock<'a> =
 
         member this.Mem6 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1) =
             this.Mem6 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
+namespace SomeNamespace
+
+open System
+open WoofWare.Myriad.Plugins
+
+/// Mock record type for an interface
+type internal TypeWithInterfaceMock =
+    {
+        Mem1 : int -> string
+    }
+
+    /// An implementation where every method throws.
+    static member Empty : TypeWithInterfaceMock =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
+
+    interface TypeWithInterface with
+        member this.Mem1 (arg_0_0) = this.Mem1 (arg_0_0)
