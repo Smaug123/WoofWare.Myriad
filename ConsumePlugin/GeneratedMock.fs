@@ -194,6 +194,7 @@ type internal TypeWithInterfaceMock =
     /// An implementation where every method throws.
     static member Empty : TypeWithInterfaceMock =
         {
+            Dispose = (fun _ -> ())
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 

@@ -107,6 +107,23 @@ module internal InterfaceMockGenerator =
                 )
             |> SynBindingReturnInfo.Create
 
+        let constructorFields =
+            let extras =
+                if inherits.Contains KnownInheritance.IDisposable then
+                    let unitFun = SynExpr.createLambda "_" SynExpr.CreateUnit
+
+                    [
+                        (SynLongIdent.CreateFromLongIdent [ Ident.Create "Dispose" ], true), Some unitFun
+                    ]
+                else
+                    []
+
+            let nonExtras =
+                fields
+                |> List.map (fun field -> (SynLongIdent.CreateFromLongIdent [ getName field ], true), Some failwithFun)
+
+            extras @ nonExtras
+
         let constructor =
             SynMemberDefn.Member (
                 SynBinding.SynBinding (
@@ -119,12 +136,7 @@ module internal InterfaceMockGenerator =
                     SynValData.SynValData (Some synValData, SynValInfo.Empty, None),
                     constructorIdent,
                     Some constructorReturnType,
-                    AstHelper.instantiateRecord (
-                        fields
-                        |> List.map (fun field ->
-                            ((SynLongIdent.CreateFromLongIdent [ getName field ], true), Some failwithFun)
-                        )
-                    ),
+                    AstHelper.instantiateRecord constructorFields,
                     range0,
                     DebugPointAtBinding.Yes range0,
                     { SynExpr.synBindingTriviaZero true with
@@ -133,6 +145,21 @@ module internal InterfaceMockGenerator =
                 ),
                 range0
             )
+
+        let fields =
+            let extras =
+                if inherits.Contains KnownInheritance.IDisposable then
+                    [
+                        SynField.Create (
+                            SynType.CreateFun (SynType.CreateUnit, SynType.CreateUnit),
+                            Ident.Create "Dispose",
+                            xmldoc = PreXmlDoc.Create " Implementation of IDisposable.Dispose"
+                        )
+                    ]
+                else
+                    []
+
+            extras @ fields
 
         let interfaceMembers =
             let members =
@@ -280,21 +307,6 @@ module internal InterfaceMockGenerator =
             | None, false -> SynAccess.Public range0
             | Some (SynAccess.Internal _), _ -> SynAccess.Internal range0
             | Some (SynAccess.Private _), _ -> SynAccess.Private range0
-
-        let fields =
-            let extras =
-                if inherits.Contains KnownInheritance.IDisposable then
-                    [
-                        SynField.Create (
-                            SynType.CreateFun (SynType.CreateUnit, SynType.CreateUnit),
-                            Ident.Create "Dispose",
-                            xmldoc = PreXmlDoc.Create " Implementation of IDisposable.Dispose"
-                        )
-                    ]
-                else
-                    []
-
-            extras @ fields
 
         let extraInterfaces =
             inherits
@@ -453,7 +465,6 @@ module internal InterfaceMockGenerator =
             |> fun s -> s + "Mock"
 
         let typeDecl = createType spec name interfaceType docString fields
-
 
         SynModuleOrNamespace.CreateNamespace (
             namespaceId,
