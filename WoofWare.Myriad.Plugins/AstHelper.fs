@@ -509,20 +509,9 @@ module internal SynTypePatterns =
         | _ -> None
 
     let (|UnitType|_|) (fieldType : SynType) : unit option =
-        use f =
-            System.IO.File.Open ("/tmp/log.txt", FileMode.OpenOrCreate, FileAccess.Write)
-
-        f.Seek (0, SeekOrigin.End) |> ignore
-        use writer = new StreamWriter (f)
-        writer.WriteLine ($"%+A{fieldType}")
-
         match fieldType with
-        | SynType.LongIdent ident when AstHelper.isUnitIdent ident ->
-            writer.WriteLine ($"matched!")
-            Some ()
-        | _ ->
-            writer.WriteLine ($"not matched")
-            None
+        | SynType.LongIdent ident when AstHelper.isUnitIdent ident -> Some ()
+        | _ -> None
 
     let (|ListType|_|) (fieldType : SynType) =
         match fieldType with
