@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
+open System.IO
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Text.Range
@@ -130,6 +131,11 @@ module internal AstHelper =
         match ident.LongIdent with
         | [ i ] when System.String.Equals (i.idText, "option", System.StringComparison.OrdinalIgnoreCase) -> true
         // TODO: consider Microsoft.FSharp.Option or whatever it is
+        | _ -> false
+
+    let isUnitIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent with
+        | [ i ] when System.String.Equals (i.idText, "unit", System.StringComparison.OrdinalIgnoreCase) -> true
         | _ -> false
 
     let isListIdent (ident : SynLongIdent) : bool =
@@ -501,6 +507,22 @@ module internal SynTypePatterns =
         | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isOptionIdent ident ->
             Some innerType
         | _ -> None
+
+    let (|UnitType|_|) (fieldType : SynType) : unit option =
+        use f =
+            System.IO.File.Open ("/tmp/log.txt", FileMode.OpenOrCreate, FileAccess.Write)
+
+        f.Seek (0, SeekOrigin.End) |> ignore
+        use writer = new StreamWriter (f)
+        writer.WriteLine ($"%+A{fieldType}")
+
+        match fieldType with
+        | SynType.LongIdent ident when AstHelper.isUnitIdent ident ->
+            writer.WriteLine ($"matched!")
+            Some ()
+        | _ ->
+            writer.WriteLine ($"not matched")
+            None
 
     let (|ListType|_|) (fieldType : SynType) =
         match fieldType with

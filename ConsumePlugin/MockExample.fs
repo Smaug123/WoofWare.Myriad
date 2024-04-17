@@ -47,3 +47,4 @@ type Curried<'a> =
 type TypeWithInterface =
     inherit IDisposable
     abstract Mem1 : string option -> string[] Async
+    abstract Mem2 : unit -> string[] Async
