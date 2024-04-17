@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
+open System.IO
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Text.Range
@@ -130,6 +131,11 @@ module internal AstHelper =
         match ident.LongIdent with
         | [ i ] when System.String.Equals (i.idText, "option", System.StringComparison.OrdinalIgnoreCase) -> true
         // TODO: consider Microsoft.FSharp.Option or whatever it is
+        | _ -> false
+
+    let isUnitIdent (ident : SynLongIdent) : bool =
+        match ident.LongIdent with
+        | [ i ] when System.String.Equals (i.idText, "unit", System.StringComparison.OrdinalIgnoreCase) -> true
         | _ -> false
 
     let isListIdent (ident : SynLongIdent) : bool =
@@ -500,6 +506,11 @@ module internal SynTypePatterns =
         match fieldType with
         | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when AstHelper.isOptionIdent ident ->
             Some innerType
+        | _ -> None
+
+    let (|UnitType|_|) (fieldType : SynType) : unit option =
+        match fieldType with
+        | SynType.LongIdent ident when AstHelper.isUnitIdent ident -> Some ()
         | _ -> None
 
     let (|ListType|_|) (fieldType : SynType) =

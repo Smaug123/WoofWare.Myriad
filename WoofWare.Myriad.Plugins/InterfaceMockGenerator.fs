@@ -194,7 +194,9 @@ module internal InterfaceMockGenerator =
                                                 |> List.mapi (fun i arg ->
                                                     arg.Args
                                                     |> List.mapi (fun j arg ->
-                                                        SynArgInfo.CreateIdString $"arg_%i{i}_%i{j}"
+                                                        match arg.Type with
+                                                        | UnitType -> SynArgInfo.SynArgInfo ([], false, None)
+                                                        | _ -> SynArgInfo.CreateIdString $"arg_%i{i}_%i{j}"
                                                     )
                                                 )
                                         ],
@@ -209,10 +211,18 @@ module internal InterfaceMockGenerator =
                         |> List.mapi (fun i tupledArgs ->
                             let args =
                                 tupledArgs.Args
-                                |> List.mapi (fun j _ -> SynPat.CreateNamed (Ident.Create $"arg_%i{i}_%i{j}"))
+                                |> List.mapi (fun j ty ->
+                                    match ty.Type with
+                                    | UnitType -> SynPat.Const (SynConst.Unit, range0)
+                                    | _ -> SynPat.CreateNamed (Ident.Create $"arg_%i{i}_%i{j}")
+                                )
 
-                            SynPat.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
-                            |> SynPat.CreateParen
+                            match args with
+                            | [] -> failwith "somehow got no args at all"
+                            | [ arg ] -> arg
+                            | args ->
+                                SynPat.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
+                                |> SynPat.CreateParen
                             |> fun i -> if tupledArgs.HasParen then SynPat.Paren (i, range0) else i
                         )
 
@@ -231,7 +241,11 @@ module internal InterfaceMockGenerator =
                             memberInfo.Args
                             |> List.mapi (fun i args ->
                                 args.Args
-                                |> List.mapi (fun j args -> SynExpr.CreateIdentString $"arg_%i{i}_%i{j}")
+                                |> List.mapi (fun j arg ->
+                                    match arg.Type with
+                                    | UnitType -> SynExpr.CreateConst SynConst.Unit
+                                    | _ -> SynExpr.CreateIdentString $"arg_%i{i}_%i{j}"
+                                )
                                 |> SynExpr.CreateParenedTuple
                             )
 

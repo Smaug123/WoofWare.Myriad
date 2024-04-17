@@ -26,7 +26,7 @@ type internal PublicTypeMock =
 
     interface IPublicType with
         member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
         member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace
 
@@ -51,7 +51,7 @@ type public PublicTypeInternalFalseMock =
 
     interface IPublicTypeInternalFalse with
         member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
         member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace
 
@@ -74,7 +74,7 @@ type internal InternalTypeMock =
 
     interface InternalType with
         member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
 open System
@@ -96,7 +96,7 @@ type private PrivateTypeMock =
 
     interface PrivateType with
         member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
 open System
@@ -118,7 +118,7 @@ type private PrivateTypeInternalFalseMock =
 
     interface PrivateTypeInternalFalse with
         member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 (arg_0_0) = this.Mem2 (arg_0_0)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
 open System
@@ -137,7 +137,7 @@ type internal VeryPublicTypeMock<'a, 'b> =
         }
 
     interface VeryPublicType<'a, 'b> with
-        member this.Mem1 (arg_0_0) = this.Mem1 (arg_0_0)
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
 namespace SomeNamespace
 
 open System
@@ -166,9 +166,9 @@ type internal CurriedMock<'a> =
         }
 
     interface Curried<'a> with
-        member this.Mem1 (arg_0_0) (arg_1_0) = this.Mem1 (arg_0_0) (arg_1_0)
-        member this.Mem2 (arg_0_0, arg_0_1) (arg_1_0) = this.Mem2 (arg_0_0, arg_0_1) (arg_1_0)
-        member this.Mem3 ((arg_0_0, arg_0_1)) (arg_1_0) = this.Mem3 (arg_0_0, arg_0_1) (arg_1_0)
+        member this.Mem1 arg_0_0 arg_1_0 = this.Mem1 (arg_0_0) (arg_1_0)
+        member this.Mem2 (arg_0_0, arg_0_1) arg_1_0 = this.Mem2 (arg_0_0, arg_0_1) (arg_1_0)
+        member this.Mem3 ((arg_0_0, arg_0_1)) arg_1_0 = this.Mem3 (arg_0_0, arg_0_1) (arg_1_0)
 
         member this.Mem4 ((arg_0_0, arg_0_1)) ((arg_1_0, arg_1_1)) =
             this.Mem4 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
@@ -189,6 +189,7 @@ type internal TypeWithInterfaceMock =
         /// Implementation of IDisposable.Dispose
         Dispose : unit -> unit
         Mem1 : string option -> string[] Async
+        Mem2 : unit -> string[] Async
     }
 
     /// An implementation where every method throws.
@@ -196,10 +197,12 @@ type internal TypeWithInterfaceMock =
         {
             Dispose = (fun _ -> ())
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface TypeWithInterface with
-        member this.Mem1 (arg_0_0) = this.Mem1 (arg_0_0)
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+        member this.Mem2 () = this.Mem2 (())
 
     interface System.IDisposable with
         member this.Dispose () : unit = this.Dispose ()
