@@ -8,13 +8,13 @@
   })
   (fetchNuGet {
     pname = "fantomas";
-    version = "6.3.3";
-    sha256 = "sha256-02uTwRPJkRZtjJ7fOJdHSvc17DszkXjT5X9jGuRZlA4=";
+    version = "6.3.4";
+    sha256 = "sha256-1aWqZynBkQoznenGoP0sbf1PcUXAbcHiWyECuv89xa0=";
   })
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.0.33";
-    sha256 = "0mmsa5gxfd3bbgacip0c1hljwd958zcx1012qdh033sx6nfz3v36";
+    version = "4.0.36";
+    sha256 = "sha256-xqIkMvjJD5UaAHYw8B0CU4h+fJvxNSVspMFro2dz0Rc=";
   })
   (fetchNuGet {
     pname = "Fantomas.Core";
