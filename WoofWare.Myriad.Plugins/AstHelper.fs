@@ -1,6 +1,5 @@
 namespace WoofWare.Myriad.Plugins
 
-open System.IO
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Text.Range

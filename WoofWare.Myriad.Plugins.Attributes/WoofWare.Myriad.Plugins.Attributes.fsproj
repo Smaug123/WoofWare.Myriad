@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Compile Include="Attributes.fs"/>
+    <Compile Include="RestEase.fs" />
     <EmbeddedResource Include="version.json"/>
     <EmbeddedResource Include="SurfaceBaseline.txt"/>
     <None Include="..\README.md">
