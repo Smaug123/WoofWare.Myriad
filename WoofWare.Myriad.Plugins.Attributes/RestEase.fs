@@ -50,10 +50,14 @@ module RestEase =
 
     /// Indicates that this interface member causes the interface to set a header with the given name,
     /// whose value is obtained whenever required by a fresh call to the interface member.
-    type HeaderAttribute (header : string) =
+    type HeaderAttribute (header : string, value : string option) =
         inherit Attribute ()
+        new (header : string) = HeaderAttribute (header, None)
+        new (header : string, value : string) = HeaderAttribute (header, Some value)
 
     /// Indicates that this argument to a method is interpolated into the request path at runtime
     /// by writing it into the templated string that specifies the HTTP query e.g. in the `[<Get "/foo/{template}">]`.
-    type PathAttribute () =
+    type PathAttribute (path : string option) =
         inherit Attribute ()
+        new (path : string) = PathAttribute (Some path)
+        new () = PathAttribute None
