@@ -30,12 +30,16 @@ WoofWare.Myriad.Plugins.RestEase+HeadAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RestEase+HeadAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.RestEase+HeaderAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RestEase+HeaderAttribute..ctor [constructor]: (string, string option)
+WoofWare.Myriad.Plugins.RestEase+HeaderAttribute..ctor [constructor]: (string, string)
+WoofWare.Myriad.Plugins.RestEase+HeaderAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.RestEase+OptionsAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RestEase+OptionsAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.RestEase+PatchAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RestEase+PatchAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.RestEase+PathAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.RestEase+PathAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.RestEase+PathAttribute..ctor [constructor]: string option
+WoofWare.Myriad.Plugins.RestEase+PathAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RestEase+PostAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RestEase+PostAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.RestEase+PutAttribute inherit System.Attribute
