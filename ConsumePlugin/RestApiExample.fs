@@ -120,7 +120,8 @@ type internal IApiWithoutBaseAddress =
 [<WoofWare.Myriad.Plugins.HttpClient>]
 [<BasePath "foo">]
 type IApiWithBasePath =
-    [<Get "endpoint/{param}">]
+    // Example where we use the bundled attributes rather than RestEase's
+    [<WoofWare.Myriad.Plugins.RestEase.Get "endpoint/{param}">]
     abstract GetPathParam : [<Path "param">] parameter : string * ?cancellationToken : CancellationToken -> Task<string>
 
 [<WoofWare.Myriad.Plugins.HttpClient>]

@@ -82,34 +82,50 @@ module internal HttpClientGenerator =
                 match attr.TypeName.AsString with
                 | "Get"
                 | "GetAttribute"
+                | "WoofWare.Myriad.Plugins.RestEase.Get"
+                | "WoofWare.Myriad.Plugins.RestEase.GetAttribute"
                 | "RestEase.Get"
                 | "RestEase.GetAttribute" -> Some (HttpMethod.Get, attr.ArgExpr)
                 | "Post"
                 | "PostAttribute"
+                | "WoofWare.Myriad.Plugins.RestEase.Post"
+                | "WoofWare.Myriad.Plugins.RestEase.PostAttribute"
                 | "RestEase.Post"
                 | "RestEase.PostAttribute" -> Some (HttpMethod.Post, attr.ArgExpr)
                 | "Put"
                 | "PutAttribute"
+                | "WoofWare.Myriad.Plugins.RestEase.Put"
+                | "WoofWare.Myriad.Plugins.RestEase.PutAttribute"
                 | "RestEase.Put"
                 | "RestEase.PutAttribute" -> Some (HttpMethod.Put, attr.ArgExpr)
                 | "Delete"
                 | "DeleteAttribute"
+                | "WoofWare.Myriad.Plugins.RestEase.Delete"
+                | "WoofWare.Myriad.Plugins.RestEase.DeleteAttribute"
                 | "RestEase.Delete"
                 | "RestEase.DeleteAttribute" -> Some (HttpMethod.Delete, attr.ArgExpr)
                 | "Head"
                 | "HeadAttribute"
+                | "WoofWare.Myriad.Plugins.RestEase.Head"
+                | "WoofWare.Myriad.Plugins.RestEase.HeadAttribute"
                 | "RestEase.Head"
                 | "RestEase.HeadAttribute" -> Some (HttpMethod.Head, attr.ArgExpr)
                 | "Options"
                 | "OptionsAttribute"
+                | "WoofWare.Myriad.Plugins.RestEase.Options"
+                | "WoofWare.Myriad.Plugins.RestEase.OptionsAttribute"
                 | "RestEase.Options"
                 | "RestEase.OptionsAttribute" -> Some (HttpMethod.Options, attr.ArgExpr)
                 | "Patch"
                 | "PatchAttribute"
+                | "WoofWare.Myriad.Plugins.RestEase.Patch"
+                | "WoofWare.Myriad.Plugins.RestEase.PatchAttribute"
                 | "RestEase.Patch"
                 | "RestEase.PatchAttribute" -> Some (HttpMethod.Patch, attr.ArgExpr)
                 | "Trace"
                 | "TraceAttribute"
+                | "WoofWare.Myriad.Plugins.RestEase.Trace"
+                | "WoofWare.Myriad.Plugins.RestEase.TraceAttribute"
                 | "RestEase.Trace"
                 | "RestEase.TraceAttribute" -> Some (HttpMethod.Trace, attr.ArgExpr)
                 | _ -> None

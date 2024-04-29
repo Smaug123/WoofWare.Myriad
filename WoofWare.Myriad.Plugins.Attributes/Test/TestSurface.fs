@@ -11,11 +11,9 @@ module TestSurface =
     [<Test>]
     let ``Ensure API surface has not been modified`` () = ApiSurface.assertIdentical assembly
 
-    (*
     [<Test>]
     let ``Check version against remote`` () =
         MonotonicVersion.validate assembly "WoofWare.Myriad.Plugins.Attributes"
-    *)
 
     [<Test ; Explicit>]
     let ``Update API surface`` () =
