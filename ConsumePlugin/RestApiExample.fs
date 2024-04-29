@@ -142,3 +142,16 @@ type IApiWithHeaders =
 
     [<Get "endpoint/{param}">]
     abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<WoofWare.Myriad.Plugins.RestEase.Header("Header-Name", "Header-Value")>]
+type IApiWithHeaders2 =
+    [<WoofWare.Myriad.Plugins.RestEase.Header "X-Foo">]
+    abstract SomeHeader : string
+
+    [<WoofWare.Myriad.Plugins.RestEase.Header "Authorization">]
+    abstract SomeOtherHeader : int
+
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam :
+        [<WoofWare.Myriad.Plugins.RestEase.Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>

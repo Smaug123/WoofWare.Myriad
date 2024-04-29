@@ -1,8 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
-open System
 open System.Net.Http
-open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
@@ -143,7 +141,8 @@ module internal HttpClientGenerator =
         |> List.choose (fun attr ->
             match attr.TypeName.AsString with
             | "Header"
-            | "RestEase.Header" ->
+            | "RestEase.Header"
+            | "WoofWare.Myriad.Plugins.RestEase.Header" ->
                 match attr.ArgExpr with
                 | SynExpr.Paren (SynExpr.Tuple (_, [ v1 ; v2 ], _, _), _, _, _) ->
                     Some [ SynExpr.stripOptionalParen v1 ; SynExpr.stripOptionalParen v2 ]
@@ -725,6 +724,10 @@ module internal HttpClientGenerator =
         attrs
         |> List.choose (fun attr ->
             match attr.TypeName.AsString with
+            | "RestEase.Query"
+            | "RestEase.QueryAttribute"
+            | "WoofWare.Myriad.Plugins.RestEase.Query"
+            | "WoofWare.Myriad.Plugins.RestEase.QueryAttribute"
             | "Query"
             | "QueryAttribute" ->
                 match attr.ArgExpr with
@@ -733,6 +736,10 @@ module internal HttpClientGenerator =
                     Some (HttpAttribute.Query (Some s))
                 | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Query attribute: %+A{a}"
                 | _ -> None
+            | "RestEase.Path"
+            | "RestEase.PathAttribute"
+            | "WoofWare.Myriad.Plugins.RestEase.Path"
+            | "WoofWare.Myriad.Plugins.RestEase.PathAttribute"
             | "Path"
             | "PathAttribute" ->
                 match attr.ArgExpr with
@@ -741,6 +748,10 @@ module internal HttpClientGenerator =
                 | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Path PathSpec.MatchArgName)
                 | SynExpr.Const (a, _) -> failwith $"unrecognised constant arg to the Path attribute: %+A{a}"
                 | _ -> None
+            | "RestEase.Body"
+            | "RestEase.BodyAttribute"
+            | "WoofWare.Myriad.Plugins.RestEase.Body"
+            | "WoofWare.Myriad.Plugins.RestEase.BodyAttribute"
             | "Body"
             | "BodyAttribute" ->
                 match attr.ArgExpr with
@@ -756,8 +767,10 @@ module internal HttpClientGenerator =
             match attr.TypeName.AsString with
             | "BasePath"
             | "RestEase.BasePath"
+            | "WoofWare.Myriad.Plugins.RestEase.BasePath"
             | "BasePathAttribute"
-            | "RestEase.BasePathAttribute" -> Some attr.ArgExpr
+            | "RestEase.BasePathAttribute"
+            | "WoofWare.Myriad.Plugins.RestEase.BasePathAttribute" -> Some attr.ArgExpr
             | _ -> None
         )
 
@@ -767,8 +780,10 @@ module internal HttpClientGenerator =
             match attr.TypeName.AsString with
             | "BaseAddress"
             | "RestEase.BaseAddress"
+            | "WoofWare.Myriad.Plugins.RestEase.BaseAddress"
             | "BaseAddressAttribute"
-            | "RestEase.BaseAddressAttribute" -> Some attr.ArgExpr
+            | "RestEase.BaseAddressAttribute"
+            | "WoofWare.Myriad.Plugins.RestEase.BaseAddressAttribute" -> Some attr.ArgExpr
             | _ -> None
         )
 
