@@ -288,7 +288,52 @@ module PureGymApi =
                              | v -> v),
                             System.Uri (
                                 ("/v2/gymSessions/member"
-                                 + "?fromDate="
+                                 + (if "/v2/gymSessions/member".IndexOf (char 63) > 0 then
+                                        "&"
+                                    else
+                                        "?")
+                                 + "fromDate="
+                                 + ((fromDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)
+                                 + "&toDate="
+                                 + ((toDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    return Sessions.jsonParse jsonNode
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetSessionsWithQuery (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com"
+                             | v -> v),
+                            System.Uri (
+                                ("/v2/gymSessions/member?foo=1"
+                                 + (if "/v2/gymSessions/member?foo=1".IndexOf (char 63) > 0 then
+                                        "&"
+                                    else
+                                        "?")
+                                 + "fromDate="
                                  + ((fromDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)
                                  + "&toDate="
                                  + ((toDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)),

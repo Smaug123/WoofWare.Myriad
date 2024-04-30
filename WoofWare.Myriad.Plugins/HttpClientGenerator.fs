@@ -308,6 +308,27 @@ module internal HttpClientGenerator =
                     | None -> failwith "Unable to get parameter variable name from anonymous parameter"
                     | Some id -> id
 
+                let urlSeparator =
+                    // apparent Myriad bug: `IndexOf '?'` gets formatted as `IndexOf ?` which is clearly wrong
+                    let questionMark =
+                        SynExpr.CreateParen (
+                            SynExpr.CreateApp (
+                                SynExpr.CreateIdentString "char",
+                                SynExpr.CreateConst (SynConst.Int32 63)
+                            )
+                        )
+
+                    let containsQuestion =
+                        info.UrlTemplate
+                        |> SynExpr.callMethodArg "IndexOf" questionMark
+                        |> SynExpr.greaterThanOrEqual (SynExpr.CreateConst (SynConst.Int32 0))
+
+                    SynExpr.ifThenElse
+                        containsQuestion
+                        (SynExpr.CreateConst (SynConst.CreateString "?"))
+                        (SynExpr.CreateConst (SynConst.CreateString "&"))
+                    |> SynExpr.CreateParen
+
                 let prefix =
                     SynExpr.CreateIdent firstValueId
                     |> SynExpr.toString firstValue.Type
@@ -316,7 +337,7 @@ module internal HttpClientGenerator =
                         SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ])
                     )
                     |> SynExpr.CreateParen
-                    |> SynExpr.plus (SynExpr.CreateConstString ("?" + firstKey + "="))
+                    |> SynExpr.plus (SynExpr.plus urlSeparator (SynExpr.CreateConstString (firstKey + "=")))
 
                 (prefix, queryParams)
                 ||> List.fold (fun uri (paramKey, paramValue) ->

@@ -38,6 +38,10 @@ type IPureGymApi =
     abstract GetSessions :
         [<Query>] fromDate : DateOnly * [<Query>] toDate : DateOnly * ?ct : CancellationToken -> Task<Sessions>
 
+    [<Get "/v2/gymSessions/member?foo=1">]
+    abstract GetSessionsWithQuery :
+        [<Query>] fromDate : DateOnly * [<Query>] toDate : DateOnly * ?ct : CancellationToken -> Task<Sessions>
+
     // An example from RestEase's own docs
     [<Post "users/new">]
     abstract CreateUserString : [<Body>] user : string * ?ct : CancellationToken -> Task<string>

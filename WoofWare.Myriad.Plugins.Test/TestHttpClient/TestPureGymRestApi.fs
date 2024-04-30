@@ -234,6 +234,33 @@ module TestPureGymRestApi =
 
         api.GetSessions(startDate, endDate).Result |> shouldEqual expected
 
+    [<TestCaseSource(nameof sessionsCases)>]
+    let ``Test GetSessionsWithQuery``
+        (baseUri : Uri, (startDate : DateOnly, (endDate : DateOnly, (json : string, expected : Sessions))))
+        =
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.Method |> shouldEqual HttpMethod.Get
+
+                // This one is specified as being absolute, in its attribute on the IPureGymApi type
+                let expectedUri =
+                    let fromDate = dateOnlyToString startDate
+                    let toDate = dateOnlyToString endDate
+                    $"https://example.com/v2/gymSessions/member?foo=1&fromDate=%s{fromDate}&toDate=%s{toDate}"
+
+                message.RequestUri.ToString () |> shouldEqual expectedUri
+
+                let content = new StringContent (json)
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- content
+                return resp
+            }
+
+        use client = HttpClientMock.make baseUri proc
+        let api = PureGymApi.make client
+
+        api.GetSessionsWithQuery(startDate, endDate).Result |> shouldEqual expected
+
     [<Test>]
     let ``URI example`` () =
         let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
