@@ -288,7 +288,11 @@ module PureGymApi =
                              | v -> v),
                             System.Uri (
                                 ("/v2/gymSessions/member"
-                                 + "?fromDate="
+                                 + (if "/v2/gymSessions/member".IndexOf (char 63) > 0 then
+                                        "&"
+                                    else
+                                        "?")
+                                 + "fromDate="
                                  + ((fromDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)
                                  + "&toDate="
                                  + ((toDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)),
@@ -325,7 +329,11 @@ module PureGymApi =
                              | v -> v),
                             System.Uri (
                                 ("/v2/gymSessions/member?foo=1"
-                                 + "?fromDate="
+                                 + (if "/v2/gymSessions/member?foo=1".IndexOf (char 63) > 0 then
+                                        "&"
+                                    else
+                                        "?")
+                                 + "fromDate="
                                  + ((fromDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)
                                  + "&toDate="
                                  + ((toDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)),

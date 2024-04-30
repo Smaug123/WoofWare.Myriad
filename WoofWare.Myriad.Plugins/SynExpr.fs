@@ -311,3 +311,19 @@ module internal SynExpr =
             ),
             x
         )
+
+    /// {y} >= {x}
+    let greaterThanOrEqual (x : SynExpr) (y : SynExpr) : SynExpr =
+        SynExpr.CreateApp (
+            SynExpr.CreateAppInfix (
+                SynExpr.CreateLongIdent (
+                    SynLongIdent.SynLongIdent (
+                        [ Ident.Create "op_GreaterThan" ],
+                        [],
+                        [ Some (IdentTrivia.OriginalNotation ">") ]
+                    )
+                ),
+                y
+            ),
+            x
+        )
