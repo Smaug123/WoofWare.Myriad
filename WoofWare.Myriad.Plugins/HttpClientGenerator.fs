@@ -321,7 +321,7 @@ module internal HttpClientGenerator =
                     let containsQuestion =
                         info.UrlTemplate
                         |> SynExpr.callMethodArg "IndexOf" questionMark
-                        |> SynExpr.greaterThan (SynExpr.CreateConst (SynConst.Int32 0))
+                        |> SynExpr.greaterThanOrEqual (SynExpr.CreateConst (SynConst.Int32 0))
 
                     SynExpr.ifThenElse
                         containsQuestion

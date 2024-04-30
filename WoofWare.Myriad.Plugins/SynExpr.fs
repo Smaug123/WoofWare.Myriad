@@ -318,9 +318,9 @@ module internal SynExpr =
             SynExpr.CreateAppInfix (
                 SynExpr.CreateLongIdent (
                     SynLongIdent.SynLongIdent (
-                        [ Ident.Create "op_GreaterThan" ],
+                        [ Ident.Create "op_GreaterThanOrEqual" ],
                         [],
-                        [ Some (IdentTrivia.OriginalNotation ">") ]
+                        [ Some (IdentTrivia.OriginalNotation ">=") ]
                     )
                 ),
                 y
