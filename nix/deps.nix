@@ -13,8 +13,8 @@
   })
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.0.36";
-    sha256 = "sha256-xqIkMvjJD5UaAHYw8B0CU4h+fJvxNSVspMFro2dz0Rc=";
+    version = "4.0.39";
+    sha256 = "sha256-I4K5nJbltsfL/1r+KPTIo2wUd30zsCC2pkrnIRnsRHM=";
   })
   (fetchNuGet {
     pname = "Fantomas.Core";
