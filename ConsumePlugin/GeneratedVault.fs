@@ -650,7 +650,7 @@ open System.Threading
 open System.Threading.Tasks
 open RestEase
 
-/// Module for constructing a REST client.
+/// Extension methods for constructing a REST client.
 [<AutoOpen>]
 module VaultClientExtensionMethodHttpClientExtension =
     /// Create a REST client.

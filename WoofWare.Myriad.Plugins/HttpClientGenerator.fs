@@ -964,7 +964,13 @@ module internal HttpClientGenerator =
 
         let members = propertyMembers @ nonPropertyMembers
 
-        let docString = PreXmlDoc.Create " Module for constructing a REST client."
+        let docString =
+            (if spec.ExtensionMethods then
+                 "Extension methods"
+             else
+                 "Module")
+            |> sprintf " %s for constructing a REST client."
+            |> PreXmlDoc.Create
 
         let interfaceImpl =
             SynExpr.ObjExpr (
