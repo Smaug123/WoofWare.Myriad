@@ -104,5 +104,5 @@ type IVaultClientExtensionMethod =
     abstract GetJwt : role : string * jwt : string * ?ct : CancellationToken -> Task<JwtVaultResponse>
 
 [<RequireQualifiedAccess>]
-module VaultClientExtensionMethod =
-    let thisClashes = 99
+type VaultClientExtensionMethod =
+    static member thisClashes = 99

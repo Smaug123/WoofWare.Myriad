@@ -1006,51 +1006,114 @@ module internal HttpClientGenerator =
                 " Create a REST client."
             else
                 " Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties."
+            |> PreXmlDoc.Create
+
+        let functionName = Ident.Create "client"
+
+        let valData =
+            let memberFlags =
+                if spec.ExtensionMethods then
+                    {
+                        SynMemberFlags.IsInstance = false
+                        SynMemberFlags.IsDispatchSlot = false
+                        SynMemberFlags.IsOverrideOrExplicitImpl = false
+                        SynMemberFlags.IsFinal = false
+                        SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
+                        SynMemberFlags.MemberKind = SynMemberKind.Member
+                    }
+                    |> Some
+                else
+                    None
+
+            SynValData.SynValData (
+                memberFlags,
+                SynValInfo.SynValInfo ([ [ SynArgInfo.SynArgInfo ([], false, Some functionName) ] ], SynArgInfo.Empty),
+                None
+            )
+
+        let pattern =
+            SynPat.CreateLongIdent (SynLongIdent.CreateString "make", headerArgs @ [ clientCreationArg ])
+
+        let returnInfo =
+            SynBindingReturnInfo.Create (SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name))
+
+        let nameWithoutLeadingI =
+            List.last interfaceType.Name
+            |> _.idText
+            |> fun s ->
+                if s.StartsWith 'I' then
+                    s.[1..]
+                else
+                    failwith $"Expected interface type to start with 'I', but was: %s{s}"
 
         let createFunc =
-            SynBinding.SynBinding (
-                None,
-                SynBindingKind.Normal,
-                false,
-                false,
-                [],
-                PreXmlDoc.Create xmlDoc,
-                SynValData.SynValData (
-                    None,
-                    SynValInfo.SynValInfo (
-                        [ [ SynArgInfo.SynArgInfo ([], false, Some (Ident.Create "client")) ] ],
-                        SynArgInfo.Empty
-                    ),
-                    None
-                ),
-                SynPat.CreateLongIdent (SynLongIdent.CreateString "make", headerArgs @ [ clientCreationArg ]),
-                Some (
-                    SynBindingReturnInfo.Create (
-                        SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name)
+            if spec.ExtensionMethods then
+                let binding =
+                    SynBinding.SynBinding (
+                        None,
+                        SynBindingKind.Normal,
+                        false,
+                        false,
+                        [],
+                        xmlDoc,
+                        valData,
+                        pattern,
+                        Some returnInfo,
+                        interfaceImpl,
+                        range0,
+                        DebugPointAtBinding.NoneAtInvisible,
+                        {
+                            LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
+                            InlineKeyword = None
+                            EqualsRange = Some range0
+                        }
                     )
-                ),
-                interfaceImpl,
-                range0,
-                DebugPointAtBinding.NoneAtLet,
-                SynExpr.synBindingTriviaZero false
-            )
-            |> List.singleton
-            |> SynModuleDecl.CreateLet
+
+                let mem = SynMemberDefn.Member (binding, range0)
+
+                let containingType =
+                    SynTypeDefn.SynTypeDefn (
+                        SynComponentInfo.Create (
+                            [ Ident.Create nameWithoutLeadingI ],
+                            xmldoc = PreXmlDoc.Create " Extension methods for HTTP clients"
+                        ),
+                        SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Augmentation range0, [], range0),
+                        [ mem ],
+                        None,
+                        range0,
+                        {
+                            LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
+                            EqualsRange = None
+                            WithKeyword = None
+                        }
+                    )
+
+                SynModuleDecl.Types ([ containingType ], range0)
+
+            else
+                SynBinding.SynBinding (
+                    None,
+                    SynBindingKind.Normal,
+                    false,
+                    false,
+                    [],
+                    xmlDoc,
+                    valData,
+                    pattern,
+                    Some returnInfo,
+                    interfaceImpl,
+                    range0,
+                    DebugPointAtBinding.NoneAtLet,
+                    SynExpr.synBindingTriviaZero false
+                )
+                |> List.singleton
+                |> SynModuleDecl.CreateLet
 
         let moduleName : LongIdent =
-            let name =
-                List.last interfaceType.Name
-                |> _.idText
-                |> fun s ->
-                    if s.StartsWith 'I' then
-                        s.[1..]
-                    else
-                        failwith $"Expected interface type to start with 'I', but was: %s{s}"
-
             if spec.ExtensionMethods then
-                [ Ident.Create (name + "HttpClientExtension") ]
+                [ Ident.Create (nameWithoutLeadingI + "HttpClientExtension") ]
             else
-                [ Ident.Create name ]
+                [ Ident.Create nameWithoutLeadingI ]
 
         let attribs =
             if spec.ExtensionMethods then
