@@ -653,7 +653,7 @@ open RestEase
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<RequireQualifiedAccess>]
-module VaultClientExtensionMethod =
+module VaultClientExtensionMethodHttpClientExtension =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IVaultClientExtensionMethod =
         { new IVaultClientExtensionMethod with

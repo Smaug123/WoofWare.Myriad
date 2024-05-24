@@ -816,7 +816,7 @@ module internal HttpClientGenerator =
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
-        (interfaceType : SynTypeDefn, outputSpec : HttpClientGeneratorOutputSpec)
+        (interfaceType : SynTypeDefn, spec : HttpClientGeneratorOutputSpec)
         : SynModuleOrNamespace
         =
         let interfaceType = AstHelper.parseInterface interfaceType
@@ -1032,15 +1032,19 @@ module internal HttpClientGenerator =
             |> SynModuleDecl.CreateLet
 
         let moduleName : LongIdent =
-            List.last interfaceType.Name
-            |> _.idText
-            |> fun s ->
-                if s.StartsWith 'I' then
-                    s.[1..]
-                else
-                    failwith $"Expected interface type to start with 'I', but was: %s{s}"
-            |> Ident.Create
-            |> List.singleton
+            let name =
+                List.last interfaceType.Name
+                |> _.idText
+                |> fun s ->
+                    if s.StartsWith 'I' then
+                        s.[1..]
+                    else
+                        failwith $"Expected interface type to start with 'I', but was: %s{s}"
+
+            if spec.ExtensionMethods then
+                [ Ident.Create (name + "HttpClientExtension") ]
+            else
+                [ Ident.Create name ]
 
         let attribs =
             [

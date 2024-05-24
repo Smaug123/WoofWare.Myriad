@@ -87,8 +87,10 @@ module TestVaultClient =
     }
 }"""
 
-    [<Test>]
-    let ``URI example`` () =
+    [<TestCase 1>]
+    [<TestCase 2>]
+    [<TestCase 3>]
+    let ``URI example`` (vaultClientId : int) =
         let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
             async {
                 message.Method |> shouldEqual HttpMethod.Get
@@ -112,10 +114,25 @@ module TestVaultClient =
             }
 
         use client = HttpClientMock.make (Uri "https://my-vault.com") proc
-        let api = VaultClient.make client
 
-        let vaultResponse = api.GetJwt("role", "jwt").Result
-        let value = api.GetSecret(vaultResponse, "path", "mount").Result
+        let value =
+            match vaultClientId with
+            | 1 ->
+                let api = VaultClient.make client
+                let vaultResponse = api.GetJwt("role", "jwt").Result
+                let value = api.GetSecret(vaultResponse, "path", "mount").Result
+                value
+            | 2 ->
+                let api = VaultClientNonExtensionMethod.make client
+                let vaultResponse = api.GetJwt("role", "jwt").Result
+                let value = api.GetSecret(vaultResponse, "path", "mount").Result
+                value
+            | 3 ->
+                let api = VaultClientExtensionMethod.make client
+                let vaultResponse = api.GetJwt("role", "jwt").Result
+                let value = api.GetSecret(vaultResponse, "path", "mount").Result
+                value
+            | _ -> failwith $"Unrecognised ID: %i{vaultClientId}"
 
         value.Data
         |> Seq.toList
