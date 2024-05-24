@@ -7,6 +7,8 @@ open FsUnitTyped
 
 [<TestFixture>]
 module TestJsonParse =
+    let _canSeePastExtensionMethod = ToGetExtensionMethod.thisModuleWouldClash
+
     [<Test>]
     let ``Single example`` () =
         let s =

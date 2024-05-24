@@ -76,3 +76,33 @@ type IVaultClient =
 
     [<Get "v1/auth/jwt/login">]
     abstract GetJwt : role : string * jwt : string * ?ct : CancellationToken -> Task<JwtVaultResponse>
+
+[<WoofWare.Myriad.Plugins.HttpClient false>]
+type IVaultClientNonExtensionMethod =
+    [<Get "v1/{mountPoint}/{path}">]
+    abstract GetSecret :
+        jwt : JwtVaultResponse *
+        [<Path "path">] path : string *
+        [<Path "mountPoint">] mountPoint : string *
+        ?ct : CancellationToken ->
+            Task<JwtSecretResponse>
+
+    [<Get "v1/auth/jwt/login">]
+    abstract GetJwt : role : string * jwt : string * ?ct : CancellationToken -> Task<JwtVaultResponse>
+
+[<WoofWare.Myriad.Plugins.HttpClient(true)>]
+type IVaultClientExtensionMethod =
+    [<Get "v1/{mountPoint}/{path}">]
+    abstract GetSecret :
+        jwt : JwtVaultResponse *
+        [<Path "path">] path : string *
+        [<Path "mountPoint">] mountPoint : string *
+        ?ct : CancellationToken ->
+            Task<JwtSecretResponse>
+
+    [<Get "v1/auth/jwt/login">]
+    abstract GetJwt : role : string * jwt : string * ?ct : CancellationToken -> Task<JwtVaultResponse>
+
+[<RequireQualifiedAccess>]
+type VaultClientExtensionMethod =
+    static member thisClashes = 99

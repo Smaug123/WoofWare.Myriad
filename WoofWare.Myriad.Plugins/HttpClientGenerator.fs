@@ -6,6 +6,11 @@ open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
 
+type internal HttpClientGeneratorOutputSpec =
+    {
+        ExtensionMethods : bool
+    }
+
 [<RequireQualifiedAccess>]
 module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range
@@ -811,7 +816,7 @@ module internal HttpClientGenerator =
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
-        (interfaceType : SynTypeDefn)
+        (interfaceType : SynTypeDefn, spec : HttpClientGeneratorOutputSpec)
         : SynModuleOrNamespace
         =
         let interfaceType = AstHelper.parseInterface interfaceType
@@ -959,7 +964,13 @@ module internal HttpClientGenerator =
 
         let members = propertyMembers @ nonPropertyMembers
 
-        let docString = PreXmlDoc.Create " Module for constructing a REST client."
+        let docString =
+            (if spec.ExtensionMethods then
+                 "Extension methods"
+             else
+                 "Module")
+            |> sprintf " %s for constructing a REST client."
+            |> PreXmlDoc.Create
 
         let interfaceImpl =
             SynExpr.ObjExpr (
@@ -995,38 +1006,38 @@ module internal HttpClientGenerator =
                 " Create a REST client."
             else
                 " Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties."
+            |> PreXmlDoc.Create
 
-        let createFunc =
-            SynBinding.SynBinding (
-                None,
-                SynBindingKind.Normal,
-                false,
-                false,
-                [],
-                PreXmlDoc.Create xmlDoc,
-                SynValData.SynValData (
-                    None,
-                    SynValInfo.SynValInfo (
-                        [ [ SynArgInfo.SynArgInfo ([], false, Some (Ident.Create "client")) ] ],
-                        SynArgInfo.Empty
-                    ),
+        let functionName = Ident.Create "client"
+
+        let valData =
+            let memberFlags =
+                if spec.ExtensionMethods then
+                    {
+                        SynMemberFlags.IsInstance = false
+                        SynMemberFlags.IsDispatchSlot = false
+                        SynMemberFlags.IsOverrideOrExplicitImpl = false
+                        SynMemberFlags.IsFinal = false
+                        SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
+                        SynMemberFlags.MemberKind = SynMemberKind.Member
+                    }
+                    |> Some
+                else
                     None
-                ),
-                SynPat.CreateLongIdent (SynLongIdent.CreateString "make", headerArgs @ [ clientCreationArg ]),
-                Some (
-                    SynBindingReturnInfo.Create (
-                        SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name)
-                    )
-                ),
-                interfaceImpl,
-                range0,
-                DebugPointAtBinding.NoneAtLet,
-                SynExpr.synBindingTriviaZero false
-            )
-            |> List.singleton
-            |> SynModuleDecl.CreateLet
 
-        let moduleName : LongIdent =
+            SynValData.SynValData (
+                memberFlags,
+                SynValInfo.SynValInfo ([ [ SynArgInfo.SynArgInfo ([], false, Some functionName) ] ], SynArgInfo.Empty),
+                None
+            )
+
+        let pattern =
+            SynPat.CreateLongIdent (SynLongIdent.CreateString "make", headerArgs @ [ clientCreationArg ])
+
+        let returnInfo =
+            SynBindingReturnInfo.Create (SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name))
+
+        let nameWithoutLeadingI =
             List.last interfaceType.Name
             |> _.idText
             |> fun s ->
@@ -1034,14 +1045,84 @@ module internal HttpClientGenerator =
                     s.[1..]
                 else
                     failwith $"Expected interface type to start with 'I', but was: %s{s}"
-            |> Ident.Create
-            |> List.singleton
+
+        let createFunc =
+            if spec.ExtensionMethods then
+                let binding =
+                    SynBinding.SynBinding (
+                        None,
+                        SynBindingKind.Normal,
+                        false,
+                        false,
+                        [],
+                        xmlDoc,
+                        valData,
+                        pattern,
+                        Some returnInfo,
+                        interfaceImpl,
+                        range0,
+                        DebugPointAtBinding.NoneAtInvisible,
+                        {
+                            LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
+                            InlineKeyword = None
+                            EqualsRange = Some range0
+                        }
+                    )
+
+                let mem = SynMemberDefn.Member (binding, range0)
+
+                let containingType =
+                    SynTypeDefn.SynTypeDefn (
+                        SynComponentInfo.Create (
+                            [ Ident.Create nameWithoutLeadingI ],
+                            xmldoc = PreXmlDoc.Create " Extension methods for HTTP clients"
+                        ),
+                        SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Augmentation range0, [], range0),
+                        [ mem ],
+                        None,
+                        range0,
+                        {
+                            LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
+                            EqualsRange = None
+                            WithKeyword = None
+                        }
+                    )
+
+                SynModuleDecl.Types ([ containingType ], range0)
+
+            else
+                SynBinding.SynBinding (
+                    None,
+                    SynBindingKind.Normal,
+                    false,
+                    false,
+                    [],
+                    xmlDoc,
+                    valData,
+                    pattern,
+                    Some returnInfo,
+                    interfaceImpl,
+                    range0,
+                    DebugPointAtBinding.NoneAtLet,
+                    SynExpr.synBindingTriviaZero false
+                )
+                |> List.singleton
+                |> SynModuleDecl.CreateLet
+
+        let moduleName : LongIdent =
+            if spec.ExtensionMethods then
+                [ Ident.Create (nameWithoutLeadingI + "HttpClientExtension") ]
+            else
+                [ Ident.Create nameWithoutLeadingI ]
 
         let attribs =
-            [
-                SynAttributeList.Create SynAttribute.compilationRepresentation
-                SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-            ]
+            if spec.ExtensionMethods then
+                [ SynAttributeList.Create SynAttribute.autoOpen ]
+            else
+                [
+                    SynAttributeList.Create SynAttribute.compilationRepresentation
+                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
+                ]
 
         let modInfo =
             SynComponentInfo.Create (
@@ -1079,9 +1160,29 @@ type HttpClientGenerator () =
             let namespaceAndTypes =
                 types
                 |> List.choose (fun (ns, types) ->
-                    match types |> List.filter Ast.hasAttribute<HttpClientAttribute> with
-                    | [] -> None
-                    | types -> Some (ns, types)
+                    types
+                    |> List.choose (fun typeDef ->
+                        match Ast.getAttribute<HttpClientAttribute> typeDef with
+                        | None -> None
+                        | Some attr ->
+                            let arg =
+                                match SynExpr.stripOptionalParen attr.ArgExpr with
+                                | SynExpr.Const (SynConst.Bool value, _) -> value
+                                | SynExpr.Const (SynConst.Unit, _) -> JsonParseAttribute.DefaultIsExtensionMethod
+                                | arg ->
+                                    failwith
+                                        $"Unrecognised argument %+A{arg} to [<%s{nameof HttpClientAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."
+
+                            let spec =
+                                {
+                                    ExtensionMethods = arg
+                                }
+
+                            Some (typeDef, spec)
+                    )
+                    |> function
+                        | [] -> None
+                        | ty -> Some (ns, ty)
                 )
 
             let modules =
