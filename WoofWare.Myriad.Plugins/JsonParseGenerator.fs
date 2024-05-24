@@ -327,7 +327,7 @@ module internal JsonParseGenerator =
         | BigInt ->
             SynExpr.CreateApp (
                 SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Numerics" ; "BigInteger" ; "Parse" ]),
-                node
+                SynExpr.CreateParen (node |> SynExpr.callMethod "ToJsonString")
             )
         | _ ->
             // Let's just hope that we've also got our own type annotation!
