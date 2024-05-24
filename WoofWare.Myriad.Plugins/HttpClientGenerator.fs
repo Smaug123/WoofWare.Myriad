@@ -6,6 +6,11 @@ open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
 
+type internal HttpClientGeneratorOutputSpec =
+    {
+        ExtensionMethods : bool
+    }
+
 [<RequireQualifiedAccess>]
 module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range
@@ -811,7 +816,7 @@ module internal HttpClientGenerator =
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
-        (interfaceType : SynTypeDefn)
+        (interfaceType : SynTypeDefn, outputSpec : HttpClientGeneratorOutputSpec)
         : SynModuleOrNamespace
         =
         let interfaceType = AstHelper.parseInterface interfaceType
@@ -1079,9 +1084,29 @@ type HttpClientGenerator () =
             let namespaceAndTypes =
                 types
                 |> List.choose (fun (ns, types) ->
-                    match types |> List.filter Ast.hasAttribute<HttpClientAttribute> with
-                    | [] -> None
-                    | types -> Some (ns, types)
+                    types
+                    |> List.choose (fun typeDef ->
+                        match Ast.getAttribute<HttpClientAttribute> typeDef with
+                        | None -> None
+                        | Some attr ->
+                            let arg =
+                                match SynExpr.stripOptionalParen attr.ArgExpr with
+                                | SynExpr.Const (SynConst.Bool value, _) -> value
+                                | SynExpr.Const (SynConst.Unit, _) -> JsonParseAttribute.DefaultIsExtensionMethod
+                                | arg ->
+                                    failwith
+                                        $"Unrecognised argument %+A{arg} to [<%s{nameof HttpClientAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."
+
+                            let spec =
+                                {
+                                    ExtensionMethods = arg
+                                }
+
+                            Some (typeDef, spec)
+                    )
+                    |> function
+                        | [] -> None
+                        | ty -> Some (ns, ty)
                 )
 
             let modules =
