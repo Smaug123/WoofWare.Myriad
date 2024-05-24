@@ -17,6 +17,9 @@ type IPureGymApi =
     [<Get "v1/gyms/{gym_id}/attendance">]
     abstract GetGymAttendance : [<Path "gym_id">] gymId : int * ?ct : CancellationToken -> Task<GymAttendance>
 
+    [<Get "v1/gyms/{gym_id}/attendance">]
+    abstract GetGymAttendance' : [<Path("gym_id")>] gymId : int * ?ct : CancellationToken -> Task<GymAttendance>
+
     [<RestEase.GetAttribute "v1/member">]
     abstract GetMember : ?ct : CancellationToken -> Member Task
 

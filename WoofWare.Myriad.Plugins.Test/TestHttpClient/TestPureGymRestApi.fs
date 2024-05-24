@@ -89,6 +89,7 @@ module TestPureGymRestApi =
         let api = PureGymApi.make client
 
         api.GetGymAttendance(requestedGym).Result |> shouldEqual expected
+        api.GetGymAttendance'(requestedGym).Result |> shouldEqual expected
 
     let memberCases =
         PureGymDtos.memberCases |> List.allPairs baseUris |> List.map TestCaseData
