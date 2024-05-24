@@ -168,3 +168,5 @@ module TestVaultClient =
                 "key8_1", "https://example.com/data8/1"
                 "key8_2", "https://example.com/data8/2"
             ]
+
+    let _canSeePastExtensionMethod = VaultClientExtensionMethod.thisClashes
