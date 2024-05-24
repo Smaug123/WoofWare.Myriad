@@ -32,10 +32,27 @@ type JsonRecordType =
 [<WoofWare.Myriad.Plugins.JsonParse true>]
 type ToGetExtensionMethod =
     {
-        Tinker : string
-        Tailor : int
-        Soldier : System.Uri
-        Sailor : float
+        Alpha : string
+        Bravo : System.Uri
+        Charlie : float
+        Delta : float32
+        Echo : single
+        Foxtrot : double
+        Golf : int64
+        Hotel : uint64
+        India : int
+        Juliette : uint
+        Kilo : int32
+        Lima : uint32
+        Mike : int16
+        November : uint16
+        Oscar : int8
+        Papa : uint8
+        Quebec : byte
+        Tango : sbyte
+        Uniform : decimal
+        Victor : char
+        Whiskey : bigint
     }
 
 [<RequireQualifiedAccess>]
