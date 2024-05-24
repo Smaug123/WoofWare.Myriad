@@ -107,24 +107,6 @@ module internal SynExpr =
         | SynExpr.Paren (expr, _, _, _) -> stripOptionalParen expr
         | expr -> expr
 
-    /// Given e.g. "byte", returns "System.Byte".
-    let qualifyPrimitiveType (typeName : string) : LongIdent =
-        match typeName with
-        | "float32" -> [ "System" ; "Single" ]
-        | "float" -> [ "System" ; "Double" ]
-        | "byte"
-        | "uint8" -> [ "System" ; "Byte" ]
-        | "sbyte" -> [ "System" ; "SByte" ]
-        | "int16" -> [ "System" ; "Int16" ]
-        | "int" -> [ "System" ; "Int32" ]
-        | "int64" -> [ "System" ; "Int64" ]
-        | "uint16" -> [ "System" ; "UInt16" ]
-        | "uint"
-        | "uint32" -> [ "System" ; "UInt32" ]
-        | "uint64" -> [ "System" ; "UInt64" ]
-        | _ -> failwith $"Unable to identify a parsing function `string -> %s{typeName}`"
-        |> List.map Ident.Create
-
     /// {obj}.{meth} {arg}
     let callMethodArg (meth : string) (arg : SynExpr) (obj : SynExpr) : SynExpr =
         SynExpr.CreateApp (
@@ -141,8 +123,22 @@ module internal SynExpr =
     let callMethod (meth : string) (obj : SynExpr) : SynExpr =
         callMethodArg meth (SynExpr.CreateConst SynConst.Unit) obj
 
+    let callGenericMethod (meth : string) (ty : LongIdent) (obj : SynExpr) : SynExpr =
+        SynExpr.CreateApp (
+            SynExpr.TypeApp (
+                SynExpr.DotGet (obj, range0, SynLongIdent.Create [ meth ], range0),
+                range0,
+                [ SynType.LongIdent (SynLongIdent.CreateFromLongIdent ty) ],
+                [],
+                Some range0,
+                range0,
+                range0
+            ),
+            SynExpr.CreateConst SynConst.Unit
+        )
+
     /// {obj}.{meth}<ty>()
-    let callGenericMethod (meth : string) (ty : string) (obj : SynExpr) : SynExpr =
+    let callGenericMethod' (meth : string) (ty : string) (obj : SynExpr) : SynExpr =
         SynExpr.CreateApp (
             SynExpr.TypeApp (
                 SynExpr.DotGet (obj, range0, SynLongIdent.Create [ meth ], range0),

@@ -66,6 +66,13 @@ module internal JsonParseGenerator =
         | None -> node
         | Some propertyName -> assertNotNull propertyName node
         |> SynExpr.callMethod "AsValue"
+        |> SynExpr.callGenericMethod' "GetValue" typeName
+
+    let asValueGetValueIdent (propertyName : SynExpr option) (typeName : LongIdent) (node : SynExpr) : SynExpr =
+        match propertyName with
+        | None -> node
+        | Some propertyName -> assertNotNull propertyName node
+        |> SynExpr.callMethod "AsValue"
         |> SynExpr.callGenericMethod "GetValue" typeName
 
     /// {node}.AsObject()
@@ -122,7 +129,12 @@ module internal JsonParseGenerator =
 
     /// Given e.g. "float", returns "System.Double.Parse"
     let parseFunction (typeName : string) : LongIdent =
-        List.append (SynExpr.qualifyPrimitiveType typeName) [ Ident.Create "Parse" ]
+        let qualified =
+            match AstHelper.qualifyPrimitiveType typeName with
+            | Some x -> x
+            | None -> failwith $"Could not recognise type %s{typeName} as a primitive."
+
+        List.append qualified [ Ident.Create "Parse" ]
 
     /// fun kvp -> let key = {key(kvp)} in let value = {value(kvp)} in (key, value))
     /// The inputs will be fed with appropriate SynExprs to apply them to the `kvp.Key` and `kvp.Value` args.
@@ -252,7 +264,7 @@ module internal JsonParseGenerator =
                         range0
                     ))
                     handler
-        | PrimitiveType typeName -> asValueGetValue propertyName typeName node
+        | PrimitiveType typeName -> asValueGetValueIdent propertyName typeName node
         | OptionType ty ->
             parseNode None options ty (SynExpr.CreateIdentString "v")
             |> createParseLineOption node
@@ -312,6 +324,11 @@ module internal JsonParseGenerator =
                 )
             )
             |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Map" ; "ofSeq" ]))
+        | BigInt ->
+            SynExpr.CreateApp (
+                SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Numerics" ; "BigInteger" ; "Parse" ]),
+                node
+            )
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =
