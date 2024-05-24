@@ -651,8 +651,7 @@ open System.Threading.Tasks
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-[<RequireQualifiedAccess>]
+[<AutoOpen>]
 module VaultClientExtensionMethodHttpClientExtension =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IVaultClientExtensionMethod =

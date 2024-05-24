@@ -1047,10 +1047,13 @@ module internal HttpClientGenerator =
                 [ Ident.Create name ]
 
         let attribs =
-            [
-                SynAttributeList.Create SynAttribute.compilationRepresentation
-                SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-            ]
+            if spec.ExtensionMethods then
+                [ SynAttributeList.Create SynAttribute.autoOpen ]
+            else
+                [
+                    SynAttributeList.Create SynAttribute.compilationRepresentation
+                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
+                ]
 
         let modInfo =
             SynComponentInfo.Create (
