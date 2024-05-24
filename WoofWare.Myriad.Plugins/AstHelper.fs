@@ -98,6 +98,30 @@ type internal AdtProduct =
 [<RequireQualifiedAccess>]
 module internal AstHelper =
 
+    /// Given e.g. "byte", returns "System.Byte".
+    let qualifyPrimitiveType (typeName : string) : LongIdent option =
+        match typeName with
+        | "float32"
+        | "single" -> [ "System" ; "Single" ] |> Some
+        | "float"
+        | "double" -> [ "System" ; "Double" ] |> Some
+        | "byte"
+        | "uint8" -> [ "System" ; "Byte" ] |> Some
+        | "sbyte"
+        | "int8" -> [ "System" ; "SByte" ] |> Some
+        | "int16" -> [ "System" ; "Int16" ] |> Some
+        | "int"
+        | "int32" -> [ "System" ; "Int32" ] |> Some
+        | "int64" -> [ "System" ; "Int64" ] |> Some
+        | "uint16" -> [ "System" ; "UInt16" ] |> Some
+        | "uint"
+        | "uint32" -> [ "System" ; "UInt32" ] |> Some
+        | "uint64" -> [ "System" ; "UInt64" ] |> Some
+        | "char" -> [ "System" ; "Char" ] |> Some
+        | "decimal" -> [ "System" ; "Decimal" ] |> Some
+        | _ -> None
+        |> Option.map (List.map Ident.Create)
+
     let instantiateRecord (fields : (RecordFieldName * SynExpr option) list) : SynExpr =
         let fields =
             fields
@@ -557,14 +581,23 @@ module internal SynTypePatterns =
             Some (key, value)
         | _ -> None
 
-    /// Returns the string name of the type.
-    let (|PrimitiveType|_|) (fieldType : SynType) =
+    let (|BigInt|_|) (fieldType : SynType) : unit option =
+        match fieldType with
+        | SynType.LongIdent ident ->
+            match ident.LongIdent |> List.map _.idText with
+            | [ "bigint" ]
+            | [ "BigInteger" ]
+            | [ "Numerics" ; "BigInteger" ]
+            | [ "System" ; "Numerics" ; "BigInteger" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
+    /// Returns the type, qualified as in e.g. `System.Boolean`.
+    let (|PrimitiveType|_|) (fieldType : SynType) : LongIdent option =
         match fieldType with
         | SynType.LongIdent ident ->
             match ident.LongIdent with
-            | [ i ] ->
-                [ "string" ; "float" ; "int" ; "bool" ; "char" ]
-                |> List.tryFind (fun s -> s = i.idText)
+            | [ i ] -> AstHelper.qualifyPrimitiveType i.idText
             | _ -> None
         | _ -> None
 

@@ -129,24 +129,230 @@ module ToGetExtensionMethodJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ToGetExtensionMethod =
-            let Sailor =
-                (match node.["sailor"] with
+            let Whiskey = System.Numerics.BigInteger.Parse (node.["whiskey"].ToJsonString ())
+
+            let Victor =
+                (match node.["victor"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("sailor")
+                             sprintf "Required key '%s' not found on JSON object" ("victor")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Char> ()
+
+            let Uniform =
+                (match node.["uniform"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("uniform")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Decimal> ()
+
+            let Tango =
+                (match node.["tango"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("tango")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.SByte> ()
+
+            let Quebec =
+                (match node.["quebec"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("quebec")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Byte> ()
+
+            let Papa =
+                (match node.["papa"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("papa")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Byte> ()
+
+            let Oscar =
+                (match node.["oscar"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("oscar")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.SByte> ()
+
+            let November =
+                (match node.["november"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("november")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.UInt16> ()
+
+            let Mike =
+                (match node.["mike"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("mike")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Int16> ()
+
+            let Lima =
+                (match node.["lima"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("lima")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.UInt32> ()
+
+            let Kilo =
+                (match node.["kilo"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("kilo")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Int32> ()
+
+            let Juliette =
+                (match node.["juliette"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("juliette")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.UInt32> ()
+
+            let India =
+                (match node.["india"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("india")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<int> ()
+
+            let Hotel =
+                (match node.["hotel"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("hotel")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.UInt64> ()
+
+            let Golf =
+                (match node.["golf"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("golf")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Int64> ()
+
+            let Foxtrot =
+                (match node.["foxtrot"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("foxtrot")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Double> ()
+
+            let Echo =
+                (match node.["echo"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("echo")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Single> ()
+
+            let Delta =
+                (match node.["delta"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("delta")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Single> ()
+
+            let Charlie =
+                (match node.["charlie"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("charlie")
                          )
                      )
                  | v -> v)
                     .AsValue()
                     .GetValue<float> ()
 
-            let Soldier =
-                (match node.["soldier"] with
+            let Bravo =
+                (match node.["bravo"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("soldier")
+                             sprintf "Required key '%s' not found on JSON object" ("bravo")
                          )
                      )
                  | v -> v)
@@ -154,24 +360,12 @@ module ToGetExtensionMethodJsonParseExtension =
                     .GetValue<string> ()
                 |> System.Uri
 
-            let Tailor =
-                (match node.["tailor"] with
+            let Alpha =
+                (match node.["alpha"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("tailor")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<int> ()
-
-            let Tinker =
-                (match node.["tinker"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("tinker")
+                             sprintf "Required key '%s' not found on JSON object" ("alpha")
                          )
                      )
                  | v -> v)
@@ -179,8 +373,25 @@ module ToGetExtensionMethodJsonParseExtension =
                     .GetValue<string> ()
 
             {
-                Tinker = Tinker
-                Tailor = Tailor
-                Soldier = Soldier
-                Sailor = Sailor
+                Alpha = Alpha
+                Bravo = Bravo
+                Charlie = Charlie
+                Delta = Delta
+                Echo = Echo
+                Foxtrot = Foxtrot
+                Golf = Golf
+                Hotel = Hotel
+                India = India
+                Juliette = Juliette
+                Kilo = Kilo
+                Lima = Lima
+                Mike = Mike
+                November = November
+                Oscar = Oscar
+                Papa = Papa
+                Quebec = Quebec
+                Tango = Tango
+                Uniform = Uniform
+                Victor = Victor
+                Whiskey = Whiskey
             }

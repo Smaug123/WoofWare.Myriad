@@ -210,7 +210,7 @@ module InnerTypeWithBothJsonParseExtension =
 
                     let value =
                         (kvp.Value).AsArray ()
-                        |> Seq.map (fun elt -> elt.AsValue().GetValue<char> ())
+                        |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Char> ())
                         |> List.ofSeq
 
                     key, value

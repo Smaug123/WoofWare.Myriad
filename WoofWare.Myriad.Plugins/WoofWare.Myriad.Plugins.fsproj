@@ -27,7 +27,7 @@
     <Compile Include="List.fs"/>
     <Compile Include="Ident.fs" />
     <Compile Include="AstHelper.fs"/>
-    <Compile Include="SynExpr.fs"/>
+    <Compile Include="SynExpr.fs" />
     <Compile Include="SynType.fs"/>
     <Compile Include="SynAttribute.fs"/>
     <Compile Include="RemoveOptionsGenerator.fs"/>
