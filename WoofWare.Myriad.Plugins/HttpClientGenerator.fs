@@ -763,7 +763,7 @@ module internal HttpClientGenerator =
             | "WoofWare.Myriad.Plugins.RestEase.PathAttribute"
             | "Path"
             | "PathAttribute" ->
-                match attr.ArgExpr with
+                match attr.ArgExpr |> SynExpr.stripOptionalParen with
                 | SynExpr.Const (SynConst.String (s, SynStringKind.Regular, _), _) ->
                     Some (HttpAttribute.Path (PathSpec.Verbatim s))
                 | SynExpr.Const (SynConst.Unit, _) -> Some (HttpAttribute.Path PathSpec.MatchArgName)

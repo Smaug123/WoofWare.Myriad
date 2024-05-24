@@ -96,7 +96,11 @@ module PureGymApi =
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com"
                              | v -> v),
-                            System.Uri ("v1/gyms/{gym_id}/attendance", System.UriKind.Relative)
+                            System.Uri (
+                                "v1/gyms/{gym_id}/attendance"
+                                    .Replace ("{gym_id}", gymId.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
                         )
 
                     let httpMessage =
