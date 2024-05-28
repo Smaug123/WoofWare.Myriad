@@ -3,5 +3,13 @@
   "publicReleaseRefSpec": [
     "^refs/heads/main$"
   ],
-  "pathFilters": null
+  "pathFilters": [
+    ":/README.md",
+    ":/LICENSE",
+    ":/WoofWare.Myriad.Plugins/logo.png",
+    ":/Directory.Build.props",
+    ":/global.json",
+    "./",
+    "^./Test"
+  ]
 }
