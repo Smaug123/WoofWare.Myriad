@@ -3,5 +3,10 @@
   "publicReleaseRefSpec": [
     "^refs/heads/main$"
   ],
-  "pathFilters": null
+  "pathFilters": [
+    ":/",
+    ":^WoofWare.Myriad.Plugins.Test/",
+    ":^WoofWare.Myriad.Plugins.Attributes/Test/",
+    ":^/.github/"
+  ]
 }
