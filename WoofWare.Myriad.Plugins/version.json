@@ -7,6 +7,7 @@
     ":/",
     ":^WoofWare.Myriad.Plugins.Test/",
     ":^WoofWare.Myriad.Plugins.Attributes/Test/",
-    ":^/.github/"
+    ":^/.github/",
+    ":^/CHANGELOG.md"
   ]
 }
