@@ -279,75 +279,13 @@ module internal InterfaceMockGenerator =
             |> Seq.map (fun inheritance ->
                 match inheritance with
                 | KnownInheritance.IDisposable ->
-                    let valData =
-                        SynValData.SynValData (
-                            Some
-                                {
-                                    IsInstance = true
-                                    IsDispatchSlot = false
-                                    IsOverrideOrExplicitImpl = true
-                                    IsFinal = false
-                                    GetterOrSetterIsCompilerGenerated = false
-                                    MemberKind = SynMemberKind.Member
-                                },
-                            valInfo =
-                                SynValInfo.SynValInfo (
-                                    curriedArgInfos =
-                                        [
-                                            yield
-                                                [
-                                                    SynArgInfo.SynArgInfo (
-                                                        attributes = [],
-                                                        optional = false,
-                                                        ident = None
-                                                    )
-                                                ]
-                                        ],
-                                    returnInfo =
-                                        SynArgInfo.SynArgInfo (attributes = [], optional = false, ident = None)
-                                ),
-                            thisIdOpt = None
-                        )
-
-                    let headArgs = [ SynPat.Const (SynConst.Unit, range0) ]
-
-                    let headPat =
-                        SynPat.LongIdent (
-                            SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; Ident.Create "Dispose" ],
-                            None,
-                            None,
-                            SynArgPats.Pats headArgs,
-                            None,
-                            range0
-                        )
-
                     let binding =
-                        SynBinding.SynBinding (
-                            None,
-                            SynBindingKind.Normal,
-                            false,
-                            false,
-                            [],
-                            PreXmlDoc.Empty,
-                            valData,
-                            headPat,
-                            Some (
-                                SynBindingReturnInfo.SynBindingReturnInfo (
-                                    SynType.Unit (),
-                                    range0,
-                                    [],
-                                    SynBindingReturnInfoTrivia.Zero
-                                )
-                            ),
-                            SynExpr.CreateApp (SynExpr.createLongIdent [ "this" ; "Dispose" ], SynExpr.CreateUnit),
-                            range0,
-                            DebugPointAtBinding.Yes range0,
-                            {
-                                LeadingKeyword = SynLeadingKeyword.Member range0
-                                InlineKeyword = None
-                                EqualsRange = Some range0
-                            }
-                        )
+                        SynBinding.basic
+                            (SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; Ident.Create "Dispose" ])
+                            [ SynPat.CreateConst SynConst.Unit ]
+                            (SynExpr.CreateApp (SynExpr.createLongIdent [ "this" ; "Dispose" ], SynExpr.CreateUnit))
+                        |> SynBinding.withReturnAnnotation (SynType.Unit ())
+                        |> SynBinding.makeInstanceMember
 
                     let mem = SynMemberDefn.Member (binding, range0)
 
