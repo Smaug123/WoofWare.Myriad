@@ -198,11 +198,6 @@ jobs:
 
   github-release-plugin-dry-run:
     runs-on: ubuntu-latest
-    if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
-    needs: [all-required-checks-complete]
-    environment: main-deploy
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Download NuGet artifact (plugin)
