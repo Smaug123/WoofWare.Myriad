@@ -41,7 +41,7 @@ module FileSystemItemCata =
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.Process__FileSystemItem x ->
+            | Instruction.Process__FileSystemItem (x) ->
                 match x with
                 | FileSystemItem.Directory ({
                                                 Name = name
@@ -116,7 +116,7 @@ module GiftCata =
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.Process__Gift x ->
+            | Instruction.Process__Gift (x) ->
                 match x with
                 | Gift.Book (arg0_0) -> cata.Gift.Book arg0_0 |> giftStack.Add
                 | Gift.Chocolate (arg0_0) -> cata.Gift.Chocolate arg0_0 |> giftStack.Add

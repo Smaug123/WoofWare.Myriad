@@ -143,6 +143,9 @@ module InnerTypeWithBoth =
         node
 ```
 
+Also includes an *opinionated* serializer for discriminated unions.
+(Any such serializer must be opinionated, because JSON does not natively model DUs.)
+
 As in `JsonParse`, you can optionally supply the boolean `true` to the attribute,
 which will cause Myriad to stamp out an extension method rather than a module with the same name as the type.
 

@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Choice.fs" />
     <Compile Include="List.fs"/>
     <Compile Include="Ident.fs" />
     <Compile Include="AstHelper.fs"/>

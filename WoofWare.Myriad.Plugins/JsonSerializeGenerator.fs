@@ -117,9 +117,7 @@ module internal JsonSerializeGenerator =
                         SynExpr.CreateIdentString "arr"
                     ],
                 range0,
-                {
-                    InKeyword = None
-                }
+                SynExprLetOrUseTrivia.empty
             )
             |> SynExpr.createLambda "field"
         | IDictionaryType (keyType, valueType)
@@ -188,9 +186,7 @@ module internal JsonSerializeGenerator =
                         SynExpr.CreateIdentString "ret"
                     ],
                 range0,
-                {
-                    InKeyword = None
-                }
+                SynExprLetOrUseTrivia.empty
             )
             |> SynExpr.createLambda "field"
         | _ ->
@@ -204,7 +200,7 @@ module internal JsonSerializeGenerator =
 
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
     /// `node.Add ({propertyName}, {toJsonNode})`
-    let createSerializeRhs (propertyName : SynExpr) (fieldId : Ident) (fieldType : SynType) : SynExpr =
+    let createSerializeRhsRecord (propertyName : SynExpr) (fieldId : Ident) (fieldType : SynType) : SynExpr =
         let func = SynExpr.CreateLongIdent (SynLongIdent.Create [ "node" ; "Add" ])
 
         let args =
@@ -219,7 +215,24 @@ module internal JsonSerializeGenerator =
 
         SynExpr.CreateApp (func, args)
 
-    let createMaker (spec : JsonSerializeOutputSpec) (typeName : LongIdent) (fields : SynField list) =
+    let getPropertyName (fieldId : Ident) (attrs : SynAttribute list) : SynExpr =
+        let propertyNameAttr =
+            attrs
+            |> List.tryFind (fun attr -> attr.TypeName.AsString.EndsWith ("JsonPropertyName", StringComparison.Ordinal))
+
+        match propertyNameAttr with
+        | None ->
+            let sb = StringBuilder fieldId.idText.Length
+            sb.Append (Char.ToLowerInvariant fieldId.idText.[0]) |> ignore
+
+            if fieldId.idText.Length > 1 then
+                sb.Append fieldId.idText.[1..] |> ignore
+
+            sb.ToString () |> SynConst.CreateString |> SynExpr.CreateConst
+        | Some name -> name.ArgExpr
+
+
+    let recordModule (spec : JsonSerializeOutputSpec) (typeName : LongIdent) (fields : SynField list) =
         let xmlDoc = PreXmlDoc.Create " Serialize to a JSON node"
 
         let returnInfo =
@@ -253,7 +266,7 @@ module internal JsonSerializeGenerator =
                 thisIdOpt
             )
 
-        let assignments =
+        let fields =
             fields
             |> List.map (fun (SynField (attrs, _, id, fieldType, _, _, _, _, _)) ->
                 let id =
@@ -261,25 +274,13 @@ module internal JsonSerializeGenerator =
                     | None -> failwith "didn't get an ID on field"
                     | Some id -> id
 
+                attrs, id, fieldType
+            )
+
+        let assignments =
+            fields
+            |> List.map (fun (attrs, id, fieldType) ->
                 let attrs = attrs |> List.collect (fun l -> l.Attributes)
-
-                let propertyNameAttr =
-                    attrs
-                    |> List.tryFind (fun attr ->
-                        attr.TypeName.AsString.EndsWith ("JsonPropertyName", StringComparison.Ordinal)
-                    )
-
-                let propertyName =
-                    match propertyNameAttr with
-                    | None ->
-                        let sb = StringBuilder id.idText.Length
-                        sb.Append (Char.ToLowerInvariant id.idText.[0]) |> ignore
-
-                        if id.idText.Length > 1 then
-                            sb.Append id.idText.[1..] |> ignore
-
-                        sb.ToString () |> SynConst.CreateString |> SynExpr.CreateConst
-                    | Some name -> name.ArgExpr
 
                 let pattern =
                     SynPat.LongIdent (
@@ -291,17 +292,14 @@ module internal JsonSerializeGenerator =
                         range0
                     )
 
-                createSerializeRhs propertyName id fieldType
+                let propertyName = getPropertyName id attrs
+
+                createSerializeRhsRecord propertyName id fieldType
             )
 
         let finalConstruction =
             fields
-            |> List.map (fun (SynField (_, _, id, _, _, _, _, _, _)) ->
-                let id =
-                    match id with
-                    | None -> failwith "Expected record field to have an identifying name"
-                    | Some id -> id
-
+            |> List.map (fun (_, id, _) ->
                 (SynLongIdent.CreateFromLongIdent [ id ], true),
                 Some (SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ id ]))
             )
@@ -331,9 +329,247 @@ module internal JsonSerializeGenerator =
                         SynExpr.Upcast (SynExpr.CreateIdentString "node", SynType.Anon range0, range0)
                     ],
                 range0,
-                {
-                    InKeyword = None
-                }
+                SynExprLetOrUseTrivia.empty
+            )
+
+        let pattern =
+            SynPat.LongIdent (
+                SynLongIdent.CreateFromLongIdent [ functionName ],
+                None,
+                None,
+                SynArgPats.Pats
+                    [
+                        SynPat.CreateTyped (
+                            SynPat.CreateNamed inputArg,
+                            SynType.LongIdent (SynLongIdent.CreateFromLongIdent typeName)
+                        )
+                        |> SynPat.CreateParen
+                    ],
+                None,
+                range0
+            )
+
+        if spec.ExtensionMethods then
+            let binding =
+                SynBinding.SynBinding (
+                    None,
+                    SynBindingKind.Normal,
+                    false,
+                    false,
+                    [],
+                    xmlDoc,
+                    inputVal,
+                    pattern,
+                    Some returnInfo,
+                    assignments,
+                    range0,
+                    DebugPointAtBinding.NoneAtInvisible,
+                    {
+                        LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
+                        InlineKeyword = None
+                        EqualsRange = Some range0
+                    }
+                )
+
+            let mem = SynMemberDefn.Member (binding, range0)
+
+            let containingType =
+                SynTypeDefn.SynTypeDefn (
+                    SynComponentInfo.Create (typeName, xmldoc = PreXmlDoc.Create " Extension methods for JSON parsing"),
+                    SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Augmentation range0, [], range0),
+                    [ mem ],
+                    None,
+                    range0,
+                    {
+                        LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
+                        EqualsRange = None
+                        WithKeyword = None
+                    }
+                )
+
+            SynModuleDecl.Types ([ containingType ], range0)
+        else
+            let binding =
+                SynBinding.Let (
+                    isInline = false,
+                    isMutable = false,
+                    xmldoc = xmlDoc,
+                    returnInfo = returnInfo,
+                    expr = assignments,
+                    valData = inputVal,
+                    pattern = pattern
+                )
+
+            SynModuleDecl.CreateLet [ binding ]
+
+    let unionModule (spec : JsonSerializeOutputSpec) (typeName : LongIdent) (cases : SynUnionCase list) =
+        let xmlDoc = PreXmlDoc.Create " Serialize to a JSON node"
+
+        let returnInfo =
+            SynBindingReturnInfo.Create (
+                SynType.LongIdent (SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+            )
+
+        let inputArg = Ident.Create "input"
+        let functionName = Ident.Create "toJsonNode"
+
+        let inputVal =
+            let memberFlags =
+                if spec.ExtensionMethods then
+                    {
+                        SynMemberFlags.IsInstance = false
+                        SynMemberFlags.IsDispatchSlot = false
+                        SynMemberFlags.IsOverrideOrExplicitImpl = false
+                        SynMemberFlags.IsFinal = false
+                        SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
+                        SynMemberFlags.MemberKind = SynMemberKind.Member
+                    }
+                    |> Some
+                else
+                    None
+
+            let thisIdOpt = if spec.ExtensionMethods then None else Some inputArg
+
+            SynValData.SynValData (
+                memberFlags,
+                SynValInfo.SynValInfo ([ [ SynArgInfo.CreateId functionName ] ], SynArgInfo.Empty),
+                thisIdOpt
+            )
+
+        let cases =
+            cases
+            |> List.map (fun (SynUnionCase (attrs, SynIdent.SynIdent (id, _), caseType, _, _, _, _)) ->
+                match caseType with
+                | SynUnionCaseKind.FullType _ -> failwith "WoofWare.Myriad does not support FullType union cases."
+                | SynUnionCaseKind.Fields fields ->
+
+                let fields =
+                    fields
+                    |> List.map (fun (SynField (attrs, _, id, fieldType, _, _, _, _, _)) ->
+                        match id with
+                        | None -> failwith "WoofWare.Myriad requires all union fields to have names"
+                        | Some id ->
+
+                        let attrs = attrs |> List.collect (fun l -> l.Attributes)
+                        attrs, id, fieldType
+                    )
+                // As far as I can tell, there's no way to get any attributes here? :shrug:
+                let attrs = attrs |> List.collect (fun l -> l.Attributes)
+                attrs, id, fields
+            )
+
+        let matchClauses : SynMatchClause list =
+            cases
+            |> List.map (fun (attrs, id, caseType) ->
+                let propertyName = getPropertyName id attrs
+
+                let caseNames = caseType |> List.mapi (fun i _ -> Ident.Create $"arg%i{i}")
+
+                let argPats = SynArgPats.create caseNames
+
+                let pattern =
+                    SynPat.LongIdent (
+                        SynLongIdent.CreateFromLongIdent (typeName @ [ id ]),
+                        None,
+                        None,
+                        argPats,
+                        None,
+                        range0
+                    )
+
+                let typeLine =
+                    let func = SynExpr.CreateLongIdent (SynLongIdent.Create [ "node" ; "Add" ])
+
+                    let args =
+                        SynExpr.CreateParenedTuple
+                            [
+                                SynExpr.CreateConstString "type"
+                                SynExpr.CreateApp (
+                                    SynExpr.CreateLongIdent (
+                                        SynLongIdent.CreateString "System.Text.Json.Nodes.JsonValue.Create"
+                                    ),
+                                    propertyName
+                                )
+                            ]
+
+                    SynExpr.CreateApp (func, args)
+
+                let dataNode =
+                    SynBinding.Let (
+                        pattern = SynPat.CreateNamed (Ident.Create "dataNode"),
+                        expr =
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (
+                                    SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
+                                ),
+                                SynExpr.CreateConst SynConst.Unit
+                            )
+                    )
+
+                let dataBindings =
+                    (caseType, caseNames)
+                    ||> List.zip
+                    |> List.map (fun ((attrs, ident, synType), caseName) ->
+                        let propertyName = getPropertyName ident attrs
+                        let func = SynExpr.CreateLongIdent (SynLongIdent.Create [ "dataNode" ; "Add" ])
+                        let node = SynExpr.CreateApp (serializeNode synType, SynExpr.CreateIdent caseName)
+
+                        SynExpr.CreateApp (func, SynExpr.CreateParenedTuple [ propertyName ; node ])
+                    )
+
+                let assignToNode =
+                    let func = SynExpr.CreateLongIdent (SynLongIdent.Create [ "node" ; "Add" ])
+
+                    let args =
+                        SynExpr.CreateParenedTuple
+                            [ SynExpr.CreateConstString "data" ; SynExpr.CreateIdentString "dataNode" ]
+
+                    SynExpr.CreateApp (func, args)
+
+                let dataNode =
+                    SynExpr.LetOrUse (
+                        false,
+                        false,
+                        [ dataNode ],
+                        SynExpr.CreateSequential (dataBindings @ [ assignToNode ]),
+                        range0,
+                        SynExprLetOrUseTrivia.empty
+                    )
+
+                let action =
+                    [
+                        yield typeLine
+                        if not dataBindings.IsEmpty then
+                            yield dataNode
+                    ]
+                    |> SynExpr.CreateSequential
+
+                SynMatchClause.Create (pattern, None, action)
+            )
+
+        let assignments =
+            SynExpr.LetOrUse (
+                false,
+                false,
+                [
+                    SynBinding.Let (
+                        pattern = SynPat.CreateNamed (Ident.Create "node"),
+                        expr =
+                            SynExpr.CreateApp (
+                                SynExpr.CreateLongIdent (
+                                    SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
+                                ),
+                                SynExpr.CreateConst SynConst.Unit
+                            )
+                    )
+                ],
+                SynExpr.CreateSequential
+                    [
+                        SynExpr.CreateMatch (SynExpr.CreateIdent inputArg, matchClauses)
+                        SynExpr.Upcast (SynExpr.CreateIdentString "node", SynType.Anon range0, range0)
+                    ],
+                range0,
+                SynExprLetOrUseTrivia.empty
             )
 
         let pattern =
@@ -459,8 +695,10 @@ module internal JsonSerializeGenerator =
 
         let decls =
             match synTypeDefnRepr with
-            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, recordFields, _recordRange), _) ->
-                [ createMaker spec ident recordFields ]
+            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, recordFields, _range), _) ->
+                [ recordModule spec ident recordFields ]
+            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_accessibility, unionFields, _range), _) ->
+                [ unionModule spec ident unionFields ]
             | _ -> failwithf "Only record types currently supported."
 
         let mdl = SynModuleDecl.CreateNestedModule (info, decls)

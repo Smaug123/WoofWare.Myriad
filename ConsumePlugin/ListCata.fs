@@ -41,7 +41,7 @@ module MyListCata =
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.Process__MyList x ->
+            | Instruction.Process__MyList (x) ->
                 match x with
                 | MyList.Nil -> cata.MyList.Nil |> myListStack.Add
                 | MyList.Cons ({
@@ -97,7 +97,7 @@ module MyList2Cata =
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.Process__MyList2 x ->
+            | Instruction.Process__MyList2 (x) ->
                 match x with
                 | MyList2.Nil -> cata.MyList2.Nil |> myList2Stack.Add
                 | MyList2.Cons (arg0_0, arg1_0) ->

@@ -149,6 +149,37 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                 )
 
             node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the FirstDu type
+[<AutoOpen>]
+module FirstDuJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type FirstDu with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : FirstDu) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            match input with
+            | FirstDu.EmptyCase -> node.Add ("type", System.Text.Json.Nodes.JsonValue.Create "emptyCase")
+            | FirstDu.Case1 (arg0) ->
+                node.Add ("type", System.Text.Json.Nodes.JsonValue.Create "case1")
+                let dataNode = System.Text.Json.Nodes.JsonObject ()
+                dataNode.Add ("data", System.Text.Json.Nodes.JsonValue.Create<string> arg0)
+                node.Add ("data", dataNode)
+            | FirstDu.Case2 (arg0, arg1) ->
+                node.Add ("type", System.Text.Json.Nodes.JsonValue.Create "case2")
+                let dataNode = System.Text.Json.Nodes.JsonObject ()
+                dataNode.Add ("record", JsonRecordTypeWithBoth.toJsonNode arg0)
+                dataNode.Add ("i", System.Text.Json.Nodes.JsonValue.Create<int> arg1)
+                node.Add ("data", dataNode)
+
+            node :> _
 
 namespace ConsumePlugin
 

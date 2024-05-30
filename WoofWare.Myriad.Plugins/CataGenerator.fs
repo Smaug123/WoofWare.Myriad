@@ -1113,7 +1113,7 @@ module internal CataGenerator =
                 analysis.AssociatedProcessInstruction,
                 None,
                 None,
-                SynArgPats.Pats [ SynPat.CreateNamed (Ident.Create "x") ],
+                SynArgPats.create [ Ident.Create "x" ],
                 None,
                 range0
             ),
@@ -1162,22 +1162,16 @@ module internal CataGenerator =
                     |> Seq.mapi (fun i x -> (i, x))
                     |> Seq.choose (fun (i, case) ->
                         match case.Description with
-                        | FieldDescription.NonRecursive _ -> SynPat.CreateNamed case.ArgName |> Some
-                        | FieldDescription.ListSelf _ -> SynPat.CreateNamed case.ArgName |> Some
+                        | FieldDescription.NonRecursive _ -> case.ArgName |> Some
+                        | FieldDescription.ListSelf _ -> case.ArgName |> Some
                         | FieldDescription.Self _ -> None
                     )
                     |> Seq.toList
 
-                let lhs =
-                    match lhsNames with
-                    | [] -> []
-                    | lhsNames ->
-                        SynPat.Tuple (false, lhsNames, List.replicate (lhsNames.Length - 1) range0, range0)
-                        |> SynPat.CreateParen
-                        |> List.singleton
+                let lhs = SynArgPats.create lhsNames
 
                 let pat =
-                    SynPat.LongIdent (unionCase.AssociatedInstruction, None, None, SynArgPats.Pats lhs, None, range0)
+                    SynPat.LongIdent (unionCase.AssociatedInstruction, None, None, lhs, None, range0)
 
                 let populateArgs =
                     unionCase.FlattenedFields
