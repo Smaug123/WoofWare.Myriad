@@ -32,6 +32,8 @@
     <Compile Include="SynExpr\SynAttribute.fs" />
     <Compile Include="SynExpr\SynArgPats.fs" />
     <Compile Include="SynExpr\SynExprLetOrUseTrivia.fs" />
+    <Compile Include="SynExpr\SynField.fs" />
+    <Compile Include="SynExpr\SynUnionCase.fs" />
     <Compile Include="RemoveOptionsGenerator.fs"/>
     <Compile Include="InterfaceMockGenerator.fs"/>
     <Compile Include="JsonSerializeGenerator.fs"/>

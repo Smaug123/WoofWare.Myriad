@@ -357,7 +357,7 @@ module internal JsonParseGenerator =
         | [ _ ; "JsonNumberHandling" ; "Serialization" ; "Json" ; "Text" ; "System" ] -> true
         | _ -> false
 
-    let createMaker (spec : JsonParseOutputSpec) (typeName : LongIdent) (fields : SynField list) =
+    let createMaker (spec : JsonParseOutputSpec) (typeName : LongIdent) (fields : SynFieldData<Ident> list) =
         let xmlDoc = PreXmlDoc.Create " Parse from a JSON node."
 
         let returnInfo =
@@ -391,22 +391,15 @@ module internal JsonParseGenerator =
 
         let assignments =
             fields
-            |> List.map (fun (SynField (attrs, _, id, fieldType, _, _, _, _, _)) ->
-                let id =
-                    match id with
-                    | None -> failwith "didn't get an ID on field"
-                    | Some id -> id
-
-                let attrs = attrs |> List.collect (fun l -> l.Attributes)
-
+            |> List.map (fun fieldData ->
                 let propertyNameAttr =
-                    attrs
+                    fieldData.Attrs
                     |> List.tryFind (fun attr ->
                         attr.TypeName.AsString.EndsWith ("JsonPropertyName", StringComparison.Ordinal)
                     )
 
                 let options =
-                    (JsonParseOption.None, attrs)
+                    (JsonParseOption.None, fieldData.Attrs)
                     ||> List.fold (fun options attr ->
                         if attr.TypeName.AsString.EndsWith ("JsonNumberHandling", StringComparison.Ordinal) then
                             let qualifiedEnumValue =
@@ -438,18 +431,18 @@ module internal JsonParseGenerator =
                 let propertyName =
                     match propertyNameAttr with
                     | None ->
-                        let sb = StringBuilder id.idText.Length
-                        sb.Append (Char.ToLowerInvariant id.idText.[0]) |> ignore
+                        let sb = StringBuilder fieldData.Ident.idText.Length
+                        sb.Append (Char.ToLowerInvariant fieldData.Ident.idText.[0]) |> ignore
 
-                        if id.idText.Length > 1 then
-                            sb.Append id.idText.[1..] |> ignore
+                        if fieldData.Ident.idText.Length > 1 then
+                            sb.Append fieldData.Ident.idText.[1..] |> ignore
 
                         sb.ToString () |> SynConst.CreateString |> SynExpr.CreateConst
                     | Some name -> name.ArgExpr
 
                 let pattern =
                     SynPat.LongIdent (
-                        SynLongIdent.CreateFromLongIdent [ id ],
+                        SynLongIdent.CreateFromLongIdent [ fieldData.Ident ],
                         None,
                         None,
                         SynArgPats.Empty,
@@ -460,7 +453,7 @@ module internal JsonParseGenerator =
                 SynBinding.Let (
                     isInline = false,
                     isMutable = false,
-                    expr = createParseRhs options propertyName fieldType,
+                    expr = createParseRhs options propertyName fieldData.Type,
                     valData = inputVal,
                     pattern = pattern
                 )
@@ -468,14 +461,9 @@ module internal JsonParseGenerator =
 
         let finalConstruction =
             fields
-            |> List.map (fun (SynField (_, _, id, _, _, _, _, _, _)) ->
-                let id =
-                    match id with
-                    | None -> failwith "Expected record field to have an identifying name"
-                    | Some id -> id
-
-                (SynLongIdent.CreateFromLongIdent [ id ], true),
-                Some (SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ id ]))
+            |> List.map (fun fieldData ->
+                (SynLongIdent.CreateFromLongIdent [ fieldData.Ident ], true),
+                Some (SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ fieldData.Ident ]))
             )
             |> AstHelper.instantiateRecord
 
@@ -614,9 +602,13 @@ module internal JsonParseGenerator =
 
         let decls =
             match synTypeDefnRepr with
-            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, recordFields, _recordRange), _) ->
-                [ createMaker spec ident recordFields ]
-            | _ -> failwithf "Not a record type"
+            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, fields, _range), _) ->
+                let fields = fields |> List.map SynField.extractWithIdent
+                [ createMaker spec ident fields ]
+            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_accessibility, cases, _range), _) ->
+                // [ createMaker spec ident cases ]
+                failwith "Unions are not yet supported"
+            | _ -> failwithf "Not a record or union type"
 
         let mdl = SynModuleDecl.CreateNestedModule (info, decls)
 
