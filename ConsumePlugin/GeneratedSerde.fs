@@ -191,7 +191,7 @@ module InnerTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerTypeWithBoth =
-            let ConcreteDict =
+            let arg_4 =
                 (match node.["concreteDict"] with
                  | null ->
                      raise (
@@ -209,7 +209,7 @@ module InnerTypeWithBothJsonParseExtension =
                 |> Seq.map System.Collections.Generic.KeyValuePair
                 |> System.Collections.Generic.Dictionary
 
-            let Dict =
+            let arg_3 =
                 (match node.["dict"] with
                  | null ->
                      raise (
@@ -226,7 +226,7 @@ module InnerTypeWithBothJsonParseExtension =
                 )
                 |> dict
 
-            let ReadOnlyDict =
+            let arg_2 =
                 (match node.["readOnlyDict"] with
                  | null ->
                      raise (
@@ -248,7 +248,7 @@ module InnerTypeWithBothJsonParseExtension =
                 )
                 |> readOnlyDict
 
-            let Map =
+            let arg_1 =
                 (match node.["map"] with
                  | null ->
                      raise (
@@ -265,7 +265,7 @@ module InnerTypeWithBothJsonParseExtension =
                 )
                 |> Map.ofSeq
 
-            let Thing =
+            let arg_0 =
                 (match node.[("it's-a-me")] with
                  | null ->
                      raise (
@@ -279,11 +279,11 @@ module InnerTypeWithBothJsonParseExtension =
                 |> System.Guid.Parse
 
             {
-                Thing = Thing
-                Map = Map
-                ReadOnlyDict = ReadOnlyDict
-                Dict = Dict
-                ConcreteDict = ConcreteDict
+                Thing = arg_0
+                Map = arg_1
+                ReadOnlyDict = arg_2
+                Dict = arg_3
+                ConcreteDict = arg_4
             }
 namespace ConsumePlugin
 
@@ -295,7 +295,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
-            let F =
+            let arg_5 =
                 (match node.["f"] with
                  | null ->
                      raise (
@@ -308,7 +308,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
                 |> Array.ofSeq
 
-            let E =
+            let arg_4 =
                 (match node.["e"] with
                  | null ->
                      raise (
@@ -321,7 +321,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
                 |> Array.ofSeq
 
-            let D =
+            let arg_3 =
                 InnerTypeWithBoth.jsonParse (
                     match node.["d"] with
                     | null ->
@@ -333,7 +333,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                     | v -> v
                 )
 
-            let C =
+            let arg_2 =
                 (match node.["c"] with
                  | null ->
                      raise (
@@ -346,7 +346,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
                 |> List.ofSeq
 
-            let B =
+            let arg_1 =
                 (match node.["b"] with
                  | null ->
                      raise (
@@ -358,7 +358,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let A =
+            let arg_0 =
                 (match node.["a"] with
                  | null ->
                      raise (
@@ -371,10 +371,10 @@ module JsonRecordTypeWithBothJsonParseExtension =
                     .GetValue<int> ()
 
             {
-                A = A
-                B = B
-                C = C
-                D = D
-                E = E
-                F = F
+                A = arg_0
+                B = arg_1
+                C = arg_2
+                D = arg_3
+                E = arg_4
+                F = arg_5
             }

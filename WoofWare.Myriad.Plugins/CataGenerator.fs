@@ -182,105 +182,53 @@ module internal CataGenerator =
                 )
             )
 
-        SynBinding.SynBinding (
-            None,
-            SynBindingKind.Normal,
-            false,
-            false,
-            [],
-            PreXmlDoc.Create " Execute the catamorphism.",
-            SynValData.SynValData (
-                None,
-                SynValInfo.SynValInfo (
-                    [ [ SynArgInfo.CreateIdString "cata" ] ; [ SynArgInfo.CreateIdString "x" ] ],
-                    SynArgInfo.SynArgInfo ([], false, None)
-                ),
-                None
-            ),
-            SynPat.CreateLongIdent (
-                SynLongIdent.CreateString ("run" + List.last(relevantTypeName).idText),
-                [ SynPat.CreateParen cataObject ; SynPat.CreateParen inputObject ]
-            ),
-            Some (SynBindingReturnInfo.Create relevantTypar),
-            SynExpr.CreateTyped (
-                SynExpr.LetOrUse (
-                    false,
-                    false,
-                    [
-                        SynBinding.Let (
-                            valData = SynValData.SynValData (None, SynValInfo.Empty, None),
-                            pattern = SynPat.CreateNamed (Ident.Create "instructions"),
-                            expr =
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateIdentString "ResizeArray",
-                                    SynExpr.CreateConst SynConst.Unit
-                                )
-                        )
-                    ],
-                    SynExpr.CreateSequential
-                        [
+        [
+            SynExpr.CreateLongIdent analysis.AssociatedProcessInstruction
+            |> SynExpr.applyTo (SynExpr.CreateLongIdent (SynLongIdent.CreateString "x"))
+            |> SynExpr.CreateParen
+            |> SynExpr.applyFunction (SynExpr.createLongIdent [ "instructions" ; "Add" ])
+
+            // TODO: add the "all other stacks are empty" sanity checks
+            SynExpr.CreateIdent (Ident.Create (relevantTyparName.idText + "Stack") |> Ident.lowerFirstLetter)
+            |> SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "exactlyOne" ])
+            |> SynExpr.createLet
+                [
+                    SynBinding.Let (
+                        valData = SynValData.SynValData (None, SynValInfo.Empty, None),
+                        pattern =
+                            SynPat.Tuple (
+                                false,
+                                List.map
+                                    (fun (t : Ident) ->
+                                        SynPat.CreateNamed (
+                                            Ident.Create (t.idText + "Stack") |> Ident.lowerFirstLetter
+                                        )
+                                    )
+                                    allArtificialTyparNames,
+                                List.replicate (allArtificialTyparNames.Length - 1) range0,
+                                range0
+                            ),
+                        expr =
                             SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Add" ]),
-                                SynExpr.CreateParen (
-                                    SynExpr.CreateApp (
-                                        SynExpr.CreateLongIdent analysis.AssociatedProcessInstruction,
-                                        SynExpr.CreateLongIdent (SynLongIdent.CreateString "x")
-                                    )
-                                )
+                                SynExpr.CreateApp (SynExpr.CreateIdentString "loop", SynExpr.CreateIdentString "cata"),
+                                SynExpr.CreateIdentString "instructions"
                             )
-                            SynExpr.LetOrUse (
-                                false,
-                                false,
-                                [
-                                    SynBinding.Let (
-                                        valData = SynValData.SynValData (None, SynValInfo.Empty, None),
-                                        pattern =
-                                            SynPat.Tuple (
-                                                false,
-                                                List.map
-                                                    (fun (t : Ident) ->
-                                                        SynPat.CreateNamed (
-                                                            Ident.Create (t.idText + "Stack") |> Ident.lowerFirstLetter
-                                                        )
-                                                    )
-                                                    allArtificialTyparNames,
-                                                List.replicate (allArtificialTyparNames.Length - 1) range0,
-                                                range0
-                                            ),
-                                        expr =
-                                            SynExpr.CreateApp (
-                                                SynExpr.CreateApp (
-                                                    SynExpr.CreateIdentString "loop",
-                                                    SynExpr.CreateIdentString "cata"
-                                                ),
-                                                SynExpr.CreateIdentString "instructions"
-                                            )
-                                    )
-                                ],
-                                // TODO: add the "all other stacks are empty" sanity checks
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "exactlyOne" ]),
-                                    SynExpr.CreateIdent (
-                                        Ident.Create (relevantTyparName.idText + "Stack") |> Ident.lowerFirstLetter
-                                    )
-                                ),
-                                range0,
-                                {
-                                    SynExprLetOrUseTrivia.InKeyword = None
-                                }
-                            )
-                        ],
-                    range0,
-                    {
-                        InKeyword = None
-                    }
-                ),
-                relevantTypar
-            ),
-            range0,
-            DebugPointAtBinding.NoneAtLet,
-            SynExpr.synBindingTriviaZero false
-        )
+                    )
+                ]
+        ]
+        |> SynExpr.CreateSequential
+        |> SynExpr.createLet
+            [
+                SynExpr.CreateIdentString "ResizeArray"
+                |> SynExpr.applyTo (SynExpr.CreateConst SynConst.Unit)
+                |> SynBinding.basic (SynLongIdent.CreateString "instructions") []
+            ]
+        |> SynExpr.typeAnnotate relevantTypar
+        |> SynBinding.basic
+            (SynLongIdent.CreateString ("run" + List.last(relevantTypeName).idText))
+            [ SynPat.CreateParen cataObject ; SynPat.CreateParen inputObject ]
+        |> SynBinding.withReturnAnnotation relevantTypar
+        |> SynBinding.withXmlDoc (PreXmlDoc.Create " Execute the catamorphism.")
 
     let getName (ty : SynTypeDefn) : LongIdent =
         match ty with
@@ -979,37 +927,29 @@ module internal CataGenerator =
 
                     // The instruction to process us again once our inputs are ready:
                     let reprocessCommand =
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Add" ]),
-                            if selfArgs.Length = unionCase.FlattenedFields.Length then
-                                SynExpr.CreateLongIdent unionCase.AssociatedInstruction
-                            else
-                                // We need to tell ourselves each non-rec arg, and the length of each input list.
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateLongIdent unionCase.AssociatedInstruction,
-                                    SynExpr.CreateParenedTuple (
-                                        listSelfArgs
-                                        |> List.map (fun (i, argName, _) ->
-                                            i,
-                                            SynExpr.CreateParen (
-                                                SynExpr.CreateApp (
-                                                    SynExpr.CreateLongIdent (
-                                                        SynLongIdent.Create [ "List" ; "length" ]
-                                                    ),
-                                                    SynExpr.CreateIdent argName
-                                                )
-                                            )
-                                        )
-                                        |> List.append (
-                                            nonRecursiveArgs
-                                            |> List.map (fun (i, arg, _) -> i, SynExpr.CreateIdent arg)
-                                        )
-                                        |> List.sortBy fst
-                                        |> List.map snd
+                        if selfArgs.Length = unionCase.FlattenedFields.Length then
+                            SynExpr.CreateLongIdent unionCase.AssociatedInstruction
+                        else
+                            // We need to tell ourselves each non-rec arg, and the length of each input list.
+                            listSelfArgs
+                            |> List.map (fun (i, argName, _) ->
+                                i,
+                                SynExpr.CreateParen (
+                                    SynExpr.CreateApp (
+                                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "List" ; "length" ]),
+                                        SynExpr.CreateIdent argName
                                     )
                                 )
-                                |> SynExpr.CreateParen
-                        )
+                            )
+                            |> List.append (
+                                nonRecursiveArgs |> List.map (fun (i, arg, _) -> i, SynExpr.CreateIdent arg)
+                            )
+                            |> List.sortBy fst
+                            |> List.map snd
+                            |> SynExpr.CreateParenedTuple
+                            |> SynExpr.applyFunction (SynExpr.CreateLongIdent unionCase.AssociatedInstruction)
+                            |> SynExpr.CreateParen
+                        |> SynExpr.applyFunction (SynExpr.createLongIdent [ "instructions" ; "Add" ])
 
                     [
                         yield reprocessCommand
@@ -1044,51 +984,43 @@ module internal CataGenerator =
                                 // And push the instruction to process each recursive call
                                 // onto the stack.
                                 yield
-                                    SynExpr.CreateApp (
-                                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Add" ]),
-                                        SynExpr.CreateParen (
-                                            SynExpr.CreateApp (
-                                                SynExpr.CreateLongIdent (
-                                                    // TODO: use an AssociatedProcessInstruction instead
-                                                    SynLongIdent.Create
-                                                        [
-                                                            "Instruction"
-                                                            // TODO wonky domain
-                                                            "Process"
-                                                            + "__"
-                                                            + List.last(getNameUnion(synType).Value).idText
-                                                        ]
-                                                ),
-                                                SynExpr.CreateIdent caseDesc.ArgName
-                                            )
-                                        )
+                                    SynExpr.CreateLongIdent (
+                                        // TODO: use an AssociatedProcessInstruction instead
+                                        SynLongIdent.Create
+                                            [
+                                                "Instruction"
+                                                // TODO wonky domain
+                                                "Process" + "__" + List.last(getNameUnion(synType).Value).idText
+                                            ]
                                     )
+                                    |> SynExpr.applyTo (SynExpr.CreateIdent caseDesc.ArgName)
+                                    |> SynExpr.CreateParen
+                                    |> SynExpr.applyFunction (SynExpr.createLongIdent [ "instructions" ; "Add" ])
                     ]
                     |> SynExpr.CreateSequential
 
                 let matchLhs =
                     if unionCase.Fields.Length > 0 then
-                        SynPat.CreateParen (
-                            SynPat.Tuple (
-                                false,
-                                unionCase.Fields
-                                |> List.mapi (fun i case ->
-                                    match case with
-                                    | CataUnionField.Basic case ->
-                                        SynPat.CreateNamed (Ident.lowerFirstLetter case.ArgName)
-                                    | CataUnionField.Record fields ->
-                                        let fields =
-                                            fields
-                                            |> List.map (fun (name, field) ->
-                                                ([], name), range0, SynPat.CreateNamed (Ident.lowerFirstLetter name)
-                                            )
+                        SynPat.Tuple (
+                            false,
+                            unionCase.Fields
+                            |> List.mapi (fun i case ->
+                                match case with
+                                | CataUnionField.Basic case ->
+                                    SynPat.CreateNamed (Ident.lowerFirstLetter case.ArgName)
+                                | CataUnionField.Record fields ->
+                                    let fields =
+                                        fields
+                                        |> List.map (fun (name, field) ->
+                                            ([], name), range0, SynPat.CreateNamed (Ident.lowerFirstLetter name)
+                                        )
 
-                                        SynPat.Record (fields, range0)
-                                ),
-                                List.replicate (unionCase.Fields.Length - 1) range0,
-                                range0
-                            )
+                                    SynPat.Record (fields, range0)
+                            ),
+                            List.replicate (unionCase.Fields.Length - 1) range0,
+                            range0
                         )
+                        |> SynPat.CreateParen
                         |> List.singleton
                     else
                         []
@@ -1187,160 +1119,81 @@ module internal CataGenerator =
                             // TODO: this is jank
                             let stackName = inputStacks.[List.last(getNameUnion(synType).Value).idText]
 
-                            SynExpr.LetOrUse (
-                                false,
-                                false,
+                            SynExpr.minusN (SynLongIdent.CreateFromLongIdent [ stackName ; Ident.Create "Count" ]) 1
+                            |> SynExpr.CreateParen
+                            |> SynExpr.applyFunction (
+                                SynExpr.createLongIdent' [ stackName ; Ident.Create "RemoveAt" ]
+                            )
+                            |> SynExpr.createLet
                                 [
-                                    SynBinding.SynBinding (
-                                        None,
-                                        SynBindingKind.Normal,
-                                        false,
-                                        false,
-                                        [],
-                                        PreXmlDoc.Empty,
-                                        SynValData.SynValData (None, SynValInfo.Empty, None),
-                                        SynPat.CreateNamed field.ArgName,
-                                        None,
-                                        SynExpr.DotIndexedGet (
-                                            SynExpr.CreateIdent stackName,
-                                            SynExpr.minusN
-                                                (SynLongIdent.CreateFromLongIdent
-                                                    [ stackName ; Ident.Create "Count" ])
-                                                1,
-                                            range0,
-                                            range0
-                                        ),
-                                        range0,
-                                        DebugPointAtBinding.Yes range0,
-                                        SynExpr.synBindingTriviaZero false
-                                    )
-                                ],
-                                SynExpr.CreateApp (
-                                    SynExpr.CreateLongIdent (
-                                        SynLongIdent.CreateFromLongIdent [ stackName ; Ident.Create "RemoveAt" ]
-                                    ),
-                                    SynExpr.CreateParen (
+                                    SynExpr.DotIndexedGet (
+                                        SynExpr.CreateIdent stackName,
                                         SynExpr.minusN
                                             (SynLongIdent.CreateFromLongIdent [ stackName ; Ident.Create "Count" ])
-                                            1
+                                            1,
+                                        range0,
+                                        range0
                                     )
-                                ),
-                                range0,
-                                {
-                                    InKeyword = None
-                                }
-                            )
+                                    |> SynBinding.basic (SynLongIdent.CreateFromLongIdent [ field.ArgName ]) []
+                                ]
                             |> Some
                         | ListSelf synType ->
                             // TODO: also jank
                             let stackName = inputStacks.[List.last(getNameUnion(synType).Value).idText]
 
                             let vals =
-                                SynBinding.SynBinding (
-                                    None,
-                                    SynBindingKind.Normal,
+                                SynExpr.ComputationExpr (
                                     false,
-                                    false,
-                                    [],
-                                    PreXmlDoc.Empty,
-                                    SynValData.SynValData (None, SynValInfo.Empty, None),
-                                    SynPat.CreateNamed field.ArgName,
-                                    None,
-                                    SynExpr.pipeThroughFunction
-                                        (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "toList" ]))
-                                        (SynExpr.CreateApp (
-                                            SynExpr.CreateIdentString "seq",
-                                            SynExpr.ComputationExpr (
-                                                false,
-                                                SynExpr.For (
-                                                    DebugPointAtFor.Yes range0,
-                                                    DebugPointAtInOrTo.Yes range0,
-                                                    Ident.Create "i",
-                                                    Some range0,
-                                                    SynExpr.minusN
-                                                        (SynLongIdent.CreateFromLongIdent
-                                                            [ stackName ; Ident.Create "Count" ])
-                                                        1,
-                                                    false,
-                                                    SynExpr.minus
-                                                        (SynLongIdent.CreateFromLongIdent
-                                                            [ stackName ; Ident.Create "Count" ])
-                                                        (SynExpr.CreateIdent field.ArgName),
-                                                    SynExpr.YieldOrReturn (
-                                                        (true, false),
-                                                        SynExpr.DotIndexedGet (
-                                                            SynExpr.CreateIdent stackName,
-                                                            SynExpr.CreateIdentString "i",
-                                                            range0,
-                                                            range0
-                                                        ),
-                                                        range0
-                                                    ),
-                                                    range0
-                                                ),
+                                    SynExpr.For (
+                                        DebugPointAtFor.Yes range0,
+                                        DebugPointAtInOrTo.Yes range0,
+                                        Ident.Create "i",
+                                        Some range0,
+                                        SynExpr.minusN
+                                            (SynLongIdent.CreateFromLongIdent [ stackName ; Ident.Create "Count" ])
+                                            1,
+                                        false,
+                                        SynExpr.minus
+                                            (SynLongIdent.CreateFromLongIdent [ stackName ; Ident.Create "Count" ])
+                                            (SynExpr.CreateIdent field.ArgName),
+                                        SynExpr.YieldOrReturn (
+                                            (true, false),
+                                            SynExpr.DotIndexedGet (
+                                                SynExpr.CreateIdent stackName,
+                                                SynExpr.CreateIdentString "i",
+                                                range0,
                                                 range0
-                                            )
-                                        )),
-                                    range0,
-                                    DebugPointAtBinding.Yes range0,
-                                    SynExpr.synBindingTriviaZero false
+                                            ),
+                                            range0
+                                        ),
+                                        range0
+                                    ),
+                                    range0
                                 )
+                                |> SynExpr.applyFunction (SynExpr.CreateIdentString "seq")
+                                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
+                                |> SynBinding.basic (SynLongIdent.CreateFromLongIdent [ field.ArgName ]) []
 
                             let shadowedIdent = Ident.Create (field.ArgName.idText + "_len")
 
-                            SynExpr.LetOrUse (
-                                false,
-                                false,
-                                [
-                                    SynBinding.SynBinding (
-                                        None,
-                                        SynBindingKind.Normal,
-                                        false,
-                                        false,
-                                        [],
-                                        PreXmlDoc.Empty,
-                                        SynValData.SynValData (None, SynValInfo.Empty, None),
-                                        SynPat.CreateNamed shadowedIdent,
-                                        None,
-                                        SynExpr.CreateIdent field.ArgName,
-                                        range0,
-                                        DebugPointAtBinding.Yes range0,
-                                        SynExpr.synBindingTriviaZero false
-                                    )
-
-                                ],
-                                SynExpr.CreateSequential
-                                    [
-                                        SynExpr.LetOrUse (
-                                            false,
-                                            false,
-                                            [ vals ],
-                                            SynExpr.CreateApp (
-                                                SynExpr.CreateLongIdent (
-                                                    SynLongIdent.CreateFromLongIdent
-                                                        [ stackName ; Ident.Create "RemoveRange" ]
-                                                ),
-                                                SynExpr.CreateParenedTuple
-                                                    [
-                                                        SynExpr.minus
-                                                            (SynLongIdent.CreateFromLongIdent
-                                                                [ stackName ; Ident.Create "Count" ])
-                                                            (SynExpr.CreateIdent shadowedIdent)
-                                                        SynExpr.CreateIdent shadowedIdent
-                                                    ]
-                                            ),
-                                            range0,
-                                            {
-                                                InKeyword = None
-                                            }
-                                        )
-                                    ],
-
-                                range0,
-                                {
-                                    InKeyword = None
-                                }
+                            [
+                                SynExpr.minus
+                                    (SynLongIdent.CreateFromLongIdent [ stackName ; Ident.Create "Count" ])
+                                    (SynExpr.CreateIdent shadowedIdent)
+                                SynExpr.CreateIdent shadowedIdent
+                            ]
+                            |> SynExpr.CreateParenedTuple
+                            |> SynExpr.applyFunction (
+                                SynExpr.createLongIdent' [ stackName ; Ident.Create "RemoveRange" ]
                             )
+                            |> SynExpr.createLet [ vals ]
+                            |> SynExpr.createLet
+                                [
+                                    SynBinding.basic
+                                        (SynLongIdent.CreateFromLongIdent [ shadowedIdent ])
+                                        []
+                                        (SynExpr.CreateIdent field.ArgName)
+                                ]
                             |> Some
                     )
 
@@ -1359,19 +1212,6 @@ module internal CataGenerator =
         )
 
     let createLoopFunction (cataTypeName : Ident) (cataVarName : Ident) (analysis : UnionAnalysis list) : SynBinding =
-        let valData =
-            SynValData.SynValData (
-                None,
-                SynValInfo.SynValInfo (
-                    [
-                        [ SynArgInfo.SynArgInfo ([], false, Some cataVarName) ]
-                        [ SynArgInfo.SynArgInfo ([], false, Some (Ident.Create "instructions")) ]
-                    ],
-                    SynArgInfo.Empty
-                ),
-                None
-            )
-
         let userSuppliedGenerics =
             analysis
             |> List.collect _.Typars
@@ -1401,45 +1241,37 @@ module internal CataGenerator =
                     yield SynType.Var (SynTypar.SynTypar (case.GenericName, TyparStaticReq.None, false), range0)
             ]
 
-        let headPat =
-            SynPat.LongIdent (
-                SynLongIdent.CreateString "loop",
-                None,
-                None,
-                SynArgPats.Pats
-                    [
-                        SynPat.CreateParen (
-                            SynPat.CreateTyped (
-                                SynPat.CreateNamed cataVarName,
-                                SynType.App (
-                                    SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ cataTypeName ]),
-                                    Some range0,
-                                    cataGenerics,
-                                    List.replicate (cataGenerics.Length - 1) range0,
-                                    Some range0,
-                                    false,
-                                    range0
-                                )
-                            )
+        let args =
+            [
+                SynPat.CreateParen (
+                    SynPat.CreateTyped (
+                        SynPat.CreateNamed cataVarName,
+                        SynType.App (
+                            SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ cataTypeName ]),
+                            Some range0,
+                            cataGenerics,
+                            List.replicate (cataGenerics.Length - 1) range0,
+                            Some range0,
+                            false,
+                            range0
                         )
-                        SynPat.CreateParen (
-                            SynPat.CreateTyped (
-                                SynPat.CreateNamed (Ident.Create "instructions"),
-                                SynType.App (
-                                    SynType.CreateLongIdent "ResizeArray",
-                                    Some range0,
-                                    [ instructionsArrType ],
-                                    [],
-                                    Some range0,
-                                    false,
-                                    range0
-                                )
-                            )
+                    )
+                )
+                SynPat.CreateParen (
+                    SynPat.CreateTyped (
+                        SynPat.CreateNamed (Ident.Create "instructions"),
+                        SynType.App (
+                            SynType.CreateLongIdent "ResizeArray",
+                            Some range0,
+                            [ instructionsArrType ],
+                            [],
+                            Some range0,
+                            false,
+                            range0
                         )
-                    ],
-                Some (SynAccess.Private range0),
-                range0
-            )
+                    )
+                )
+            ]
 
         let baseMatchClauses = analysis |> List.map createBaseMatchClause
 
@@ -1449,47 +1281,24 @@ module internal CataGenerator =
             SynExpr.CreateMatch (SynExpr.CreateIdentString "currentInstruction", baseMatchClauses @ recMatchClauses)
 
         let body =
-            SynExpr.CreateSequential
+            [
+                SynExpr.CreateApp (
+                    SynExpr.createLongIdent [ "instructions" ; "RemoveAt" ],
+                    SynExpr.CreateParen (SynExpr.minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1)
+                )
+                matchStatement
+            ]
+            |> SynExpr.CreateSequential
+            |> SynExpr.createLet
                 [
-                    SynExpr.CreateApp (
-                        SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "RemoveAt" ]),
-                        SynExpr.CreateParen (SynExpr.minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1)
-                    )
-                    matchStatement
-                ]
-
-        let body =
-            SynExpr.LetOrUse (
-                false,
-                false,
-                [
-                    SynBinding.SynBinding (
-                        None,
-                        SynBindingKind.Normal,
-                        false,
-                        false,
-                        [],
-                        PreXmlDoc.Empty,
-                        SynValData.SynValData (None, SynValInfo.SynValInfo ([], SynArgInfo.Empty), None),
-                        SynPat.CreateNamed (Ident.Create "currentInstruction"),
-                        None,
-                        SynExpr.DotIndexedGet (
-                            SynExpr.CreateIdentString "instructions",
-                            SynExpr.minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1,
-                            range0,
-                            range0
-                        ),
+                    SynExpr.DotIndexedGet (
+                        SynExpr.CreateIdentString "instructions",
+                        SynExpr.minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1,
                         range0,
-                        DebugPointAtBinding.Yes range0,
-                        SynExpr.synBindingTriviaZero false
+                        range0
                     )
-                ],
-                body,
-                range0,
-                {
-                    InKeyword = None
-                }
-            )
+                    |> SynBinding.basic (SynLongIdent.CreateString "currentInstruction") []
+                ]
 
         let body =
             SynExpr.CreateSequential
@@ -1498,82 +1307,43 @@ module internal CataGenerator =
                         DebugPointAtWhile.Yes range0,
                         SynExpr.greaterThan
                             (SynExpr.CreateConst (SynConst.Int32 0))
-                            (SynExpr.CreateLongIdent (SynLongIdent.Create [ "instructions" ; "Count" ])),
+                            (SynExpr.createLongIdent [ "instructions" ; "Count" ]),
                         body,
                         range0
                     )
                     SynExpr.CreateTuple (
                         analysis
-                        |> List.map (fun unionAnalysis ->
-                            [ unionAnalysis.StackName ]
-                            |> SynLongIdent.CreateFromLongIdent
-                            |> SynExpr.CreateLongIdent
-                        )
+                        |> List.map (fun unionAnalysis -> [ unionAnalysis.StackName ] |> SynExpr.createLongIdent')
                     )
                 ]
 
         let body =
             (body, analysis)
             ||> List.fold (fun body unionCase ->
-                SynExpr.LetOrUse (
-                    false,
-                    false,
+                body
+                |> SynExpr.createLet
                     [
-                        SynBinding.SynBinding (
-                            None,
-                            SynBindingKind.Normal,
-                            false,
-                            false,
-                            [],
-                            PreXmlDoc.Empty,
-                            SynValData.SynValData (None, SynValInfo.Empty, None),
-                            SynPat.Named (SynIdent.SynIdent (unionCase.StackName, None), false, None, range0),
-                            None,
-                            SynExpr.CreateApp (
-                                SynExpr.TypeApp (
-                                    SynExpr.CreateIdent (Ident.Create "ResizeArray"),
-                                    range0,
-                                    [
-                                        SynType.Var (
-                                            SynTypar.SynTypar (unionCase.GenericName, TyparStaticReq.None, false),
-                                            range0
-                                        )
-                                    ],
-                                    [],
-                                    Some range0,
-                                    range0,
-                                    range0
-                                ),
-                                SynExpr.CreateConst SynConst.Unit
-                            ),
+                        SynExpr.TypeApp (
+                            SynExpr.CreateIdent (Ident.Create "ResizeArray"),
                             range0,
-                            DebugPointAtBinding.Yes range0,
-                            SynExpr.synBindingTriviaZero false
+                            [
+                                SynType.Var (
+                                    SynTypar.SynTypar (unionCase.GenericName, TyparStaticReq.None, false),
+                                    range0
+                                )
+                            ],
+                            [],
+                            Some range0,
+                            range0,
+                            range0
                         )
-                    ],
-                    body,
-                    range0,
-                    {
-                        SynExprLetOrUseTrivia.InKeyword = None
-                    }
-                )
+                        |> SynExpr.applyTo (SynExpr.CreateConst SynConst.Unit)
+                        |> SynBinding.basic (SynLongIdent.CreateFromLongIdent [ unionCase.StackName ]) []
+                    ]
             )
 
-        SynBinding.SynBinding (
-            Some (SynAccess.Private range0),
-            SynBindingKind.Normal,
-            false,
-            false,
-            [],
-            PreXmlDoc.Empty,
-            valData,
-            headPat,
-            None,
-            body,
-            range0,
-            DebugPointAtBinding.NoneAtLet,
-            trivia = SynExpr.synBindingTriviaZero false
-        )
+        SynBinding.basic (SynLongIdent.CreateString "loop") args body
+        |> SynBinding.withAccessibility (Some (SynAccess.Private range0))
 
     let createModule
         (opens : SynOpenDeclTarget list)
