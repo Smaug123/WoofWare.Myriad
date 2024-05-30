@@ -709,24 +709,3 @@ module internal SynTypePatterns =
                 | _ -> failwithf "Expected Task to be applied to exactly one arg, but got: %+A" args
             | _ -> None
         | _ -> None
-
-[<RequireQualifiedAccess>]
-module SynExprLetOrUseTrivia =
-    let empty : SynExprLetOrUseTrivia =
-        {
-            InKeyword = None
-        }
-
-[<RequireQualifiedAccess>]
-module SynArgPats =
-    let create (caseNames : Ident list) : SynArgPats =
-        if caseNames.IsEmpty then
-            SynArgPats.Pats []
-        else
-
-        caseNames
-        |> List.map (fun ident -> SynPat.Named (SynIdent.SynIdent (ident, None), false, None, range0))
-        |> fun ps -> SynPat.Tuple (false, ps, List.replicate (ps.Length - 1) range0, range0)
-        |> fun p -> SynPat.Paren (p, range0)
-        |> List.singleton
-        |> SynArgPats.Pats
