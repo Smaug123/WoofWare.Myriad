@@ -197,6 +197,7 @@ jobs:
         run: if [[ $(find packed-attribute -maxdepth 1 -name 'WoofWare.Myriad.Plugins.Attributes.*.nupkg' -printf c | wc -c) -ne "1" ]]; then exit 1; fi
 
   github-release-plugin-dry-run:
+    needs: [nuget-pack]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
