@@ -196,8 +196,31 @@ jobs:
         # Verify that there is exactly one nupkg in the artifact that would be NuGet published
         run: if [[ $(find packed-attribute -maxdepth 1 -name 'WoofWare.Myriad.Plugins.Attributes.*.nupkg' -printf c | wc -c) -ne "1" ]]; then exit 1; fi
 
+  github-release-plugin-dry-run:
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
+    needs: [all-required-checks-complete]
+    environment: main-deploy
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download NuGet artifact (plugin)
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-plugin
+      - name: Download NuGet artifact (attribute)
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-attribute
+      - name: Tag and release plugin
+        env:
+          DRY_RUN: 1
+          GITHUB_TOKEN: mock-token
+        run: sh .github/workflows/tag.sh
+
   all-required-checks-complete:
-    needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack]
+    needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack, github-release-plugin-dry-run]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All required checks complete."
