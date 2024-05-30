@@ -46,16 +46,6 @@ module internal InterfaceMockGenerator =
             )
             |> Set.ofSeq
 
-        let synValData =
-            {
-                SynMemberFlags.IsInstance = false
-                SynMemberFlags.IsDispatchSlot = false
-                SynMemberFlags.IsOverrideOrExplicitImpl = false
-                SynMemberFlags.IsFinal = false
-                SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
-                SynMemberFlags.MemberKind = SynMemberKind.Member
-            }
-
         let failwithFun =
             SynExpr.createLongIdent [ "System" ; "NotImplementedException" ]
             |> SynExpr.applyTo (SynExpr.CreateConstString "Unimplemented mock function")
@@ -63,43 +53,24 @@ module internal InterfaceMockGenerator =
             |> SynExpr.applyFunction (SynExpr.CreateIdentString "raise")
             |> SynExpr.createLambda "_"
 
-        let constructorIdent =
-            let generics =
-                interfaceType.Generics
-                |> Option.map (fun generics -> SynValTyparDecls (Some generics, false))
-
-            SynPat.LongIdent (
-                SynLongIdent.CreateString "Empty",
-                None,
-                None, // no generics on the "Empty", only on the return type
-                SynArgPats.Pats (
-                    if generics.IsNone then
-                        []
-                    else
-                        [ SynPat.CreateParen (SynPat.CreateConst SynConst.Unit) ]
-                ),
-                None,
-                range0
-            )
-
         let constructorReturnType =
             match interfaceType.Generics with
             | None -> SynType.CreateLongIdent name
             | Some generics ->
-                let generics =
-                    generics.TyparDecls
-                    |> List.map (fun (SynTyparDecl (_, typar)) -> SynType.Var (typar, range0))
 
-                SynType.App (
-                    SynType.CreateLongIdent name,
-                    Some range0,
-                    generics,
-                    List.replicate (generics.Length - 1) range0,
-                    Some range0,
-                    false,
-                    range0
-                )
-            |> SynBindingReturnInfo.Create
+            let generics =
+                generics.TyparDecls
+                |> List.map (fun (SynTyparDecl (_, typar)) -> SynType.Var (typar, range0))
+
+            SynType.App (
+                SynType.CreateLongIdent name,
+                Some range0,
+                generics,
+                List.replicate (generics.Length - 1) range0,
+                Some range0,
+                false,
+                range0
+            )
 
         let constructorFields =
             let extras =
@@ -119,26 +90,17 @@ module internal InterfaceMockGenerator =
             extras @ nonExtras
 
         let constructor =
-            SynMemberDefn.Member (
-                SynBinding.SynBinding (
-                    None,
-                    SynBindingKind.Normal,
-                    false,
-                    false,
-                    [],
-                    PreXmlDoc.Create " An implementation where every method throws.",
-                    SynValData.SynValData (Some synValData, SynValInfo.Empty, None),
-                    constructorIdent,
-                    Some constructorReturnType,
-                    AstHelper.instantiateRecord constructorFields,
-                    range0,
-                    DebugPointAtBinding.Yes range0,
-                    { SynExpr.synBindingTriviaZero true with
-                        LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
-                    }
-                ),
-                range0
-            )
+            SynBinding.basic
+                (SynLongIdent.CreateString "Empty")
+                (if interfaceType.Generics.IsNone then
+                     []
+                 else
+                     [ SynPat.CreateConst SynConst.Unit ])
+                (AstHelper.instantiateRecord constructorFields)
+            |> SynBinding.makeStaticMember
+            |> SynBinding.withXmlDoc (PreXmlDoc.Create " An implementation where every method throws.")
+            |> SynBinding.withReturnAnnotation constructorReturnType
+            |> fun m -> SynMemberDefn.Member (m, range0)
 
         let fields =
             let extras =
@@ -460,7 +422,7 @@ module internal InterfaceMockGenerator =
             |> _.idText
             |> fun s ->
                 if s.StartsWith 'I' && s.Length > 1 && Char.IsUpper s.[1] then
-                    s.[1..]
+                    s.Substring 1
                 else
                     s
             |> fun s -> s + "Mock"

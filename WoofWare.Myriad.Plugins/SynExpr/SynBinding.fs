@@ -18,11 +18,23 @@ module internal SynBinding =
         | SynPat.Named (SynIdent.SynIdent (name, _), _, _, _) -> Some name
         | SynPat.Wild _ -> None
         | SynPat.Typed (pat, _, _) -> getName pat
+        | SynPat.Const _ -> None
         | SynPat.LongIdent (SynLongIdent.SynLongIdent (longIdent, _, _), _, _, _, _, _) ->
             match longIdent with
             | [ x ] -> Some x
             | _ -> failwithf "got long ident %O ; can only get the name of a long ident with one component" longIdent
         | _ -> failwithf "unrecognised pattern: %+A" pat
+
+    let triviaZero (isMember : bool) =
+        {
+            SynBindingTrivia.EqualsRange = Some range0
+            InlineKeyword = None
+            LeadingKeyword =
+                if isMember then
+                    SynLeadingKeyword.Member range0
+                else
+                    SynLeadingKeyword.Let range0
+        }
 
     let basic (name : SynLongIdent) (args : SynPat list) (body : SynExpr) : SynBinding =
         let valInfo : SynValInfo =
@@ -43,12 +55,18 @@ module internal SynBinding =
             body,
             range0,
             DebugPointAtBinding.Yes range0,
-            SynExpr.synBindingTriviaZero false
+            triviaZero false
         )
 
     let withAccessibility (acc : SynAccess option) (binding : SynBinding) : SynBinding =
         match binding with
         | SynBinding (_, kind, inl, mut, attrs, xml, valData, headPat, returnInfo, expr, range, debugPoint, trivia) ->
+            let headPat =
+                match headPat with
+                | SynPat.LongIdent (ident, extra, options, argPats, _, range) ->
+                    SynPat.LongIdent (ident, extra, options, argPats, acc, range)
+                | _ -> failwithf "unrecognised head pattern: %O" headPat
+
             SynBinding (acc, kind, inl, mut, attrs, xml, valData, headPat, returnInfo, expr, range, debugPoint, trivia)
 
     let withXmlDoc (doc : PreXmlDoc) (binding : SynBinding) : SynBinding =
@@ -84,3 +102,72 @@ module internal SynBinding =
                 debugPoint,
                 trivia
             )
+
+    let makeInline (binding : SynBinding) : SynBinding =
+        match binding with
+        | SynBinding (acc, kind, _, mut, attrs, doc, valData, headPat, ret, expr, range, debugPoint, trivia) ->
+            SynBinding (
+                acc,
+                kind,
+                true,
+                mut,
+                attrs,
+                doc,
+                valData,
+                headPat,
+                ret,
+                expr,
+                range,
+                debugPoint,
+                { trivia with
+                    InlineKeyword = Some range0
+                }
+            )
+
+    let makeStaticMember (binding : SynBinding) : SynBinding =
+        let memberFlags =
+            {
+                SynMemberFlags.IsInstance = false
+                SynMemberFlags.IsDispatchSlot = false
+                SynMemberFlags.IsOverrideOrExplicitImpl = false
+                SynMemberFlags.IsFinal = false
+                SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
+                SynMemberFlags.MemberKind = SynMemberKind.Member
+            }
+
+        match binding with
+        | SynBinding (acc, kind, inl, mut, attrs, doc, valData, headPat, ret, expr, range, debugPoint, trivia) ->
+            let valData =
+                match valData with
+                | SynValData.SynValData (_, valInfo, _) -> SynValData.SynValData (Some memberFlags, valInfo, None)
+
+            let trivia =
+                { trivia with
+                    LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
+                }
+
+            SynBinding (acc, kind, inl, mut, attrs, doc, valData, headPat, ret, expr, range, debugPoint, trivia)
+
+    let makeInstanceMember (binding : SynBinding) : SynBinding =
+        let memberFlags =
+            {
+                SynMemberFlags.IsInstance = true
+                SynMemberFlags.IsDispatchSlot = false
+                SynMemberFlags.IsOverrideOrExplicitImpl = true
+                SynMemberFlags.IsFinal = false
+                SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
+                SynMemberFlags.MemberKind = SynMemberKind.Member
+            }
+
+        match binding with
+        | SynBinding (acc, kind, inl, mut, attrs, doc, valData, headPat, ret, expr, range, debugPoint, trivia) ->
+            let valData =
+                match valData with
+                | SynValData.SynValData (_, valInfo, _) -> SynValData.SynValData (Some memberFlags, valInfo, None)
+
+            let trivia =
+                { trivia with
+                    LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
+                }
+
+            SynBinding (acc, kind, inl, mut, attrs, doc, valData, headPat, ret, expr, range, debugPoint, trivia)

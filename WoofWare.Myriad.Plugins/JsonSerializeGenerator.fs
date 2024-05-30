@@ -97,14 +97,9 @@ module internal JsonSerializeGenerator =
             |> SynExpr.CreateSequential
             |> SynExpr.createLet
                 [
-                    SynBinding.Let (
-                        pattern = SynPat.CreateNamed (Ident.Create "arr"),
-                        expr =
-                            SynExpr.CreateApp (
-                                SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonArray" ],
-                                SynExpr.CreateConst SynConst.Unit
-                            )
-                    )
+                    SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonArray" ]
+                    |> SynExpr.applyTo (SynExpr.CreateConst SynConst.Unit)
+                    |> SynBinding.basic (SynLongIdent.CreateString "arr") []
                 ]
             |> SynExpr.createLambda "field"
         | IDictionaryType (_keyType, valueType)
@@ -159,14 +154,9 @@ module internal JsonSerializeGenerator =
             |> SynExpr.CreateSequential
             |> SynExpr.createLet
                 [
-                    SynBinding.Let (
-                        pattern = SynPat.CreateNamed (Ident.Create "ret"),
-                        expr =
-                            SynExpr.CreateApp (
-                                SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ],
-                                SynExpr.CreateConst SynConst.Unit
-                            )
-                    )
+                    SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
+                    |> SynExpr.applyTo (SynExpr.CreateConst SynConst.Unit)
+                    |> SynBinding.basic (SynLongIdent.CreateString "ret") []
                 ]
             |> SynExpr.createLambda "field"
         | _ ->
@@ -220,34 +210,10 @@ module internal JsonSerializeGenerator =
         let xmlDoc = PreXmlDoc.Create " Serialize to a JSON node"
 
         let returnInfo =
-            SynBindingReturnInfo.Create (
-                SynType.LongIdent (SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
-            )
+            SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
+            |> SynType.LongIdent
 
         let functionName = Ident.Create "toJsonNode"
-
-        let inputVal =
-            let memberFlags =
-                if spec.ExtensionMethods then
-                    {
-                        SynMemberFlags.IsInstance = false
-                        SynMemberFlags.IsDispatchSlot = false
-                        SynMemberFlags.IsOverrideOrExplicitImpl = false
-                        SynMemberFlags.IsFinal = false
-                        SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
-                        SynMemberFlags.MemberKind = SynMemberKind.Member
-                    }
-                    |> Some
-                else
-                    None
-
-            let thisIdOpt = if spec.ExtensionMethods then None else Some inputArgName
-
-            SynValData.SynValData (
-                memberFlags,
-                SynValInfo.SynValInfo ([ [ SynArgInfo.CreateId functionName ] ], SynArgInfo.Empty),
-                thisIdOpt
-            )
 
         let assignments =
             [
@@ -257,54 +223,22 @@ module internal JsonSerializeGenerator =
             |> SynExpr.CreateSequential
             |> SynExpr.createLet
                 [
-                    SynBinding.Let (
-                        pattern = SynPat.CreateNamed (Ident.Create "node"),
-                        expr =
-                            SynExpr.CreateApp (
-                                SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ],
-                                SynExpr.CreateConst SynConst.Unit
-                            )
-                    )
+                    SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
+                    |> SynExpr.applyTo (SynExpr.CreateConst SynConst.Unit)
+                    |> SynBinding.basic (SynLongIdent.CreateString "node") []
                 ]
 
         let pattern =
-            SynPat.LongIdent (
-                SynLongIdent.CreateFromLongIdent [ functionName ],
-                None,
-                None,
-                SynArgPats.Pats
-                    [
-                        SynPat.CreateTyped (
-                            SynPat.CreateNamed inputArgName,
-                            SynType.LongIdent (SynLongIdent.CreateFromLongIdent typeName)
-                        )
-                        |> SynPat.CreateParen
-                    ],
-                None,
-                range0
-            )
+            SynPat.CreateNamed inputArgName
+            |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.CreateFromLongIdent typeName))
 
         if spec.ExtensionMethods then
             let binding =
-                SynBinding.SynBinding (
-                    None,
-                    SynBindingKind.Normal,
-                    false,
-                    false,
-                    [],
-                    xmlDoc,
-                    inputVal,
-                    pattern,
-                    Some returnInfo,
-                    assignments,
-                    range0,
-                    DebugPointAtBinding.NoneAtInvisible,
-                    {
-                        LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
-                        InlineKeyword = None
-                        EqualsRange = Some range0
-                    }
-                )
+                assignments
+                |> SynBinding.basic (SynLongIdent.CreateFromLongIdent [ functionName ]) [ pattern ]
+                |> SynBinding.withXmlDoc xmlDoc
+                |> SynBinding.withReturnAnnotation returnInfo
+                |> SynBinding.makeStaticMember
 
             let mem = SynMemberDefn.Member (binding, range0)
 
@@ -325,15 +259,10 @@ module internal JsonSerializeGenerator =
             SynModuleDecl.Types ([ containingType ], range0)
         else
             let binding =
-                SynBinding.Let (
-                    isInline = false,
-                    isMutable = false,
-                    xmldoc = xmlDoc,
-                    returnInfo = returnInfo,
-                    expr = assignments,
-                    valData = inputVal,
-                    pattern = pattern
-                )
+                assignments
+                |> SynBinding.basic (SynLongIdent.CreateFromLongIdent [ functionName ]) [ pattern ]
+                |> SynBinding.withReturnAnnotation returnInfo
+                |> SynBinding.withXmlDoc xmlDoc
 
             SynModuleDecl.CreateLet [ binding ]
 

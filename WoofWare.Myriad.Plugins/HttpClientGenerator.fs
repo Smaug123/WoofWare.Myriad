@@ -706,7 +706,7 @@ module internal HttpClientGenerator =
             implementation,
             range0,
             DebugPointAtBinding.Yes range0,
-            SynExpr.synBindingTriviaZero true
+            SynBinding.triviaZero true
         )
         |> SynBinding.withAccessibility info.Accessibility
         |> fun b -> SynMemberDefn.Member (b, range0)
@@ -994,8 +994,7 @@ module internal HttpClientGenerator =
                 None
             )
 
-        let pattern =
-            SynPat.CreateLongIdent (SynLongIdent.CreateString "make", headerArgs @ [ clientCreationArg ])
+        let pattern = SynLongIdent.CreateString "make"
 
         let returnInfo =
             SynType.LongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name)
@@ -1005,32 +1004,19 @@ module internal HttpClientGenerator =
             |> _.idText
             |> fun s ->
                 if s.StartsWith 'I' then
-                    s.[1..]
+                    s.Substring 1
                 else
                     failwith $"Expected interface type to start with 'I', but was: %s{s}"
 
         let createFunc =
             if spec.ExtensionMethods then
                 let binding =
-                    SynBinding.SynBinding (
-                        None,
-                        SynBindingKind.Normal,
-                        false,
-                        false,
-                        [],
-                        xmlDoc,
-                        valData,
-                        pattern,
-                        None,
-                        interfaceImpl,
-                        range0,
-                        DebugPointAtBinding.NoneAtInvisible,
-                        {
-                            LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
-                            InlineKeyword = None
-                            EqualsRange = Some range0
-                        }
-                    )
+                    SynBinding.basic
+                        (SynLongIdent.CreateString "make")
+                        (headerArgs @ [ clientCreationArg ])
+                        interfaceImpl
+                    |> SynBinding.withXmlDoc xmlDoc
+                    |> SynBinding.makeStaticMember
                     |> SynBinding.withReturnAnnotation returnInfo
 
                 let mem = SynMemberDefn.Member (binding, range0)
@@ -1055,21 +1041,8 @@ module internal HttpClientGenerator =
                 SynModuleDecl.Types ([ containingType ], range0)
 
             else
-                SynBinding.SynBinding (
-                    None,
-                    SynBindingKind.Normal,
-                    false,
-                    false,
-                    [],
-                    xmlDoc,
-                    valData,
-                    pattern,
-                    None,
-                    interfaceImpl,
-                    range0,
-                    DebugPointAtBinding.NoneAtLet,
-                    SynExpr.synBindingTriviaZero false
-                )
+                SynBinding.basic (SynLongIdent.CreateString "make") (headerArgs @ [ clientCreationArg ]) interfaceImpl
+                |> SynBinding.withXmlDoc xmlDoc
                 |> SynBinding.withReturnAnnotation returnInfo
                 |> List.singleton
                 |> SynModuleDecl.CreateLet

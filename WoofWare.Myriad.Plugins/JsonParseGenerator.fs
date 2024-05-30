@@ -334,75 +334,23 @@ module internal JsonParseGenerator =
     let scaffolding (spec : JsonParseOutputSpec) (typeName : LongIdent) (functionBody : SynExpr) : SynModuleDecl =
         let xmlDoc = PreXmlDoc.Create " Parse from a JSON node."
 
-        let returnInfo =
-            SynBindingReturnInfo.Create (SynType.LongIdent (SynLongIdent.CreateFromLongIdent typeName))
+        let returnInfo = SynType.LongIdent (SynLongIdent.CreateFromLongIdent typeName)
 
         let inputArg = Ident.Create "node"
         let functionName = Ident.Create "jsonParse"
 
-        let inputVal =
-            let memberFlags =
-                if spec.ExtensionMethods then
-                    {
-                        SynMemberFlags.IsInstance = false
-                        SynMemberFlags.IsDispatchSlot = false
-                        SynMemberFlags.IsOverrideOrExplicitImpl = false
-                        SynMemberFlags.IsFinal = false
-                        SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
-                        SynMemberFlags.MemberKind = SynMemberKind.Member
-                    }
-                    |> Some
-                else
-                    None
-
-            let thisIdOpt = if spec.ExtensionMethods then None else Some inputArg
-
-            SynValData.SynValData (
-                memberFlags,
-                SynValInfo.SynValInfo ([ [ SynArgInfo.CreateId functionName ] ], SynArgInfo.Empty),
-                thisIdOpt
-            )
-
-        let pattern =
-            SynPat.LongIdent (
-                SynLongIdent.CreateFromLongIdent [ functionName ],
-                None,
-                None,
-                SynArgPats.Pats
-                    [
-                        SynPat.CreateTyped (
-                            SynPat.CreateNamed inputArg,
-                            SynType.LongIdent (
-                                SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
-                            )
-                        )
-                        |> SynPat.CreateParen
-                    ],
-                None,
-                range0
+        let arg =
+            SynPat.CreateNamed inputArg
+            |> SynPat.annotateType (
+                SynType.LongIdent (SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
             )
 
         if spec.ExtensionMethods then
             let binding =
-                SynBinding.SynBinding (
-                    None,
-                    SynBindingKind.Normal,
-                    false,
-                    false,
-                    [],
-                    xmlDoc,
-                    inputVal,
-                    pattern,
-                    Some returnInfo,
-                    functionBody,
-                    range0,
-                    DebugPointAtBinding.NoneAtInvisible,
-                    {
-                        LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
-                        InlineKeyword = None
-                        EqualsRange = Some range0
-                    }
-                )
+                SynBinding.basic (SynLongIdent.CreateFromLongIdent [ functionName ]) [ arg ] functionBody
+                |> SynBinding.makeStaticMember
+                |> SynBinding.withXmlDoc xmlDoc
+                |> SynBinding.withReturnAnnotation returnInfo
 
             let mem = SynMemberDefn.Member (binding, range0)
 
@@ -422,18 +370,11 @@ module internal JsonParseGenerator =
 
             SynModuleDecl.Types ([ containingType ], range0)
         else
-            let binding =
-                SynBinding.Let (
-                    isInline = false,
-                    isMutable = false,
-                    xmldoc = xmlDoc,
-                    returnInfo = returnInfo,
-                    expr = functionBody,
-                    valData = inputVal,
-                    pattern = pattern
-                )
-
-            SynModuleDecl.CreateLet [ binding ]
+            SynBinding.basic (SynLongIdent.CreateFromLongIdent [ functionName ]) [ arg ] functionBody
+            |> SynBinding.withXmlDoc xmlDoc
+            |> SynBinding.withReturnAnnotation returnInfo
+            |> List.singleton
+            |> SynModuleDecl.CreateLet
 
     let createMaker (spec : JsonParseOutputSpec) (typeName : LongIdent) (fields : SynFieldData<Ident> list) =
         let assignments =

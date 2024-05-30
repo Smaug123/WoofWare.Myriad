@@ -219,14 +219,9 @@ module internal CataGenerator =
         |> SynExpr.CreateSequential
         |> SynExpr.createLet
             [
-                SynBinding.Let (
-                    valData = SynValData.SynValData (None, SynValInfo.Empty, None),
-                    pattern = SynPat.CreateNamed (Ident.Create "instructions"),
-                    expr =
-                        SynExpr.applyFunction
-                            (SynExpr.CreateIdentString "ResizeArray")
-                            (SynExpr.CreateConst SynConst.Unit)
-                )
+                SynExpr.CreateIdentString "ResizeArray"
+                |> SynExpr.applyTo (SynExpr.CreateConst SynConst.Unit)
+                |> SynBinding.basic (SynLongIdent.CreateString "instructions") []
             ]
         |> SynExpr.typeAnnotate relevantTypar
         |> SynBinding.basic
@@ -1217,19 +1212,6 @@ module internal CataGenerator =
         )
 
     let createLoopFunction (cataTypeName : Ident) (cataVarName : Ident) (analysis : UnionAnalysis list) : SynBinding =
-        let valData =
-            SynValData.SynValData (
-                None,
-                SynValInfo.SynValInfo (
-                    [
-                        [ SynArgInfo.SynArgInfo ([], false, Some cataVarName) ]
-                        [ SynArgInfo.SynArgInfo ([], false, Some (Ident.Create "instructions")) ]
-                    ],
-                    SynArgInfo.Empty
-                ),
-                None
-            )
-
         let userSuppliedGenerics =
             analysis
             |> List.collect _.Typars
@@ -1259,45 +1241,37 @@ module internal CataGenerator =
                     yield SynType.Var (SynTypar.SynTypar (case.GenericName, TyparStaticReq.None, false), range0)
             ]
 
-        let headPat =
-            SynPat.LongIdent (
-                SynLongIdent.CreateString "loop",
-                None,
-                None,
-                SynArgPats.Pats
-                    [
-                        SynPat.CreateParen (
-                            SynPat.CreateTyped (
-                                SynPat.CreateNamed cataVarName,
-                                SynType.App (
-                                    SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ cataTypeName ]),
-                                    Some range0,
-                                    cataGenerics,
-                                    List.replicate (cataGenerics.Length - 1) range0,
-                                    Some range0,
-                                    false,
-                                    range0
-                                )
-                            )
+        let args =
+            [
+                SynPat.CreateParen (
+                    SynPat.CreateTyped (
+                        SynPat.CreateNamed cataVarName,
+                        SynType.App (
+                            SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent [ cataTypeName ]),
+                            Some range0,
+                            cataGenerics,
+                            List.replicate (cataGenerics.Length - 1) range0,
+                            Some range0,
+                            false,
+                            range0
                         )
-                        SynPat.CreateParen (
-                            SynPat.CreateTyped (
-                                SynPat.CreateNamed (Ident.Create "instructions"),
-                                SynType.App (
-                                    SynType.CreateLongIdent "ResizeArray",
-                                    Some range0,
-                                    [ instructionsArrType ],
-                                    [],
-                                    Some range0,
-                                    false,
-                                    range0
-                                )
-                            )
+                    )
+                )
+                SynPat.CreateParen (
+                    SynPat.CreateTyped (
+                        SynPat.CreateNamed (Ident.Create "instructions"),
+                        SynType.App (
+                            SynType.CreateLongIdent "ResizeArray",
+                            Some range0,
+                            [ instructionsArrType ],
+                            [],
+                            Some range0,
+                            false,
+                            range0
                         )
-                    ],
-                Some (SynAccess.Private range0),
-                range0
-            )
+                    )
+                )
+            ]
 
         let baseMatchClauses = analysis |> List.map createBaseMatchClause
 
@@ -1315,39 +1289,16 @@ module internal CataGenerator =
                 matchStatement
             ]
             |> SynExpr.CreateSequential
-
-        let body =
-            SynExpr.LetOrUse (
-                false,
-                false,
+            |> SynExpr.createLet
                 [
-                    SynBinding.SynBinding (
-                        None,
-                        SynBindingKind.Normal,
-                        false,
-                        false,
-                        [],
-                        PreXmlDoc.Empty,
-                        SynValData.SynValData (None, SynValInfo.SynValInfo ([], SynArgInfo.Empty), None),
-                        SynPat.CreateNamed (Ident.Create "currentInstruction"),
-                        None,
-                        SynExpr.DotIndexedGet (
-                            SynExpr.CreateIdentString "instructions",
-                            SynExpr.minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1,
-                            range0,
-                            range0
-                        ),
+                    SynExpr.DotIndexedGet (
+                        SynExpr.CreateIdentString "instructions",
+                        SynExpr.minusN (SynLongIdent.Create [ "instructions" ; "Count" ]) 1,
                         range0,
-                        DebugPointAtBinding.Yes range0,
-                        SynExpr.synBindingTriviaZero false
+                        range0
                     )
-                ],
-                body,
-                range0,
-                {
-                    InKeyword = None
-                }
-            )
+                    |> SynBinding.basic (SynLongIdent.CreateString "currentInstruction") []
+                ]
 
         let body =
             SynExpr.CreateSequential
@@ -1391,21 +1342,8 @@ module internal CataGenerator =
                     ]
             )
 
-        SynBinding.SynBinding (
-            Some (SynAccess.Private range0),
-            SynBindingKind.Normal,
-            false,
-            false,
-            [],
-            PreXmlDoc.Empty,
-            valData,
-            headPat,
-            None,
-            body,
-            range0,
-            DebugPointAtBinding.NoneAtLet,
-            trivia = SynExpr.synBindingTriviaZero false
-        )
+        SynBinding.basic (SynLongIdent.CreateString "loop") args body
+        |> SynBinding.withAccessibility (Some (SynAccess.Private range0))
 
     let createModule
         (opens : SynOpenDeclTarget list)

@@ -185,6 +185,19 @@ module internal SynExpr =
 
         pipeThroughFunction lambda body
 
+    let createLongIdent (ident : string list) : SynExpr =
+        SynExpr.CreateLongIdent (SynLongIdent.Create ident)
+
+    let createLongIdent' (ident : Ident list) : SynExpr =
+        SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent ident)
+
+    let createLet (bindings : SynBinding list) (body : SynExpr) : SynExpr =
+        SynExpr.LetOrUse (false, false, bindings, body, range0, SynExprLetOrUseTrivia.empty)
+
+    let createMatch (matchOn : SynExpr) (cases : SynMatchClause list) : SynExpr = SynExpr.CreateMatch (matchOn, cases)
+
+    let typeAnnotate (ty : SynType) (expr : SynExpr) : SynExpr = SynExpr.CreateTyped (expr, ty)
+
     /// {compExpr} { {lets} ; return {ret} }
     let createCompExpr (compExpr : string) (retBody : SynExpr) (lets : CompExprBinding list) : SynExpr =
         let retStatement = SynExpr.YieldOrReturn ((false, true), retBody, range0)
@@ -208,16 +221,7 @@ module internal SynExpr =
                         }
                     )
                 | Let (lhs, rhs) ->
-                    SynExpr.LetOrUse (
-                        false,
-                        false,
-                        [ SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create lhs), expr = rhs) ],
-                        state,
-                        range0,
-                        {
-                            SynExprLetOrUseTrivia.InKeyword = None
-                        }
-                    )
+                    createLet [ SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create lhs), expr = rhs) ] state
                 | Use (lhs, rhs) ->
                     SynExpr.LetOrUse (
                         false,
@@ -253,17 +257,6 @@ module internal SynExpr =
         | _ -> callMethod "ToString" ident
 
     let upcast' (ty : SynType) (e : SynExpr) = SynExpr.Upcast (e, ty, range0)
-
-    let synBindingTriviaZero (isMember : bool) =
-        {
-            SynBindingTrivia.EqualsRange = Some range0
-            InlineKeyword = None
-            LeadingKeyword =
-                if isMember then
-                    SynLeadingKeyword.Member range0
-                else
-                    SynLeadingKeyword.Let range0
-        }
 
     /// {ident} - {rhs}
     let minus (ident : SynLongIdent) (rhs : SynExpr) : SynExpr =
@@ -314,16 +307,3 @@ module internal SynExpr =
             y
         )
         |> applyTo x
-
-    let createLongIdent (ident : string list) : SynExpr =
-        SynExpr.CreateLongIdent (SynLongIdent.Create ident)
-
-    let createLongIdent' (ident : Ident list) : SynExpr =
-        SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent ident)
-
-    let createLet (bindings : SynBinding list) (body : SynExpr) : SynExpr =
-        SynExpr.LetOrUse (false, false, bindings, body, range0, SynExprLetOrUseTrivia.empty)
-
-    let createMatch (matchOn : SynExpr) (cases : SynMatchClause list) : SynExpr = SynExpr.CreateMatch (matchOn, cases)
-
-    let typeAnnotate (ty : SynType) (expr : SynExpr) : SynExpr = SynExpr.CreateTyped (expr, ty)
