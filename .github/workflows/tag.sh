@@ -5,7 +5,11 @@ if [ "$DRY_RUN" = 1 ]; then
     DRY_RUN_FLAG="--dry-run"
 fi
 
-find . -maxdepth 1 -type f -name '*.nupkg' -exec sh -c 'tag=$(basename "$1" .nupkg); git tag "$tag"; git push origin "$tag" "$DRY_RUN_FLAG"' shell {} \;
+for file in find . -maxdepth 1 -type f -name '*.nupkg'; do
+    tag=$(basename "$file" .nupkg)
+    git tag "$tag"
+    git push origin "$tag" "$DRY_RUN_FLAG"
+done
 
 export TAG
 TAG=$(find . -maxdepth 1 -type f -name 'WoofWare.Myriad.Plugins.*.nupkg' -exec sh -c 'basename "$1" .nupkg' shell {} \; | grep -v Attributes)
