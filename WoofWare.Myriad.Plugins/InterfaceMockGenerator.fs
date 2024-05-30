@@ -57,17 +57,11 @@ module internal InterfaceMockGenerator =
             }
 
         let failwithFun =
-            SynExpr.createLambda
-                "x"
-                (SynExpr.CreateApp (
-                    SynExpr.CreateIdentString "raise",
-                    SynExpr.CreateParen (
-                        SynExpr.CreateApp (
-                            SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "NotImplementedException" ]),
-                            SynExpr.CreateConstString "Unimplemented mock function"
-                        )
-                    )
-                ))
+            SynExpr.createLongIdent [ "System" ; "NotImplementedException" ]
+            |> SynExpr.applyTo (SynExpr.CreateConstString "Unimplemented mock function")
+            |> SynExpr.CreateParen
+            |> SynExpr.applyFunction (SynExpr.CreateIdentString "raise")
+            |> SynExpr.createLambda "_"
 
         let constructorIdent =
             let generics =
@@ -255,13 +249,9 @@ module internal InterfaceMockGenerator =
 
                         (last, rest)
                         ||> List.fold (fun trail next -> SynExpr.CreateApp (next, trail))
-                        |> fun args ->
-                            SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (
-                                    SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; memberInfo.Identifier ]
-                                ),
-                                args
-                            )
+                        |> SynExpr.applyFunction (
+                            SynExpr.createLongIdent' [ Ident.Create "this" ; memberInfo.Identifier ]
+                        )
 
                     SynMemberDefn.Member (
                         SynBinding.SynBinding (
@@ -387,10 +377,7 @@ module internal InterfaceMockGenerator =
                                     SynBindingReturnInfoTrivia.Zero
                                 )
                             ),
-                            SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (SynLongIdent.Create [ "this" ; "Dispose" ]),
-                                SynExpr.CreateUnit
-                            ),
+                            SynExpr.CreateApp (SynExpr.createLongIdent [ "this" ; "Dispose" ], SynExpr.CreateUnit),
                             range0,
                             DebugPointAtBinding.Yes range0,
                             {

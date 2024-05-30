@@ -46,7 +46,7 @@ namespace PureGym
 module GymOpeningHours =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymOpeningHours =
-        let OpeningHours =
+        let arg_1 =
             (match node.["openingHours"] with
              | null ->
                  raise (
@@ -59,7 +59,7 @@ module GymOpeningHours =
             |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> List.ofSeq
 
-        let IsAlwaysOpen =
+        let arg_0 =
             (match node.["isAlwaysOpen"] with
              | null ->
                  raise (
@@ -72,8 +72,8 @@ module GymOpeningHours =
                 .GetValue<bool> ()
 
         {
-            IsAlwaysOpen = IsAlwaysOpen
-            OpeningHours = OpeningHours
+            IsAlwaysOpen = arg_0
+            OpeningHours = arg_1
         }
 namespace PureGym
 
@@ -83,7 +83,7 @@ namespace PureGym
 module GymAccessOptions =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAccessOptions =
-        let QrCodeAccess =
+        let arg_1 =
             (match node.["qrCodeAccess"] with
              | null ->
                  raise (
@@ -95,7 +95,7 @@ module GymAccessOptions =
                 .AsValue()
                 .GetValue<bool> ()
 
-        let PinAccess =
+        let arg_0 =
             (match node.["pinAccess"] with
              | null ->
                  raise (
@@ -108,8 +108,8 @@ module GymAccessOptions =
                 .GetValue<bool> ()
 
         {
-            PinAccess = PinAccess
-            QrCodeAccess = QrCodeAccess
+            PinAccess = arg_0
+            QrCodeAccess = arg_1
         }
 namespace PureGym
 
@@ -119,7 +119,7 @@ namespace PureGym
 module GymLocation =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymLocation =
-        let Latitude =
+        let arg_1 =
             try
                 (match node.["latitude"] with
                  | null ->
@@ -152,7 +152,7 @@ module GymLocation =
                 else
                     reraise ()
 
-        let Longitude =
+        let arg_0 =
             try
                 (match node.["longitude"] with
                  | null ->
@@ -186,8 +186,8 @@ module GymLocation =
                     reraise ()
 
         {
-            Longitude = Longitude
-            Latitude = Latitude
+            Longitude = arg_0
+            Latitude = arg_1
         }
 namespace PureGym
 
@@ -197,7 +197,7 @@ namespace PureGym
 module GymAddress =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAddress =
-        let Postcode =
+        let arg_5 =
             (match node.["postcode"] with
              | null ->
                  raise (
@@ -209,12 +209,12 @@ module GymAddress =
                 .AsValue()
                 .GetValue<string> ()
 
-        let County =
+        let arg_4 =
             match node.["county"] with
             | null -> None
             | v -> v.AsValue().GetValue<string> () |> Some
 
-        let Town =
+        let arg_3 =
             (match node.["town"] with
              | null ->
                  raise (
@@ -226,17 +226,17 @@ module GymAddress =
                 .AsValue()
                 .GetValue<string> ()
 
-        let AddressLine3 =
+        let arg_2 =
             match node.["addressLine3"] with
             | null -> None
             | v -> v.AsValue().GetValue<string> () |> Some
 
-        let AddressLine2 =
+        let arg_1 =
             match node.["addressLine2"] with
             | null -> None
             | v -> v.AsValue().GetValue<string> () |> Some
 
-        let AddressLine1 =
+        let arg_0 =
             (match node.["addressLine1"] with
              | null ->
                  raise (
@@ -249,12 +249,12 @@ module GymAddress =
                 .GetValue<string> ()
 
         {
-            AddressLine1 = AddressLine1
-            AddressLine2 = AddressLine2
-            AddressLine3 = AddressLine3
-            Town = Town
-            County = County
-            Postcode = Postcode
+            AddressLine1 = arg_0
+            AddressLine2 = arg_1
+            AddressLine3 = arg_2
+            Town = arg_3
+            County = arg_4
+            Postcode = arg_5
         }
 namespace PureGym
 
@@ -264,7 +264,7 @@ namespace PureGym
 module Gym =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Gym =
-        let ReopenDate =
+        let arg_10 =
             (match node.["reopenDate"] with
              | null ->
                  raise (
@@ -276,7 +276,7 @@ module Gym =
                 .AsValue()
                 .GetValue<string> ()
 
-        let TimeZone =
+        let arg_9 =
             (match node.["timeZone"] with
              | null ->
                  raise (
@@ -288,7 +288,7 @@ module Gym =
                 .AsValue()
                 .GetValue<string> ()
 
-        let Location =
+        let arg_8 =
             GymLocation.jsonParse (
                 match node.["location"] with
                 | null ->
@@ -300,7 +300,7 @@ module Gym =
                 | v -> v
             )
 
-        let AccessOptions =
+        let arg_7 =
             GymAccessOptions.jsonParse (
                 match node.["accessOptions"] with
                 | null ->
@@ -312,7 +312,7 @@ module Gym =
                 | v -> v
             )
 
-        let GymOpeningHours =
+        let arg_6 =
             GymOpeningHours.jsonParse (
                 match node.["gymOpeningHours"] with
                 | null ->
@@ -324,7 +324,7 @@ module Gym =
                 | v -> v
             )
 
-        let EmailAddress =
+        let arg_5 =
             (match node.["emailAddress"] with
              | null ->
                  raise (
@@ -336,7 +336,7 @@ module Gym =
                 .AsValue()
                 .GetValue<string> ()
 
-        let PhoneNumber =
+        let arg_4 =
             (match node.["phoneNumber"] with
              | null ->
                  raise (
@@ -348,7 +348,7 @@ module Gym =
                 .AsValue()
                 .GetValue<string> ()
 
-        let Address =
+        let arg_3 =
             GymAddress.jsonParse (
                 match node.["address"] with
                 | null ->
@@ -360,7 +360,7 @@ module Gym =
                 | v -> v
             )
 
-        let Status =
+        let arg_2 =
             (match node.["status"] with
              | null ->
                  raise (
@@ -372,7 +372,7 @@ module Gym =
                 .AsValue()
                 .GetValue<int> ()
 
-        let Id =
+        let arg_1 =
             (match node.["id"] with
              | null ->
                  raise (
@@ -384,7 +384,7 @@ module Gym =
                 .AsValue()
                 .GetValue<int> ()
 
-        let Name =
+        let arg_0 =
             (match node.["name"] with
              | null ->
                  raise (
@@ -397,17 +397,17 @@ module Gym =
                 .GetValue<string> ()
 
         {
-            Name = Name
-            Id = Id
-            Status = Status
-            Address = Address
-            PhoneNumber = PhoneNumber
-            EmailAddress = EmailAddress
-            GymOpeningHours = GymOpeningHours
-            AccessOptions = AccessOptions
-            Location = Location
-            TimeZone = TimeZone
-            ReopenDate = ReopenDate
+            Name = arg_0
+            Id = arg_1
+            Status = arg_2
+            Address = arg_3
+            PhoneNumber = arg_4
+            EmailAddress = arg_5
+            GymOpeningHours = arg_6
+            AccessOptions = arg_7
+            Location = arg_8
+            TimeZone = arg_9
+            ReopenDate = arg_10
         }
 namespace PureGym
 
@@ -419,7 +419,7 @@ module MemberJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Member =
-            let MemberStatus =
+            let arg_14 =
                 (match node.["memberStatus"] with
                  | null ->
                      raise (
@@ -431,7 +431,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<int> ()
 
-            let SuspendedReason =
+            let arg_13 =
                 (match node.["suspendedReason"] with
                  | null ->
                      raise (
@@ -443,7 +443,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<int> ()
 
-            let MembershipLevel =
+            let arg_12 =
                 (match node.["membershipLevel"] with
                  | null ->
                      raise (
@@ -455,7 +455,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<int> ()
 
-            let MembershipName =
+            let arg_11 =
                 (match node.["membershipName"] with
                  | null ->
                      raise (
@@ -467,7 +467,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let Postcode =
+            let arg_10 =
                 (match node.["postCode"] with
                  | null ->
                      raise (
@@ -479,7 +479,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let MobileNumber =
+            let arg_9 =
                 (match node.["mobileNumber"] with
                  | null ->
                      raise (
@@ -491,7 +491,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let DateOfBirth =
+            let arg_8 =
                 (match node.["dateofBirth"] with
                  | null ->
                      raise (
@@ -504,7 +504,7 @@ module MemberJsonParseExtension =
                     .GetValue<string> ()
                 |> System.DateOnly.Parse
 
-            let GymAccessPin =
+            let arg_7 =
                 (match node.["gymAccessPin"] with
                  | null ->
                      raise (
@@ -516,7 +516,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let EmailAddress =
+            let arg_6 =
                 (match node.["emailAddress"] with
                  | null ->
                      raise (
@@ -528,7 +528,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let HomeGymName =
+            let arg_5 =
                 (match node.["homeGymName"] with
                  | null ->
                      raise (
@@ -540,7 +540,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let HomeGymId =
+            let arg_4 =
                 (match node.["homeGymId"] with
                  | null ->
                      raise (
@@ -552,7 +552,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<int> ()
 
-            let LastName =
+            let arg_3 =
                 (match node.["lastName"] with
                  | null ->
                      raise (
@@ -564,7 +564,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let FirstName =
+            let arg_2 =
                 (match node.["firstName"] with
                  | null ->
                      raise (
@@ -576,7 +576,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let CompoundMemberId =
+            let arg_1 =
                 (match node.["compoundMemberId"] with
                  | null ->
                      raise (
@@ -588,7 +588,7 @@ module MemberJsonParseExtension =
                     .AsValue()
                     .GetValue<string> ()
 
-            let Id =
+            let arg_0 =
                 (match node.["id"] with
                  | null ->
                      raise (
@@ -601,21 +601,21 @@ module MemberJsonParseExtension =
                     .GetValue<int> ()
 
             {
-                Id = Id
-                CompoundMemberId = CompoundMemberId
-                FirstName = FirstName
-                LastName = LastName
-                HomeGymId = HomeGymId
-                HomeGymName = HomeGymName
-                EmailAddress = EmailAddress
-                GymAccessPin = GymAccessPin
-                DateOfBirth = DateOfBirth
-                MobileNumber = MobileNumber
-                Postcode = Postcode
-                MembershipName = MembershipName
-                MembershipLevel = MembershipLevel
-                SuspendedReason = SuspendedReason
-                MemberStatus = MemberStatus
+                Id = arg_0
+                CompoundMemberId = arg_1
+                FirstName = arg_2
+                LastName = arg_3
+                HomeGymId = arg_4
+                HomeGymName = arg_5
+                EmailAddress = arg_6
+                GymAccessPin = arg_7
+                DateOfBirth = arg_8
+                MobileNumber = arg_9
+                Postcode = arg_10
+                MembershipName = arg_11
+                MembershipLevel = arg_12
+                SuspendedReason = arg_13
+                MemberStatus = arg_14
             }
 namespace PureGym
 
@@ -625,7 +625,7 @@ namespace PureGym
 module GymAttendance =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAttendance =
-        let MaximumCapacity =
+        let arg_8 =
             (match node.["maximumCapacity"] with
              | null ->
                  raise (
@@ -637,7 +637,7 @@ module GymAttendance =
                 .AsValue()
                 .GetValue<int> ()
 
-        let LastRefreshedPeopleInClasses =
+        let arg_7 =
             (match node.["lastRefreshedPeopleInClasses"] with
              | null ->
                  raise (
@@ -650,7 +650,7 @@ module GymAttendance =
                 .GetValue<string> ()
             |> System.DateTime.Parse
 
-        let LastRefreshed =
+        let arg_6 =
             (match node.["lastRefreshed"] with
              | null ->
                  raise (
@@ -663,7 +663,7 @@ module GymAttendance =
                 .GetValue<string> ()
             |> System.DateTime.Parse
 
-        let AttendanceTime =
+        let arg_5 =
             (match node.["attendanceTime"] with
              | null ->
                  raise (
@@ -676,7 +676,7 @@ module GymAttendance =
                 .GetValue<string> ()
             |> System.DateTime.Parse
 
-        let IsApproximate =
+        let arg_4 =
             (match node.["isApproximate"] with
              | null ->
                  raise (
@@ -688,12 +688,12 @@ module GymAttendance =
                 .AsValue()
                 .GetValue<bool> ()
 
-        let TotalPeopleSuffix =
+        let arg_3 =
             match node.["totalPeopleSuffix"] with
             | null -> None
             | v -> v.AsValue().GetValue<string> () |> Some
 
-        let TotalPeopleInClasses =
+        let arg_2 =
             (match node.["totalPeopleInClasses"] with
              | null ->
                  raise (
@@ -705,7 +705,7 @@ module GymAttendance =
                 .AsValue()
                 .GetValue<int> ()
 
-        let TotalPeopleInGym =
+        let arg_1 =
             (match node.["totalPeopleInGym"] with
              | null ->
                  raise (
@@ -717,7 +717,7 @@ module GymAttendance =
                 .AsValue()
                 .GetValue<int> ()
 
-        let Description =
+        let arg_0 =
             (match node.["description"] with
              | null ->
                  raise (
@@ -730,15 +730,15 @@ module GymAttendance =
                 .GetValue<string> ()
 
         {
-            Description = Description
-            TotalPeopleInGym = TotalPeopleInGym
-            TotalPeopleInClasses = TotalPeopleInClasses
-            TotalPeopleSuffix = TotalPeopleSuffix
-            IsApproximate = IsApproximate
-            AttendanceTime = AttendanceTime
-            LastRefreshed = LastRefreshed
-            LastRefreshedPeopleInClasses = LastRefreshedPeopleInClasses
-            MaximumCapacity = MaximumCapacity
+            Description = arg_0
+            TotalPeopleInGym = arg_1
+            TotalPeopleInClasses = arg_2
+            TotalPeopleSuffix = arg_3
+            IsApproximate = arg_4
+            AttendanceTime = arg_5
+            LastRefreshed = arg_6
+            LastRefreshedPeopleInClasses = arg_7
+            MaximumCapacity = arg_8
         }
 namespace PureGym
 
@@ -748,7 +748,7 @@ namespace PureGym
 module MemberActivityDto =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : MemberActivityDto =
-        let LastRefreshed =
+        let arg_5 =
             (match node.["lastRefreshed"] with
              | null ->
                  raise (
@@ -761,7 +761,7 @@ module MemberActivityDto =
                 .GetValue<string> ()
             |> System.DateTime.Parse
 
-        let IsEstimated =
+        let arg_4 =
             (match node.["isEstimated"] with
              | null ->
                  raise (
@@ -773,7 +773,7 @@ module MemberActivityDto =
                 .AsValue()
                 .GetValue<bool> ()
 
-        let TotalClasses =
+        let arg_3 =
             (match node.["totalClasses"] with
              | null ->
                  raise (
@@ -785,7 +785,7 @@ module MemberActivityDto =
                 .AsValue()
                 .GetValue<int> ()
 
-        let TotalVisits =
+        let arg_2 =
             (match node.["totalVisits"] with
              | null ->
                  raise (
@@ -797,7 +797,7 @@ module MemberActivityDto =
                 .AsValue()
                 .GetValue<int> ()
 
-        let AverageDuration =
+        let arg_1 =
             (match node.["averageDuration"] with
              | null ->
                  raise (
@@ -809,7 +809,7 @@ module MemberActivityDto =
                 .AsValue()
                 .GetValue<int> ()
 
-        let TotalDuration =
+        let arg_0 =
             (match node.["totalDuration"] with
              | null ->
                  raise (
@@ -822,12 +822,12 @@ module MemberActivityDto =
                 .GetValue<int> ()
 
         {
-            TotalDuration = TotalDuration
-            AverageDuration = AverageDuration
-            TotalVisits = TotalVisits
-            TotalClasses = TotalClasses
-            IsEstimated = IsEstimated
-            LastRefreshed = LastRefreshed
+            TotalDuration = arg_0
+            AverageDuration = arg_1
+            TotalVisits = arg_2
+            TotalClasses = arg_3
+            IsEstimated = arg_4
+            LastRefreshed = arg_5
         }
 namespace PureGym
 
@@ -837,7 +837,7 @@ namespace PureGym
 module SessionsAggregate =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsAggregate =
-        let Duration =
+        let arg_2 =
             (match node.["Duration"] with
              | null ->
                  raise (
@@ -849,7 +849,7 @@ module SessionsAggregate =
                 .AsValue()
                 .GetValue<int> ()
 
-        let Visits =
+        let arg_1 =
             (match node.["Visits"] with
              | null ->
                  raise (
@@ -861,7 +861,7 @@ module SessionsAggregate =
                 .AsValue()
                 .GetValue<int> ()
 
-        let Activities =
+        let arg_0 =
             (match node.["Activities"] with
              | null ->
                  raise (
@@ -874,9 +874,9 @@ module SessionsAggregate =
                 .GetValue<int> ()
 
         {
-            Activities = Activities
-            Visits = Visits
-            Duration = Duration
+            Activities = arg_0
+            Visits = arg_1
+            Duration = arg_2
         }
 namespace PureGym
 
@@ -886,7 +886,7 @@ namespace PureGym
 module VisitGym =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : VisitGym =
-        let Status =
+        let arg_2 =
             (match node.["Status"] with
              | null ->
                  raise (
@@ -898,7 +898,7 @@ module VisitGym =
                 .AsValue()
                 .GetValue<string> ()
 
-        let Name =
+        let arg_1 =
             (match node.["Name"] with
              | null ->
                  raise (
@@ -910,7 +910,7 @@ module VisitGym =
                 .AsValue()
                 .GetValue<string> ()
 
-        let Id =
+        let arg_0 =
             (match node.["Id"] with
              | null ->
                  raise (
@@ -923,9 +923,9 @@ module VisitGym =
                 .GetValue<int> ()
 
         {
-            Id = Id
-            Name = Name
-            Status = Status
+            Id = arg_0
+            Name = arg_1
+            Status = arg_2
         }
 namespace PureGym
 
@@ -935,7 +935,7 @@ namespace PureGym
 module Visit =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Visit =
-        let Gym =
+        let arg_3 =
             VisitGym.jsonParse (
                 match node.["Gym"] with
                 | null ->
@@ -947,7 +947,7 @@ module Visit =
                 | v -> v
             )
 
-        let Duration =
+        let arg_2 =
             (match node.["Duration"] with
              | null ->
                  raise (
@@ -959,7 +959,7 @@ module Visit =
                 .AsValue()
                 .GetValue<int> ()
 
-        let StartTime =
+        let arg_1 =
             (match node.["StartTime"] with
              | null ->
                  raise (
@@ -972,7 +972,7 @@ module Visit =
                 .GetValue<string> ()
             |> System.DateTime.Parse
 
-        let IsDurationEstimated =
+        let arg_0 =
             (match node.["IsDurationEstimated"] with
              | null ->
                  raise (
@@ -985,10 +985,10 @@ module Visit =
                 .GetValue<bool> ()
 
         {
-            IsDurationEstimated = IsDurationEstimated
-            StartTime = StartTime
-            Duration = Duration
-            Gym = Gym
+            IsDurationEstimated = arg_0
+            StartTime = arg_1
+            Duration = arg_2
+            Gym = arg_3
         }
 namespace PureGym
 
@@ -998,7 +998,7 @@ namespace PureGym
 module SessionsSummary =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsSummary =
-        let ThisWeek =
+        let arg_1 =
             SessionsAggregate.jsonParse (
                 match node.["ThisWeek"] with
                 | null ->
@@ -1010,7 +1010,7 @@ module SessionsSummary =
                 | v -> v
             )
 
-        let Total =
+        let arg_0 =
             SessionsAggregate.jsonParse (
                 match node.["Total"] with
                 | null ->
@@ -1023,8 +1023,8 @@ module SessionsSummary =
             )
 
         {
-            Total = Total
-            ThisWeek = ThisWeek
+            Total = arg_0
+            ThisWeek = arg_1
         }
 namespace PureGym
 
@@ -1034,7 +1034,7 @@ namespace PureGym
 module Sessions =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Sessions =
-        let Visits =
+        let arg_1 =
             (match node.["Visits"] with
              | null ->
                  raise (
@@ -1047,7 +1047,7 @@ module Sessions =
             |> Seq.map (fun elt -> Visit.jsonParse elt)
             |> List.ofSeq
 
-        let Summary =
+        let arg_0 =
             SessionsSummary.jsonParse (
                 match node.["Summary"] with
                 | null ->
@@ -1060,8 +1060,8 @@ module Sessions =
             )
 
         {
-            Summary = Summary
-            Visits = Visits
+            Summary = arg_0
+            Visits = arg_1
         }
 namespace PureGym
 
@@ -1071,7 +1071,7 @@ namespace PureGym
 module UriThing =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : UriThing =
-        let SomeUri =
+        let arg_0 =
             (match node.["someUri"] with
              | null ->
                  raise (
@@ -1085,5 +1085,5 @@ module UriThing =
             |> System.Uri
 
         {
-            SomeUri = SomeUri
+            SomeUri = arg_0
         }

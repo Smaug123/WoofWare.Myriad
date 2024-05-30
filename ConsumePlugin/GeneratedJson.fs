@@ -13,7 +13,7 @@ namespace ConsumePlugin
 module InnerType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerType =
-        let Thing =
+        let arg_0 =
             (match node.[(Literals.something)] with
              | null ->
                  raise (
@@ -26,7 +26,7 @@ module InnerType =
                 .GetValue<string> ()
 
         {
-            Thing = Thing
+            Thing = arg_0
         }
 namespace ConsumePlugin
 
@@ -36,7 +36,7 @@ namespace ConsumePlugin
 module JsonRecordType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordType =
-        let F =
+        let arg_5 =
             (match node.["f"] with
              | null ->
                  raise (
@@ -49,7 +49,7 @@ module JsonRecordType =
             |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
             |> Array.ofSeq
 
-        let E =
+        let arg_4 =
             (match node.["e"] with
              | null ->
                  raise (
@@ -62,7 +62,7 @@ module JsonRecordType =
             |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> Array.ofSeq
 
-        let D =
+        let arg_3 =
             InnerType.jsonParse (
                 match node.["d"] with
                 | null ->
@@ -74,7 +74,7 @@ module JsonRecordType =
                 | v -> v
             )
 
-        let C =
+        let arg_2 =
             (match node.["hi"] with
              | null ->
                  raise (
@@ -87,7 +87,7 @@ module JsonRecordType =
             |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
             |> List.ofSeq
 
-        let B =
+        let arg_1 =
             (match node.["another-thing"] with
              | null ->
                  raise (
@@ -99,7 +99,7 @@ module JsonRecordType =
                 .AsValue()
                 .GetValue<string> ()
 
-        let A =
+        let arg_0 =
             (match node.["a"] with
              | null ->
                  raise (
@@ -112,12 +112,12 @@ module JsonRecordType =
                 .GetValue<int> ()
 
         {
-            A = A
-            B = B
-            C = C
-            D = D
-            E = E
-            F = F
+            A = arg_0
+            B = arg_1
+            C = arg_2
+            D = arg_3
+            E = arg_4
+            F = arg_5
         }
 namespace ConsumePlugin
 
@@ -129,9 +129,9 @@ module ToGetExtensionMethodJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ToGetExtensionMethod =
-            let Whiskey = System.Numerics.BigInteger.Parse (node.["whiskey"].ToJsonString ())
+            let arg_20 = System.Numerics.BigInteger.Parse (node.["whiskey"].ToJsonString ())
 
-            let Victor =
+            let arg_19 =
                 (match node.["victor"] with
                  | null ->
                      raise (
@@ -143,7 +143,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Char> ()
 
-            let Uniform =
+            let arg_18 =
                 (match node.["uniform"] with
                  | null ->
                      raise (
@@ -155,7 +155,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Decimal> ()
 
-            let Tango =
+            let arg_17 =
                 (match node.["tango"] with
                  | null ->
                      raise (
@@ -167,7 +167,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.SByte> ()
 
-            let Quebec =
+            let arg_16 =
                 (match node.["quebec"] with
                  | null ->
                      raise (
@@ -179,7 +179,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Byte> ()
 
-            let Papa =
+            let arg_15 =
                 (match node.["papa"] with
                  | null ->
                      raise (
@@ -191,7 +191,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Byte> ()
 
-            let Oscar =
+            let arg_14 =
                 (match node.["oscar"] with
                  | null ->
                      raise (
@@ -203,7 +203,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.SByte> ()
 
-            let November =
+            let arg_13 =
                 (match node.["november"] with
                  | null ->
                      raise (
@@ -215,7 +215,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.UInt16> ()
 
-            let Mike =
+            let arg_12 =
                 (match node.["mike"] with
                  | null ->
                      raise (
@@ -227,7 +227,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Int16> ()
 
-            let Lima =
+            let arg_11 =
                 (match node.["lima"] with
                  | null ->
                      raise (
@@ -239,7 +239,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.UInt32> ()
 
-            let Kilo =
+            let arg_10 =
                 (match node.["kilo"] with
                  | null ->
                      raise (
@@ -251,7 +251,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Int32> ()
 
-            let Juliette =
+            let arg_9 =
                 (match node.["juliette"] with
                  | null ->
                      raise (
@@ -263,7 +263,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.UInt32> ()
 
-            let India =
+            let arg_8 =
                 (match node.["india"] with
                  | null ->
                      raise (
@@ -275,7 +275,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<int> ()
 
-            let Hotel =
+            let arg_7 =
                 (match node.["hotel"] with
                  | null ->
                      raise (
@@ -287,7 +287,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.UInt64> ()
 
-            let Golf =
+            let arg_6 =
                 (match node.["golf"] with
                  | null ->
                      raise (
@@ -299,7 +299,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Int64> ()
 
-            let Foxtrot =
+            let arg_5 =
                 (match node.["foxtrot"] with
                  | null ->
                      raise (
@@ -311,7 +311,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Double> ()
 
-            let Echo =
+            let arg_4 =
                 (match node.["echo"] with
                  | null ->
                      raise (
@@ -323,7 +323,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Single> ()
 
-            let Delta =
+            let arg_3 =
                 (match node.["delta"] with
                  | null ->
                      raise (
@@ -335,7 +335,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<System.Single> ()
 
-            let Charlie =
+            let arg_2 =
                 (match node.["charlie"] with
                  | null ->
                      raise (
@@ -347,7 +347,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .AsValue()
                     .GetValue<float> ()
 
-            let Bravo =
+            let arg_1 =
                 (match node.["bravo"] with
                  | null ->
                      raise (
@@ -360,7 +360,7 @@ module ToGetExtensionMethodJsonParseExtension =
                     .GetValue<string> ()
                 |> System.Uri
 
-            let Alpha =
+            let arg_0 =
                 (match node.["alpha"] with
                  | null ->
                      raise (
@@ -373,25 +373,25 @@ module ToGetExtensionMethodJsonParseExtension =
                     .GetValue<string> ()
 
             {
-                Alpha = Alpha
-                Bravo = Bravo
-                Charlie = Charlie
-                Delta = Delta
-                Echo = Echo
-                Foxtrot = Foxtrot
-                Golf = Golf
-                Hotel = Hotel
-                India = India
-                Juliette = Juliette
-                Kilo = Kilo
-                Lima = Lima
-                Mike = Mike
-                November = November
-                Oscar = Oscar
-                Papa = Papa
-                Quebec = Quebec
-                Tango = Tango
-                Uniform = Uniform
-                Victor = Victor
-                Whiskey = Whiskey
+                Alpha = arg_0
+                Bravo = arg_1
+                Charlie = arg_2
+                Delta = arg_3
+                Echo = arg_4
+                Foxtrot = arg_5
+                Golf = arg_6
+                Hotel = arg_7
+                India = arg_8
+                Juliette = arg_9
+                Kilo = arg_10
+                Lima = arg_11
+                Mike = arg_12
+                November = arg_13
+                Oscar = arg_14
+                Papa = arg_15
+                Quebec = arg_16
+                Tango = arg_17
+                Uniform = arg_18
+                Victor = arg_19
+                Whiskey = arg_20
             }

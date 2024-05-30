@@ -13,7 +13,7 @@ namespace ConsumePlugin
 module JwtVaultAuthResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtVaultAuthResponse =
-        let NumUses =
+        let arg_10 =
             (match node.["num_uses"] with
              | null ->
                  raise (
@@ -25,7 +25,7 @@ module JwtVaultAuthResponse =
                 .AsValue()
                 .GetValue<int> ()
 
-        let Orphan =
+        let arg_9 =
             (match node.["orphan"] with
              | null ->
                  raise (
@@ -37,7 +37,7 @@ module JwtVaultAuthResponse =
                 .AsValue()
                 .GetValue<bool> ()
 
-        let EntityId =
+        let arg_8 =
             (match node.["entity_id"] with
              | null ->
                  raise (
@@ -49,7 +49,7 @@ module JwtVaultAuthResponse =
                 .AsValue()
                 .GetValue<string> ()
 
-        let TokenType =
+        let arg_7 =
             (match node.["token_type"] with
              | null ->
                  raise (
@@ -61,7 +61,7 @@ module JwtVaultAuthResponse =
                 .AsValue()
                 .GetValue<string> ()
 
-        let Renewable =
+        let arg_6 =
             (match node.["renewable"] with
              | null ->
                  raise (
@@ -73,7 +73,7 @@ module JwtVaultAuthResponse =
                 .AsValue()
                 .GetValue<bool> ()
 
-        let LeaseDuration =
+        let arg_5 =
             (match node.["lease_duration"] with
              | null ->
                  raise (
@@ -85,7 +85,7 @@ module JwtVaultAuthResponse =
                 .AsValue()
                 .GetValue<int> ()
 
-        let IdentityPolicies =
+        let arg_4 =
             (match node.["identity_policies"] with
              | null ->
                  raise (
@@ -98,7 +98,7 @@ module JwtVaultAuthResponse =
             |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> List.ofSeq
 
-        let TokenPolicies =
+        let arg_3 =
             (match node.["token_policies"] with
              | null ->
                  raise (
@@ -111,7 +111,7 @@ module JwtVaultAuthResponse =
             |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> List.ofSeq
 
-        let Policies =
+        let arg_2 =
             (match node.["policies"] with
              | null ->
                  raise (
@@ -124,7 +124,7 @@ module JwtVaultAuthResponse =
             |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
             |> List.ofSeq
 
-        let Accessor =
+        let arg_1 =
             (match node.["accessor"] with
              | null ->
                  raise (
@@ -136,7 +136,7 @@ module JwtVaultAuthResponse =
                 .AsValue()
                 .GetValue<string> ()
 
-        let ClientToken =
+        let arg_0 =
             (match node.["client_token"] with
              | null ->
                  raise (
@@ -149,17 +149,17 @@ module JwtVaultAuthResponse =
                 .GetValue<string> ()
 
         {
-            ClientToken = ClientToken
-            Accessor = Accessor
-            Policies = Policies
-            TokenPolicies = TokenPolicies
-            IdentityPolicies = IdentityPolicies
-            LeaseDuration = LeaseDuration
-            Renewable = Renewable
-            TokenType = TokenType
-            EntityId = EntityId
-            Orphan = Orphan
-            NumUses = NumUses
+            ClientToken = arg_0
+            Accessor = arg_1
+            Policies = arg_2
+            TokenPolicies = arg_3
+            IdentityPolicies = arg_4
+            LeaseDuration = arg_5
+            Renewable = arg_6
+            TokenType = arg_7
+            EntityId = arg_8
+            Orphan = arg_9
+            NumUses = arg_10
         }
 namespace ConsumePlugin
 
@@ -169,7 +169,7 @@ namespace ConsumePlugin
 module JwtVaultResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtVaultResponse =
-        let Auth =
+        let arg_4 =
             JwtVaultAuthResponse.jsonParse (
                 match node.["auth"] with
                 | null ->
@@ -181,7 +181,7 @@ module JwtVaultResponse =
                 | v -> v
             )
 
-        let LeaseDuration =
+        let arg_3 =
             (match node.["lease_duration"] with
              | null ->
                  raise (
@@ -193,7 +193,7 @@ module JwtVaultResponse =
                 .AsValue()
                 .GetValue<int> ()
 
-        let Renewable =
+        let arg_2 =
             (match node.["renewable"] with
              | null ->
                  raise (
@@ -205,7 +205,7 @@ module JwtVaultResponse =
                 .AsValue()
                 .GetValue<bool> ()
 
-        let LeaseId =
+        let arg_1 =
             (match node.["lease_id"] with
              | null ->
                  raise (
@@ -217,7 +217,7 @@ module JwtVaultResponse =
                 .AsValue()
                 .GetValue<string> ()
 
-        let RequestId =
+        let arg_0 =
             (match node.["request_id"] with
              | null ->
                  raise (
@@ -230,11 +230,11 @@ module JwtVaultResponse =
                 .GetValue<string> ()
 
         {
-            RequestId = RequestId
-            LeaseId = LeaseId
-            Renewable = Renewable
-            LeaseDuration = LeaseDuration
-            Auth = Auth
+            RequestId = arg_0
+            LeaseId = arg_1
+            Renewable = arg_2
+            LeaseDuration = arg_3
+            Auth = arg_4
         }
 namespace ConsumePlugin
 
@@ -244,7 +244,7 @@ namespace ConsumePlugin
 module JwtSecretResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtSecretResponse =
-        let Data8 =
+        let arg_11 =
             (match node.["data8"] with
              | null ->
                  raise (
@@ -262,7 +262,7 @@ module JwtSecretResponse =
             |> Seq.map System.Collections.Generic.KeyValuePair
             |> System.Collections.Generic.Dictionary
 
-        let Data7 =
+        let arg_10 =
             (match node.["data7"] with
              | null ->
                  raise (
@@ -279,7 +279,7 @@ module JwtSecretResponse =
             )
             |> Map.ofSeq
 
-        let Data6 =
+        let arg_9 =
             (match node.["data6"] with
              | null ->
                  raise (
@@ -296,7 +296,7 @@ module JwtSecretResponse =
             )
             |> dict
 
-        let Data5 =
+        let arg_8 =
             (match node.["data5"] with
              | null ->
                  raise (
@@ -313,7 +313,7 @@ module JwtSecretResponse =
             )
             |> readOnlyDict
 
-        let Data4 =
+        let arg_7 =
             (match node.["data4"] with
              | null ->
                  raise (
@@ -330,7 +330,7 @@ module JwtSecretResponse =
             )
             |> Map.ofSeq
 
-        let Data3 =
+        let arg_6 =
             (match node.["data3"] with
              | null ->
                  raise (
@@ -348,7 +348,7 @@ module JwtSecretResponse =
             |> Seq.map System.Collections.Generic.KeyValuePair
             |> System.Collections.Generic.Dictionary
 
-        let Data2 =
+        let arg_5 =
             (match node.["data2"] with
              | null ->
                  raise (
@@ -365,7 +365,7 @@ module JwtSecretResponse =
             )
             |> dict
 
-        let Data =
+        let arg_4 =
             (match node.["data"] with
              | null ->
                  raise (
@@ -382,7 +382,7 @@ module JwtSecretResponse =
             )
             |> readOnlyDict
 
-        let LeaseDuration =
+        let arg_3 =
             (match node.["lease_duration"] with
              | null ->
                  raise (
@@ -394,7 +394,7 @@ module JwtSecretResponse =
                 .AsValue()
                 .GetValue<int> ()
 
-        let Renewable =
+        let arg_2 =
             (match node.["renewable"] with
              | null ->
                  raise (
@@ -406,7 +406,7 @@ module JwtSecretResponse =
                 .AsValue()
                 .GetValue<bool> ()
 
-        let LeaseId =
+        let arg_1 =
             (match node.["lease_id"] with
              | null ->
                  raise (
@@ -418,7 +418,7 @@ module JwtSecretResponse =
                 .AsValue()
                 .GetValue<string> ()
 
-        let RequestId =
+        let arg_0 =
             (match node.["request_id"] with
              | null ->
                  raise (
@@ -431,18 +431,18 @@ module JwtSecretResponse =
                 .GetValue<string> ()
 
         {
-            RequestId = RequestId
-            LeaseId = LeaseId
-            Renewable = Renewable
-            LeaseDuration = LeaseDuration
-            Data = Data
-            Data2 = Data2
-            Data3 = Data3
-            Data4 = Data4
-            Data5 = Data5
-            Data6 = Data6
-            Data7 = Data7
-            Data8 = Data8
+            RequestId = arg_0
+            LeaseId = arg_1
+            Renewable = arg_2
+            LeaseDuration = arg_3
+            Data = arg_4
+            Data2 = arg_5
+            Data3 = arg_6
+            Data4 = arg_7
+            Data5 = arg_8
+            Data6 = arg_9
+            Data7 = arg_10
+            Data8 = arg_11
         }
 
 namespace ConsumePlugin

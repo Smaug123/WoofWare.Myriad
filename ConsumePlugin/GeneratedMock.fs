@@ -19,9 +19,9 @@ type internal PublicTypeMock =
     /// An implementation where every method throws.
     static member Empty : PublicTypeMock =
         {
-            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem3 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface IPublicType with
@@ -44,9 +44,9 @@ type public PublicTypeInternalFalseMock =
     /// An implementation where every method throws.
     static member Empty : PublicTypeInternalFalseMock =
         {
-            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem3 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface IPublicTypeInternalFalse with
@@ -68,8 +68,8 @@ type internal InternalTypeMock =
     /// An implementation where every method throws.
     static member Empty : InternalTypeMock =
         {
-            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface InternalType with
@@ -90,8 +90,8 @@ type private PrivateTypeMock =
     /// An implementation where every method throws.
     static member Empty : PrivateTypeMock =
         {
-            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface PrivateType with
@@ -112,8 +112,8 @@ type private PrivateTypeInternalFalseMock =
     /// An implementation where every method throws.
     static member Empty : PrivateTypeInternalFalseMock =
         {
-            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface PrivateTypeInternalFalse with
@@ -133,7 +133,7 @@ type internal VeryPublicTypeMock<'a, 'b> =
     /// An implementation where every method throws.
     static member Empty () : VeryPublicTypeMock<'a, 'b> =
         {
-            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface VeryPublicType<'a, 'b> with
@@ -157,12 +157,12 @@ type internal CurriedMock<'a> =
     /// An implementation where every method throws.
     static member Empty () : CurriedMock<'a> =
         {
-            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem3 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem4 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem5 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem6 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem4 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem5 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem6 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface Curried<'a> with
@@ -196,8 +196,8 @@ type internal TypeWithInterfaceMock =
     static member Empty : TypeWithInterfaceMock =
         {
             Dispose = (fun _ -> ())
-            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
-            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function"))
         }
 
     interface TypeWithInterface with

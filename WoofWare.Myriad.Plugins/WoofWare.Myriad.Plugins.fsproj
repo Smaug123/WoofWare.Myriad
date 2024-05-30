@@ -27,13 +27,14 @@
     <Compile Include="List.fs"/>
     <Compile Include="Ident.fs" />
     <Compile Include="AstHelper.fs"/>
+    <Compile Include="SynExpr\SynExprLetOrUseTrivia.fs" />
     <Compile Include="SynExpr\SynExpr.fs" />
     <Compile Include="SynExpr\SynType.fs" />
     <Compile Include="SynExpr\SynAttribute.fs" />
     <Compile Include="SynExpr\SynArgPats.fs" />
-    <Compile Include="SynExpr\SynExprLetOrUseTrivia.fs" />
     <Compile Include="SynExpr\SynField.fs" />
     <Compile Include="SynExpr\SynUnionCase.fs" />
+    <Compile Include="SynExpr\SynBinding.fs" />
     <Compile Include="RemoveOptionsGenerator.fs"/>
     <Compile Include="InterfaceMockGenerator.fs"/>
     <Compile Include="JsonSerializeGenerator.fs"/>
