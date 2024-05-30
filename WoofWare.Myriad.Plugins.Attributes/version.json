@@ -5,7 +5,6 @@
   ],
   "pathFilters": [
     ":/README.md",
-    ":/CHANGELOG.md",
     ":/LICENSE",
     ":/WoofWare.Myriad.Plugins/logo.png",
     ":/Directory.Build.props",
