@@ -314,9 +314,8 @@ module internal JsonParseGenerator =
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
     /// The result of this function is the body of a let-binding (not including the LHS of that let-binding).
     let createParseRhs (options : JsonParseOption) (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
-        SynExpr.CreateIdentString "node"
-        |> SynExpr.index propertyName
-        |> parseNode (Some propertyName) options fieldType
+        let objectToParse = SynExpr.CreateIdentString "node" |> SynExpr.index propertyName
+        parseNode (Some propertyName) options fieldType objectToParse
 
     let isJsonNumberHandling (literal : LongIdent) : bool =
         match List.rev literal |> List.map (fun ident -> ident.idText) with
@@ -376,7 +375,34 @@ module internal JsonParseGenerator =
             |> List.singleton
             |> SynModuleDecl.CreateLet
 
-    let createMaker (spec : JsonParseOutputSpec) (typeName : LongIdent) (fields : SynFieldData<Ident> list) =
+    let getParseOptions (fieldAttrs : SynAttribute list) =
+        (JsonParseOption.None, fieldAttrs)
+        ||> List.fold (fun options attr ->
+            if attr.TypeName.AsString.EndsWith ("JsonNumberHandling", StringComparison.Ordinal) then
+                let qualifiedEnumValue =
+                    match SynExpr.stripOptionalParen attr.ArgExpr with
+                    | SynExpr.LongIdent (_, SynLongIdent (ident, _, _), _, _) when isJsonNumberHandling ident ->
+                        // Make sure it's fully qualified
+                        SynExpr.createLongIdent
+                            [
+                                "System"
+                                "Text"
+                                "Json"
+                                "Serialization"
+                                "JsonNumberHandling"
+                                "AllowReadingFromString"
+                            ]
+                    | _ -> attr.ArgExpr
+
+                {
+                    JsonNumberHandlingArg = Some qualifiedEnumValue
+                }
+            else
+                options
+        )
+
+
+    let createRecordMaker (spec : JsonParseOutputSpec) (typeName : LongIdent) (fields : SynFieldData<Ident> list) =
         let assignments =
             fields
             |> List.mapi (fun i fieldData ->
@@ -386,42 +412,18 @@ module internal JsonParseGenerator =
                         attr.TypeName.AsString.EndsWith ("JsonPropertyName", StringComparison.Ordinal)
                     )
 
-                let options =
-                    (JsonParseOption.None, fieldData.Attrs)
-                    ||> List.fold (fun options attr ->
-                        if attr.TypeName.AsString.EndsWith ("JsonNumberHandling", StringComparison.Ordinal) then
-                            let qualifiedEnumValue =
-                                match SynExpr.stripOptionalParen attr.ArgExpr with
-                                | SynExpr.LongIdent (_, SynLongIdent (ident, _, _), _, _) when
-                                    isJsonNumberHandling ident
-                                    ->
-                                    // Make sure it's fully qualified
-                                    SynExpr.createLongIdent
-                                        [
-                                            "System"
-                                            "Text"
-                                            "Json"
-                                            "Serialization"
-                                            "JsonNumberHandling"
-                                            "AllowReadingFromString"
-                                        ]
-                                | _ -> attr.ArgExpr
-
-                            {
-                                JsonNumberHandlingArg = Some qualifiedEnumValue
-                            }
-                        else
-                            options
-                    )
+                let options = getParseOptions fieldData.Attrs
 
                 let propertyName =
                     match propertyNameAttr with
                     | None ->
                         let sb = StringBuilder fieldData.Ident.idText.Length
-                        sb.Append (Char.ToLowerInvariant fieldData.Ident.idText.[0]) |> ignore
+
+                        sb.Append (Char.ToLowerInvariant fieldData.Ident.idText.[0])
+                        |> ignore<StringBuilder>
 
                         if fieldData.Ident.idText.Length > 1 then
-                            sb.Append fieldData.Ident.idText.[1..] |> ignore
+                            sb.Append (fieldData.Ident.idText.Substring 1) |> ignore<StringBuilder>
 
                         sb.ToString () |> SynConst.CreateString |> SynExpr.CreateConst
                     | Some name -> name.ArgExpr
@@ -438,15 +440,97 @@ module internal JsonParseGenerator =
             )
             |> AstHelper.instantiateRecord
 
-        let assignments =
-            (finalConstruction, assignments)
-            ||> List.fold (fun final assignment -> SynExpr.createLet [ assignment ] final)
+        (finalConstruction, assignments)
+        ||> List.fold (fun final assignment -> SynExpr.createLet [ assignment ] final)
 
-        assignments |> scaffolding spec typeName
+    let createUnionMaker (spec : JsonParseOutputSpec) (typeName : LongIdent) (fields : UnionCase<Ident> list) =
+        fields
+        |> List.map (fun case ->
+            let propertyName = JsonSerializeGenerator.getPropertyName case.Ident case.Attrs
 
+            let body =
+                if case.Fields.IsEmpty then
+                    SynExpr.createLongIdent' (typeName @ [ case.Ident ])
+                else
+                    case.Fields
+                    |> List.map (fun field ->
+                        let propertyName = JsonSerializeGenerator.getPropertyName field.Ident field.Attrs
+                        let options = getParseOptions field.Attrs
+                        createParseRhs options propertyName field.Type
+                    )
+                    |> SynExpr.CreateParenedTuple
+                    |> SynExpr.applyFunction (SynExpr.createLongIdent' (typeName @ [ case.Ident ]))
+                    |> SynExpr.createLet
+                        [
+                            SynExpr.index (SynExpr.CreateConstString "data") (SynExpr.CreateIdentString "node")
+                            |> assertNotNull (SynExpr.CreateConstString "data")
+                            |> SynBinding.basic (SynLongIdent.CreateString "node") []
+                        ]
+
+            match propertyName with
+            | SynExpr.Const (synConst, _) ->
+                SynMatchClause.SynMatchClause (
+                    SynPat.CreateConst synConst,
+                    None,
+                    body,
+                    range0,
+                    DebugPointAtTarget.Yes,
+                    {
+                        ArrowRange = Some range0
+                        BarRange = Some range0
+                    }
+                )
+            | _ ->
+                SynMatchClause.SynMatchClause (
+                    SynPat.CreateNamed (Ident.Create "x"),
+                    Some (SynExpr.equals (SynExpr.CreateIdentString "x") propertyName),
+                    body,
+                    range0,
+                    DebugPointAtTarget.Yes,
+                    {
+                        ArrowRange = Some range0
+                        BarRange = Some range0
+                    }
+                )
+        )
+        |> fun l ->
+            l
+            @ [
+                let fail =
+                    SynExpr.plus
+                        (SynExpr.CreateConstString "Unrecognised 'type' field value: ")
+                        (SynExpr.CreateIdentString "v")
+                    |> SynExpr.CreateParen
+                    |> SynExpr.applyFunction (SynExpr.CreateIdentString "failwith")
+
+                SynMatchClause.SynMatchClause (
+                    SynPat.CreateNamed (Ident.Create "v"),
+                    None,
+                    fail,
+                    range0,
+                    DebugPointAtTarget.Yes,
+                    {
+                        ArrowRange = Some range0
+                        BarRange = Some range0
+                    }
+                )
+            ]
+        |> SynExpr.createMatch (SynExpr.CreateIdentString "ty")
+        |> SynExpr.createLet
+            [
+                let property = SynExpr.CreateConstString "type"
+
+                SynExpr.CreateIdentString "node"
+                |> SynExpr.index property
+                |> assertNotNull property
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.createLambda
+                        "v"
+                        (SynExpr.callGenericMethod "GetValue" [ Ident.Create "string" ] (SynExpr.CreateIdentString "v"))
+                )
+                |> SynBinding.basic (SynLongIdent.CreateString "ty") []
+            ]
     (*
-
-        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : FirstDu =
             let ty =
                 match node.["type"] with
                 | null -> raise (System.Collections.Generic.KeyNotFoundException ())
@@ -506,18 +590,28 @@ module internal JsonParseGenerator =
         let info =
             SynComponentInfo.Create (moduleName, attributes = attributes, xmldoc = xmlDoc)
 
-        let decls =
+        let decl =
             match synTypeDefnRepr with
             | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, fields, _range), _) ->
                 let fields = fields |> List.map SynField.extractWithIdent
-                [ createMaker spec ident fields ]
+                createRecordMaker spec ident fields
             | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_accessibility, cases, _range), _) ->
-                let cases = cases |> List.map SynUnionCase.extract
-                // [ createMaker spec ident cases ]
-                failwith "Unions are not yet supported"
+                let optionGet (i : Ident option) =
+                    match i with
+                    | None -> failwith "WoofWare.Myriad requires union cases to have identifiers on each field."
+                    | Some i -> i
+
+                let cases =
+                    cases
+                    |> List.map SynUnionCase.extract
+                    |> List.map (UnionCase.mapIdentFields optionGet)
+
+                createUnionMaker spec ident cases
             | _ -> failwithf "Not a record or union type"
 
-        let mdl = SynModuleDecl.CreateNestedModule (info, decls)
+        let mdl =
+            [ scaffolding spec ident decl ]
+            |> fun d -> SynModuleDecl.CreateNestedModule (info, d)
 
         SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ mdl ])
 

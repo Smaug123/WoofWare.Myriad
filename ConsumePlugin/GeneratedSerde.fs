@@ -378,3 +378,83 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 E = arg_4
                 F = arg_5
             }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the FirstDu type
+[<AutoOpen>]
+module FirstDuJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type FirstDu with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : FirstDu =
+            let ty =
+                (match node.["type"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("type")
+                         )
+                     )
+                 | v -> v)
+                |> (fun v -> v.GetValue<string> ())
+
+            match ty with
+            | "emptyCase" -> FirstDu.EmptyCase
+            | "case1" ->
+                let node =
+                    (match node.["data"] with
+                     | null ->
+                         raise (
+                             System.Collections.Generic.KeyNotFoundException (
+                                 sprintf "Required key '%s' not found on JSON object" ("data")
+                             )
+                         )
+                     | v -> v)
+
+                FirstDu.Case1 (
+                    (match node.["data"] with
+                     | null ->
+                         raise (
+                             System.Collections.Generic.KeyNotFoundException (
+                                 sprintf "Required key '%s' not found on JSON object" ("data")
+                             )
+                         )
+                     | v -> v)
+                        .AsValue()
+                        .GetValue<string> ()
+                )
+            | "case2" ->
+                let node =
+                    (match node.["data"] with
+                     | null ->
+                         raise (
+                             System.Collections.Generic.KeyNotFoundException (
+                                 sprintf "Required key '%s' not found on JSON object" ("data")
+                             )
+                         )
+                     | v -> v)
+
+                FirstDu.Case2 (
+                    JsonRecordTypeWithBoth.jsonParse (
+                        match node.["record"] with
+                        | null ->
+                            raise (
+                                System.Collections.Generic.KeyNotFoundException (
+                                    sprintf "Required key '%s' not found on JSON object" ("record")
+                                )
+                            )
+                        | v -> v
+                    ),
+                    (match node.["i"] with
+                     | null ->
+                         raise (
+                             System.Collections.Generic.KeyNotFoundException (
+                                 sprintf "Required key '%s' not found on JSON object" ("i")
+                             )
+                         )
+                     | v -> v)
+                        .AsValue()
+                        .GetValue<int> ()
+                )
+            | v -> failwith ("Unrecognised 'type' field value: " + v)

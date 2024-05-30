@@ -2,10 +2,9 @@ namespace WoofWare.Myriad.Plugins.Test
 
 open System
 open System.Collections.Generic
-open System.IO
-open System.Text
-open System.Text.Json
 open System.Text.Json.Nodes
+open FsCheck.Random
+open Microsoft.FSharp.Reflection
 open NUnit.Framework
 open FsCheck
 open FsUnitTyped
@@ -124,3 +123,82 @@ module TestJsonSerde =
         |> shouldEqual (
             sprintf """{"it\u0027s-a-me":"%s","map":{},"readOnlyDict":{},"dict":{},"concreteDict":{}}""" guidStr
         )
+
+    type Generators =
+        static member TestCase () =
+            { new Arbitrary<InnerTypeWithBoth>() with
+                override x.Generator = innerGen 5
+            }
+
+    let sanitiseInner (r : InnerTypeWithBoth) : InnerTypeWithBoth =
+        {
+            Thing = r.Thing
+            Map = r.Map
+            ReadOnlyDict = r.ReadOnlyDict
+            Dict = r.Dict
+            ConcreteDict = r.ConcreteDict
+        }
+
+    let sanitiseRec (r : JsonRecordTypeWithBoth) : JsonRecordTypeWithBoth =
+        {
+            A = r.A
+            B = if isNull r.B then "<null>" else r.B
+            C =
+                if Object.ReferenceEquals (r.C, (null : obj)) then
+                    []
+                else
+                    r.C
+            D = sanitiseInner r.D
+            E = if isNull r.E then [||] else r.E
+            F =
+                if Object.ReferenceEquals (r.F, (null : obj)) then
+                    [||]
+                else
+                    r.F
+        }
+
+    let duGen =
+        gen {
+            let! case = Gen.choose (0, 2)
+
+            match case with
+            | 0 -> return FirstDu.EmptyCase
+            | 1 ->
+                let! s = Arb.generate<NonNull<string>>
+                return FirstDu.Case1 s.Get
+            | 2 ->
+                let! i = Arb.generate<int>
+                let! record = outerGen
+                return FirstDu.Case2 (record, i)
+            | _ -> return failwith $"unexpected: %i{case}"
+        }
+
+    [<Test>]
+    let ``Discriminated union works`` () =
+        let property (du : FirstDu) : unit =
+            du
+            |> FirstDu.toJsonNode
+            |> fun s -> s.ToJsonString ()
+            |> JsonNode.Parse
+            |> FirstDu.jsonParse
+            |> shouldEqual du
+
+        property |> Prop.forAll (Arb.fromGen duGen) |> Check.QuickThrowOnFailure
+
+    [<Test>]
+    let ``DU generator covers all cases`` () =
+        let rand = Random ()
+        let cases = FSharpType.GetUnionCases typeof<FirstDu>
+        let counts = Array.zeroCreate<int> cases.Length
+
+        let decompose = FSharpValue.PreComputeUnionTagReader typeof<FirstDu>
+
+        Gen.listOf duGen
+        |> Gen.eval 100 (StdGen.StdGen (rand.Next (), rand.Next ()))
+        |> List.iter (fun du ->
+            let tag = decompose du
+            counts.[tag] <- counts.[tag] + 1
+        )
+
+        for i in counts do
+            i |> shouldBeGreaterThan 0
