@@ -6,7 +6,7 @@ find . -maxdepth 1 -type f ! -name "$(printf "*\n*")" -name '*.nupkg' | while IF
 do
     tag=$(basename "$file" .nupkg)
     git tag "$tag"
-    git push origin "$tag" ${DRY_RUN:+--dry-run}
+    ${DRY_RUN:+echo} git push origin "$tag"
 done
 
 export TAG
