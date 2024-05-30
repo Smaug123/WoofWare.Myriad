@@ -63,7 +63,7 @@ module internal RemoveOptionsGenerator =
 
         SynModuleDecl.Types ([ typeDecl ], range0)
 
-    let createMaker (withOptionsType : LongIdent) (withoutOptionsType : LongIdent) (fields : SynField list) =
+    let createMaker (withOptionsType : LongIdent) (withoutOptionsType : LongIdent) (fields : SynFieldData<Ident> list) =
         let xmlDoc = PreXmlDoc.Create " Remove the optional members of the input."
 
         let returnInfo =
@@ -81,17 +81,17 @@ module internal RemoveOptionsGenerator =
 
         let body =
             fields
-            |> List.map (fun (SynField (_, _, id, fieldType, _, _, _, _, _)) ->
-                let id =
-                    match id with
-                    | None -> failwith "Expected record field to have an identifying name"
-                    | Some id -> id
-
+            |> List.map (fun fieldData ->
                 let accessor =
-                    SynExpr.LongIdent (false, SynLongIdent ([ inputArg ; id ], [ range0 ], []), None, range0)
+                    SynExpr.LongIdent (
+                        false,
+                        SynLongIdent ([ inputArg ; fieldData.Ident ], [ range0 ], []),
+                        None,
+                        range0
+                    )
 
                 let body =
-                    match fieldType with
+                    match fieldData.Type with
                     | OptionType _ ->
                         SynExpr.CreateApp (
                             SynExpr.CreateAppInfix (
@@ -111,14 +111,15 @@ module internal RemoveOptionsGenerator =
                                 SynExpr.CreateLongIdent (SynLongIdent.CreateString "Option.defaultWith"),
                                 SynExpr.CreateLongIdent (
                                     SynLongIdent.CreateFromLongIdent (
-                                        withoutOptionsType @ [ Ident.Create (sprintf "Default%s" id.idText) ]
+                                        withoutOptionsType
+                                        @ [ Ident.Create (sprintf "Default%s" fieldData.Ident.idText) ]
                                     )
                                 )
                             )
                         )
                     | _ -> accessor
 
-                (SynLongIdent.CreateFromLongIdent [ id ], true), Some body
+                (SynLongIdent.CreateFromLongIdent [ fieldData.Ident ], true), Some body
             )
             |> AstHelper.instantiateRecord
 
@@ -160,12 +161,13 @@ module internal RemoveOptionsGenerator =
             synComponentInfo
 
         match synTypeDefnRepr with
-        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (accessibility, recordFields, _recordRange), _) ->
+        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (accessibility, fields, _range), _) ->
+            let fieldData = fields |> List.map SynField.extractWithIdent
 
             let decls =
                 [
-                    createType (Some doc) accessibility typeParams recordFields
-                    createMaker [ Ident.Create "Short" ] recordId recordFields
+                    createType (Some doc) accessibility typeParams fields
+                    createMaker [ Ident.Create "Short" ] recordId fieldData
                 ]
 
             let attributes =
