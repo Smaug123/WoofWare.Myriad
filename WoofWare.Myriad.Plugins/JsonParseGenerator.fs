@@ -427,14 +427,14 @@ module internal JsonParseGenerator =
                     | Some name -> name.ArgExpr
 
                 createParseRhs options propertyName fieldData.Type
-                |> SynBinding.basic (SynLongIdent.CreateString $"arg_{i}") []
+                |> SynBinding.basic (SynLongIdent.CreateString $"arg_%i{i}") []
             )
 
         let finalConstruction =
             fields
             |> List.mapi (fun i fieldData ->
                 (SynLongIdent.CreateFromLongIdent [ fieldData.Ident ], true),
-                Some (SynExpr.CreateLongIdent (SynLongIdent.CreateString $"arg_{i}"))
+                Some (SynExpr.CreateLongIdent (SynLongIdent.CreateString $"arg_%i{i}"))
             )
             |> AstHelper.instantiateRecord
 
