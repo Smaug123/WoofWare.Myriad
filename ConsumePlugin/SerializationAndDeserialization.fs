@@ -28,7 +28,6 @@ type JsonRecordTypeWithBoth =
         F : int[]
     }
 
-[<WoofWare.Myriad.Plugins.JsonParse true>]
 [<WoofWare.Myriad.Plugins.JsonSerialize true>]
 type FirstDu =
     | EmptyCase
