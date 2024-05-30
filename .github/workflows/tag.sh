@@ -96,18 +96,23 @@ handle_error() {
     fi
 }
 
-if [ "$DRY_RUN" = 1 ]; then
+run_tests() {
     handle_error "$failed_output"
     if [ "$HANDLE_OUTPUT" != "Did not create GitHub release because it already exists at this version." ]; then
         echo "Bad output from handler: $HANDLE_OUTPUT"
         exit 3
     fi
     HANDLE_OUTPUT=''
-fi
+    echo "Tests passed."
+}
 
-if curl --fail-with-body -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/Smaug123/WoofWare.Myriad/releases -d "$curl_body" > curl_output.json; then
-    echo "Curl succeeded."
-else
-    handle_error "$(cat curl_output.json)"
-    echo "$HANDLE_OUTPUT"
+run_tests
+
+if [ "$DRY_RUN" != 1 ] ; then
+    if curl --fail-with-body -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/Smaug123/WoofWare.Myriad/releases -d "$curl_body" > curl_output.json; then
+        echo "Curl succeeded."
+    else
+        handle_error "$(cat curl_output.json)"
+        echo "$HANDLE_OUTPUT"
+    fi
 fi
