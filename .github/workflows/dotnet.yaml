@@ -92,6 +92,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # so that NerdBank.GitVersioning has access to history
       - name: Install Nix
         uses: cachix/install-nix-action@V27
         with:
