@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
 name: .NET
 
 on:
@@ -85,6 +86,27 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Run Fantomas
         run: nix run .#fantomas -- --check .
+
+  check-accurate-generations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # so that NerdBank.GitVersioning has access to history
+      - name: Install Nix
+        uses: cachix/install-nix-action@V27
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Whitespace change
+        run: "echo ' ' >> ConsumePlugin/List.fs"
+      - name: Generate code
+        run: nix develop --command dotnet build
+      - name: Run Fantomas
+        run: nix run .#fantomas -- .
+      - name: Verify there is no diff
+        run: git diff --name-only --no-color --exit-code
 
   check-nix-format:
     runs-on: ubuntu-latest
@@ -175,7 +197,7 @@ jobs:
         run: if [[ $(find packed-attribute -maxdepth 1 -name 'WoofWare.Myriad.Plugins.Attributes.*.nupkg' -printf c | wc -c) -ne "1" ]]; then exit 1; fi
 
   all-required-checks-complete:
-    needs: [check-dotnet-format, check-nix-format, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack]
+    needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All required checks complete."
