@@ -10,6 +10,15 @@ type internal UnionCase<'Ident> =
     }
 
 [<RequireQualifiedAccess>]
+module internal UnionCase =
+    let mapIdentFields<'a, 'b> (f : 'a -> 'b) (unionCase : UnionCase<'a>) : UnionCase<'b> =
+        {
+            Fields = unionCase.Fields |> List.map (SynField.mapIdent f)
+            Attrs = unionCase.Attrs
+            Ident = unionCase.Ident
+        }
+
+[<RequireQualifiedAccess>]
 module internal SynUnionCase =
     let extract (SynUnionCase (attrs, id, caseType, _, _, _, _)) : UnionCase<Ident option> =
         match caseType with
