@@ -1,5 +1,14 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 2.1.33
+
+`JsonParse` can now deserialize the discriminated unions which `JsonSerialize` wrote out.
+
+# WoofWare.Myriad.Plugins 2.1.32, WoofWare.Myriad.Plugins.Attributes 3.1.4
+
+`JsonSerialize` can now serialize many discriminated unions.
+(This operation is inherently opinionated, because JSON does not model discriminated unions.)
+
 # WoofWare.Myriad.Plugins 2.1.20, WoofWare.Myriad.Plugins.Attributes 3.0.1
 
 We now bundle copies of the RestEase attributes in `WoofWare.Myriad.Plugins.Attributes`, in case you don't want to take a dependency on RestEase.
