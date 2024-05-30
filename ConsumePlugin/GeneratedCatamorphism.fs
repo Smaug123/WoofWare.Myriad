@@ -60,7 +60,7 @@ module TreeCata =
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.Process__TreeBuilder x ->
+            | Instruction.Process__TreeBuilder (x) ->
                 match x with
                 | TreeBuilder.Child (arg0_0) ->
                     instructions.Add Instruction.TreeBuilder_Child
@@ -68,7 +68,7 @@ module TreeCata =
                 | TreeBuilder.Parent (arg0_0) ->
                     instructions.Add Instruction.TreeBuilder_Parent
                     instructions.Add (Instruction.Process__Tree arg0_0)
-            | Instruction.Process__Tree x ->
+            | Instruction.Process__Tree (x) ->
                 match x with
                 | Tree.Const (arg0_0, arg1_0) -> cata.Tree.Const arg0_0 arg1_0 |> treeStack.Add
                 | Tree.Pair (arg0_0, arg1_0, arg2_0) ->

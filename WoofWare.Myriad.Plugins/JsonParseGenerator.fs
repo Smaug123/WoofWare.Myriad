@@ -566,61 +566,61 @@ module internal JsonParseGenerator =
 
             SynModuleDecl.CreateLet [ binding ]
 
-    let createRecordModule (namespaceId : LongIdent) (spec : JsonParseOutputSpec) (typeDefn : SynTypeDefn) =
+    let createModule (namespaceId : LongIdent) (spec : JsonParseOutputSpec) (typeDefn : SynTypeDefn) =
         let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
             typeDefn
 
-        let (SynComponentInfo (_attributes, _typeParams, _constraints, recordId, _, _preferPostfix, _access, _)) =
+        let (SynComponentInfo (_attributes, _typeParams, _constraints, ident, _, _preferPostfix, _access, _)) =
             synComponentInfo
 
-        match synTypeDefnRepr with
-        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, recordFields, _recordRange), _) ->
+        let attributes =
+            if spec.ExtensionMethods then
+                [ SynAttributeList.Create SynAttribute.autoOpen ]
+            else
+                [
+                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
+                    SynAttributeList.Create SynAttribute.compilationRepresentation
+                ]
 
-            let decls = [ createMaker spec recordId recordFields ]
+        let xmlDoc =
+            let fullyQualified = ident |> Seq.map (fun i -> i.idText) |> String.concat "."
 
-            let attributes =
+            let description =
                 if spec.ExtensionMethods then
-                    [ SynAttributeList.Create SynAttribute.autoOpen ]
+                    "extension members"
                 else
-                    [
-                        SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-                        SynAttributeList.Create SynAttribute.compilationRepresentation
-                    ]
+                    "methods"
 
-            let xmlDoc =
-                let fullyQualified = recordId |> Seq.map (fun i -> i.idText) |> String.concat "."
+            $" Module containing JSON parsing %s{description} for the %s{fullyQualified} type"
+            |> PreXmlDoc.Create
 
-                let description =
-                    if spec.ExtensionMethods then
-                        "extension members"
-                    else
-                        "methods"
+        let moduleName =
+            if spec.ExtensionMethods then
+                match ident with
+                | [] -> failwith "unexpectedly got an empty identifier for record name"
+                | ident ->
+                    let expanded =
+                        List.last ident
+                        |> fun i -> i.idText
+                        |> fun s -> s + "JsonParseExtension"
+                        |> Ident.Create
 
-                $" Module containing JSON parsing %s{description} for the %s{fullyQualified} type"
-                |> PreXmlDoc.Create
+                    List.take (List.length ident - 1) ident @ [ expanded ]
+            else
+                ident
 
-            let moduleName =
-                if spec.ExtensionMethods then
-                    match recordId with
-                    | [] -> failwith "unexpectedly got an empty identifier for record name"
-                    | recordId ->
-                        let expanded =
-                            List.last recordId
-                            |> fun i -> i.idText
-                            |> fun s -> s + "JsonParseExtension"
-                            |> Ident.Create
+        let info =
+            SynComponentInfo.Create (moduleName, attributes = attributes, xmldoc = xmlDoc)
 
-                        List.take (List.length recordId - 1) recordId @ [ expanded ]
-                else
-                    recordId
+        let decls =
+            match synTypeDefnRepr with
+            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, recordFields, _recordRange), _) ->
+                [ createMaker spec ident recordFields ]
+            | _ -> failwithf "Not a record type"
 
-            let info =
-                SynComponentInfo.Create (moduleName, attributes = attributes, xmldoc = xmlDoc)
+        let mdl = SynModuleDecl.CreateNestedModule (info, decls)
 
-            let mdl = SynModuleDecl.CreateNestedModule (info, decls)
-
-            SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ mdl ])
-        | _ -> failwithf "Not a record type"
+        SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ mdl ])
 
 /// Myriad generator that provides a method (possibly an extension method) for a record type,
 /// containing a JSON parse function.
@@ -634,10 +634,20 @@ type JsonParseGenerator () =
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
-            let records = Ast.extractRecords ast
+            let recordsAndUnions =
+                Ast.extractTypeDefn ast
+                |> List.map (fun (name, defns) ->
+                    defns
+                    |> List.choose (fun defn ->
+                        if Ast.isRecord defn then Some defn
+                        elif Ast.isDu defn then Some defn
+                        else None
+                    )
+                    |> fun defns -> name, defns
+                )
 
-            let namespaceAndRecords =
-                records
+            let namespaceAndTypes =
+                recordsAndUnions
                 |> List.choose (fun (ns, types) ->
                     types
                     |> List.choose (fun typeDef ->
@@ -665,13 +675,9 @@ type JsonParseGenerator () =
                 )
 
             let modules =
-                namespaceAndRecords
-                |> List.collect (fun (ns, records) ->
-                    records
-                    |> List.map (fun (record, spec) ->
-                        let recordModule = JsonParseGenerator.createRecordModule ns spec record
-                        recordModule
-                    )
+                namespaceAndTypes
+                |> List.collect (fun (ns, types) ->
+                    types |> List.map (fun (ty, spec) -> JsonParseGenerator.createModule ns spec ty)
                 )
 
             Output.Ast modules

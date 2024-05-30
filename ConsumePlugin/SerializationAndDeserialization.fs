@@ -27,3 +27,9 @@ type JsonRecordTypeWithBoth =
         E : string array
         F : int[]
     }
+
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
+type FirstDu =
+    | EmptyCase
+    | Case1 of data : string
+    | Case2 of record : JsonRecordTypeWithBoth * i : int
