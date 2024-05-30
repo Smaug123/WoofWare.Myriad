@@ -97,8 +97,10 @@ jobs:
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - name: Generate code
+      - name: Whitespace change
         run: "echo ' ' >> ConsumePlugin/List.fs"
+      - name: Generate code
+        run: nix develop --command dotnet build
       - name: Run Fantomas
         run: nix run .#fantomas -- .
       - name: Verify there is no diff
