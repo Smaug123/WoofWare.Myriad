@@ -1,6 +1,9 @@
 #!/bin/sh
 
-for file in find . -maxdepth 1 -type f -name '*.nupkg'; do
+echo "Dry-run? $DRY_RUN!"
+
+find . -maxdepth 1 -type f ! -name "$(printf "*\n*")" -name '*.nupkg' | while IFS= read -r file
+do
     tag=$(basename "$file" .nupkg)
     git tag "$tag"
     git push origin "$tag" ${DRY_RUN:+--dry-run}
