@@ -1,14 +1,9 @@
 #!/bin/sh
 
-export DRY_RUN_FLAG
-if [ "$DRY_RUN" = 1 ]; then
-    DRY_RUN_FLAG="--dry-run"
-fi
-
 for file in find . -maxdepth 1 -type f -name '*.nupkg'; do
     tag=$(basename "$file" .nupkg)
     git tag "$tag"
-    git push origin "$tag" "$DRY_RUN_FLAG"
+    git push origin "$tag" ${DRY_RUN:+--dry-run}
 done
 
 export TAG
