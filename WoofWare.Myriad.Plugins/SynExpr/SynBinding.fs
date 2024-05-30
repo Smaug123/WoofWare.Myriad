@@ -167,7 +167,7 @@ module internal SynBinding =
 
             let trivia =
                 { trivia with
-                    LeadingKeyword = SynLeadingKeyword.StaticMember (range0, range0)
+                    LeadingKeyword = SynLeadingKeyword.Member range0
                 }
 
             SynBinding (acc, kind, inl, mut, attrs, doc, valData, headPat, ret, expr, range, debugPoint, trivia)
