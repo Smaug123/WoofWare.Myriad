@@ -60,17 +60,9 @@ module internal InterfaceMockGenerator =
 
             let generics =
                 generics.TyparDecls
-                |> List.map (fun (SynTyparDecl (_, typar)) -> SynType.Var (typar, range0))
+                |> List.map (fun (SynTyparDecl (_, typar)) -> SynType.var typar)
 
-            SynType.App (
-                SynType.CreateLongIdent name,
-                Some range0,
-                generics,
-                List.replicate (generics.Length - 1) range0,
-                Some range0,
-                false,
-                range0
-            )
+            SynType.app name generics
 
         let constructorFields =
             let extras =
@@ -238,7 +230,7 @@ module internal InterfaceMockGenerator =
                 )
 
             let interfaceName =
-                let baseName = SynType.CreateLongIdent (SynLongIdent.create interfaceType.Name)
+                let baseName = SynType.createLongIdent interfaceType.Name
 
                 match interfaceType.Generics with
                 | None -> baseName
@@ -248,17 +240,9 @@ module internal InterfaceMockGenerator =
                         | SynTyparDecls.PostfixList (decls, _, _) -> decls
                         | SynTyparDecls.PrefixList (decls, _) -> decls
                         | SynTyparDecls.SinglePrefix (decl, _) -> [ decl ]
-                        |> List.map (fun (SynTyparDecl (_, typar)) -> SynType.Var (typar, range0))
+                        |> List.map (fun (SynTyparDecl (_, typar)) -> SynType.var typar)
 
-                    SynType.App (
-                        baseName,
-                        Some range0,
-                        generics,
-                        List.replicate (generics.Length - 1) range0,
-                        Some range0,
-                        false,
-                        range0
-                    )
+                    SynType.app' baseName generics
 
             SynMemberDefn.Interface (interfaceName, Some range0, Some members, range0)
 
@@ -311,7 +295,7 @@ module internal InterfaceMockGenerator =
 
     let private buildType (x : ParameterInfo) : SynType =
         if x.IsOptional then
-            SynType.App (SynType.CreateLongIdent "option", Some range0, [ x.Type ], [], Some range0, false, range0)
+            SynType.app "option" [ x.Type ]
         else
             x.Type
 

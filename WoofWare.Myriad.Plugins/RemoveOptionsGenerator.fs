@@ -139,12 +139,6 @@ module internal RemoveOptionsGenerator =
                     createMaker [ Ident.create "Short" ] recordId fieldData
                 ]
 
-            let attributes =
-                [
-                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-                    SynAttributeList.Create SynAttribute.compilationRepresentation
-                ]
-
             let xmlDoc =
                 recordId
                 |> Seq.map (fun i -> i.idText)
@@ -153,7 +147,10 @@ module internal RemoveOptionsGenerator =
                 |> PreXmlDoc.create
 
             let info =
-                SynComponentInfo.Create (recordId, attributes = attributes, xmldoc = xmlDoc)
+                SynComponentInfo.createLong recordId
+                |> SynComponentInfo.withDocString xmlDoc
+                |> SynComponentInfo.addAttributes [ SynAttribute.compilationRepresentation ]
+                |> SynComponentInfo.addAttributes [ SynAttribute.RequireQualifiedAccess () ]
 
             let mdl = SynModuleDecl.CreateNestedModule (info, decls)
 

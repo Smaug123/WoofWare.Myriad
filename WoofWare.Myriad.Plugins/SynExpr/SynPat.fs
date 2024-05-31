@@ -11,3 +11,6 @@ module internal SynPat =
 
     let named (s : string) : SynPat =
         SynPat.Named (SynIdent.SynIdent (Ident (s, range0), None), false, None, range0)
+
+    let namedI (i : Ident) : SynPat =
+        SynPat.Named (SynIdent.SynIdent (i, None), false, None, range0)

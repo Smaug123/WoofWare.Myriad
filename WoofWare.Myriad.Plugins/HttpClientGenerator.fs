@@ -213,11 +213,7 @@ module internal HttpClientGenerator =
 
                 let argType =
                     if arg.IsOptional then
-                        SynType.CreateApp (
-                            SynType.CreateLongIdent (SynLongIdent.createS "option"),
-                            [ arg.Type ],
-                            isPostfix = true
-                        )
+                        SynType.appPostfix "option" arg.Type
                     else
                         arg.Type
 
@@ -438,7 +434,7 @@ module internal HttpClientGenerator =
                         [ "System" ; "Net" ; "Http" ; "HttpMethod" ; httpMethodString info.HttpMethod ])
                 SynExpr.equals (SynExpr.createIdent "RequestUri") (SynExpr.createIdent "uri")
             ]
-            |> SynExpr.CreateParenedTuple
+            |> SynExpr.CreateTuple
 
         let returnExpr =
             match info.TaskReturnType with
@@ -456,25 +452,14 @@ module internal HttpClientGenerator =
                     |> SynExpr.createThunk
 
                 // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
-                SynExpr.New (
-                    false,
-                    SynType.App (
-                        SynType.createLongIdent' [ "RestEase" ; "Response" ],
-                        Some range0,
-                        [ SynType.Anon range0 ],
-                        [],
-                        Some range0,
-                        false,
-                        range0
-                    ),
-                    SynExpr.CreateParenedTuple
+                SynExpr.createNew
+                    (SynType.app' (SynType.createLongIdent' [ "RestEase" ; "Response" ]) [ SynType.Anon range0 ])
+                    (SynExpr.CreateTuple
                         [
                             SynExpr.createIdent "responseString"
                             SynExpr.createIdent "response"
                             deserialiser
-                        ],
-                    range0
-                )
+                        ])
             | retType ->
                 JsonParseGenerator.parseNode
                     None
@@ -493,13 +478,10 @@ module internal HttpClientGenerator =
                     [
                         Let (
                             "queryParams",
-                            SynExpr.New (
-                                false,
-                                SynType.createLongIdent'
-                                    [ "System" ; "Net" ; "Http" ; (bodyParamType : BodyParamMethods).ToString () ],
-                                SynExpr.paren (SynExpr.createIdent' bodyParamName),
-                                range0
-                            )
+                            SynExpr.createNew
+                                (SynType.createLongIdent'
+                                    [ "System" ; "Net" ; "Http" ; (bodyParamType : BodyParamMethods).ToString () ])
+                                (SynExpr.createIdent' bodyParamName)
                         )
                         Do (
                             SynExpr.LongIdentSet (
@@ -523,27 +505,22 @@ module internal HttpClientGenerator =
                     [
                         Let (
                             "queryParams",
-                            SynExpr.New (
-                                false,
-                                SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "StringContent" ],
-                                SynExpr.paren (
-                                    SynExpr.createIdent' bodyParamName
-                                    |> SynExpr.pipeThroughFunction (JsonSerializeGenerator.serializeNode ty)
-                                    |> SynExpr.pipeThroughFunction (
-                                        SynExpr.createLambda
-                                            "node"
-                                            (SynExpr.ifThenElse
-                                                (SynExpr.applyFunction
-                                                    (SynExpr.createIdent "isNull")
-                                                    (SynExpr.createIdent "node"))
-                                                (SynExpr.applyFunction
-                                                    (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
-                                                    (SynExpr.CreateConst ()))
-                                                (SynExpr.CreateConst "null"))
-                                    )
-                                ),
-                                range0
-                            )
+                            SynExpr.createNew
+                                (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "StringContent" ])
+                                (SynExpr.createIdent' bodyParamName
+                                 |> SynExpr.pipeThroughFunction (JsonSerializeGenerator.serializeNode ty)
+                                 |> SynExpr.pipeThroughFunction (
+                                     SynExpr.createLambda
+                                         "node"
+                                         (SynExpr.ifThenElse
+                                             (SynExpr.applyFunction
+                                                 (SynExpr.createIdent "isNull")
+                                                 (SynExpr.createIdent "node"))
+                                             (SynExpr.applyFunction
+                                                 (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
+                                                 (SynExpr.CreateConst ()))
+                                             (SynExpr.CreateConst "null"))
+                                 ))
                         )
                         Do (
                             SynExpr.LongIdentSet (
@@ -593,29 +570,25 @@ module internal HttpClientGenerator =
             let setVariableHeaders =
                 variableHeaders
                 |> List.map (fun (headerName, callToGetValue) ->
-                    Do (
+                    [
+                        headerName
                         SynExpr.applyFunction
-                            (SynExpr.createLongIdent [ "httpMessage" ; "Headers" ; "Add" ])
-                            (SynExpr.CreateParenedTuple
-                                [
-                                    headerName
-                                    SynExpr.CreateApp (
-                                        SynExpr.createLongIdent'
-                                            [ Ident.Create "this" ; callToGetValue ; Ident.Create "ToString" ],
-                                        SynExpr.CreateConst ()
-                                    )
-                                ])
-                    )
+                            (SynExpr.createLongIdent'
+                                [ Ident.Create "this" ; callToGetValue ; Ident.Create "ToString" ])
+                            (SynExpr.CreateConst ())
+                    ]
+                    |> SynExpr.CreateParenedTuple
+                    |> SynExpr.applyFunction (SynExpr.createLongIdent [ "httpMessage" ; "Headers" ; "Add" ])
+                    |> Do
                 )
 
             let setConstantHeaders =
                 constantHeaders
                 |> List.map (fun (headerName, headerValue) ->
-                    Do (
-                        SynExpr.applyFunction
-                            (SynExpr.createLongIdent [ "httpMessage" ; "Headers" ; "Add" ])
-                            (SynExpr.CreateParenedTuple [ headerName ; headerValue ])
-                    )
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "httpMessage" ; "Headers" ; "Add" ])
+                        (SynExpr.CreateParenedTuple [ headerName ; headerValue ])
+                    |> Do
                 )
 
             [
@@ -624,12 +597,9 @@ module internal HttpClientGenerator =
                 yield
                     Use (
                         "httpMessage",
-                        SynExpr.New (
-                            false,
-                            SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "HttpRequestMessage" ],
-                            httpReqMessageConstructor,
-                            range0
-                        )
+                        SynExpr.createNew
+                            (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "HttpRequestMessage" ])
+                            httpReqMessageConstructor
                     )
 
                 yield! handleBodyParams
@@ -979,27 +949,17 @@ module internal HttpClientGenerator =
                 let binding =
                     SynBinding.basic (SynLongIdent.createS "make") (headerArgs @ [ clientCreationArg ]) interfaceImpl
                     |> SynBinding.withXmlDoc xmlDoc
-                    |> SynBinding.makeStaticMember
                     |> SynBinding.withReturnAnnotation returnInfo
+                    |> SynMemberDefn.staticMember
 
-                let mem = SynMemberDefn.Member (binding, range0)
+                let componentInfo =
+                    SynComponentInfo.create (Ident.create nameWithoutLeadingI)
+                    |> SynComponentInfo.withDocString (PreXmlDoc.create "Extension methods for HTTP clients")
 
                 let containingType =
-                    SynTypeDefn.SynTypeDefn (
-                        SynComponentInfo.Create (
-                            [ Ident.Create nameWithoutLeadingI ],
-                            xmldoc = PreXmlDoc.Create " Extension methods for HTTP clients"
-                        ),
-                        SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Augmentation range0, [], range0),
-                        [ mem ],
-                        None,
-                        range0,
-                        {
-                            LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
-                            EqualsRange = None
-                            WithKeyword = None
-                        }
-                    )
+                    SynTypeDefnRepr.augmentation ()
+                    |> SynTypeDefn.create componentInfo
+                    |> SynTypeDefn.withMemberDefns [ binding ]
 
                 SynModuleDecl.Types ([ containingType ], range0)
 
@@ -1010,28 +970,26 @@ module internal HttpClientGenerator =
                 |> List.singleton
                 |> SynModuleDecl.CreateLet
 
-        let moduleName : LongIdent =
+        let moduleName =
             if spec.ExtensionMethods then
-                [ Ident.create (nameWithoutLeadingI + "HttpClientExtension") ]
+                Ident.create (nameWithoutLeadingI + "HttpClientExtension")
             else
-                [ Ident.create nameWithoutLeadingI ]
+                Ident.create nameWithoutLeadingI
 
         let attribs =
             if spec.ExtensionMethods then
-                [ SynAttributeList.Create SynAttribute.autoOpen ]
+                [ SynAttribute.autoOpen ]
             else
                 [
-                    SynAttributeList.Create SynAttribute.compilationRepresentation
-                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
+                    SynAttribute.compilationRepresentation
+                    SynAttribute.RequireQualifiedAccess ()
                 ]
 
         let modInfo =
-            SynComponentInfo.Create (
-                moduleName,
-                attributes = attribs,
-                xmldoc = docString,
-                access = interfaceType.Accessibility
-            )
+            SynComponentInfo.create moduleName
+            |> SynComponentInfo.withDocString docString
+            |> SynComponentInfo.addAttributes attribs
+            |> SynComponentInfo.setAccessibility interfaceType.Accessibility
 
         SynModuleOrNamespace.CreateNamespace (
             ns,

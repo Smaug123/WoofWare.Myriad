@@ -5,12 +5,6 @@ open Fantomas.FCS.SyntaxTrivia
 open Myriad.Core
 open Fantomas.FCS.Text.Range
 
-type internal CompExprBinding =
-    | LetBang of varName : string * rhs : SynExpr
-    | Let of varName : string * rhs : SynExpr
-    | Use of varName : string * rhs : SynExpr
-    | Do of body : SynExpr
-
 [<AutoOpen>]
 module internal SynExprExtensions =
     type SynExpr with
@@ -227,6 +221,12 @@ module internal SynExpr =
 
     let inline paren (e : SynExpr) : SynExpr =
         SynExpr.Paren (e, range0, Some range0, range0)
+
+    let inline createNew (ty : SynType) (args : SynExpr) : SynExpr =
+        SynExpr.New (false, ty, paren args, range0)
+
+    let inline createWhile (cond : SynExpr) (body : SynExpr) : SynExpr =
+        SynExpr.While (DebugPointAtWhile.Yes range0, cond, body, range0)
 
     let reraise : SynExpr = createIdent "reraise" |> applyTo (SynExpr.CreateConst ())
 

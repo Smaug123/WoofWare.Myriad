@@ -309,25 +309,18 @@ module internal JsonParseGenerator =
         if spec.ExtensionMethods then
             let binding =
                 SynBinding.basic (SynLongIdent.createI functionName) [ arg ] functionBody
-                |> SynBinding.makeStaticMember
                 |> SynBinding.withXmlDoc xmlDoc
                 |> SynBinding.withReturnAnnotation returnInfo
+                |> SynMemberDefn.staticMember
 
-            let mem = SynMemberDefn.Member (binding, range0)
+            let componentInfo =
+                SynComponentInfo.createLong typeName
+                |> SynComponentInfo.withDocString (PreXmlDoc.Create " Extension methods for JSON parsing")
 
             let containingType =
-                SynTypeDefn.SynTypeDefn (
-                    SynComponentInfo.Create (typeName, xmldoc = PreXmlDoc.Create " Extension methods for JSON parsing"),
-                    SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Augmentation range0, [], range0),
-                    [ mem ],
-                    None,
-                    range0,
-                    {
-                        LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
-                        EqualsRange = None
-                        WithKeyword = None
-                    }
-                )
+                SynTypeDefnRepr.augmentation ()
+                |> SynTypeDefn.create componentInfo
+                |> SynTypeDefn.withMemberDefns [ binding ]
 
             SynModuleDecl.Types ([ containingType ], range0)
         else
@@ -490,11 +483,11 @@ module internal JsonParseGenerator =
 
         let attributes =
             if spec.ExtensionMethods then
-                [ SynAttributeList.Create SynAttribute.autoOpen ]
+                [ SynAttribute.autoOpen ]
             else
                 [
-                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-                    SynAttributeList.Create SynAttribute.compilationRepresentation
+                    SynAttribute.RequireQualifiedAccess ()
+                    SynAttribute.compilationRepresentation
                 ]
 
         let xmlDoc =
@@ -525,7 +518,9 @@ module internal JsonParseGenerator =
                 ident
 
         let info =
-            SynComponentInfo.Create (moduleName, attributes = attributes, xmldoc = xmlDoc)
+            SynComponentInfo.createLong moduleName
+            |> SynComponentInfo.withDocString xmlDoc
+            |> SynComponentInfo.addAttributes attributes
 
         let decl =
             match synTypeDefnRepr with

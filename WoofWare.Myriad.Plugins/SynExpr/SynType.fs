@@ -1,6 +1,7 @@
 namespace WoofWare.Myriad.Plugins
 
 open Fantomas.FCS.Syntax
+open Fantomas.FCS.Text.Range
 
 [<RequireQualifiedAccess>]
 module internal SynType =
@@ -14,6 +15,34 @@ module internal SynType =
 
     let inline createLongIdent' (ident : string list) : SynType =
         SynType.LongIdent (SynLongIdent.createS' ident)
+
+    let inline named (name : string) = createLongIdent' [ name ]
+
+    let inline app' (name : SynType) (args : SynType list) : SynType =
+        if args.IsEmpty then
+            failwith "Type cannot be applied to no arguments"
+
+        SynType.App (name, Some range0, args, List.replicate (args.Length - 1) range0, Some range0, false, range0)
+
+    let inline app (name : string) (args : SynType list) : SynType = app' (named name) args
+
+    let inline appPostfix (name : string) (arg : SynType) : SynType =
+        SynType.App (named name, None, [ arg ], [], None, true, range0)
+
+    let inline funFromDomain (domain : SynType) (range : SynType) : SynType =
+        SynType.Fun (
+            domain,
+            range,
+            range0,
+            {
+                ArrowRange = range0
+            }
+        )
+
+    let inline signatureParamOfType (ty : SynType) (name : Ident option) : SynType =
+        SynType.SignatureParameter ([], false, name, ty, range0)
+
+    let inline var (ty : SynTypar) : SynType = SynType.Var (ty, range0)
 
 [<AutoOpen>]
 module internal SynTypePatterns =

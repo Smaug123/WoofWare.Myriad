@@ -17,8 +17,7 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module PureGymApi =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IPureGymApi =
@@ -1055,8 +1054,7 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module internal ApiWithoutBaseAddress =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IApiWithoutBaseAddress =
@@ -1107,8 +1105,7 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module ApiWithBasePath =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IApiWithBasePath =
@@ -1159,8 +1156,7 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module ApiWithBasePathAndAddress =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IApiWithBasePathAndAddress =
@@ -1205,8 +1201,7 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module ApiWithHeaders =
     /// Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties.
     let make
@@ -1268,8 +1263,7 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module ApiWithHeaders2 =
     /// Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties.
     let make

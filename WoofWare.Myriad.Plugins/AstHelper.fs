@@ -1,7 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
 open Fantomas.FCS.Syntax
-open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Text.Range
 open Fantomas.FCS.Xml
 open Myriad.Core.AstExtensions
@@ -106,25 +105,17 @@ module internal AstHelper =
         SynExpr.Record (None, None, fields, range0)
 
     let defineRecordType (record : RecordType) : SynTypeDefn =
-        let repr =
-            SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (None, Seq.toList record.Fields, range0), range0)
-
         let name =
-            SynComponentInfo.Create (
-                [ record.Name ],
-                ?xmldoc = record.XmlDoc,
-                ?parameters = record.Generics,
-                access = record.Accessibility
-            )
+            SynComponentInfo.create record.Name
+            |> SynComponentInfo.setAccessibility record.Accessibility
+            |> match record.XmlDoc with
+               | None -> id
+               | Some doc -> SynComponentInfo.withDocString doc
+            |> SynComponentInfo.setGenerics record.Generics
 
-        let trivia : SynTypeDefnTrivia =
-            {
-                LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
-                EqualsRange = Some range0
-                WithKeyword = Some range0
-            }
-
-        SynTypeDefn (name, repr, defaultArg record.Members SynMemberDefns.Empty, None, range0, trivia)
+        SynTypeDefnRepr.record (Seq.toList record.Fields)
+        |> SynTypeDefn.create name
+        |> SynTypeDefn.withMemberDefns (defaultArg record.Members SynMemberDefns.Empty)
 
     let rec private extractOpensFromDecl (moduleDecls : SynModuleDecl list) : SynOpenDeclTarget list =
         moduleDecls
@@ -169,7 +160,7 @@ module internal AstHelper =
                 Attributes = []
                 IsOptional = false
                 Id = None
-                Type = SynType.Var (typar, range0)
+                Type = SynType.var typar
             },
             false
         | _ -> failwithf "expected SignatureParameter, got: %+A" ty
@@ -283,7 +274,7 @@ module internal AstHelper =
                                     Attributes = []
                                     IsOptional = false
                                     Id = None
-                                    Type = SynType.Var (typar, range0)
+                                    Type = SynType.var typar
                                 }
                                 |> List.singleton
                         }

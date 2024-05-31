@@ -226,28 +226,21 @@ module internal JsonSerializeGenerator =
             |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.create typeName))
 
         if spec.ExtensionMethods then
-            let binding =
+            let componentInfo =
+                SynComponentInfo.createLong typeName
+                |> SynComponentInfo.withDocString (PreXmlDoc.Create " Extension methods for JSON parsing")
+
+            let memberDef =
                 assignments
                 |> SynBinding.basic (SynLongIdent.createI functionName) [ pattern ]
                 |> SynBinding.withXmlDoc xmlDoc
                 |> SynBinding.withReturnAnnotation returnInfo
-                |> SynBinding.makeStaticMember
-
-            let mem = SynMemberDefn.Member (binding, range0)
+                |> SynMemberDefn.staticMember
 
             let containingType =
-                SynTypeDefn.SynTypeDefn (
-                    SynComponentInfo.Create (typeName, xmldoc = PreXmlDoc.Create " Extension methods for JSON parsing"),
-                    SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Augmentation range0, [], range0),
-                    [ mem ],
-                    None,
-                    range0,
-                    {
-                        LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
-                        EqualsRange = None
-                        WithKeyword = None
-                    }
-                )
+                SynTypeDefnRepr.augmentation ()
+                |> SynTypeDefn.create componentInfo
+                |> SynTypeDefn.withMemberDefns [ memberDef ]
 
             SynModuleDecl.Types ([ containingType ], range0)
         else
@@ -363,11 +356,11 @@ module internal JsonSerializeGenerator =
 
         let attributes =
             if spec.ExtensionMethods then
-                [ SynAttributeList.Create SynAttribute.autoOpen ]
+                [ SynAttribute.autoOpen ]
             else
                 [
-                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-                    SynAttributeList.Create SynAttribute.compilationRepresentation
+                    SynAttribute.RequireQualifiedAccess ()
+                    SynAttribute.compilationRepresentation
                 ]
 
         let xmlDoc =
@@ -398,7 +391,9 @@ module internal JsonSerializeGenerator =
                 ident
 
         let info =
-            SynComponentInfo.Create (moduleName, attributes = attributes, xmldoc = xmlDoc)
+            SynComponentInfo.createLong moduleName
+            |> SynComponentInfo.addAttributes attributes
+            |> SynComponentInfo.withDocString xmlDoc
 
         let decls =
             match synTypeDefnRepr with
