@@ -3,8 +3,6 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Text
 open Fantomas.FCS.Syntax
-open Fantomas.FCS.SyntaxTrivia
-open Fantomas.FCS.Xml
 open Myriad.Core
 
 type internal JsonSerializeOutputSpec =
@@ -40,28 +38,23 @@ module internal JsonSerializeGenerator =
             )
         | OptionType ty ->
             // fun field -> match field with | None -> JsonValue.Create null | Some v -> {serializeNode ty} field
-            [
-                SynMatchClause.Create (
-                    SynPat.CreateLongIdent (SynLongIdent.createS "None", []),
-                    None,
-                    // The absolutely galaxy-brained implementation of JsonValue has `JsonValue.Parse "null"`
-                    // identically equal to null. We have to work around this later, but we might as well just
-                    // be efficient here and whip up the null directly.
-                    SynExpr.CreateNull
-                    |> SynExpr.upcast' (
-                        SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
+            let noneClause =
+                // The absolutely galaxy-brained implementation of JsonValue has `JsonValue.Parse "null"`
+                // identically equal to null. We have to work around this later, but we might as well just
+                // be efficient here and whip up the null directly.
+                SynExpr.createNull ()
+                |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+                |> SynMatchClause.create (SynPat.named "None")
 
-                    )
+            let someClause =
+                SynExpr.applyFunction (serializeNode ty) (SynExpr.createIdent "field")
+                |> SynExpr.paren
+                |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+                |> SynMatchClause.create (
+                    SynPat.CreateLongIdent (SynLongIdent.createS "Some", [ SynPat.named "field" ])
                 )
 
-                SynMatchClause.Create (
-                    SynPat.CreateLongIdent (SynLongIdent.createS "Some", [ SynPat.named "field" ]),
-                    None,
-                    SynExpr.applyFunction (serializeNode ty) (SynExpr.createIdent "field")
-                    |> SynExpr.paren
-                    |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
-                )
-            ]
+            [ noneClause ; someClause ]
             |> SynExpr.createMatch (SynExpr.createIdent "field")
             |> SynExpr.createLambda "field"
         | ArrayType ty
@@ -79,18 +72,18 @@ module internal JsonSerializeGenerator =
                     SynPat.named "mem",
                     SynExpr.createIdent "field",
                     SynExpr.applyFunction
-                        (SynExpr.CreateLongIdent (SynLongIdent.createS' [ "arr" ; "Add" ]))
-                        (SynExpr.CreateParen (SynExpr.CreateApp (serializeNode ty, SynExpr.createIdent "mem"))),
+                        (SynExpr.createLongIdent [ "arr" ; "Add" ])
+                        (SynExpr.paren (SynExpr.applyFunction (serializeNode ty) (SynExpr.createIdent "mem"))),
                     range0
                 )
                 SynExpr.createIdent "arr"
             ]
-            |> SynExpr.CreateSequential
+            |> SynExpr.sequential
             |> SynExpr.createLet
                 [
                     SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonArray" ]
                     |> SynExpr.applyTo (SynExpr.CreateConst ())
-                    |> SynBinding.basic (SynLongIdent.createS "arr") []
+                    |> SynBinding.basic [ Ident.create "arr" ] []
                 ]
             |> SynExpr.createLambda "field"
         | IDictionaryType (_keyType, valueType)
@@ -108,46 +101,31 @@ module internal JsonSerializeGenerator =
                     DebugPointAtInOrTo.Yes range0,
                     SeqExprOnly.SeqExprOnly false,
                     true,
-                    SynPat.CreateParen (
+                    SynPat.paren (
                         SynPat.CreateLongIdent (
                             SynLongIdent.createS "KeyValue",
-                            [
-                                SynPat.CreateParen (
-                                    SynPat.Tuple (
-                                        false,
-                                        [
-                                            SynPat.CreateNamed (Ident.Create "key")
-                                            SynPat.CreateNamed (Ident.Create "value")
-                                        ],
-                                        [ range0 ],
-                                        range0
-                                    )
-                                )
-                            ]
+                            [ SynPat.tuple [ SynPat.named "key" ; SynPat.named "value" ] ]
                         )
                     ),
-                    SynExpr.CreateIdent (Ident.Create "field"),
-                    SynExpr.CreateApp (
-                        SynExpr.createLongIdent [ "ret" ; "Add" ],
-                        SynExpr.CreateParenedTuple
+                    SynExpr.createIdent "field",
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "ret" ; "Add" ])
+                        (SynExpr.tuple
                             [
-                                SynExpr.CreateApp (
-                                    SynExpr.createLongIdent [ "key" ; "ToString" ],
-                                    SynExpr.CreateConst ()
-                                )
-                                SynExpr.CreateApp (serializeNode valueType, SynExpr.createIdent "value")
-                            ]
-                    ),
+                                SynExpr.createLongIdent [ "key" ; "ToString" ]
+                                |> SynExpr.applyTo (SynExpr.CreateConst ())
+                                SynExpr.applyFunction (serializeNode valueType) (SynExpr.createIdent "value")
+                            ]),
                     range0
                 )
                 SynExpr.createIdent "ret"
             ]
-            |> SynExpr.CreateSequential
+            |> SynExpr.sequential
             |> SynExpr.createLet
                 [
                     SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
                     |> SynExpr.applyTo (SynExpr.CreateConst ())
-                    |> SynBinding.basic (SynLongIdent.createS "ret") []
+                    |> SynBinding.basic [ Ident.create "ret" ] []
                 ]
             |> SynExpr.createLambda "field"
         | _ ->
@@ -157,7 +135,7 @@ module internal JsonSerializeGenerator =
                 | SynType.LongIdent ident -> ident.LongIdent
                 | _ -> failwith $"Unrecognised type: %+A{fieldType}"
 
-            SynExpr.createLongIdent' (typeName @ [ Ident.Create "toJsonNode" ])
+            SynExpr.createLongIdent' (typeName @ [ Ident.create "toJsonNode" ])
 
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
     /// `node.Add ({propertyName}, {toJsonNode})`
@@ -168,13 +146,16 @@ module internal JsonSerializeGenerator =
                 (serializeNode fieldType)
                 (SynExpr.createLongIdent' [ Ident.create "input" ; fieldId ])
         ]
-        |> SynExpr.CreateParenedTuple
+        |> SynExpr.tuple
         |> SynExpr.applyFunction (SynExpr.createLongIdent [ "node" ; "Add" ])
 
     let getPropertyName (fieldId : Ident) (attrs : SynAttribute list) : SynExpr =
         let propertyNameAttr =
             attrs
-            |> List.tryFind (fun attr -> attr.TypeName.AsString.EndsWith ("JsonPropertyName", StringComparison.Ordinal))
+            |> List.tryFind (fun attr ->
+                (SynLongIdent.toString attr.TypeName)
+                    .EndsWith ("JsonPropertyName", StringComparison.Ordinal)
+            )
 
         match propertyNameAttr with
         | None ->
@@ -213,12 +194,12 @@ module internal JsonSerializeGenerator =
                 populateNode
                 SynExpr.Upcast (SynExpr.createIdent "node", SynType.Anon range0, range0)
             ]
-            |> SynExpr.CreateSequential
+            |> SynExpr.sequential
             |> SynExpr.createLet
                 [
                     SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
                     |> SynExpr.applyTo (SynExpr.CreateConst ())
-                    |> SynBinding.basic (SynLongIdent.createS "node") []
+                    |> SynBinding.basic [ Ident.create "node" ] []
                 ]
 
         let pattern =
@@ -228,11 +209,11 @@ module internal JsonSerializeGenerator =
         if spec.ExtensionMethods then
             let componentInfo =
                 SynComponentInfo.createLong typeName
-                |> SynComponentInfo.withDocString (PreXmlDoc.Create " Extension methods for JSON parsing")
+                |> SynComponentInfo.withDocString (PreXmlDoc.create "Extension methods for JSON parsing")
 
             let memberDef =
                 assignments
-                |> SynBinding.basic (SynLongIdent.createI functionName) [ pattern ]
+                |> SynBinding.basic [ functionName ] [ pattern ]
                 |> SynBinding.withXmlDoc xmlDoc
                 |> SynBinding.withReturnAnnotation returnInfo
                 |> SynMemberDefn.staticMember
@@ -246,7 +227,7 @@ module internal JsonSerializeGenerator =
         else
             let binding =
                 assignments
-                |> SynBinding.basic (SynLongIdent.createI functionName) [ pattern ]
+                |> SynBinding.basic [ functionName ] [ pattern ]
                 |> SynBinding.withReturnAnnotation returnInfo
                 |> SynBinding.withXmlDoc xmlDoc
 
@@ -261,7 +242,7 @@ module internal JsonSerializeGenerator =
             let propertyName = getPropertyName fieldData.Ident fieldData.Attrs
             createSerializeRhsRecord propertyName fieldData.Ident fieldData.Type
         )
-        |> SynExpr.CreateSequential
+        |> SynExpr.sequential
         |> fun expr -> SynExpr.Do (expr, range0)
         |> scaffolding spec typeName inputArg
 
@@ -294,7 +275,7 @@ module internal JsonSerializeGenerator =
                         (SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ])
                         propertyName
                 ]
-                |> SynExpr.CreateParenedTuple
+                |> SynExpr.tuple
                 |> SynExpr.applyFunction (SynExpr.createLongIdent [ "node" ; "Add" ])
 
             let dataNode =
@@ -316,17 +297,17 @@ module internal JsonSerializeGenerator =
                         SynExpr.applyFunction (serializeNode fieldData.Type) (SynExpr.createIdent' caseName)
 
                     [ propertyName ; node ]
-                    |> SynExpr.CreateParenedTuple
+                    |> SynExpr.tuple
                     |> SynExpr.applyFunction (SynExpr.createLongIdent [ "dataNode" ; "Add" ])
                 )
 
             let assignToNode =
                 [ SynExpr.CreateConst "data" ; SynExpr.createIdent "dataNode" ]
-                |> SynExpr.CreateParenedTuple
+                |> SynExpr.tuple
                 |> SynExpr.applyFunction (SynExpr.createLongIdent [ "node" ; "Add" ])
 
             let dataNode =
-                SynExpr.CreateSequential (dataBindings @ [ assignToNode ])
+                SynExpr.sequential (dataBindings @ [ assignToNode ])
                 |> SynExpr.createLet [ dataNode ]
 
             let action =
@@ -335,7 +316,7 @@ module internal JsonSerializeGenerator =
                     if not dataBindings.IsEmpty then
                         yield dataNode
                 ]
-                |> SynExpr.CreateSequential
+                |> SynExpr.sequential
 
             SynMatchClause.create pattern action
         )
@@ -358,10 +339,7 @@ module internal JsonSerializeGenerator =
             if spec.ExtensionMethods then
                 [ SynAttribute.autoOpen ]
             else
-                [
-                    SynAttribute.RequireQualifiedAccess ()
-                    SynAttribute.compilationRepresentation
-                ]
+                [ SynAttribute.requireQualifiedAccess ; SynAttribute.compilationRepresentation ]
 
         let xmlDoc =
             let fullyQualified = ident |> Seq.map (fun i -> i.idText) |> String.concat "."

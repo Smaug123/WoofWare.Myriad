@@ -193,12 +193,13 @@ module TestJsonSerde =
 
         let decompose = FSharpValue.PreComputeUnionTagReader typeof<FirstDu>
 
-        Gen.listOf duGen
-        |> Gen.eval 100 (StdGen.StdGen (rand.Next (), rand.Next ()))
-        |> List.iter (fun du ->
+        let mutable i = 0
+
+        while i < 10_000 && Array.exists (fun i -> i = 0) counts do
+            let du = Gen.eval 10 (StdGen.StdGen (rand.Next (), rand.Next ())) duGen
             let tag = decompose du
             counts.[tag] <- counts.[tag] + 1
-        )
+            i <- i + 1
 
         for i in counts do
             i |> shouldBeGreaterThan 0

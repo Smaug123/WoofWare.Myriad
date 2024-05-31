@@ -1,9 +1,7 @@
 namespace WoofWare.Myriad.Plugins
 
 open Fantomas.FCS.Syntax
-open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
-open Myriad.Core
 
 [<RequireQualifiedAccess>]
 module internal RemoveOptionsGenerator =
@@ -83,26 +81,15 @@ module internal RemoveOptionsGenerator =
                 let body =
                     match fieldData.Type with
                     | OptionType _ ->
-                        SynExpr.applyFunction
-                            (SynExpr.CreateAppInfix (
-                                SynExpr.LongIdent (
-                                    false,
-                                    SynLongIdent.SynLongIdent (
-                                        [ Ident.Create "op_PipeRight" ],
-                                        [],
-                                        [ Some (IdentTrivia.OriginalNotation "|>") ]
-                                    ),
-                                    None,
-                                    range0
-                                ),
-                                accessor
-                            ))
-                            (SynExpr.applyFunction
+                        accessor
+                        |> SynExpr.pipeThroughFunction (
+                            SynExpr.applyFunction
                                 (SynExpr.createLongIdent [ "Option" ; "defaultWith" ])
                                 (SynExpr.createLongIdent' (
                                     withoutOptionsType
                                     @ [ Ident.create (sprintf "Default%s" fieldData.Ident.idText) ]
-                                )))
+                                ))
+                        )
                     | _ -> accessor
 
                 (SynLongIdent.createI fieldData.Ident, true), Some body
@@ -111,7 +98,7 @@ module internal RemoveOptionsGenerator =
 
         let binding =
             SynBinding.basic
-                (SynLongIdent.createI functionName)
+                [ functionName ]
                 [
                     SynPat.named inputArg.idText
                     |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.create withoutOptionsType))
@@ -150,12 +137,14 @@ module internal RemoveOptionsGenerator =
                 SynComponentInfo.createLong recordId
                 |> SynComponentInfo.withDocString xmlDoc
                 |> SynComponentInfo.addAttributes [ SynAttribute.compilationRepresentation ]
-                |> SynComponentInfo.addAttributes [ SynAttribute.RequireQualifiedAccess () ]
+                |> SynComponentInfo.addAttributes [ SynAttribute.requireQualifiedAccess ]
 
             let mdl = SynModuleDecl.CreateNestedModule (info, decls)
 
             SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ mdl ])
         | _ -> failwithf "Not a record type"
+
+open Myriad.Core
 
 /// Myriad generator that stamps out a record with option types stripped
 /// from the fields at the top level.

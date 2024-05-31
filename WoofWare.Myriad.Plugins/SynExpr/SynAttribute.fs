@@ -2,7 +2,6 @@ namespace WoofWare.Myriad.Plugins
 
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
-open Myriad.Core
 
 [<RequireQualifiedAccess>]
 module internal SynAttribute =
@@ -10,12 +9,18 @@ module internal SynAttribute =
         {
             TypeName = SynLongIdent.createS "CompilationRepresentation"
             ArgExpr =
-                SynExpr.CreateLongIdent (
-                    false,
-                    SynLongIdent.createS' [ "CompilationRepresentationFlags" ; "ModuleSuffix" ],
-                    None
-                )
-                |> SynExpr.CreateParen
+                [ "CompilationRepresentationFlags" ; "ModuleSuffix" ]
+                |> SynExpr.createLongIdent
+                |> SynExpr.paren
+            Target = None
+            AppliesToGetterAndSetter = false
+            Range = range0
+        }
+
+    let internal requireQualifiedAccess : SynAttribute =
+        {
+            TypeName = SynLongIdent.createS "RequireQualifiedAccess"
+            ArgExpr = SynExpr.CreateConst ()
             Target = None
             AppliesToGetterAndSetter = false
             Range = range0
@@ -24,7 +29,7 @@ module internal SynAttribute =
     let internal autoOpen : SynAttribute =
         {
             TypeName = SynLongIdent.createS "AutoOpen"
-            ArgExpr = SynExpr.CreateConst SynConst.Unit
+            ArgExpr = SynExpr.CreateConst ()
             Target = None
             AppliesToGetterAndSetter = false
             Range = range0

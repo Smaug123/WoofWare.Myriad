@@ -23,20 +23,11 @@ module internal SynExpr =
     let applyFunction (f : SynExpr) (x : SynExpr) : SynExpr = SynExpr.CreateApp (f, x)
 
     /// {f} {x}
-    let applyTo (x : SynExpr) (f : SynExpr) : SynExpr = SynExpr.CreateApp (f, x)
+    let inline applyTo (x : SynExpr) (f : SynExpr) : SynExpr = applyFunction f x
 
     /// {expr} |> {func}
     let pipeThroughFunction (func : SynExpr) (expr : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (
-            SynExpr.CreateLongIdent (
-                SynLongIdent.SynLongIdent (
-                    [ Ident.Create "op_PipeRight" ],
-                    [],
-                    [ Some (IdentTrivia.OriginalNotation "|>") ]
-                )
-            ),
-            expr
-        )
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.pipe, expr)
         |> applyTo func
 
     /// if {cond} then {trueBranch} else {falseBranch}
@@ -80,17 +71,7 @@ module internal SynExpr =
 
     /// {a} = {b}
     let equals (a : SynExpr) (b : SynExpr) =
-        SynExpr.CreateAppInfix (
-            SynExpr.CreateLongIdent (
-                SynLongIdent.SynLongIdent (
-                    Ident.CreateLong "op_Equality",
-                    [],
-                    [ Some (IdentTrivia.OriginalNotation "=") ]
-                )
-            ),
-            a
-        )
-        |> applyTo b
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.eq, a) |> applyTo b
 
     /// {a} + {b}
     let plus (a : SynExpr) (b : SynExpr) =
@@ -116,7 +97,7 @@ module internal SynExpr =
         SynExpr.DotGet (
             obj,
             range0,
-            SynLongIdent.SynLongIdent (id = [ Ident.Create meth ], dotRanges = [], trivia = [ None ]),
+            SynLongIdent.SynLongIdent (id = [ Ident.create meth ], dotRanges = [], trivia = [ None ]),
             range0
         )
         |> applyTo arg
@@ -142,7 +123,7 @@ module internal SynExpr =
         SynExpr.TypeApp (
             SynExpr.DotGet (obj, range0, SynLongIdent.createS meth, range0),
             range0,
-            [ SynType.CreateLongIdent ty ],
+            [ SynType.createLongIdent' [ ty ] ],
             [],
             Some range0,
             range0,
@@ -150,8 +131,11 @@ module internal SynExpr =
         )
         |> applyTo (SynExpr.CreateConst ())
 
-    let index (property : SynExpr) (obj : SynExpr) : SynExpr =
+    let inline index (property : SynExpr) (obj : SynExpr) : SynExpr =
         SynExpr.DotIndexedGet (obj, property, range0, range0)
+
+    let inline paren (e : SynExpr) : SynExpr =
+        SynExpr.Paren (e, range0, Some range0, range0)
 
     /// (fun {varName} -> {body})
     let createLambda (varName : string) (body : SynExpr) : SynExpr =
@@ -168,59 +152,68 @@ module internal SynExpr =
                 ArrowRange = Some range0
             }
         )
-        |> SynExpr.CreateParen
+        |> paren
 
     let createThunk (body : SynExpr) : SynExpr =
-        let parsedDataPat = [ SynPat.Const (SynConst.Unit, range0) ]
-
         SynExpr.Lambda (
             false,
             false,
             SynSimplePats.Create [],
             body,
-            Some (parsedDataPat, body),
+            Some ([ SynPat.unit ], body),
             range0,
             {
                 ArrowRange = Some range0
             }
         )
-        |> SynExpr.CreateParen
-
-    /// {body} |> fun a -> Async.StartAsTask (a, ?cancellationToken=ct)
-    let startAsTask (ct : SynLongIdent) (body : SynExpr) =
-        let lambda =
-            [
-                SynExpr.CreateLongIdent (SynLongIdent.createS "a")
-                equals
-                    (SynExpr.LongIdent (true, SynLongIdent.createS "cancellationToken", None, range0))
-                    (SynExpr.CreateLongIdent ct)
-            ]
-            |> SynExpr.CreateParenedTuple
-            |> applyFunction (SynExpr.CreateLongIdent (SynLongIdent.createS' [ "Async" ; "StartAsTask" ]))
-            |> createLambda "a"
-
-        pipeThroughFunction lambda body
+        |> paren
 
     let inline createIdent (s : string) : SynExpr = SynExpr.Ident (Ident (s, range0))
 
     let inline createIdent' (i : Ident) : SynExpr = SynExpr.Ident i
 
-    let inline createLongIdent (ident : string list) : SynExpr =
-        SynExpr.CreateLongIdent (SynLongIdent.createS' ident)
-
     let inline createLongIdent' (ident : Ident list) : SynExpr =
-        SynExpr.CreateLongIdent (SynLongIdent.create ident)
+        SynExpr.LongIdent (false, SynLongIdent.create ident, None, range0)
+
+    let inline createLongIdent (ident : string list) : SynExpr =
+        createLongIdent' (ident |> List.map Ident.create)
+
+    let tupleNoParen (args : SynExpr list) : SynExpr =
+        SynExpr.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
+
+    let inline tuple (args : SynExpr list) = args |> tupleNoParen |> paren
+
+    /// {body} |> fun a -> Async.StartAsTask (a, ?cancellationToken=ct)
+    let startAsTask (ct : Ident) (body : SynExpr) =
+        let lambda =
+            [
+                createIdent "a"
+                equals
+                    (SynExpr.LongIdent (true, SynLongIdent.createS "cancellationToken", None, range0))
+                    (createIdent' ct)
+            ]
+            |> tuple
+            |> applyFunction (createLongIdent [ "Async" ; "StartAsTask" ])
+            |> createLambda "a"
+
+        pipeThroughFunction lambda body
 
     let inline createLet (bindings : SynBinding list) (body : SynExpr) : SynExpr =
         SynExpr.LetOrUse (false, false, bindings, body, range0, SynExprLetOrUseTrivia.empty)
 
     let inline createMatch (matchOn : SynExpr) (cases : SynMatchClause list) : SynExpr =
-        SynExpr.CreateMatch (matchOn, cases)
+        SynExpr.Match (
+            DebugPointAtBinding.Yes range0,
+            matchOn,
+            cases,
+            range0,
+            {
+                MatchKeyword = range0
+                WithKeyword = range0
+            }
+        )
 
-    let typeAnnotate (ty : SynType) (expr : SynExpr) : SynExpr = SynExpr.CreateTyped (expr, ty)
-
-    let inline paren (e : SynExpr) : SynExpr =
-        SynExpr.Paren (e, range0, Some range0, range0)
+    let typeAnnotate (ty : SynType) (expr : SynExpr) : SynExpr = SynExpr.Typed (expr, ty, range0)
 
     let inline createNew (ty : SynType) (args : SynExpr) : SynExpr =
         SynExpr.New (false, ty, paren args, range0)
@@ -228,7 +221,13 @@ module internal SynExpr =
     let inline createWhile (cond : SynExpr) (body : SynExpr) : SynExpr =
         SynExpr.While (DebugPointAtWhile.Yes range0, cond, body, range0)
 
+    let inline createNull () : SynExpr = SynExpr.Null range0
+
     let reraise : SynExpr = createIdent "reraise" |> applyTo (SynExpr.CreateConst ())
+
+    let sequential (exprs : SynExpr list) : SynExpr =
+        exprs
+        |> List.reduce (fun a b -> SynExpr.Sequential (DebugPointAtSequential.SuppressNeither, false, a, b, range0))
 
     /// {compExpr} { {lets} ; return {ret} }
     let createCompExpr (compExpr : string) (retBody : SynExpr) (lets : CompExprBinding list) : SynExpr =
@@ -252,25 +251,22 @@ module internal SynExpr =
                             EqualsRange = Some range0
                         }
                     )
-                | Let (lhs, rhs) -> createLet [ SynBinding.basic (SynLongIdent.createS lhs) [] rhs ] state
+                | Let (lhs, rhs) -> createLet [ SynBinding.basic [ Ident.create lhs ] [] rhs ] state
                 | Use (lhs, rhs) ->
                     SynExpr.LetOrUse (
                         false,
                         true,
-                        [ SynBinding.basic (SynLongIdent.createS lhs) [] rhs ],
+                        [ SynBinding.basic [ Ident.create lhs ] [] rhs ],
                         state,
                         range0,
                         {
                             SynExprLetOrUseTrivia.InKeyword = None
                         }
                     )
-                | Do body -> SynExpr.CreateSequential [ SynExpr.Do (body, range0) ; state ]
+                | Do body -> sequential [ SynExpr.Do (body, range0) ; state ]
             )
 
-        SynExpr.CreateApp (
-            SynExpr.CreateIdent (Ident.Create compExpr),
-            SynExpr.ComputationExpr (false, contents, range0)
-        )
+        applyFunction (createIdent compExpr) (SynExpr.ComputationExpr (false, contents, range0))
 
     /// {expr} |> Async.AwaitTask
     let awaitTask (expr : SynExpr) : SynExpr =
@@ -288,49 +284,17 @@ module internal SynExpr =
 
     /// {ident} - {rhs}
     let minus (ident : SynLongIdent) (rhs : SynExpr) : SynExpr =
-        SynExpr.CreateApp (
-            SynExpr.CreateAppInfix (
-                SynExpr.CreateLongIdent (
-                    SynLongIdent.SynLongIdent (
-                        [ Ident.Create "op_Subtraction" ],
-                        [],
-                        [ Some (IdentTrivia.OriginalNotation "-") ]
-                    )
-                ),
-                SynExpr.CreateLongIdent ident
-            ),
-            rhs
-        )
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.sub, SynExpr.CreateLongIdent ident)
+        |> applyTo rhs
 
     /// {ident} - {n}
     let minusN (ident : SynLongIdent) (n : int) : SynExpr = minus ident (SynExpr.CreateConst n)
 
     /// {y} > {x}
     let greaterThan (x : SynExpr) (y : SynExpr) : SynExpr =
-        SynExpr.CreateApp (
-            SynExpr.CreateAppInfix (
-                SynExpr.CreateLongIdent (
-                    SynLongIdent.SynLongIdent (
-                        [ Ident.Create "op_GreaterThan" ],
-                        [],
-                        [ Some (IdentTrivia.OriginalNotation ">") ]
-                    )
-                ),
-                y
-            ),
-            x
-        )
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.ge, y) |> applyTo x
 
     /// {y} >= {x}
     let greaterThanOrEqual (x : SynExpr) (y : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (
-            SynExpr.CreateLongIdent (
-                SynLongIdent.SynLongIdent (
-                    [ Ident.Create "op_GreaterThanOrEqual" ],
-                    [],
-                    [ Some (IdentTrivia.OriginalNotation ">=") ]
-                )
-            ),
-            y
-        )
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.geq, y)
         |> applyTo x

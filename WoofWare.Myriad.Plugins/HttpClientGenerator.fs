@@ -82,7 +82,7 @@ module internal HttpClientGenerator =
         let matchingAttrs =
             attrs
             |> List.choose (fun attr ->
-                match attr.TypeName.AsString with
+                match SynLongIdent.toString attr.TypeName with
                 | "Get"
                 | "GetAttribute"
                 | "WoofWare.Myriad.Plugins.RestEase.Get"
@@ -144,7 +144,7 @@ module internal HttpClientGenerator =
     let extractHeaderInformation (attrs : SynAttribute list) : SynExpr list list =
         attrs
         |> List.choose (fun attr ->
-            match attr.TypeName.AsString with
+            match SynLongIdent.toString attr.TypeName with
             | "Header"
             | "RestEase.Header"
             | "WoofWare.Myriad.Plugins.RestEase.Header" ->
@@ -158,7 +158,7 @@ module internal HttpClientGenerator =
     let shouldAllowAnyStatusCode (attrs : SynAttribute list) : bool =
         attrs
         |> List.exists (fun attr ->
-            match attr.TypeName.AsString with
+            match SynLongIdent.toString attr.TypeName with
             | "AllowAnyStatusCode"
             | "AllowAnyStatusCodeAttribute"
             | "RestEase.AllowAnyStatusCode"
@@ -225,25 +225,15 @@ module internal HttpClientGenerator =
             | None -> failwith $"expected an optional cancellation token as final arg in %s{info.Identifier.idText}"
             | Some (arg, _) -> arg
 
-        let argPats =
-            let args = args |> List.map snd
-
-            SynPat.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
-            |> SynPat.CreateParen
-            |> List.singleton
-            |> SynArgPats.Pats
-
         let headPat =
             let thisIdent = if variableHeaders.IsEmpty then "_" else "this"
 
-            SynPat.LongIdent (
-                SynLongIdent.create [ Ident.create thisIdent ; info.Identifier ],
-                None,
-                None,
-                argPats,
-                None,
-                range0
-            )
+            args
+            |> List.map snd
+            |> SynPat.tuple
+            |> List.singleton
+            |> SynArgPats.Pats
+            |> SynPat.identWithArgs [ Ident.create thisIdent ; info.Identifier ]
 
         let requestUriTrailer =
             (info.UrlTemplate, info.Args)
@@ -265,10 +255,10 @@ module internal HttpClientGenerator =
                         template
                         |> SynExpr.callMethodArg
                             "Replace"
-                            (SynExpr.CreateParenedTuple
+                            (SynExpr.tuple
                                 [
                                     SynExpr.CreateConst ("{" + substituteId + "}")
-                                    SynExpr.callMethod "ToString" (SynExpr.CreateIdent varName)
+                                    SynExpr.callMethod "ToString" (SynExpr.createIdent' varName)
                                     |> SynExpr.pipeThroughFunction (
                                         SynExpr.createLongIdent [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ]
                                     )
@@ -357,45 +347,37 @@ module internal HttpClientGenerator =
 
             let baseAddress =
                 [
-                    SynMatchClause.Create (
-                        SynPat.CreateNull,
-                        None,
-                        match info.BaseAddress with
-                        | None ->
-                            [
-                                SynExpr.applyFunction (SynExpr.createIdent "nameof") (SynExpr.paren baseAddress)
-                                SynExpr.CreateConst
-                                    "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
-                            ]
-                            |> SynExpr.CreateParenedTuple
-                            |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "ArgumentNullException" ])
-                            |> SynExpr.paren
-                            |> SynExpr.applyFunction (SynExpr.createIdent "raise")
-                        | Some expr -> SynExpr.applyFunction uriIdent expr
-                    )
-                    SynMatchClause.Create (SynPat.named "v", None, SynExpr.createIdent "v")
+                    SynMatchClause.create
+                        SynPat.createNull
+                        (match info.BaseAddress with
+                         | None ->
+                             [
+                                 SynExpr.applyFunction (SynExpr.createIdent "nameof") (SynExpr.paren baseAddress)
+                                 SynExpr.CreateConst
+                                     "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                             ]
+                             |> SynExpr.tuple
+                             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "ArgumentNullException" ])
+                             |> SynExpr.paren
+                             |> SynExpr.applyFunction (SynExpr.createIdent "raise")
+                         | Some expr -> SynExpr.applyFunction uriIdent expr)
+                    SynMatchClause.create (SynPat.named "v") (SynExpr.createIdent "v")
                 ]
                 |> SynExpr.createMatch baseAddress
                 |> SynExpr.paren
 
-            SynExpr.App (
-                ExprAtomicFlag.Atomic,
-                false,
-                uriIdent,
-                SynExpr.CreateParenedTuple
-                    [
-                        baseAddress
-                        SynExpr.CreateApp (
-                            uriIdent,
-                            SynExpr.CreateParenedTuple
-                                [
-                                    requestUriTrailer
-                                    SynExpr.createLongIdent [ "System" ; "UriKind" ; "Relative" ]
-                                ]
-                        )
-                    ],
-                range0
-            )
+            [
+                baseAddress
+                SynExpr.applyFunction
+                    uriIdent
+                    (SynExpr.tuple
+                        [
+                            requestUriTrailer
+                            SynExpr.createLongIdent [ "System" ; "UriKind" ; "Relative" ]
+                        ])
+            ]
+            |> SynExpr.tuple
+            |> SynExpr.applyFunction uriIdent
 
         let bodyParams =
             info.Args
@@ -434,7 +416,7 @@ module internal HttpClientGenerator =
                         [ "System" ; "Net" ; "Http" ; "HttpMethod" ; httpMethodString info.HttpMethod ])
                 SynExpr.equals (SynExpr.createIdent "RequestUri") (SynExpr.createIdent "uri")
             ]
-            |> SynExpr.CreateTuple
+            |> SynExpr.tupleNoParen
 
         let returnExpr =
             match info.TaskReturnType with
@@ -559,7 +541,7 @@ module internal HttpClientGenerator =
                         SynExpr.applyFunction
                             (SynExpr.createLongIdent
                                 [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "ParseAsync" ])
-                            (SynExpr.CreateParenedTuple
+                            (SynExpr.tuple
                                 [
                                     SynExpr.createIdent "responseStream"
                                     SynExpr.equals (SynExpr.createIdent "cancellationToken") (SynExpr.createIdent "ct")
@@ -574,10 +556,10 @@ module internal HttpClientGenerator =
                         headerName
                         SynExpr.applyFunction
                             (SynExpr.createLongIdent'
-                                [ Ident.Create "this" ; callToGetValue ; Ident.Create "ToString" ])
+                                [ Ident.create "this" ; callToGetValue ; Ident.create "ToString" ])
                             (SynExpr.CreateConst ())
                     ]
-                    |> SynExpr.CreateParenedTuple
+                    |> SynExpr.tuple
                     |> SynExpr.applyFunction (SynExpr.createLongIdent [ "httpMessage" ; "Headers" ; "Add" ])
                     |> Do
                 )
@@ -587,7 +569,7 @@ module internal HttpClientGenerator =
                 |> List.map (fun (headerName, headerValue) ->
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "httpMessage" ; "Headers" ; "Add" ])
-                        (SynExpr.CreateParenedTuple [ headerName ; headerValue ])
+                        (SynExpr.tuple [ headerName ; headerValue ])
                     |> Do
                 )
 
@@ -613,8 +595,7 @@ module internal HttpClientGenerator =
                         SynExpr.awaitTask (
                             SynExpr.applyFunction
                                 (SynExpr.createLongIdent [ "client" ; "SendAsync" ])
-                                (SynExpr.CreateParenedTuple
-                                    [ SynExpr.createIdent "httpMessage" ; SynExpr.createIdent "ct" ])
+                                (SynExpr.tuple [ SynExpr.createIdent "httpMessage" ; SynExpr.createIdent "ct" ])
                         )
                     )
                 if info.EnsureSuccessHttpCode then
@@ -638,7 +619,7 @@ module internal HttpClientGenerator =
                     yield jsonNode
             ]
             |> SynExpr.createCompExpr "async" returnExpr
-            |> SynExpr.startAsTask (SynLongIdent.createI cancellationTokenArg)
+            |> SynExpr.startAsTask cancellationTokenArg
 
         SynBinding.SynBinding (
             None,
@@ -661,7 +642,7 @@ module internal HttpClientGenerator =
     let getHttpAttributes (attrs : SynAttribute list) : HttpAttribute list =
         attrs
         |> List.choose (fun attr ->
-            match attr.TypeName.AsString with
+            match SynLongIdent.toString attr.TypeName with
             | "RestEase.Query"
             | "RestEase.QueryAttribute"
             | "WoofWare.Myriad.Plugins.RestEase.Query"
@@ -702,7 +683,7 @@ module internal HttpClientGenerator =
     let extractBasePath (attrs : SynAttribute list) : SynExpr option =
         attrs
         |> List.tryPick (fun attr ->
-            match attr.TypeName.AsString with
+            match SynLongIdent.toString attr.TypeName with
             | "BasePath"
             | "RestEase.BasePath"
             | "WoofWare.Myriad.Plugins.RestEase.BasePath"
@@ -715,7 +696,7 @@ module internal HttpClientGenerator =
     let extractBaseAddress (attrs : SynAttribute list) : SynExpr option =
         attrs
         |> List.tryPick (fun attr ->
-            match attr.TypeName.AsString with
+            match SynLongIdent.toString attr.TypeName with
             | "BaseAddress"
             | "RestEase.BaseAddress"
             | "WoofWare.Myriad.Plugins.RestEase.BaseAddress"
@@ -947,7 +928,7 @@ module internal HttpClientGenerator =
         let createFunc =
             if spec.ExtensionMethods then
                 let binding =
-                    SynBinding.basic (SynLongIdent.createS "make") (headerArgs @ [ clientCreationArg ]) interfaceImpl
+                    SynBinding.basic [ Ident.create "make" ] (headerArgs @ [ clientCreationArg ]) interfaceImpl
                     |> SynBinding.withXmlDoc xmlDoc
                     |> SynBinding.withReturnAnnotation returnInfo
                     |> SynMemberDefn.staticMember
@@ -964,7 +945,7 @@ module internal HttpClientGenerator =
                 SynModuleDecl.Types ([ containingType ], range0)
 
             else
-                SynBinding.basic (SynLongIdent.createS "make") (headerArgs @ [ clientCreationArg ]) interfaceImpl
+                SynBinding.basic [ Ident.create "make" ] (headerArgs @ [ clientCreationArg ]) interfaceImpl
                 |> SynBinding.withXmlDoc xmlDoc
                 |> SynBinding.withReturnAnnotation returnInfo
                 |> List.singleton
@@ -980,10 +961,7 @@ module internal HttpClientGenerator =
             if spec.ExtensionMethods then
                 [ SynAttribute.autoOpen ]
             else
-                [
-                    SynAttribute.compilationRepresentation
-                    SynAttribute.RequireQualifiedAccess ()
-                ]
+                [ SynAttribute.compilationRepresentation ; SynAttribute.requireQualifiedAccess ]
 
         let modInfo =
             SynComponentInfo.create moduleName

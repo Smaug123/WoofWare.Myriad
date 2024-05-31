@@ -3,7 +3,6 @@ namespace WoofWare.Myriad.Plugins
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
 open Fantomas.FCS.Xml
-open Myriad.Core.AstExtensions
 
 type internal ParameterInfo =
     {
@@ -137,12 +136,12 @@ module internal AstHelper =
         | SynType.Paren (inner, _) ->
             let result, _ = convertSigParam inner
             result, true
-        | SynType.LongIdent ident ->
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
             {
                 Attributes = []
                 IsOptional = false
                 Id = None
-                Type = SynType.CreateLongIdent ident
+                Type = SynType.createLongIdent ident
             },
             false
         | SynType.SignatureParameter (attrs, opt, id, usedType, _) ->
@@ -191,7 +190,7 @@ module internal AstHelper =
 
     let toFun (inputs : SynType list) (ret : SynType) : SynType =
         (ret, List.rev inputs)
-        ||> List.fold (fun ty input -> SynType.CreateFun (input, ty))
+        ||> List.fold (fun ty input -> SynType.funFromDomain input ty)
 
     /// Returns the args (where these are tuple types if curried) in order, and the return type.
     let rec getType (ty : SynType) : (SynType * bool) list * SynType =
