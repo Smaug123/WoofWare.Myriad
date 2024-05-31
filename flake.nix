@@ -45,44 +45,19 @@
       packages = {
         fantomas = dotnetTool null "fantomas" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fantomas.version (builtins.head (builtins.filter (elem: elem.pname == "fantomas") ((import ./nix/deps.nix) {fetchNuGet = x: x;}))).sha256;
         fsharp-analyzers = dotnetTool "FSharp.Analyzers.Cli" "fsharp-analyzers" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fsharp-analyzers.version (builtins.head (builtins.filter (elem: elem.pname == "fsharp-analyzers") ((import ./nix/deps.nix) {fetchNuGet = x: x;}))).sha256;
-        fetchDeps = let
-          flags = [];
-          runtimeIds = ["win-x64"] ++ map (system: pkgs.dotnetCorePackages.systemToDotnetRid system) dotnet-sdk.meta.platforms;
-        in
-          pkgs.writeShellScriptBin "fetch-${pname}-deps" (builtins.readFile (pkgs.substituteAll {
-            src = ./nix/fetchDeps.sh;
-            pname = pname;
-            binPath = pkgs.lib.makeBinPath [pkgs.coreutils dotnet-sdk (pkgs.nuget-to-nix.override {inherit dotnet-sdk;})];
-            projectFiles = toString ["./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj" "./ConsumePlugin/ConsumePlugin.fsproj" "./WoofWare.Myriad.Plugins.Attributes/WoofWare.Myriad.Plugins.Attributes.fsproj"];
-            testProjectFiles = ["./WoofWare.Myriad.Plugins.Test/WoofWare.Myriad.Plugins.Test.fsproj" "./WoofWare.Myriad.Plugins.Attributes/Test/Woofware.Myriad.Plugins.Attributes.Test.fsproj"];
-            rids = pkgs.lib.concatStringsSep "\" \"" runtimeIds;
-            packages = dotnet-sdk.packages;
-            storeSrc = pkgs.srcOnly {
-              src = ./.;
-              pname = pname;
-              version = version;
-            };
-          }));
         default = pkgs.buildDotnetModule {
-          pname = pname;
+          inherit pname version dotnet-sdk dotnet-runtime;
           name = "WoofWare.Myriad.Plugins";
-          version = version;
           src = ./.;
           projectFile = "./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj";
-          nugetDeps = ./nix/deps.nix;
+          testProjectFile = "./WoofWare.Myriad.Plugins.Test/WoofWare.Myriad.Plugins.Test.fsproj";
+          disabledTests = ["WoofWare.Myriad.Plugins.Test.TestSurface.CheckVersionAgainstRemote"];
+          nugetDeps = ./nix/deps.nix; # `nix build .#default.passthru.fetch-deps && ./result` and put the result here
           doCheck = true;
-          dotnet-sdk = dotnet-sdk;
-          dotnet-runtime = dotnet-runtime;
         };
       };
       devShell = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          (with dotnetCorePackages;
-            combinePackages [
-              dotnet-sdk_8
-              dotnetPackages.Nuget
-            ])
-        ];
+        buildInputs = [dotnet-sdk];
         packages = [
           pkgs.alejandra
           pkgs.nodePackages.markdown-link-check
