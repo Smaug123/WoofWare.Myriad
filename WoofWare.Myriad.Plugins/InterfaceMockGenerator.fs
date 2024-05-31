@@ -48,9 +48,9 @@ module internal InterfaceMockGenerator =
 
         let failwithFun =
             SynExpr.createLongIdent [ "System" ; "NotImplementedException" ]
-            |> SynExpr.applyTo (SynExpr.CreateConstString "Unimplemented mock function")
+            |> SynExpr.applyTo (SynExpr.CreateConst "Unimplemented mock function")
             |> SynExpr.CreateParen
-            |> SynExpr.applyFunction (SynExpr.CreateIdentString "raise")
+            |> SynExpr.applyFunction (SynExpr.createIdent "raise")
             |> SynExpr.createLambda "_"
 
         let constructorReturnType =
@@ -77,21 +77,19 @@ module internal InterfaceMockGenerator =
                 if inherits.Contains KnownInheritance.IDisposable then
                     let unitFun = SynExpr.createLambda "_" SynExpr.CreateUnit
 
-                    [
-                        (SynLongIdent.CreateFromLongIdent [ Ident.Create "Dispose" ], true), Some unitFun
-                    ]
+                    [ (SynLongIdent.createS "Dispose", true), Some unitFun ]
                 else
                     []
 
             let nonExtras =
                 fields
-                |> List.map (fun field -> (SynLongIdent.CreateFromLongIdent [ getName field ], true), Some failwithFun)
+                |> List.map (fun field -> (SynLongIdent.createI (getName field), true), Some failwithFun)
 
             extras @ nonExtras
 
         let constructor =
             SynBinding.basic
-                (SynLongIdent.CreateString "Empty")
+                (SynLongIdent.createS "Empty")
                 (if interfaceType.Generics.IsNone then
                      []
                  else
@@ -184,7 +182,7 @@ module internal InterfaceMockGenerator =
 
                     let headPat =
                         SynPat.LongIdent (
-                            SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; memberInfo.Identifier ],
+                            SynLongIdent.create [ Ident.Create "this" ; memberInfo.Identifier ],
                             None,
                             None,
                             SynArgPats.Pats headArgs,
@@ -199,8 +197,8 @@ module internal InterfaceMockGenerator =
                                 args.Args
                                 |> List.mapi (fun j arg ->
                                     match arg.Type with
-                                    | UnitType -> SynExpr.CreateConst SynConst.Unit
-                                    | _ -> SynExpr.CreateIdentString $"arg_%i{i}_%i{j}"
+                                    | UnitType -> SynExpr.CreateConst ()
+                                    | _ -> SynExpr.createIdent $"arg_%i{i}_%i{j}"
                                 )
                                 |> SynExpr.CreateParenedTuple
                             )
@@ -240,8 +238,7 @@ module internal InterfaceMockGenerator =
                 )
 
             let interfaceName =
-                let baseName =
-                    SynType.CreateLongIdent (SynLongIdent.CreateFromLongIdent interfaceType.Name)
+                let baseName = SynType.CreateLongIdent (SynLongIdent.create interfaceType.Name)
 
                 match interfaceType.Generics with
                 | None -> baseName
@@ -281,7 +278,7 @@ module internal InterfaceMockGenerator =
                 | KnownInheritance.IDisposable ->
                     let binding =
                         SynBinding.basic
-                            (SynLongIdent.CreateFromLongIdent [ Ident.Create "this" ; Ident.Create "Dispose" ])
+                            (SynLongIdent.createS' [ "this" ; "Dispose" ])
                             [ SynPat.CreateConst SynConst.Unit ]
                             (SynExpr.CreateApp (SynExpr.createLongIdent [ "this" ; "Dispose" ], SynExpr.CreateUnit))
                         |> SynBinding.withReturnAnnotation (SynType.Unit ())
@@ -290,7 +287,7 @@ module internal InterfaceMockGenerator =
                     let mem = SynMemberDefn.Member (binding, range0)
 
                     SynMemberDefn.Interface (
-                        SynType.CreateLongIdent (SynLongIdent.Create [ "System" ; "IDisposable" ]),
+                        SynType.CreateLongIdent (SynLongIdent.createS' [ "System" ; "IDisposable" ]),
                         Some range0,
                         Some [ mem ],
                         range0
