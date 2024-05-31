@@ -893,8 +893,8 @@ module internal HttpClientGenerator =
         let headerArgs =
             properties
             |> List.map (fun (_, pi) ->
-                SynPat.CreateNamed (Ident.lowerFirstLetter pi.Identifier)
-                |> SynPat.annotateType (SynType.CreateFun (SynType.CreateLongIdent "unit", pi.Type))
+                SynPat.namedI (Ident.lowerFirstLetter pi.Identifier)
+                |> SynPat.annotateType (SynType.funFromDomain (SynType.named "unit") pi.Type)
             )
 
         let clientCreationArg =
