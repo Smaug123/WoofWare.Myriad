@@ -47,7 +47,7 @@ module internal RemoveOptionsGenerator =
         (fields : SynField list)
         =
         let fields : SynField list = fields |> List.map removeOption
-        let name = Ident.Create "Short"
+        let name = Ident.create "Short"
 
         let record =
             {
@@ -64,20 +64,10 @@ module internal RemoveOptionsGenerator =
         SynModuleDecl.Types ([ typeDecl ], range0)
 
     let createMaker (withOptionsType : LongIdent) (withoutOptionsType : LongIdent) (fields : SynFieldData<Ident> list) =
-        let xmlDoc = PreXmlDoc.Create " Remove the optional members of the input."
+        let xmlDoc = PreXmlDoc.create "Remove the optional members of the input."
 
-        let returnInfo =
-            SynBindingReturnInfo.Create (SynType.LongIdent (SynLongIdent.CreateFromLongIdent withOptionsType))
-
-        let inputArg = Ident.Create "input"
-        let functionName = Ident.Create "shorten"
-
-        let inputVal =
-            SynValData.SynValData (
-                None,
-                SynValInfo.SynValInfo ([ [ SynArgInfo.CreateId functionName ] ], SynArgInfo.Empty),
-                Some inputArg
-            )
+        let inputArg = Ident.create "input"
+        let functionName = Ident.create "shorten"
 
         let body =
             fields
@@ -93,8 +83,8 @@ module internal RemoveOptionsGenerator =
                 let body =
                     match fieldData.Type with
                     | OptionType _ ->
-                        SynExpr.CreateApp (
-                            SynExpr.CreateAppInfix (
+                        SynExpr.applyFunction
+                            (SynExpr.CreateAppInfix (
                                 SynExpr.LongIdent (
                                     false,
                                     SynLongIdent.SynLongIdent (
@@ -106,50 +96,29 @@ module internal RemoveOptionsGenerator =
                                     range0
                                 ),
                                 accessor
-                            ),
-                            SynExpr.CreateApp (
-                                SynExpr.CreateLongIdent (SynLongIdent.CreateString "Option.defaultWith"),
-                                SynExpr.CreateLongIdent (
-                                    SynLongIdent.CreateFromLongIdent (
-                                        withoutOptionsType
-                                        @ [ Ident.Create (sprintf "Default%s" fieldData.Ident.idText) ]
-                                    )
-                                )
-                            )
-                        )
+                            ))
+                            (SynExpr.applyFunction
+                                (SynExpr.createLongIdent [ "Option" ; "defaultWith" ])
+                                (SynExpr.createLongIdent' (
+                                    withoutOptionsType
+                                    @ [ Ident.create (sprintf "Default%s" fieldData.Ident.idText) ]
+                                )))
                     | _ -> accessor
 
-                (SynLongIdent.CreateFromLongIdent [ fieldData.Ident ], true), Some body
+                (SynLongIdent.createI fieldData.Ident, true), Some body
             )
             |> AstHelper.instantiateRecord
 
-        let pattern =
-            SynPat.LongIdent (
-                SynLongIdent.CreateFromLongIdent [ functionName ],
-                None,
-                None,
-                SynArgPats.Pats
-                    [
-                        SynPat.CreateTyped (
-                            SynPat.CreateNamed inputArg,
-                            SynType.LongIdent (SynLongIdent.CreateFromLongIdent withoutOptionsType)
-                        )
-                        |> SynPat.CreateParen
-                    ],
-                None,
-                range0
-            )
-
         let binding =
-            SynBinding.Let (
-                isInline = false,
-                isMutable = false,
-                xmldoc = xmlDoc,
-                returnInfo = returnInfo,
-                expr = body,
-                valData = inputVal,
-                pattern = pattern
-            )
+            SynBinding.basic
+                (SynLongIdent.createI functionName)
+                [
+                    SynPat.named inputArg.idText
+                    |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.create withoutOptionsType))
+                ]
+                body
+            |> SynBinding.withXmlDoc xmlDoc
+            |> SynBinding.withReturnAnnotation (SynType.LongIdent (SynLongIdent.create withOptionsType))
 
         SynModuleDecl.CreateLet [ binding ]
 
@@ -167,24 +136,21 @@ module internal RemoveOptionsGenerator =
             let decls =
                 [
                     createType (Some doc) accessibility typeParams fields
-                    createMaker [ Ident.Create "Short" ] recordId fieldData
-                ]
-
-            let attributes =
-                [
-                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-                    SynAttributeList.Create SynAttribute.compilationRepresentation
+                    createMaker [ Ident.create "Short" ] recordId fieldData
                 ]
 
             let xmlDoc =
                 recordId
                 |> Seq.map (fun i -> i.idText)
                 |> String.concat "."
-                |> sprintf " Module containing an option-truncated version of the %s type"
-                |> PreXmlDoc.Create
+                |> sprintf "Module containing an option-truncated version of the %s type"
+                |> PreXmlDoc.create
 
             let info =
-                SynComponentInfo.Create (recordId, attributes = attributes, xmldoc = xmlDoc)
+                SynComponentInfo.createLong recordId
+                |> SynComponentInfo.withDocString xmlDoc
+                |> SynComponentInfo.addAttributes [ SynAttribute.compilationRepresentation ]
+                |> SynComponentInfo.addAttributes [ SynAttribute.RequireQualifiedAccess () ]
 
             let mdl = SynModuleDecl.CreateNestedModule (info, decls)
 

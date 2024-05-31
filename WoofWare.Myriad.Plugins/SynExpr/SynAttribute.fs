@@ -8,11 +8,11 @@ open Myriad.Core
 module internal SynAttribute =
     let internal compilationRepresentation : SynAttribute =
         {
-            TypeName = SynLongIdent.CreateString "CompilationRepresentation"
+            TypeName = SynLongIdent.createS "CompilationRepresentation"
             ArgExpr =
                 SynExpr.CreateLongIdent (
                     false,
-                    SynLongIdent.Create [ "CompilationRepresentationFlags" ; "ModuleSuffix" ],
+                    SynLongIdent.createS' [ "CompilationRepresentationFlags" ; "ModuleSuffix" ],
                     None
                 )
                 |> SynExpr.CreateParen
@@ -23,7 +23,7 @@ module internal SynAttribute =
 
     let internal autoOpen : SynAttribute =
         {
-            TypeName = SynLongIdent.CreateString "AutoOpen"
+            TypeName = SynLongIdent.createS "AutoOpen"
             ArgExpr = SynExpr.CreateConst SynConst.Unit
             Target = None
             AppliesToGetterAndSetter = false

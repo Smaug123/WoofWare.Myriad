@@ -3,14 +3,18 @@ namespace WoofWare.Myriad.Plugins
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Myriad.Core
-open Myriad.Core.Ast
 open Fantomas.FCS.Text.Range
 
-type internal CompExprBinding =
-    | LetBang of varName : string * rhs : SynExpr
-    | Let of varName : string * rhs : SynExpr
-    | Use of varName : string * rhs : SynExpr
-    | Do of body : SynExpr
+[<AutoOpen>]
+module internal SynExprExtensions =
+    type SynExpr with
+        static member CreateConst (s : string) : SynExpr =
+            SynExpr.Const (SynConst.String (s, SynStringKind.Regular, range0), range0)
+
+        static member CreateConst () : SynExpr = SynExpr.Const (SynConst.Unit, range0)
+
+        static member CreateConst (i : int32) : SynExpr =
+            SynExpr.Const (SynConst.Int32 i, range0)
 
 [<RequireQualifiedAccess>]
 module internal SynExpr =
@@ -58,7 +62,7 @@ module internal SynExpr =
     /// try {body} with | {exc} as exc -> {handler}
     let pipeThroughTryWith (exc : SynPat) (handler : SynExpr) (body : SynExpr) : SynExpr =
         let clause =
-            SynMatchClause.Create (SynPat.As (exc, SynPat.CreateNamed (Ident.Create "exc"), range0), None, handler)
+            SynMatchClause.create (SynPat.As (exc, SynPat.named "exc", range0)) handler
 
         SynExpr.TryWith (
             body,
@@ -119,24 +123,24 @@ module internal SynExpr =
 
     /// {obj}.{meth}()
     let callMethod (meth : string) (obj : SynExpr) : SynExpr =
-        callMethodArg meth (SynExpr.CreateConst SynConst.Unit) obj
+        callMethodArg meth (SynExpr.CreateConst ()) obj
 
     let callGenericMethod (meth : string) (ty : LongIdent) (obj : SynExpr) : SynExpr =
         SynExpr.TypeApp (
-            SynExpr.DotGet (obj, range0, SynLongIdent.Create [ meth ], range0),
+            SynExpr.DotGet (obj, range0, SynLongIdent.createS meth, range0),
             range0,
-            [ SynType.LongIdent (SynLongIdent.CreateFromLongIdent ty) ],
+            [ SynType.LongIdent (SynLongIdent.create ty) ],
             [],
             Some range0,
             range0,
             range0
         )
-        |> applyTo (SynExpr.CreateConst SynConst.Unit)
+        |> applyTo (SynExpr.CreateConst ())
 
     /// {obj}.{meth}<ty>()
     let callGenericMethod' (meth : string) (ty : string) (obj : SynExpr) : SynExpr =
         SynExpr.TypeApp (
-            SynExpr.DotGet (obj, range0, SynLongIdent.Create [ meth ], range0),
+            SynExpr.DotGet (obj, range0, SynLongIdent.createS meth, range0),
             range0,
             [ SynType.CreateLongIdent ty ],
             [],
@@ -144,14 +148,14 @@ module internal SynExpr =
             range0,
             range0
         )
-        |> applyTo (SynExpr.CreateConst SynConst.Unit)
+        |> applyTo (SynExpr.CreateConst ())
 
     let index (property : SynExpr) (obj : SynExpr) : SynExpr =
         SynExpr.DotIndexedGet (obj, property, range0, range0)
 
     /// (fun {varName} -> {body})
     let createLambda (varName : string) (body : SynExpr) : SynExpr =
-        let parsedDataPat = [ SynPat.CreateNamed (Ident.Create varName) ]
+        let parsedDataPat = [ SynPat.named varName ]
 
         SynExpr.Lambda (
             false,
@@ -166,37 +170,65 @@ module internal SynExpr =
         )
         |> SynExpr.CreateParen
 
-    let reraise : SynExpr =
-        SynExpr.CreateIdent (Ident.Create "reraise")
-        |> applyTo (SynExpr.CreateConst SynConst.Unit)
+    let createThunk (body : SynExpr) : SynExpr =
+        let parsedDataPat = [ SynPat.Const (SynConst.Unit, range0) ]
+
+        SynExpr.Lambda (
+            false,
+            false,
+            SynSimplePats.Create [],
+            body,
+            Some (parsedDataPat, body),
+            range0,
+            {
+                ArrowRange = Some range0
+            }
+        )
+        |> SynExpr.CreateParen
 
     /// {body} |> fun a -> Async.StartAsTask (a, ?cancellationToken=ct)
     let startAsTask (ct : SynLongIdent) (body : SynExpr) =
         let lambda =
             [
-                SynExpr.CreateLongIdent (SynLongIdent.CreateString "a")
+                SynExpr.CreateLongIdent (SynLongIdent.createS "a")
                 equals
-                    (SynExpr.LongIdent (true, SynLongIdent.CreateString "cancellationToken", None, range0))
+                    (SynExpr.LongIdent (true, SynLongIdent.createS "cancellationToken", None, range0))
                     (SynExpr.CreateLongIdent ct)
             ]
             |> SynExpr.CreateParenedTuple
-            |> applyFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "StartAsTask" ]))
+            |> applyFunction (SynExpr.CreateLongIdent (SynLongIdent.createS' [ "Async" ; "StartAsTask" ]))
             |> createLambda "a"
 
         pipeThroughFunction lambda body
 
-    let createLongIdent (ident : string list) : SynExpr =
-        SynExpr.CreateLongIdent (SynLongIdent.Create ident)
+    let inline createIdent (s : string) : SynExpr = SynExpr.Ident (Ident (s, range0))
 
-    let createLongIdent' (ident : Ident list) : SynExpr =
-        SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent ident)
+    let inline createIdent' (i : Ident) : SynExpr = SynExpr.Ident i
 
-    let createLet (bindings : SynBinding list) (body : SynExpr) : SynExpr =
+    let inline createLongIdent (ident : string list) : SynExpr =
+        SynExpr.CreateLongIdent (SynLongIdent.createS' ident)
+
+    let inline createLongIdent' (ident : Ident list) : SynExpr =
+        SynExpr.CreateLongIdent (SynLongIdent.create ident)
+
+    let inline createLet (bindings : SynBinding list) (body : SynExpr) : SynExpr =
         SynExpr.LetOrUse (false, false, bindings, body, range0, SynExprLetOrUseTrivia.empty)
 
-    let createMatch (matchOn : SynExpr) (cases : SynMatchClause list) : SynExpr = SynExpr.CreateMatch (matchOn, cases)
+    let inline createMatch (matchOn : SynExpr) (cases : SynMatchClause list) : SynExpr =
+        SynExpr.CreateMatch (matchOn, cases)
 
     let typeAnnotate (ty : SynType) (expr : SynExpr) : SynExpr = SynExpr.CreateTyped (expr, ty)
+
+    let inline paren (e : SynExpr) : SynExpr =
+        SynExpr.Paren (e, range0, Some range0, range0)
+
+    let inline createNew (ty : SynType) (args : SynExpr) : SynExpr =
+        SynExpr.New (false, ty, paren args, range0)
+
+    let inline createWhile (cond : SynExpr) (body : SynExpr) : SynExpr =
+        SynExpr.While (DebugPointAtWhile.Yes range0, cond, body, range0)
+
+    let reraise : SynExpr = createIdent "reraise" |> applyTo (SynExpr.CreateConst ())
 
     /// {compExpr} { {lets} ; return {ret} }
     let createCompExpr (compExpr : string) (retBody : SynExpr) (lets : CompExprBinding list) : SynExpr =
@@ -211,7 +243,7 @@ module internal SynExpr =
                         DebugPointAtBinding.Yes range0,
                         false,
                         true,
-                        SynPat.CreateNamed (Ident.Create lhs),
+                        SynPat.named lhs,
                         rhs,
                         [],
                         state,
@@ -220,13 +252,12 @@ module internal SynExpr =
                             EqualsRange = Some range0
                         }
                     )
-                | Let (lhs, rhs) ->
-                    createLet [ SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create lhs), expr = rhs) ] state
+                | Let (lhs, rhs) -> createLet [ SynBinding.basic (SynLongIdent.createS lhs) [] rhs ] state
                 | Use (lhs, rhs) ->
                     SynExpr.LetOrUse (
                         false,
                         true,
-                        [ SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create lhs), expr = rhs) ],
+                        [ SynBinding.basic (SynLongIdent.createS lhs) [] rhs ],
                         state,
                         range0,
                         {
@@ -243,17 +274,14 @@ module internal SynExpr =
 
     /// {expr} |> Async.AwaitTask
     let awaitTask (expr : SynExpr) : SynExpr =
-        expr
-        |> pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Async" ; "AwaitTask" ]))
+        expr |> pipeThroughFunction (createLongIdent [ "Async" ; "AwaitTask" ])
 
     /// {ident}.ToString ()
     /// with special casing for some types like DateTime
     let toString (ty : SynType) (ident : SynExpr) =
         match ty with
-        | DateOnly -> ident |> callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-dd")
-        | DateTime ->
-            ident
-            |> callMethodArg "ToString" (SynExpr.CreateConstString "yyyy-MM-ddTHH:mm:ss")
+        | DateOnly -> ident |> callMethodArg "ToString" (SynExpr.CreateConst "yyyy-MM-dd")
+        | DateTime -> ident |> callMethodArg "ToString" (SynExpr.CreateConst "yyyy-MM-ddTHH:mm:ss")
         | _ -> callMethod "ToString" ident
 
     let upcast' (ty : SynType) (e : SynExpr) = SynExpr.Upcast (e, ty, range0)
@@ -275,8 +303,7 @@ module internal SynExpr =
         )
 
     /// {ident} - {n}
-    let minusN (ident : SynLongIdent) (n : int) : SynExpr =
-        minus ident (SynExpr.CreateConst (SynConst.Int32 n))
+    let minusN (ident : SynLongIdent) (n : int) : SynExpr = minus ident (SynExpr.CreateConst n)
 
     /// {y} > {x}
     let greaterThan (x : SynExpr) (y : SynExpr) : SynExpr =

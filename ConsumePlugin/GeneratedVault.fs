@@ -8,8 +8,7 @@
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JwtVaultAuthResponse type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JwtVaultAuthResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtVaultAuthResponse =
@@ -164,8 +163,7 @@ module JwtVaultAuthResponse =
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JwtVaultResponse type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JwtVaultResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtVaultResponse =
@@ -239,8 +237,7 @@ module JwtVaultResponse =
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JwtSecretResponse type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JwtSecretResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtSecretResponse =
@@ -455,8 +452,7 @@ open System.Threading.Tasks
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module VaultClient =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IVaultClient =
@@ -553,8 +549,7 @@ open System.Threading.Tasks
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module VaultClientNonExtensionMethod =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IVaultClientNonExtensionMethod =

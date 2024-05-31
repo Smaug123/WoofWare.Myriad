@@ -3,12 +3,14 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Text
 open Fantomas.FCS.Syntax
-open Myriad.Core
+open Fantomas.FCS.Text.Range
 
 [<RequireQualifiedAccess>]
 module internal Ident =
+    let inline create (s : string) = Ident (s, range0)
+
     let lowerFirstLetter (x : Ident) : Ident =
         let result = StringBuilder x.idText.Length
         result.Append (Char.ToLowerInvariant x.idText.[0]) |> ignore
         result.Append x.idText.[1..] |> ignore
-        Ident.Create ((result : StringBuilder).ToString ())
+        create ((result : StringBuilder).ToString ())

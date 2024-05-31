@@ -8,8 +8,7 @@
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the InnerType type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module InnerType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerType =
@@ -31,8 +30,7 @@ module InnerType =
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JsonRecordType type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JsonRecordType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordType =

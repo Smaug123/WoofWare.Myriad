@@ -30,30 +30,23 @@ module internal JsonParseGenerator =
     /// (match {indexed} with | null -> raise (System.Collections.Generic.KeyNotFoundException ()) | v -> v)
     let assertNotNull (propertyName : SynExpr) (indexed : SynExpr) =
         let raiseExpr =
-            SynExpr.CreateApp (
-                SynExpr.CreateApp (
-                    SynExpr.CreateIdentString "sprintf",
-                    SynExpr.CreateConstString "Required key '%s' not found on JSON object"
-                ),
-                SynExpr.CreateParen propertyName
-            )
-            |> SynExpr.CreateParen
+            SynExpr.applyFunction
+                (SynExpr.createIdent "sprintf")
+                (SynExpr.CreateConst "Required key '%s' not found on JSON object")
+            |> SynExpr.applyTo (SynExpr.paren propertyName)
+            |> SynExpr.paren
             |> SynExpr.applyFunction (
-                SynExpr.CreateLongIdent (
-                    SynLongIdent.Create [ "System" ; "Collections" ; "Generic" ; "KeyNotFoundException" ]
-                )
+                SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "KeyNotFoundException" ]
             )
-            |> SynExpr.CreateParen
-            |> SynExpr.applyFunction (SynExpr.CreateIdentString "raise")
+            |> SynExpr.paren
+            |> SynExpr.applyFunction (SynExpr.createIdent "raise")
 
-        SynExpr.CreateMatch (
-            indexed,
-            [
-                SynMatchClause.Create (SynPat.CreateNull, None, raiseExpr)
-                SynMatchClause.Create (SynPat.CreateNamed (Ident.Create "v"), None, SynExpr.CreateIdentString "v")
-            ]
-        )
-        |> SynExpr.CreateParen
+        [
+            SynMatchClause.create SynPat.CreateNull raiseExpr
+            SynMatchClause.create (SynPat.named "v") (SynExpr.createIdent "v")
+        ]
+        |> SynExpr.createMatch indexed
+        |> SynExpr.paren
 
     /// {node}.AsValue().GetValue<{typeName}> ()
     /// If `propertyName` is Some, uses `assertNotNull {node}` instead of `{node}`.
@@ -81,10 +74,8 @@ module internal JsonParseGenerator =
 
     /// {type}.jsonParse {node}
     let typeJsonParse (typeName : LongIdent) (node : SynExpr) : SynExpr =
-        SynExpr.CreateApp (
-            SynExpr.CreateLongIdent (SynLongIdent.CreateFromLongIdent (typeName @ [ Ident.Create "jsonParse" ])),
-            node
-        )
+        node
+        |> SynExpr.applyFunction (SynExpr.createLongIdent' (typeName @ [ Ident.create "jsonParse" ]))
 
     /// collectionType is e.g. "List"; we'll be calling `ofSeq` on it.
     /// body is the body of a lambda which takes a parameter `elt`.
@@ -103,51 +94,40 @@ module internal JsonParseGenerator =
         | Some propertyName -> assertNotNull propertyName node
         |> SynExpr.callMethod "AsArray"
         |> SynExpr.pipeThroughFunction (
-            SynExpr.CreateApp (
-                SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                SynExpr.createLambda "elt" body
-            )
+            SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ]) (SynExpr.createLambda "elt" body)
         )
-        |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ collectionType ; "ofSeq" ]))
+        |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ collectionType ; "ofSeq" ])
 
     /// match {node} with | null -> None | v -> {body} |> Some
     /// Use the variable `v` to get access to the `Some`.
     let createParseLineOption (node : SynExpr) (body : SynExpr) : SynExpr =
-        let body = SynExpr.pipeThroughFunction (SynExpr.CreateIdentString "Some") body
+        let body = SynExpr.pipeThroughFunction (SynExpr.createIdent "Some") body
 
-        SynExpr.CreateMatch (
-            node,
-            [
-                SynMatchClause.Create (SynPat.CreateNull, None, SynExpr.CreateIdent (Ident.Create "None"))
-                SynMatchClause.Create (SynPat.CreateNamed (Ident.Create "v"), None, body)
-            ]
-        )
+        [
+            SynMatchClause.create SynPat.CreateNull (SynExpr.createIdent "None")
+            SynMatchClause.create (SynPat.named "v") body
+        ]
+        |> SynExpr.createMatch node
 
     /// Given e.g. "float", returns "System.Double.Parse"
     let parseFunction (typeName : string) : LongIdent =
         let qualified =
-            match AstHelper.qualifyPrimitiveType typeName with
+            match Primitives.qualifyType typeName with
             | Some x -> x
             | None -> failwith $"Could not recognise type %s{typeName} as a primitive."
 
-        List.append qualified [ Ident.Create "Parse" ]
+        List.append qualified [ Ident.create "Parse" ]
 
     /// fun kvp -> let key = {key(kvp)} in let value = {value(kvp)} in (key, value))
     /// The inputs will be fed with appropriate SynExprs to apply them to the `kvp.Key` and `kvp.Value` args.
     let dictionaryMapper (key : SynExpr -> SynExpr) (value : SynExpr -> SynExpr) : SynExpr =
-        let keyArg = SynExpr.createLongIdent [ "kvp" ; "Key" ] |> SynExpr.CreateParen
+        let keyArg = SynExpr.createLongIdent [ "kvp" ; "Key" ] |> SynExpr.paren
 
-        let valueArg = SynExpr.createLongIdent [ "kvp" ; "Value" ] |> SynExpr.CreateParen
+        let valueArg = SynExpr.createLongIdent [ "kvp" ; "Value" ] |> SynExpr.paren
 
-        SynExpr.CreateTuple [ SynExpr.CreateIdentString "key" ; SynExpr.CreateIdentString "value" ]
-        |> SynExpr.createLet
-            [
-                SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create "value"), expr = value valueArg)
-            ]
-        |> SynExpr.createLet
-            [
-                SynBinding.Let (pattern = SynPat.CreateNamed (Ident.Create "key"), expr = key keyArg)
-            ]
+        SynExpr.CreateTuple [ SynExpr.createIdent "key" ; SynExpr.createIdent "value" ]
+        |> SynExpr.createLet [ SynBinding.Let (pattern = SynPat.named "value", expr = value valueArg) ]
+        |> SynExpr.createLet [ SynBinding.Let (pattern = SynPat.named "key", expr = key keyArg) ]
         |> SynExpr.createLambda "kvp"
 
     /// A conforming JSON object has only strings as keys. But it would be reasonable to allow the user
@@ -157,7 +137,7 @@ module internal JsonParseGenerator =
         | String -> key
         | Uri ->
             key
-            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Uri" ]))
+            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Uri" ])
         | _ ->
             failwithf
                 $"Unable to parse the key type %+A{desiredType} of a JSON object. Keys are strings, and this plugin does not know how to convert to that from a string."
@@ -197,15 +177,8 @@ module internal JsonParseGenerator =
             | None -> basic
             | Some option ->
                 let cond =
-                    SynExpr.DotGet (
-                        SynExpr.CreateIdentString "exc",
-                        range0,
-                        SynLongIdent.CreateString "Message",
-                        range0
-                    )
-                    |> SynExpr.callMethodArg
-                        "Contains"
-                        (SynExpr.CreateConst (SynConst.CreateString "cannot be converted to"))
+                    SynExpr.DotGet (SynExpr.createIdent "exc", range0, SynLongIdent.createS "Message", range0)
+                    |> SynExpr.callMethodArg "Contains" (SynExpr.CreateConst "cannot be converted to")
 
                 let handler =
                     asValueGetValue propertyName "string" node
@@ -213,91 +186,82 @@ module internal JsonParseGenerator =
                     |> SynExpr.ifThenElse
                         (SynExpr.equals
                             option
-                            (SynExpr.CreateLongIdent (
-                                SynLongIdent.Create
-                                    [
-                                        "System"
-                                        "Text"
-                                        "Json"
-                                        "Serialization"
-                                        "JsonNumberHandling"
-                                        "AllowReadingFromString"
-                                    ]
-                            )))
+                            (SynExpr.createLongIdent
+                                [
+                                    "System"
+                                    "Text"
+                                    "Json"
+                                    "Serialization"
+                                    "JsonNumberHandling"
+                                    "AllowReadingFromString"
+                                ]))
                         SynExpr.reraise
                     |> SynExpr.ifThenElse cond SynExpr.reraise
 
                 basic
                 |> SynExpr.pipeThroughTryWith
                     (SynPat.IsInst (
-                        SynType.LongIdent (SynLongIdent.Create [ "System" ; "InvalidOperationException" ]),
+                        SynType.LongIdent (SynLongIdent.createS' [ "System" ; "InvalidOperationException" ]),
                         range0
                     ))
                     handler
         | PrimitiveType typeName -> asValueGetValueIdent propertyName typeName node
         | OptionType ty ->
-            parseNode None options ty (SynExpr.CreateIdentString "v")
+            parseNode None options ty (SynExpr.createIdent "v")
             |> createParseLineOption node
         | ListType ty ->
-            parseNode None options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
+            parseNode None options ty (SynExpr.createIdent "elt")
             |> asArrayMapped propertyName "List" node
         | ArrayType ty ->
-            parseNode None options ty (SynExpr.CreateLongIdent (SynLongIdent.CreateString "elt"))
+            parseNode None options ty (SynExpr.createIdent "elt")
             |> asArrayMapped propertyName "Array" node
         | IDictionaryType (keyType, valueType) ->
             node
             |> asObject propertyName
             |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
-                )
+                SynExpr.applyFunction
+                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                    (dictionaryMapper (parseKeyString keyType) (parseNode None options valueType))
             )
-            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "dict" ]))
+            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "dict")
         | DictionaryType (keyType, valueType) ->
             node
             |> asObject propertyName
             |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
-                )
+                SynExpr.applyFunction
+                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                    (dictionaryMapper (parseKeyString keyType) (parseNode None options valueType))
             )
             |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    SynExpr.CreateLongIdent (
-                        SynLongIdent.Create [ "System" ; "Collections" ; "Generic" ; "KeyValuePair" ]
-                    )
-                )
+                SynExpr.applyFunction
+                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                    (SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "KeyValuePair" ])
             )
             |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateLongIdent (SynLongIdent.Create [ "System" ; "Collections" ; "Generic" ; "Dictionary" ])
+                SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "Dictionary" ]
             )
         | IReadOnlyDictionaryType (keyType, valueType) ->
             node
             |> asObject propertyName
             |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
-                )
+                SynExpr.applyFunction
+                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                    (dictionaryMapper (parseKeyString keyType) (parseNode None options valueType))
             )
-            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "readOnlyDict" ]))
+            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "readOnlyDict")
         | MapType (keyType, valueType) ->
             node
             |> asObject propertyName
             |> SynExpr.pipeThroughFunction (
-                SynExpr.CreateApp (
-                    SynExpr.CreateLongIdent (SynLongIdent.Create [ "Seq" ; "map" ]),
-                    dictionaryMapper (parseKeyString keyType) (parseNode None options valueType)
-                )
+                SynExpr.applyFunction
+                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                    (dictionaryMapper (parseKeyString keyType) (parseNode None options valueType))
             )
-            |> SynExpr.pipeThroughFunction (SynExpr.CreateLongIdent (SynLongIdent.Create [ "Map" ; "ofSeq" ]))
+            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Map" ; "ofSeq" ])
         | BigInt ->
             node
             |> SynExpr.callMethod "ToJsonString"
-            |> SynExpr.CreateParen
+            |> SynExpr.paren
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Numerics" ; "BigInteger" ; "Parse" ])
         | _ ->
             // Let's just hope that we've also got our own type annotation!
@@ -314,7 +278,7 @@ module internal JsonParseGenerator =
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
     /// The result of this function is the body of a let-binding (not including the LHS of that let-binding).
     let createParseRhs (options : JsonParseOption) (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
-        let objectToParse = SynExpr.CreateIdentString "node" |> SynExpr.index propertyName
+        let objectToParse = SynExpr.createIdent "node" |> SynExpr.index propertyName
         parseNode (Some propertyName) options fieldType objectToParse
 
     let isJsonNumberHandling (literal : LongIdent) : bool =
@@ -331,45 +295,36 @@ module internal JsonParseGenerator =
     /// That is, we give you access to a `JsonNode` called `node`,
     /// and you must return a `typeName`.
     let scaffolding (spec : JsonParseOutputSpec) (typeName : LongIdent) (functionBody : SynExpr) : SynModuleDecl =
-        let xmlDoc = PreXmlDoc.Create " Parse from a JSON node."
+        let xmlDoc = PreXmlDoc.create "Parse from a JSON node."
 
-        let returnInfo = SynType.LongIdent (SynLongIdent.CreateFromLongIdent typeName)
+        let returnInfo = SynType.createLongIdent typeName
 
-        let inputArg = Ident.Create "node"
-        let functionName = Ident.Create "jsonParse"
+        let inputArg = "node"
+        let functionName = Ident.create "jsonParse"
 
         let arg =
-            SynPat.CreateNamed inputArg
-            |> SynPat.annotateType (
-                SynType.LongIdent (SynLongIdent.Create [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
-            )
+            SynPat.named inputArg
+            |> SynPat.annotateType (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
 
         if spec.ExtensionMethods then
             let binding =
-                SynBinding.basic (SynLongIdent.CreateFromLongIdent [ functionName ]) [ arg ] functionBody
-                |> SynBinding.makeStaticMember
+                SynBinding.basic (SynLongIdent.createI functionName) [ arg ] functionBody
                 |> SynBinding.withXmlDoc xmlDoc
                 |> SynBinding.withReturnAnnotation returnInfo
+                |> SynMemberDefn.staticMember
 
-            let mem = SynMemberDefn.Member (binding, range0)
+            let componentInfo =
+                SynComponentInfo.createLong typeName
+                |> SynComponentInfo.withDocString (PreXmlDoc.Create " Extension methods for JSON parsing")
 
             let containingType =
-                SynTypeDefn.SynTypeDefn (
-                    SynComponentInfo.Create (typeName, xmldoc = PreXmlDoc.Create " Extension methods for JSON parsing"),
-                    SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Augmentation range0, [], range0),
-                    [ mem ],
-                    None,
-                    range0,
-                    {
-                        LeadingKeyword = SynTypeDefnLeadingKeyword.Type range0
-                        EqualsRange = None
-                        WithKeyword = None
-                    }
-                )
+                SynTypeDefnRepr.augmentation ()
+                |> SynTypeDefn.create componentInfo
+                |> SynTypeDefn.withMemberDefns [ binding ]
 
             SynModuleDecl.Types ([ containingType ], range0)
         else
-            SynBinding.basic (SynLongIdent.CreateFromLongIdent [ functionName ]) [ arg ] functionBody
+            SynBinding.basic (SynLongIdent.createI functionName) [ arg ] functionBody
             |> SynBinding.withXmlDoc xmlDoc
             |> SynBinding.withReturnAnnotation returnInfo
             |> List.singleton
@@ -425,18 +380,17 @@ module internal JsonParseGenerator =
                         if fieldData.Ident.idText.Length > 1 then
                             sb.Append (fieldData.Ident.idText.Substring 1) |> ignore<StringBuilder>
 
-                        sb.ToString () |> SynConst.CreateString |> SynExpr.CreateConst
+                        sb.ToString () |> SynExpr.CreateConst
                     | Some name -> name.ArgExpr
 
                 createParseRhs options propertyName fieldData.Type
-                |> SynBinding.basic (SynLongIdent.CreateString $"arg_%i{i}") []
+                |> SynBinding.basic (SynLongIdent.createS $"arg_%i{i}") []
             )
 
         let finalConstruction =
             fields
             |> List.mapi (fun i fieldData ->
-                (SynLongIdent.CreateFromLongIdent [ fieldData.Ident ], true),
-                Some (SynExpr.CreateLongIdent (SynLongIdent.CreateString $"arg_%i{i}"))
+                (SynLongIdent.createI fieldData.Ident, true), Some (SynExpr.createIdent $"arg_%i{i}")
             )
             |> AstHelper.instantiateRecord
 
@@ -462,9 +416,9 @@ module internal JsonParseGenerator =
                     |> SynExpr.applyFunction (SynExpr.createLongIdent' (typeName @ [ case.Ident ]))
                     |> SynExpr.createLet
                         [
-                            SynExpr.index (SynExpr.CreateConstString "data") (SynExpr.CreateIdentString "node")
-                            |> assertNotNull (SynExpr.CreateConstString "data")
-                            |> SynBinding.basic (SynLongIdent.CreateString "node") []
+                            SynExpr.index (SynExpr.CreateConst "data") (SynExpr.createIdent "node")
+                            |> assertNotNull (SynExpr.CreateConst "data")
+                            |> SynBinding.basic (SynLongIdent.createS "node") []
                         ]
 
             match propertyName with
@@ -481,30 +435,19 @@ module internal JsonParseGenerator =
                     }
                 )
             | _ ->
-                SynMatchClause.SynMatchClause (
-                    SynPat.CreateNamed (Ident.Create "x"),
-                    Some (SynExpr.equals (SynExpr.CreateIdentString "x") propertyName),
-                    body,
-                    range0,
-                    DebugPointAtTarget.Yes,
-                    {
-                        ArrowRange = Some range0
-                        BarRange = Some range0
-                    }
-                )
+                SynMatchClause.create (SynPat.named "x") body
+                |> SynMatchClause.withWhere (SynExpr.equals (SynExpr.createIdent "x") propertyName)
         )
         |> fun l ->
             l
             @ [
                 let fail =
-                    SynExpr.plus
-                        (SynExpr.CreateConstString "Unrecognised 'type' field value: ")
-                        (SynExpr.CreateIdentString "v")
-                    |> SynExpr.CreateParen
-                    |> SynExpr.applyFunction (SynExpr.CreateIdentString "failwith")
+                    SynExpr.plus (SynExpr.CreateConst "Unrecognised 'type' field value: ") (SynExpr.createIdent "v")
+                    |> SynExpr.paren
+                    |> SynExpr.applyFunction (SynExpr.createIdent "failwith")
 
                 SynMatchClause.SynMatchClause (
-                    SynPat.CreateNamed (Ident.Create "v"),
+                    SynPat.named "v",
                     None,
                     fail,
                     range0,
@@ -515,34 +458,21 @@ module internal JsonParseGenerator =
                     }
                 )
             ]
-        |> SynExpr.createMatch (SynExpr.CreateIdentString "ty")
+        |> SynExpr.createMatch (SynExpr.createIdent "ty")
         |> SynExpr.createLet
             [
-                let property = SynExpr.CreateConstString "type"
+                let property = SynExpr.CreateConst "type"
 
-                SynExpr.CreateIdentString "node"
+                SynExpr.createIdent "node"
                 |> SynExpr.index property
                 |> assertNotNull property
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.createLambda
                         "v"
-                        (SynExpr.callGenericMethod "GetValue" [ Ident.Create "string" ] (SynExpr.CreateIdentString "v"))
+                        (SynExpr.callGenericMethod "GetValue" [ Ident.create "string" ] (SynExpr.createIdent "v"))
                 )
-                |> SynBinding.basic (SynLongIdent.CreateString "ty") []
+                |> SynBinding.basic (SynLongIdent.createS "ty") []
             ]
-    (*
-            let ty =
-                match node.["type"] with
-                | null -> raise (System.Collections.Generic.KeyNotFoundException ())
-                | v -> v.GetValue<string> ()
-            match ty with
-            | "emptyCase" -> FirstDu.EmptyCase
-            | "case1" ->
-                FirstDu.Case1
-            | "case2" -> FirstDu.Case2
-            | _ -> failwithf "Unrecognised case name: %s" ty
-            *)
-
 
     let createModule (namespaceId : LongIdent) (spec : JsonParseOutputSpec) (typeDefn : SynTypeDefn) =
         let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
@@ -553,11 +483,11 @@ module internal JsonParseGenerator =
 
         let attributes =
             if spec.ExtensionMethods then
-                [ SynAttributeList.Create SynAttribute.autoOpen ]
+                [ SynAttribute.autoOpen ]
             else
                 [
-                    SynAttributeList.Create (SynAttribute.RequireQualifiedAccess ())
-                    SynAttributeList.Create SynAttribute.compilationRepresentation
+                    SynAttribute.RequireQualifiedAccess ()
+                    SynAttribute.compilationRepresentation
                 ]
 
         let xmlDoc =
@@ -581,14 +511,16 @@ module internal JsonParseGenerator =
                         List.last ident
                         |> fun i -> i.idText
                         |> fun s -> s + "JsonParseExtension"
-                        |> Ident.Create
+                        |> Ident.create
 
                     List.take (List.length ident - 1) ident @ [ expanded ]
             else
                 ident
 
         let info =
-            SynComponentInfo.Create (moduleName, attributes = attributes, xmldoc = xmlDoc)
+            SynComponentInfo.createLong moduleName
+            |> SynComponentInfo.withDocString xmlDoc
+            |> SynComponentInfo.addAttributes attributes
 
         let decl =
             match synTypeDefnRepr with

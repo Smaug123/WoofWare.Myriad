@@ -25,17 +25,26 @@
 
   <ItemGroup>
     <Compile Include="List.fs"/>
-    <Compile Include="Ident.fs" />
-    <Compile Include="AstHelper.fs"/>
+    <Compile Include="Primitives.fs" />
+    <Compile Include="SynExpr\PreXmlDoc.fs" />
+    <Compile Include="SynExpr\Ident.fs" />
+    <Compile Include="SynExpr\SynLongIdent.fs" />
     <Compile Include="SynExpr\SynExprLetOrUseTrivia.fs" />
     <Compile Include="SynExpr\SynBinding.fs" />
-    <Compile Include="SynExpr\SynExpr.fs" />
     <Compile Include="SynExpr\SynType.fs" />
+    <Compile Include="SynExpr\SynMatchClause.fs" />
+    <Compile Include="SynExpr\SynPat.fs" />
+    <Compile Include="SynExpr\CompExpr.fs" />
+    <Compile Include="SynExpr\SynExpr.fs" />
     <Compile Include="SynExpr\SynAttribute.fs" />
     <Compile Include="SynExpr\SynArgPats.fs" />
     <Compile Include="SynExpr\SynField.fs" />
     <Compile Include="SynExpr\SynUnionCase.fs" />
-    <Compile Include="SynExpr\SynPat.fs" />
+    <Compile Include="SynExpr\SynTypeDefnRepr.fs" />
+    <Compile Include="SynExpr\SynTypeDefn.fs" />
+    <Compile Include="SynExpr\SynComponentInfo.fs" />
+    <Compile Include="SynExpr\SynMemberDefn.fs" />
+    <Compile Include="AstHelper.fs" />
     <Compile Include="RemoveOptionsGenerator.fs"/>
     <Compile Include="InterfaceMockGenerator.fs"/>
     <Compile Include="JsonSerializeGenerator.fs"/>

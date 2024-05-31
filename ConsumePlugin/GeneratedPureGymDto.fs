@@ -41,8 +41,7 @@ module MemberJsonSerializeExtension =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymOpeningHours type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymOpeningHours =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymOpeningHours =
@@ -78,8 +77,7 @@ module GymOpeningHours =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymAccessOptions type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymAccessOptions =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAccessOptions =
@@ -114,8 +112,7 @@ module GymAccessOptions =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymLocation type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymLocation =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymLocation =
@@ -192,8 +189,7 @@ module GymLocation =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymAddress type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymAddress =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAddress =
@@ -259,8 +255,7 @@ module GymAddress =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the Gym type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Gym =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Gym =
@@ -620,8 +615,7 @@ module MemberJsonParseExtension =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the GymAttendance type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module GymAttendance =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymAttendance =
@@ -743,8 +737,7 @@ module GymAttendance =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the MemberActivityDto type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module MemberActivityDto =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : MemberActivityDto =
@@ -832,8 +825,7 @@ module MemberActivityDto =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the SessionsAggregate type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module SessionsAggregate =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsAggregate =
@@ -881,8 +873,7 @@ module SessionsAggregate =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the VisitGym type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module VisitGym =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : VisitGym =
@@ -930,8 +921,7 @@ module VisitGym =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the Visit type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Visit =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Visit =
@@ -993,8 +983,7 @@ module Visit =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the SessionsSummary type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module SessionsSummary =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : SessionsSummary =
@@ -1029,8 +1018,7 @@ module SessionsSummary =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the Sessions type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Sessions =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : Sessions =
@@ -1066,8 +1054,7 @@ module Sessions =
 namespace PureGym
 
 /// Module containing JSON parsing methods for the UriThing type
-[<RequireQualifiedAccess>]
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module UriThing =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : UriThing =
