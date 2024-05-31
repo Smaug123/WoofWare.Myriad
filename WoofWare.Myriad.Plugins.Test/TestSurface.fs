@@ -12,7 +12,8 @@ module TestSurface =
     let ``Ensure API surface has not been modified`` () = ApiSurface.assertIdentical assembly
 
     [<Test>]
-    let ``Check version against remote`` () =
+    // https://github.com/nunit/nunit3-vs-adapter/issues/876
+    let CheckVersionAgainstRemote () =
         MonotonicVersion.validate assembly "WoofWare.Myriad.Plugins"
 
     [<Test ; Explicit>]
