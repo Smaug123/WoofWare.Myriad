@@ -44,6 +44,9 @@ module internal SynType =
 
     let inline var (ty : SynTypar) : SynType = SynType.Var (ty, range0)
 
+    let unit : SynType = named "unit"
+    let int : SynType = named "int"
+
 [<AutoOpen>]
 module internal SynTypePatterns =
     let (|OptionType|_|) (fieldType : SynType) =

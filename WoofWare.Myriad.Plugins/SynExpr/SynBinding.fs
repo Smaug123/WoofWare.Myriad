@@ -36,7 +36,7 @@ module internal SynBinding =
                     SynLeadingKeyword.Let range0
         }
 
-    let basic (name : SynLongIdent) (args : SynPat list) (body : SynExpr) : SynBinding =
+    let basic (name : LongIdent) (args : SynPat list) (body : SynExpr) : SynBinding =
         let valInfo : SynValInfo =
             args
             |> List.map (fun pat -> [ SynArgInfo.SynArgInfo (SynAttributes.Empty, false, getName pat) ])
@@ -50,7 +50,7 @@ module internal SynBinding =
             [],
             PreXmlDoc.Empty,
             SynValData.SynValData (None, valInfo, None),
-            SynPat.LongIdent (name, None, None, SynArgPats.Pats args, None, range0),
+            SynPat.identWithArgs name (SynArgPats.Pats args),
             None,
             body,
             range0,

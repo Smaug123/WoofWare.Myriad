@@ -49,13 +49,13 @@ module internal InterfaceMockGenerator =
         let failwithFun =
             SynExpr.createLongIdent [ "System" ; "NotImplementedException" ]
             |> SynExpr.applyTo (SynExpr.CreateConst "Unimplemented mock function")
-            |> SynExpr.CreateParen
+            |> SynExpr.paren
             |> SynExpr.applyFunction (SynExpr.createIdent "raise")
             |> SynExpr.createLambda "_"
 
         let constructorReturnType =
             match interfaceType.Generics with
-            | None -> SynType.CreateLongIdent name
+            | None -> SynType.createLongIdent' [ name ]
             | Some generics ->
 
             let generics =
@@ -67,7 +67,7 @@ module internal InterfaceMockGenerator =
         let constructorFields =
             let extras =
                 if inherits.Contains KnownInheritance.IDisposable then
-                    let unitFun = SynExpr.createLambda "_" SynExpr.CreateUnit
+                    let unitFun = SynExpr.createThunk (SynExpr.CreateConst ())
 
                     [ (SynLongIdent.createS "Dispose", true), Some unitFun ]
                 else
@@ -81,14 +81,14 @@ module internal InterfaceMockGenerator =
 
         let constructor =
             SynBinding.basic
-                (SynLongIdent.createS "Empty")
+                [ Ident.create "Empty" ]
                 (if interfaceType.Generics.IsNone then
                      []
                  else
-                     [ SynPat.CreateConst SynConst.Unit ])
+                     [ SynPat.unit ])
                 (AstHelper.instantiateRecord constructorFields)
             |> SynBinding.makeStaticMember
-            |> SynBinding.withXmlDoc (PreXmlDoc.Create " An implementation where every method throws.")
+            |> SynBinding.withXmlDoc (PreXmlDoc.create "An implementation where every method throws.")
             |> SynBinding.withReturnAnnotation constructorReturnType
             |> fun m -> SynMemberDefn.Member (m, range0)
 
@@ -97,9 +97,9 @@ module internal InterfaceMockGenerator =
                 if inherits.Contains KnownInheritance.IDisposable then
                     [
                         SynField.Create (
-                            SynType.CreateFun (SynType.CreateUnit, SynType.CreateUnit),
-                            Ident.Create "Dispose",
-                            xmldoc = PreXmlDoc.Create " Implementation of IDisposable.Dispose"
+                            SynType.funFromDomain SynType.unit SynType.unit,
+                            Ident.create "Dispose",
+                            xmldoc = PreXmlDoc.create "Implementation of IDisposable.Dispose"
                         )
                     ]
                 else
@@ -159,22 +159,20 @@ module internal InterfaceMockGenerator =
                                 tupledArgs.Args
                                 |> List.mapi (fun j ty ->
                                     match ty.Type with
-                                    | UnitType -> SynPat.Const (SynConst.Unit, range0)
-                                    | _ -> SynPat.CreateNamed (Ident.Create $"arg_%i{i}_%i{j}")
+                                    | UnitType -> SynPat.unit
+                                    | _ -> SynPat.named $"arg_%i{i}_%i{j}"
                                 )
 
                             match args with
                             | [] -> failwith "somehow got no args at all"
                             | [ arg ] -> arg
-                            | args ->
-                                SynPat.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
-                                |> SynPat.CreateParen
-                            |> fun i -> if tupledArgs.HasParen then SynPat.Paren (i, range0) else i
+                            | args -> SynPat.tuple args
+                            |> fun i -> if tupledArgs.HasParen then SynPat.paren i else i
                         )
 
                     let headPat =
                         SynPat.LongIdent (
-                            SynLongIdent.create [ Ident.Create "this" ; memberInfo.Identifier ],
+                            SynLongIdent.create [ Ident.create "this" ; memberInfo.Identifier ],
                             None,
                             None,
                             SynArgPats.Pats headArgs,
@@ -192,7 +190,7 @@ module internal InterfaceMockGenerator =
                                     | UnitType -> SynExpr.CreateConst ()
                                     | _ -> SynExpr.createIdent $"arg_%i{i}_%i{j}"
                                 )
-                                |> SynExpr.CreateParenedTuple
+                                |> SynExpr.tuple
                             )
 
                         match tuples |> List.rev with
@@ -200,9 +198,9 @@ module internal InterfaceMockGenerator =
                         | last :: rest ->
 
                         (last, rest)
-                        ||> List.fold (fun trail next -> SynExpr.CreateApp (next, trail))
+                        ||> List.fold SynExpr.applyTo
                         |> SynExpr.applyFunction (
-                            SynExpr.createLongIdent' [ Ident.Create "this" ; memberInfo.Identifier ]
+                            SynExpr.createLongIdent' [ Ident.create "this" ; memberInfo.Identifier ]
                         )
 
                     SynMemberDefn.Member (
@@ -261,17 +259,16 @@ module internal InterfaceMockGenerator =
                 match inheritance with
                 | KnownInheritance.IDisposable ->
                     let binding =
-                        SynBinding.basic
-                            (SynLongIdent.createS' [ "this" ; "Dispose" ])
-                            [ SynPat.CreateConst SynConst.Unit ]
-                            (SynExpr.CreateApp (SynExpr.createLongIdent [ "this" ; "Dispose" ], SynExpr.CreateUnit))
-                        |> SynBinding.withReturnAnnotation (SynType.Unit ())
+                        SynExpr.createLongIdent [ "this" ; "Dispose" ]
+                        |> SynExpr.applyTo (SynExpr.CreateConst ())
+                        |> SynBinding.basic [ Ident.create "this" ; Ident.create "Dispose" ] [ SynPat.unit ]
+                        |> SynBinding.withReturnAnnotation SynType.unit
                         |> SynBinding.makeInstanceMember
 
                     let mem = SynMemberDefn.Member (binding, range0)
 
                     SynMemberDefn.Interface (
-                        SynType.CreateLongIdent (SynLongIdent.createS' [ "System" ; "IDisposable" ]),
+                        SynType.createLongIdent' [ "System" ; "IDisposable" ],
                         Some range0,
                         Some [ mem ],
                         range0
@@ -281,7 +278,7 @@ module internal InterfaceMockGenerator =
 
         let record =
             {
-                Name = Ident.Create name
+                Name = Ident.create name
                 Fields = fields
                 Members = Some ([ constructor ; interfaceMembers ] @ extraInterfaces)
                 XmlDoc = Some xmlDoc
@@ -334,7 +331,7 @@ module internal InterfaceMockGenerator =
         =
         let interfaceType = AstHelper.parseInterface interfaceType
         let fields = interfaceType.Members |> List.map constructMember
-        let docString = PreXmlDoc.Create " Mock record type for an interface"
+        let docString = PreXmlDoc.create "Mock record type for an interface"
 
         let name =
             List.last interfaceType.Name

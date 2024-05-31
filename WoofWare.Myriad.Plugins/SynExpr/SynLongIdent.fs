@@ -1,10 +1,33 @@
 namespace WoofWare.Myriad.Plugins
 
+open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Text.Range
 open Fantomas.FCS.Syntax
 
 [<RequireQualifiedAccess>]
 module internal SynLongIdent =
+
+    let geq =
+        SynLongIdent.SynLongIdent (
+            [ Ident.create "op_GreaterThanOrEqual" ],
+            [],
+            [ Some (IdentTrivia.OriginalNotation ">=") ]
+        )
+
+    let ge =
+        SynLongIdent.SynLongIdent ([ Ident.create "op_GreaterThan" ], [], [ Some (IdentTrivia.OriginalNotation ">") ])
+
+    let sub =
+        SynLongIdent.SynLongIdent ([ Ident.create "op_Subtraction" ], [], [ Some (IdentTrivia.OriginalNotation "-") ])
+
+    let eq =
+        SynLongIdent.SynLongIdent ([ Ident.create "op_Equality" ], [], [ Some (IdentTrivia.OriginalNotation "=") ])
+
+    let pipe =
+        SynLongIdent.SynLongIdent ([ Ident.create "op_PipeRight" ], [], [ Some (IdentTrivia.OriginalNotation "|>") ])
+
+    let toString (sli : SynLongIdent) : string =
+        sli.LongIdent |> List.map _.idText |> String.concat "."
 
     let create (ident : LongIdent) : SynLongIdent =
         let commas =

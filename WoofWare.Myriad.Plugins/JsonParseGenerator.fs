@@ -4,7 +4,6 @@ open System
 open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
-open Fantomas.FCS.Xml
 open Myriad.Core
 
 type internal JsonParseOutputSpec =
@@ -42,7 +41,7 @@ module internal JsonParseGenerator =
             |> SynExpr.applyFunction (SynExpr.createIdent "raise")
 
         [
-            SynMatchClause.create SynPat.CreateNull raiseExpr
+            SynMatchClause.create SynPat.createNull raiseExpr
             SynMatchClause.create (SynPat.named "v") (SynExpr.createIdent "v")
         ]
         |> SynExpr.createMatch indexed
@@ -104,7 +103,7 @@ module internal JsonParseGenerator =
         let body = SynExpr.pipeThroughFunction (SynExpr.createIdent "Some") body
 
         [
-            SynMatchClause.create SynPat.CreateNull (SynExpr.createIdent "None")
+            SynMatchClause.create SynPat.createNull (SynExpr.createIdent "None")
             SynMatchClause.create (SynPat.named "v") body
         ]
         |> SynExpr.createMatch node
@@ -308,14 +307,14 @@ module internal JsonParseGenerator =
 
         if spec.ExtensionMethods then
             let binding =
-                SynBinding.basic (SynLongIdent.createI functionName) [ arg ] functionBody
+                SynBinding.basic [ functionName ] [ arg ] functionBody
                 |> SynBinding.withXmlDoc xmlDoc
                 |> SynBinding.withReturnAnnotation returnInfo
                 |> SynMemberDefn.staticMember
 
             let componentInfo =
                 SynComponentInfo.createLong typeName
-                |> SynComponentInfo.withDocString (PreXmlDoc.Create " Extension methods for JSON parsing")
+                |> SynComponentInfo.withDocString (PreXmlDoc.create "Extension methods for JSON parsing")
 
             let containingType =
                 SynTypeDefnRepr.augmentation ()
@@ -324,7 +323,7 @@ module internal JsonParseGenerator =
 
             SynModuleDecl.Types ([ containingType ], range0)
         else
-            SynBinding.basic (SynLongIdent.createI functionName) [ arg ] functionBody
+            SynBinding.basic [ functionName ] [ arg ] functionBody
             |> SynBinding.withXmlDoc xmlDoc
             |> SynBinding.withReturnAnnotation returnInfo
             |> List.singleton
@@ -333,7 +332,10 @@ module internal JsonParseGenerator =
     let getParseOptions (fieldAttrs : SynAttribute list) =
         (JsonParseOption.None, fieldAttrs)
         ||> List.fold (fun options attr ->
-            if attr.TypeName.AsString.EndsWith ("JsonNumberHandling", StringComparison.Ordinal) then
+            if
+                (SynLongIdent.toString attr.TypeName)
+                    .EndsWith ("JsonNumberHandling", StringComparison.Ordinal)
+            then
                 let qualifiedEnumValue =
                     match SynExpr.stripOptionalParen attr.ArgExpr with
                     | SynExpr.LongIdent (_, SynLongIdent (ident, _, _), _, _) when isJsonNumberHandling ident ->
@@ -356,15 +358,15 @@ module internal JsonParseGenerator =
                 options
         )
 
-
-    let createRecordMaker (spec : JsonParseOutputSpec) (typeName : LongIdent) (fields : SynFieldData<Ident> list) =
+    let createRecordMaker (spec : JsonParseOutputSpec) (fields : SynFieldData<Ident> list) =
         let assignments =
             fields
             |> List.mapi (fun i fieldData ->
                 let propertyNameAttr =
                     fieldData.Attrs
                     |> List.tryFind (fun attr ->
-                        attr.TypeName.AsString.EndsWith ("JsonPropertyName", StringComparison.Ordinal)
+                        (SynLongIdent.toString attr.TypeName)
+                            .EndsWith ("JsonPropertyName", StringComparison.Ordinal)
                     )
 
                 let options = getParseOptions fieldData.Attrs
@@ -384,7 +386,7 @@ module internal JsonParseGenerator =
                     | Some name -> name.ArgExpr
 
                 createParseRhs options propertyName fieldData.Type
-                |> SynBinding.basic (SynLongIdent.createS $"arg_%i{i}") []
+                |> SynBinding.basic [ Ident.create $"arg_%i{i}" ] []
             )
 
         let finalConstruction =
@@ -412,13 +414,13 @@ module internal JsonParseGenerator =
                         let options = getParseOptions field.Attrs
                         createParseRhs options propertyName field.Type
                     )
-                    |> SynExpr.CreateParenedTuple
+                    |> SynExpr.tuple
                     |> SynExpr.applyFunction (SynExpr.createLongIdent' (typeName @ [ case.Ident ]))
                     |> SynExpr.createLet
                         [
                             SynExpr.index (SynExpr.CreateConst "data") (SynExpr.createIdent "node")
                             |> assertNotNull (SynExpr.CreateConst "data")
-                            |> SynBinding.basic (SynLongIdent.createS "node") []
+                            |> SynBinding.basic [ Ident.create "node" ] []
                         ]
 
             match propertyName with
@@ -471,7 +473,7 @@ module internal JsonParseGenerator =
                         "v"
                         (SynExpr.callGenericMethod "GetValue" [ Ident.create "string" ] (SynExpr.createIdent "v"))
                 )
-                |> SynBinding.basic (SynLongIdent.createS "ty") []
+                |> SynBinding.basic [ Ident.create "ty" ] []
             ]
 
     let createModule (namespaceId : LongIdent) (spec : JsonParseOutputSpec) (typeDefn : SynTypeDefn) =
@@ -485,10 +487,7 @@ module internal JsonParseGenerator =
             if spec.ExtensionMethods then
                 [ SynAttribute.autoOpen ]
             else
-                [
-                    SynAttribute.RequireQualifiedAccess ()
-                    SynAttribute.compilationRepresentation
-                ]
+                [ SynAttribute.requireQualifiedAccess ; SynAttribute.compilationRepresentation ]
 
         let xmlDoc =
             let fullyQualified = ident |> Seq.map (fun i -> i.idText) |> String.concat "."
@@ -499,8 +498,8 @@ module internal JsonParseGenerator =
                 else
                     "methods"
 
-            $" Module containing JSON parsing %s{description} for the %s{fullyQualified} type"
-            |> PreXmlDoc.Create
+            $"Module containing JSON parsing %s{description} for the %s{fullyQualified} type"
+            |> PreXmlDoc.create
 
         let moduleName =
             if spec.ExtensionMethods then
@@ -525,20 +524,17 @@ module internal JsonParseGenerator =
         let decl =
             match synTypeDefnRepr with
             | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, fields, _range), _) ->
-                let fields = fields |> List.map SynField.extractWithIdent
-                createRecordMaker spec ident fields
+                fields |> List.map SynField.extractWithIdent |> createRecordMaker spec
             | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_accessibility, cases, _range), _) ->
                 let optionGet (i : Ident option) =
                     match i with
                     | None -> failwith "WoofWare.Myriad requires union cases to have identifiers on each field."
                     | Some i -> i
 
-                let cases =
-                    cases
-                    |> List.map SynUnionCase.extract
-                    |> List.map (UnionCase.mapIdentFields optionGet)
-
-                createUnionMaker spec ident cases
+                cases
+                |> List.map SynUnionCase.extract
+                |> List.map (UnionCase.mapIdentFields optionGet)
+                |> createUnionMaker spec ident
             | _ -> failwithf "Not a record or union type"
 
         let mdl =
