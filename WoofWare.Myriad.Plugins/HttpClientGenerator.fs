@@ -766,42 +766,13 @@ module internal HttpClientGenerator =
         let propertyMembers =
             properties
             |> List.map (fun (_, pi) ->
-                SynMemberDefn.Member (
-                    SynBinding.SynBinding (
-                        pi.Accessibility,
-                        SynBindingKind.Normal,
-                        pi.IsInline,
-                        false,
-                        [],
-                        PreXmlDoc.Empty,
-                        SynValData.SynValData (
-                            Some
-                                {
-                                    IsInstance = true
-                                    IsDispatchSlot = false
-                                    IsOverrideOrExplicitImpl = true
-                                    IsFinal = false
-                                    GetterOrSetterIsCompilerGenerated = false
-                                    MemberKind = SynMemberKind.Member
-                                },
-                            SynValInfo.SynValInfo ([ [ SynArgInfo.Empty ] ; [] ], SynArgInfo.Empty),
-                            None
-                        ),
-                        SynPat.CreateLongIdent (SynLongIdent.create [ Ident.create "_" ; pi.Identifier ], []),
-                        Some (SynBindingReturnInfo.Create pi.Type),
-                        SynExpr.applyFunction
-                            (SynExpr.createLongIdent' [ Ident.lowerFirstLetter pi.Identifier ])
-                            (SynExpr.CreateConst ()),
-                        range0,
-                        DebugPointAtBinding.Yes range0,
-                        {
-                            LeadingKeyword = SynLeadingKeyword.Member range0
-                            InlineKeyword = if pi.IsInline then Some range0 else None
-                            EqualsRange = Some range0
-                        }
-                    ),
-                    range0
-                )
+                SynExpr.createLongIdent' [ Ident.lowerFirstLetter pi.Identifier ]
+                |> SynExpr.applyTo (SynExpr.CreateConst ())
+                |> SynBinding.basic [ Ident.create "_" ; pi.Identifier ] []
+                |> SynBinding.withReturnAnnotation pi.Type
+                |> SynBinding.setInline pi.IsInline
+                |> SynBinding.withAccessibility pi.Accessibility
+                |> SynMemberDefn.memberImplementation
             )
 
         let members = propertyMembers @ nonPropertyMembers

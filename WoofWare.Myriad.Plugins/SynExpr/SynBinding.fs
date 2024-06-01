@@ -107,7 +107,7 @@ module internal SynBinding =
                 trivia
             )
 
-    let makeInline (binding : SynBinding) : SynBinding =
+    let inline makeInline (binding : SynBinding) : SynBinding =
         match binding with
         | SynBinding (acc, kind, _, mut, attrs, doc, valData, headPat, ret, expr, range, debugPoint, trivia) ->
             SynBinding (
@@ -127,6 +127,33 @@ module internal SynBinding =
                     InlineKeyword = Some range0
                 }
             )
+
+    let inline makeNotInline (binding : SynBinding) : SynBinding =
+        match binding with
+        | SynBinding (acc, kind, _, mut, attrs, doc, valData, headPat, ret, expr, range, debugPoint, trivia) ->
+            SynBinding (
+                acc,
+                kind,
+                false,
+                mut,
+                attrs,
+                doc,
+                valData,
+                headPat,
+                ret,
+                expr,
+                range,
+                debugPoint,
+                { trivia with
+                    InlineKeyword = None
+                }
+            )
+
+    let inline setInline (isInline : bool) (binding : SynBinding) : SynBinding =
+        if isInline then
+            makeInline binding
+        else
+            makeNotInline binding
 
     let makeStaticMember (binding : SynBinding) : SynBinding =
         let memberFlags =
