@@ -3,7 +3,6 @@ namespace WoofWare.Myriad.Plugins
 open System
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Xml
-open Myriad.Core
 
 type internal GenerateMockOutputSpec =
     {
@@ -13,7 +12,6 @@ type internal GenerateMockOutputSpec =
 [<RequireQualifiedAccess>]
 module internal InterfaceMockGenerator =
     open Fantomas.FCS.Text.Range
-    open Myriad.Core.Ast
 
     let private getName (SynField (_, _, id, _, _, _, _, _, _)) =
         match id with
@@ -267,10 +265,10 @@ module internal InterfaceMockGenerator =
 
         let typeDecl = createType spec name interfaceType docString fields
 
-        SynModuleOrNamespace.CreateNamespace (
-            namespaceId,
-            decls = (opens |> List.map SynModuleDecl.CreateOpen) @ [ typeDecl ]
-        )
+        [ yield! opens |> List.map SynModuleDecl.openAny ; yield typeDecl ]
+        |> SynModuleOrNamespace.createNamespace namespaceId
+
+open Myriad.Core
 
 /// Myriad generator that creates a record which implements the given interface,
 /// but with every field mocked out.

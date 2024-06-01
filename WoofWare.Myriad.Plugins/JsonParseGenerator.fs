@@ -4,7 +4,6 @@ open System
 open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
-open Myriad.Core
 
 type internal JsonParseOutputSpec =
     {
@@ -14,7 +13,6 @@ type internal JsonParseOutputSpec =
 [<RequireQualifiedAccess>]
 module internal JsonParseGenerator =
     open Fantomas.FCS.Text.Range
-    open Myriad.Core.Ast
 
     type JsonParseOption =
         {
@@ -124,9 +122,10 @@ module internal JsonParseGenerator =
 
         let valueArg = SynExpr.createLongIdent [ "kvp" ; "Value" ] |> SynExpr.paren
 
-        SynExpr.CreateTuple [ SynExpr.createIdent "key" ; SynExpr.createIdent "value" ]
-        |> SynExpr.createLet [ SynBinding.Let (pattern = SynPat.named "value", expr = value valueArg) ]
-        |> SynExpr.createLet [ SynBinding.Let (pattern = SynPat.named "key", expr = key keyArg) ]
+        // No need to paren here, we're on the LHS of a `let`
+        SynExpr.tupleNoParen [ SynExpr.createIdent "key" ; SynExpr.createIdent "value" ]
+        |> SynExpr.createLet [ SynBinding.basic [ Ident.create "value" ] [] (value valueArg) ]
+        |> SynExpr.createLet [ SynBinding.basic [ Ident.create "key" ] [] (key keyArg) ]
         |> SynExpr.createLambda "kvp"
 
     /// A conforming JSON object has only strings as keys. But it would be reasonable to allow the user
@@ -326,8 +325,7 @@ module internal JsonParseGenerator =
             SynBinding.basic [ functionName ] [ arg ] functionBody
             |> SynBinding.withXmlDoc xmlDoc
             |> SynBinding.withReturnAnnotation returnInfo
-            |> List.singleton
-            |> SynModuleDecl.CreateLet
+            |> SynModuleDecl.createLet
 
     let getParseOptions (fieldAttrs : SynAttribute list) =
         (JsonParseOption.None, fieldAttrs)
@@ -426,7 +424,7 @@ module internal JsonParseGenerator =
             match propertyName with
             | SynExpr.Const (synConst, _) ->
                 SynMatchClause.SynMatchClause (
-                    SynPat.CreateConst synConst,
+                    SynPat.createConst synConst,
                     None,
                     body,
                     range0,
@@ -537,11 +535,12 @@ module internal JsonParseGenerator =
                 |> createUnionMaker spec ident
             | _ -> failwithf "Not a record or union type"
 
-        let mdl =
-            [ scaffolding spec ident decl ]
-            |> fun d -> SynModuleDecl.CreateNestedModule (info, d)
+        [ scaffolding spec ident decl ]
+        |> SynModuleDecl.nestedModule info
+        |> List.singleton
+        |> SynModuleOrNamespace.createNamespace namespaceId
 
-        SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ mdl ])
+open Myriad.Core
 
 /// Myriad generator that provides a method (possibly an extension method) for a record type,
 /// containing a JSON parse function.

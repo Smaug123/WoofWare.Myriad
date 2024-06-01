@@ -2,9 +2,6 @@ namespace WoofWare.Myriad.Plugins
 
 open System.Net.Http
 open Fantomas.FCS.Syntax
-open Fantomas.FCS.SyntaxTrivia
-open Fantomas.FCS.Xml
-open Myriad.Core
 
 type internal HttpClientGeneratorOutputSpec =
     {
@@ -14,7 +11,6 @@ type internal HttpClientGeneratorOutputSpec =
 [<RequireQualifiedAccess>]
 module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range
-    open Myriad.Core.Ast
 
     [<RequireQualifiedAccess>]
     type PathSpec =
@@ -817,27 +813,6 @@ module internal HttpClientGenerator =
 
         let functionName = Ident.create "client"
 
-        let valData =
-            let memberFlags =
-                if spec.ExtensionMethods then
-                    {
-                        SynMemberFlags.IsInstance = false
-                        SynMemberFlags.IsDispatchSlot = false
-                        SynMemberFlags.IsOverrideOrExplicitImpl = false
-                        SynMemberFlags.IsFinal = false
-                        SynMemberFlags.GetterOrSetterIsCompilerGenerated = false
-                        SynMemberFlags.MemberKind = SynMemberKind.Member
-                    }
-                    |> Some
-                else
-                    None
-
-            SynValData.SynValData (
-                memberFlags,
-                SynValInfo.SynValInfo ([ [ SynArgInfo.SynArgInfo ([], false, Some functionName) ] ], SynArgInfo.Empty),
-                None
-            )
-
         let pattern = SynLongIdent.createS "make"
 
         let returnInfo = SynType.createLongIdent interfaceType.Name
@@ -874,8 +849,7 @@ module internal HttpClientGenerator =
                 SynBinding.basic [ Ident.create "make" ] (headerArgs @ [ clientCreationArg ]) interfaceImpl
                 |> SynBinding.withXmlDoc xmlDoc
                 |> SynBinding.withReturnAnnotation returnInfo
-                |> List.singleton
-                |> SynModuleDecl.CreateLet
+                |> SynModuleDecl.createLet
 
         let moduleName =
             if spec.ExtensionMethods then
@@ -895,15 +869,14 @@ module internal HttpClientGenerator =
             |> SynComponentInfo.addAttributes attribs
             |> SynComponentInfo.setAccessibility interfaceType.Accessibility
 
-        SynModuleOrNamespace.CreateNamespace (
-            ns,
-            decls =
-                [
-                    for openStatement in opens do
-                        yield SynModuleDecl.CreateOpen openStatement
-                    yield SynModuleDecl.CreateNestedModule (modInfo, [ createFunc ])
-                ]
-        )
+        [
+            for openStatement in opens do
+                yield SynModuleDecl.openAny openStatement
+            yield SynModuleDecl.nestedModule modInfo [ createFunc ]
+        ]
+        |> SynModuleOrNamespace.createNamespace ns
+
+open Myriad.Core
 
 /// Myriad generator that provides an HTTP client for an interface type using RestEase annotations.
 [<MyriadGenerator("http-client")>]

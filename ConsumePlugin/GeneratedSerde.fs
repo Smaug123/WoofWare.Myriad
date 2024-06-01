@@ -167,7 +167,7 @@ module FirstDuJsonSerializeExtension =
 
             match input with
             | FirstDu.EmptyCase -> node.Add ("type", System.Text.Json.Nodes.JsonValue.Create "emptyCase")
-            | FirstDu.Case1 (arg0) ->
+            | FirstDu.Case1 arg0 ->
                 node.Add ("type", System.Text.Json.Nodes.JsonValue.Create "case1")
                 let dataNode = System.Text.Json.Nodes.JsonObject ()
                 dataNode.Add ("data", System.Text.Json.Nodes.JsonValue.Create<string> arg0)

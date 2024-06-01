@@ -28,6 +28,8 @@ module internal SynPat =
 
     let inline tuple (elements : SynPat list) : SynPat = tupleNoParen elements |> paren
 
-    let unit = SynPat.Const (SynConst.Unit, range0)
+    let inline createConst (c : SynConst) = SynPat.Const (c, range0)
+
+    let unit = createConst SynConst.Unit
 
     let createNull = SynPat.Null range0

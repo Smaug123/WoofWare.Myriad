@@ -5,12 +5,12 @@ open Fantomas.FCS.Syntax
 [<RequireQualifiedAccess>]
 module internal SynArgPats =
     let create (caseNames : Ident list) : SynArgPats =
-        if caseNames.IsEmpty then
-            SynArgPats.Pats []
-        else
-
-        caseNames
-        |> List.map (fun i -> SynPat.named i.idText)
-        |> SynPat.tuple
-        |> List.singleton
-        |> SynArgPats.Pats
+        match caseNames.Length with
+        | 0 -> SynArgPats.Pats []
+        | 1 -> [ SynPat.named caseNames.[0].idText ] |> SynArgPats.Pats
+        | _ ->
+            caseNames
+            |> List.map (fun i -> SynPat.named i.idText)
+            |> SynPat.tuple
+            |> List.singleton
+            |> SynArgPats.Pats

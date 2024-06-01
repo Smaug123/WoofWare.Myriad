@@ -460,7 +460,12 @@ module internal CataGenerator =
                     unionCase.Fields
                     |> List.map (fun field ->
                         // TODO: adjust type parameters
-                        SynField.Create field.Type
+                        {
+                            SynFieldData.Type = field.Type
+                            Attrs = []
+                            Ident = None
+                        }
+                        |> SynField.make
                     )
 
                 SynUnionCase.Create (unionCase.Name, fields)
@@ -1148,24 +1153,19 @@ module internal CataGenerator =
         let cataRecord =
             SynModuleDecl.Types ([ createCataRecord cataName recordDoc analysis ], range0)
 
-        SynModuleOrNamespace.CreateNamespace (
-            ns,
-            decls =
+        [
+            for openStatement in opens do
+                yield SynModuleDecl.CreateOpen openStatement
+            yield! cataStructures
+            yield cataRecord
+            yield
                 [
-                    for openStatement in opens do
-                        yield SynModuleDecl.CreateOpen openStatement
-                    yield! cataStructures
-                    yield cataRecord
-                    yield
-                        SynModuleDecl.CreateNestedModule (
-                            modInfo,
-                            [
-                                SynModuleDecl.Types ([ createInstructionType analysis ], range0)
-                                SynModuleDecl.CreateLet (loopFunction :: runFunctions)
-                            ]
-                        )
+                    SynModuleDecl.Types ([ createInstructionType analysis ], range0)
+                    SynModuleDecl.createLets (loopFunction :: runFunctions)
                 ]
-        )
+                |> SynModuleDecl.nestedModule modInfo
+        ]
+        |> SynModuleOrNamespace.createNamespace ns
 
     let generate (context : GeneratorContext) : Output =
         let ast, _ =

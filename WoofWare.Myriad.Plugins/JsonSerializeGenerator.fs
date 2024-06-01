@@ -3,7 +3,6 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Text
 open Fantomas.FCS.Syntax
-open Myriad.Core
 
 type internal JsonSerializeOutputSpec =
     {
@@ -13,7 +12,6 @@ type internal JsonSerializeOutputSpec =
 [<RequireQualifiedAccess>]
 module internal JsonSerializeGenerator =
     open Fantomas.FCS.Text.Range
-    open Myriad.Core.Ast
 
     /// Given `input.Ident`, for example, choose how to add it to the ambient `node`.
     /// The result is a line like `(fun ident -> InnerType.toJsonNode ident)` or `(fun ident -> JsonValue.Create ident)`.
@@ -51,7 +49,7 @@ module internal JsonSerializeGenerator =
                 |> SynExpr.paren
                 |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
                 |> SynMatchClause.create (
-                    SynPat.CreateLongIdent (SynLongIdent.createS "Some", [ SynPat.named "field" ])
+                    SynPat.identWithArgs [ Ident.create "Some" ] (SynArgPats.create [ Ident.create "field" ])
                 )
 
             [ noneClause ; someClause ]
@@ -102,10 +100,9 @@ module internal JsonSerializeGenerator =
                     SeqExprOnly.SeqExprOnly false,
                     true,
                     SynPat.paren (
-                        SynPat.CreateLongIdent (
-                            SynLongIdent.createS "KeyValue",
-                            [ SynPat.tuple [ SynPat.named "key" ; SynPat.named "value" ] ]
-                        )
+                        SynPat.identWithArgs
+                            [ Ident.create "KeyValue" ]
+                            (SynArgPats.create [ Ident.create "key" ; Ident.create "value" ])
                     ),
                     SynExpr.createIdent "field",
                     SynExpr.applyFunction
@@ -203,7 +200,7 @@ module internal JsonSerializeGenerator =
                 ]
 
         let pattern =
-            SynPat.CreateNamed inputArgName
+            SynPat.namedI inputArgName
             |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.create typeName))
 
         if spec.ExtensionMethods then
@@ -225,13 +222,11 @@ module internal JsonSerializeGenerator =
 
             SynModuleDecl.Types ([ containingType ], range0)
         else
-            let binding =
-                assignments
-                |> SynBinding.basic [ functionName ] [ pattern ]
-                |> SynBinding.withReturnAnnotation returnInfo
-                |> SynBinding.withXmlDoc xmlDoc
-
-            SynModuleDecl.CreateLet [ binding ]
+            assignments
+            |> SynBinding.basic [ functionName ] [ pattern ]
+            |> SynBinding.withReturnAnnotation returnInfo
+            |> SynBinding.withXmlDoc xmlDoc
+            |> SynModuleDecl.createLet
 
     let recordModule (spec : JsonSerializeOutputSpec) (typeName : LongIdent) (fields : SynField list) =
         let inputArg = Ident.create "input"
@@ -279,13 +274,9 @@ module internal JsonSerializeGenerator =
                 |> SynExpr.applyFunction (SynExpr.createLongIdent [ "node" ; "Add" ])
 
             let dataNode =
-                SynBinding.Let (
-                    pattern = SynPat.named "dataNode",
-                    expr =
-                        SynExpr.applyFunction
-                            (SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ])
-                            (SynExpr.CreateConst ())
-                )
+                SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
+                |> SynExpr.applyTo (SynExpr.CreateConst ())
+                |> SynBinding.basic [ Ident.create "dataNode" ] []
 
             let dataBindings =
                 (unionCase.Fields, caseNames)
@@ -381,12 +372,13 @@ module internal JsonSerializeGenerator =
                 [ unionModule spec ident unionFields ]
             | _ -> failwithf "Only record types currently supported."
 
-        let mdl = SynModuleDecl.CreateNestedModule (info, decls)
+        [
+            yield! opens |> List.map SynModuleDecl.openAny
+            yield SynModuleDecl.nestedModule info decls
+        ]
+        |> SynModuleOrNamespace.createNamespace namespaceId
 
-        SynModuleOrNamespace.CreateNamespace (
-            namespaceId,
-            decls = (opens |> List.map SynModuleDecl.CreateOpen) @ [ mdl ]
-        )
+open Myriad.Core
 
 /// Myriad generator that provides a method (possibly an extension method) for a record type,
 /// containing a JSON serialization function.
