@@ -5,9 +5,11 @@ open Fantomas.FCS.Text.Range
 
 [<RequireQualifiedAccess>]
 module internal SynPat =
+    let inline paren (pat : SynPat) : SynPat = SynPat.Paren (pat, range0)
 
-    let inline annotateType (ty : SynType) (pat : SynPat) =
-        SynPat.Paren (SynPat.Typed (pat, ty, range0), range0)
+    let inline annotateTypeNoParen (ty : SynType) (pat : SynPat) = SynPat.Typed (pat, ty, range0)
+
+    let inline annotateType (ty : SynType) (pat : SynPat) = paren (annotateTypeNoParen ty pat)
 
     let inline named (s : string) : SynPat =
         SynPat.Named (SynIdent.SynIdent (Ident (s, range0), None), false, None, range0)
@@ -24,10 +26,10 @@ module internal SynPat =
         | [ p ] -> p
         | elements -> SynPat.Tuple (false, elements, List.replicate (elements.Length - 1) range0, range0)
 
-    let inline paren (pat : SynPat) : SynPat = SynPat.Paren (pat, range0)
-
     let inline tuple (elements : SynPat list) : SynPat = tupleNoParen elements |> paren
 
-    let unit = SynPat.Const (SynConst.Unit, range0)
+    let inline createConst (c : SynConst) = SynPat.Const (c, range0)
+
+    let unit = createConst SynConst.Unit
 
     let createNull = SynPat.Null range0

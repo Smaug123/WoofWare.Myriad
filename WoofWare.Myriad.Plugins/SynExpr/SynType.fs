@@ -47,6 +47,10 @@ module internal SynType =
     let unit : SynType = named "unit"
     let int : SynType = named "int"
 
+    /// Given ['a1, 'a2] and 'ret, returns 'a1 -> 'a2 -> 'ret.
+    let toFun (inputs : SynType list) (ret : SynType) : SynType =
+        (ret, List.rev inputs) ||> List.fold (fun ty input -> funFromDomain input ty)
+
 [<AutoOpen>]
 module internal SynTypePatterns =
     let (|OptionType|_|) (fieldType : SynType) =

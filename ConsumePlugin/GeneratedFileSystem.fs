@@ -41,7 +41,7 @@ module FileSystemItemCata =
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.Process__FileSystemItem (x) ->
+            | Instruction.Process__FileSystemItem x ->
                 match x with
                 | FileSystemItem.Directory ({
                                                 Name = name
@@ -116,7 +116,7 @@ module GiftCata =
             instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
-            | Instruction.Process__Gift (x) ->
+            | Instruction.Process__Gift x ->
                 match x with
                 | Gift.Book (arg0_0) -> cata.Gift.Book arg0_0 |> giftStack.Add
                 | Gift.Chocolate (arg0_0) -> cata.Gift.Chocolate arg0_0 |> giftStack.Add
@@ -129,7 +129,7 @@ module GiftCata =
                 | Gift.WithACard (arg0_0, message) ->
                     instructions.Add (Instruction.Gift_WithACard (message))
                     instructions.Add (Instruction.Process__Gift arg0_0)
-            | Instruction.Gift_Wrapped (arg1_0) ->
+            | Instruction.Gift_Wrapped arg1_0 ->
                 let arg0_0 = giftStack.[giftStack.Count - 1]
                 giftStack.RemoveAt (giftStack.Count - 1)
                 cata.Gift.Wrapped arg0_0 arg1_0 |> giftStack.Add
@@ -137,7 +137,7 @@ module GiftCata =
                 let arg0_0 = giftStack.[giftStack.Count - 1]
                 giftStack.RemoveAt (giftStack.Count - 1)
                 cata.Gift.Boxed arg0_0 |> giftStack.Add
-            | Instruction.Gift_WithACard (message) ->
+            | Instruction.Gift_WithACard message ->
                 let arg0_0 = giftStack.[giftStack.Count - 1]
                 giftStack.RemoveAt (giftStack.Count - 1)
                 cata.Gift.WithACard arg0_0 message |> giftStack.Add

@@ -6,7 +6,6 @@ open Fantomas.FCS.Xml
 [<RequireQualifiedAccess>]
 module internal RemoveOptionsGenerator =
     open Fantomas.FCS.Text.Range
-    open Myriad.Core.Ast
 
     let private removeOption (s : SynField) : SynField =
         let (SynField.SynField (synAttributeLists,
@@ -96,18 +95,16 @@ module internal RemoveOptionsGenerator =
             )
             |> AstHelper.instantiateRecord
 
-        let binding =
-            SynBinding.basic
-                [ functionName ]
-                [
-                    SynPat.named inputArg.idText
-                    |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.create withoutOptionsType))
-                ]
-                body
-            |> SynBinding.withXmlDoc xmlDoc
-            |> SynBinding.withReturnAnnotation (SynType.LongIdent (SynLongIdent.create withOptionsType))
-
-        SynModuleDecl.CreateLet [ binding ]
+        SynBinding.basic
+            [ functionName ]
+            [
+                SynPat.named inputArg.idText
+                |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.create withoutOptionsType))
+            ]
+            body
+        |> SynBinding.withXmlDoc xmlDoc
+        |> SynBinding.withReturnAnnotation (SynType.LongIdent (SynLongIdent.create withOptionsType))
+        |> SynModuleDecl.createLet
 
     let createRecordModule (namespaceId : LongIdent) (typeDefn : SynTypeDefn) =
         let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
@@ -139,9 +136,9 @@ module internal RemoveOptionsGenerator =
                 |> SynComponentInfo.addAttributes [ SynAttribute.compilationRepresentation ]
                 |> SynComponentInfo.addAttributes [ SynAttribute.requireQualifiedAccess ]
 
-            let mdl = SynModuleDecl.CreateNestedModule (info, decls)
-
-            SynModuleOrNamespace.CreateNamespace (namespaceId, decls = [ mdl ])
+            SynModuleDecl.nestedModule info decls
+            |> List.singleton
+            |> SynModuleOrNamespace.createNamespace namespaceId
         | _ -> failwithf "Not a record type"
 
 open Myriad.Core

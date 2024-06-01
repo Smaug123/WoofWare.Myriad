@@ -44,6 +44,8 @@
     <Compile Include="SynExpr\SynComponentInfo.fs" />
     <Compile Include="SynExpr\SynMemberDefn.fs" />
     <Compile Include="SynExpr\SynAttribute.fs" />
+    <Compile Include="SynExpr\SynModuleDecl.fs" />
+    <Compile Include="SynExpr\SynModuleOrNamespace.fs" />
     <Compile Include="AstHelper.fs" />
     <Compile Include="RemoveOptionsGenerator.fs"/>
     <Compile Include="InterfaceMockGenerator.fs"/>
