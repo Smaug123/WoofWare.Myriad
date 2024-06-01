@@ -188,10 +188,6 @@ module internal AstHelper =
             }
         | _ -> failwithf "Didn't have alternating type-and-star in interface member definition: %+A" tupleType
 
-    let toFun (inputs : SynType list) (ret : SynType) : SynType =
-        (ret, List.rev inputs)
-        ||> List.fold (fun ty input -> SynType.funFromDomain input ty)
-
     /// Returns the args (where these are tuple types if curried) in order, and the return type.
     let rec getType (ty : SynType) : (SynType * bool) list * SynType =
         match ty with
@@ -204,7 +200,7 @@ module internal AstHelper =
                 | SynType.Paren (argType, _) -> getType argType, true
                 | _ -> getType argType, false
 
-            ((toFun (List.map fst inputArgs) inputRet), hasParen) :: args, ret
+            ((SynType.toFun (List.map fst inputArgs) inputRet), hasParen) :: args, ret
         | _ -> [], ty
 
     let private parseMember (slotSig : SynValSig) (flags : SynMemberFlags) : Choice<MemberInfo, PropertyInfo> =

@@ -59,3 +59,7 @@ module internal SynMemberDefn =
     let staticMember (binding : SynBinding) : SynMemberDefn =
         let binding = SynBinding.makeStaticMember binding
         SynMemberDefn.Member (binding, range0)
+
+    let memberImplementation (binding : SynBinding) : SynMemberDefn =
+        let binding = SynBinding.makeInstanceMember binding
+        SynMemberDefn.Member (binding, range0)

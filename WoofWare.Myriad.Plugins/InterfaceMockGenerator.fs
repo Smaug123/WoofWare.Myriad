@@ -2,7 +2,6 @@ namespace WoofWare.Myriad.Plugins
 
 open System
 open Fantomas.FCS.Syntax
-open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 open Myriad.Core
 
@@ -87,21 +86,21 @@ module internal InterfaceMockGenerator =
                  else
                      [ SynPat.unit ])
                 (AstHelper.instantiateRecord constructorFields)
-            |> SynBinding.makeStaticMember
             |> SynBinding.withXmlDoc (PreXmlDoc.create "An implementation where every method throws.")
             |> SynBinding.withReturnAnnotation constructorReturnType
-            |> fun m -> SynMemberDefn.Member (m, range0)
+            |> SynMemberDefn.staticMember
 
         let fields =
             let extras =
                 if inherits.Contains KnownInheritance.IDisposable then
-                    [
-                        SynField.Create (
-                            SynType.funFromDomain SynType.unit SynType.unit,
-                            Ident.create "Dispose",
-                            xmldoc = PreXmlDoc.create "Implementation of IDisposable.Dispose"
-                        )
-                    ]
+                    {
+                        Attrs = []
+                        Ident = Some (Ident.create "Dispose")
+                        Type = SynType.funFromDomain SynType.unit SynType.unit
+                    }
+                    |> SynField.make
+                    |> SynField.withDocString (PreXmlDoc.create "Implementation of IDisposable.Dispose")
+                    |> List.singleton
                 else
                     []
 
@@ -111,47 +110,6 @@ module internal InterfaceMockGenerator =
             let members =
                 interfaceType.Members
                 |> List.map (fun memberInfo ->
-
-                    let synValData =
-                        SynValData.SynValData (
-                            Some
-                                {
-                                    IsInstance = true
-                                    IsDispatchSlot = false
-                                    IsOverrideOrExplicitImpl = true
-                                    IsFinal = false
-                                    GetterOrSetterIsCompilerGenerated = false
-                                    MemberKind = SynMemberKind.Member
-                                },
-                            valInfo =
-                                SynValInfo.SynValInfo (
-                                    curriedArgInfos =
-                                        [
-                                            yield
-                                                [
-                                                    SynArgInfo.SynArgInfo (
-                                                        attributes = [],
-                                                        optional = false,
-                                                        ident = None
-                                                    )
-                                                ]
-                                            yield!
-                                                memberInfo.Args
-                                                |> List.mapi (fun i arg ->
-                                                    arg.Args
-                                                    |> List.mapi (fun j arg ->
-                                                        match arg.Type with
-                                                        | UnitType -> SynArgInfo.SynArgInfo ([], false, None)
-                                                        | _ -> SynArgInfo.CreateIdString $"arg_%i{i}_%i{j}"
-                                                    )
-                                                )
-                                        ],
-                                    returnInfo =
-                                        SynArgInfo.SynArgInfo (attributes = [], optional = false, ident = None)
-                                ),
-                            thisIdOpt = None
-                        )
-
                     let headArgs =
                         memberInfo.Args
                         |> List.mapi (fun i tupledArgs ->
@@ -168,16 +126,6 @@ module internal InterfaceMockGenerator =
                             | [ arg ] -> arg
                             | args -> SynPat.tuple args
                             |> fun i -> if tupledArgs.HasParen then SynPat.paren i else i
-                        )
-
-                    let headPat =
-                        SynPat.LongIdent (
-                            SynLongIdent.create [ Ident.create "this" ; memberInfo.Identifier ],
-                            None,
-                            None,
-                            SynArgPats.Pats headArgs,
-                            None,
-                            range0
                         )
 
                     let body =
@@ -203,28 +151,8 @@ module internal InterfaceMockGenerator =
                             SynExpr.createLongIdent' [ Ident.create "this" ; memberInfo.Identifier ]
                         )
 
-                    SynMemberDefn.Member (
-                        SynBinding.SynBinding (
-                            None,
-                            SynBindingKind.Normal,
-                            false,
-                            false,
-                            [],
-                            PreXmlDoc.Empty,
-                            synValData,
-                            headPat,
-                            None,
-                            body,
-                            range0,
-                            DebugPointAtBinding.Yes range0,
-                            {
-                                LeadingKeyword = SynLeadingKeyword.Member range0
-                                InlineKeyword = None
-                                EqualsRange = Some range0
-                            }
-                        ),
-                        range0
-                    )
+                    SynBinding.basic [ Ident.create "this" ; memberInfo.Identifier ] headArgs body
+                    |> SynMemberDefn.memberImplementation
                 )
 
             let interfaceName =
@@ -258,14 +186,12 @@ module internal InterfaceMockGenerator =
             |> Seq.map (fun inheritance ->
                 match inheritance with
                 | KnownInheritance.IDisposable ->
-                    let binding =
+                    let mem =
                         SynExpr.createLongIdent [ "this" ; "Dispose" ]
                         |> SynExpr.applyTo (SynExpr.CreateConst ())
                         |> SynBinding.basic [ Ident.create "this" ; Ident.create "Dispose" ] [ SynPat.unit ]
                         |> SynBinding.withReturnAnnotation SynType.unit
-                        |> SynBinding.makeInstanceMember
-
-                    let mem = SynMemberDefn.Member (binding, range0)
+                        |> SynMemberDefn.memberImplementation
 
                     SynMemberDefn.Interface (
                         SynType.createLongIdent' [ "System" ; "IDisposable" ],
@@ -309,19 +235,15 @@ module internal InterfaceMockGenerator =
     let constructMember (mem : MemberInfo) : SynField =
         let inputType = mem.Args |> List.map constructMemberSinglePlace
 
-        let funcType = AstHelper.toFun inputType mem.ReturnType
+        let funcType = SynType.toFun inputType mem.ReturnType
 
-        SynField.SynField (
-            [],
-            false,
-            Some mem.Identifier,
-            funcType,
-            false,
-            mem.XmlDoc |> Option.defaultValue PreXmlDoc.Empty,
-            None,
-            range0,
-            SynFieldTrivia.Zero
-        )
+        {
+            Type = funcType
+            Attrs = []
+            Ident = Some mem.Identifier
+        }
+        |> SynField.make
+        |> SynField.withDocString (mem.XmlDoc |> Option.defaultValue PreXmlDoc.Empty)
 
     let createRecord
         (namespaceId : LongIdent)

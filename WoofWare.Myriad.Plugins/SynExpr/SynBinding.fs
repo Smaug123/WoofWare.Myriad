@@ -16,14 +16,18 @@ module internal SynBinding =
     let rec private getName (pat : SynPat) : Ident option =
         match stripParen pat with
         | SynPat.Named (SynIdent.SynIdent (name, _), _, _, _) -> Some name
-        | SynPat.Wild _ -> None
         | SynPat.Typed (pat, _, _) -> getName pat
-        | SynPat.Const _ -> None
         | SynPat.LongIdent (SynLongIdent.SynLongIdent (longIdent, _, _), _, _, _, _, _) ->
             match longIdent with
             | [ x ] -> Some x
             | _ -> failwithf "got long ident %O ; can only get the name of a long ident with one component" longIdent
-        | _ -> failwithf "unrecognised pattern: %+A" pat
+        | _ -> None
+
+    let private getArgInfo (pat : SynPat) : SynArgInfo list =
+        // TODO: this only copes with one layer of tupling
+        match stripParen pat with
+        | SynPat.Tuple (_, pats, _, _) -> pats |> List.map (fun pat -> SynArgInfo.SynArgInfo ([], false, getName pat))
+        | pat -> [ SynArgInfo.SynArgInfo (SynAttributes.Empty, false, getName pat) ]
 
     let triviaZero (isMember : bool) =
         {
@@ -39,7 +43,7 @@ module internal SynBinding =
     let basic (name : LongIdent) (args : SynPat list) (body : SynExpr) : SynBinding =
         let valInfo : SynValInfo =
             args
-            |> List.map (fun pat -> [ SynArgInfo.SynArgInfo (SynAttributes.Empty, false, getName pat) ])
+            |> List.map getArgInfo
             |> fun x -> SynValInfo.SynValInfo (x, SynArgInfo.SynArgInfo ([], false, None))
 
         SynBinding.SynBinding (
