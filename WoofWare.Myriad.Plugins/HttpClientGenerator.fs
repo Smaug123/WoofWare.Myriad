@@ -174,35 +174,6 @@ module internal HttpClientGenerator =
         (info : MemberInfo)
         : SynMemberDefn
         =
-        let valInfo =
-            SynValInfo.SynValInfo (
-                [
-                    [ SynArgInfo.Empty ]
-                    [
-                        for arg in info.Args do
-                            match arg.Id with
-                            | None -> yield SynArgInfo.CreateIdString (failwith "TODO: create an arg name")
-                            | Some id -> yield SynArgInfo.CreateId id
-                    ]
-                ],
-                SynArgInfo.Empty
-            )
-
-        let valData =
-            SynValData (
-                Some
-                    {
-                        IsInstance = true
-                        IsDispatchSlot = false
-                        IsOverrideOrExplicitImpl = true
-                        IsFinal = false
-                        GetterOrSetterIsCompilerGenerated = false
-                        MemberKind = SynMemberKind.Member
-                    },
-                valInfo,
-                None
-            )
-
         let args =
             info.Args
             |> List.map (fun arg ->
@@ -217,23 +188,15 @@ module internal HttpClientGenerator =
                     else
                         arg.Type
 
-                argName, SynPat.CreateTyped (SynPat.CreateNamed argName, argType)
+                // We'll be tupling these up anyway, so don't need the parens
+                // around the type annotations.
+                argName, SynPat.annotateTypeNoParen argType (SynPat.namedI argName)
             )
 
         let cancellationTokenArg =
             match List.tryLast args with
             | None -> failwith $"expected an optional cancellation token as final arg in %s{info.Identifier.idText}"
             | Some (arg, _) -> arg
-
-        let headPat =
-            let thisIdent = if variableHeaders.IsEmpty then "_" else "this"
-
-            args
-            |> List.map snd
-            |> SynPat.tuple
-            |> List.singleton
-            |> SynArgPats.Pats
-            |> SynPat.identWithArgs [ Ident.create thisIdent ; info.Identifier ]
 
         let requestUriTrailer =
             (info.UrlTemplate, info.Args)
@@ -436,7 +399,7 @@ module internal HttpClientGenerator =
                 // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
                 SynExpr.createNew
                     (SynType.app' (SynType.createLongIdent' [ "RestEase" ; "Response" ]) [ SynType.Anon range0 ])
-                    (SynExpr.CreateTuple
+                    (SynExpr.tupleNoParen
                         [
                             SynExpr.createIdent "responseString"
                             SynExpr.createIdent "response"
@@ -621,23 +584,15 @@ module internal HttpClientGenerator =
             |> SynExpr.createCompExpr "async" returnExpr
             |> SynExpr.startAsTask cancellationTokenArg
 
-        SynBinding.SynBinding (
-            None,
-            SynBindingKind.Normal,
-            false,
-            false,
-            [],
-            PreXmlDoc.Empty,
-            valData,
-            headPat,
-            None,
-            implementation,
-            range0,
-            DebugPointAtBinding.Yes range0,
-            SynBinding.triviaZero true
-        )
+        let thisIdent =
+            if variableHeaders.IsEmpty then "_" else "this"
+            |> Ident.create
+
+        let args = args |> List.map snd |> SynPat.tuple |> List.singleton
+
+        SynBinding.basic [ thisIdent ; info.Identifier ] args implementation
         |> SynBinding.withAccessibility info.Accessibility
-        |> fun b -> SynMemberDefn.Member (b, range0)
+        |> SynMemberDefn.memberImplementation
 
     let getHttpAttributes (attrs : SynAttribute list) : HttpAttribute list =
         attrs
