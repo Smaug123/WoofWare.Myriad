@@ -8,8 +8,8 @@
   })
   (fetchNuGet {
     pname = "fantomas";
-    version = "6.3.4";
-    sha256 = "1bf57pzvl0i1bgic2vf08mqlzzbd5kys1ip9klrhm4f155ksm9fm";
+    version = "6.3.7";
+    sha256 = "1z1a5bw7vwz6g8nvfgkvx66jnm4hmvn62vbyq0as60nw0jlvaidl";
   })
   (fetchNuGet {
     pname = "Fantomas.Core";
