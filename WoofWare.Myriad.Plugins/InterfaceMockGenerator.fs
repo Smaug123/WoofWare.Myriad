@@ -43,9 +43,14 @@ module internal InterfaceMockGenerator =
             )
             |> Set.ofSeq
 
-        let failwithFun =
+        let failwithFun (SynField (_, _, idOpt, _, _, _, _, _, _)) =
+            let failString =
+                match idOpt with
+                | None -> SynExpr.CreateConst "Unimplemented mock function"
+                | Some ident -> SynExpr.CreateConst $"Unimplemented mock function: %s{ident.idText}"
+
             SynExpr.createLongIdent [ "System" ; "NotImplementedException" ]
-            |> SynExpr.applyTo (SynExpr.CreateConst "Unimplemented mock function")
+            |> SynExpr.applyTo failString
             |> SynExpr.paren
             |> SynExpr.applyFunction (SynExpr.createIdent "raise")
             |> SynExpr.createLambda "_"
@@ -72,7 +77,7 @@ module internal InterfaceMockGenerator =
 
             let nonExtras =
                 fields
-                |> List.map (fun field -> (SynLongIdent.createI (getName field), true), Some failwithFun)
+                |> List.map (fun field -> (SynLongIdent.createI (getName field), true), Some (failwithFun field))
 
             extras @ nonExtras
 
