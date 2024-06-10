@@ -3,8 +3,8 @@
 {fetchNuGet}: [
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.0.40";
-    sha256 = "1c9z0b6minlripwrjmv4yd5w8zj4lcpak4x41izh7ygx8kgmbvx0";
+    version = "4.0.41";
+    sha256 = "03kfa5ngmgkik9lc58sp8s9rrh9g40hhgjnrv662ks0d0y2i9i89";
   })
   (fetchNuGet {
     pname = "fantomas";
@@ -75,11 +75,6 @@
     pname = "Microsoft.AspNetCore.App.Runtime.osx-x64";
     version = "6.0.26";
     sha256 = "02src68hd3213sd1a2ms1my7i92knfmdxclvv90il9cky2zsq8kw";
-  })
-  (fetchNuGet {
-    pname = "Microsoft.Build.Tasks.Git";
-    version = "8.0.0";
-    sha256 = "0055f69q3hbagqp8gl3nk0vfn4qyqyxsxyy7pd0g7wm3z28byzmx";
   })
   (fetchNuGet {
     pname = "Microsoft.CodeCoverage";
@@ -157,16 +152,6 @@
     sha256 = "05smkcyxir59rgrmp7d6327vvrlacdgldfxhmyr1azclvga1zfsq";
   })
   (fetchNuGet {
-    pname = "Microsoft.SourceLink.Common";
-    version = "8.0.0";
-    sha256 = "0xrr8yd34ij7dqnyddkp2awfmf9qn3c89xmw2f3npaa4wnajmx81";
-  })
-  (fetchNuGet {
-    pname = "Microsoft.SourceLink.GitHub";
-    version = "8.0.0";
-    sha256 = "1gdx7n45wwia3yvang3ls92sk3wrymqcx9p349j8wba2lyjf9m44";
-  })
-  (fetchNuGet {
     pname = "Microsoft.TestPlatform.ObjectModel";
     version = "17.10.0";
     sha256 = "07j69cw8r39533w4p39mnj00kahazz38760in3jfc45kmlcdb26x";
@@ -188,8 +173,8 @@
   })
   (fetchNuGet {
     pname = "Nerdbank.GitVersioning";
-    version = "3.6.133";
-    sha256 = "1cdw8krvsnx0n34f7fm5hiiy7bs6h3asvncqcikc0g46l50w2j80";
+    version = "3.6.139";
+    sha256 = "0npcryhq3r0c2zi940jk39h13mzc4hyg7z8gm6jdmxi1aqv1vh8c";
   })
   (fetchNuGet {
     pname = "NETStandard.Library";
