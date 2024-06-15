@@ -478,7 +478,7 @@ module internal JsonParseGenerator =
         let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
             typeDefn
 
-        let (SynComponentInfo (_attributes, _typeParams, _constraints, ident, _, _preferPostfix, _access, _)) =
+        let (SynComponentInfo (_attributes, _typeParams, _constraints, ident, _, _preferPostfix, access, _)) =
             synComponentInfo
 
         let attributes =
@@ -517,6 +517,7 @@ module internal JsonParseGenerator =
         let info =
             SynComponentInfo.createLong moduleName
             |> SynComponentInfo.withDocString xmlDoc
+            |> SynComponentInfo.setAccessibility access
             |> SynComponentInfo.addAttributes attributes
 
         let decl =

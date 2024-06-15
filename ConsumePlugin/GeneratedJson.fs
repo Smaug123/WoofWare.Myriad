@@ -119,6 +119,53 @@ module JsonRecordType =
         }
 namespace ConsumePlugin
 
+/// Module containing JSON parsing methods for the InternalTypeNotExtension type
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module internal InternalTypeNotExtension =
+    /// Parse from a JSON node.
+    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : InternalTypeNotExtension =
+        let arg_0 =
+            (match node.[(Literals.something)] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ((Literals.something))
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        {
+            InternalThing = arg_0
+        }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the InternalTypeExtension type
+[<AutoOpen>]
+module internal InternalTypeExtensionJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type InternalTypeExtension with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : InternalTypeExtension =
+            let arg_0 =
+                (match node.[(Literals.something)] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ((Literals.something))
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<string> ()
+
+            {
+                ExternalThing = arg_0
+            }
+namespace ConsumePlugin
+
 /// Module containing JSON parsing extension members for the ToGetExtensionMethod type
 [<AutoOpen>]
 module ToGetExtensionMethodJsonParseExtension =
