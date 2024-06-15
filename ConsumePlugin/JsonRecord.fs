@@ -29,6 +29,28 @@ type JsonRecordType =
         F : int[]
     }
 
+[<WoofWare.Myriad.Plugins.JsonParse>]
+type internal InternalTypeNotExtension =
+    {
+        [<JsonPropertyName(Literals.something)>]
+        InternalThing : string
+    }
+
+[<WoofWare.Myriad.Plugins.JsonSerialize>]
+type internal InternalTypeNotExtensionSerial =
+    {
+        [<JsonPropertyName(Literals.something)>]
+        InternalThing2 : string
+    }
+
+[<WoofWare.Myriad.Plugins.JsonParse true>]
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
+type internal InternalTypeExtension =
+    {
+        [<JsonPropertyName(Literals.something)>]
+        ExternalThing : string
+    }
+
 [<WoofWare.Myriad.Plugins.JsonParse true>]
 type ToGetExtensionMethod =
     {

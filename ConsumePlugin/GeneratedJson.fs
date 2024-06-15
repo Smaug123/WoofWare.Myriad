@@ -4,6 +4,33 @@
 //------------------------------------------------------------------------------
 
 
+namespace ConsumePlugin
+
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing methods for the InternalTypeNotExtensionSerial type
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module internal InternalTypeNotExtensionSerial =
+    /// Serialize to a JSON node
+    let toJsonNode (input : InternalTypeNotExtensionSerial) : System.Text.Json.Nodes.JsonNode =
+        let node = System.Text.Json.Nodes.JsonObject ()
+        do node.Add ((Literals.something), System.Text.Json.Nodes.JsonValue.Create<string> input.InternalThing2)
+        node :> _
+namespace ConsumePlugin
+
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the InternalTypeExtension type
+[<AutoOpen>]
+module internal InternalTypeExtensionJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type InternalTypeExtension with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : InternalTypeExtension) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+            do node.Add ((Literals.something), System.Text.Json.Nodes.JsonValue.Create<string> input.ExternalThing)
+            node :> _
 
 namespace ConsumePlugin
 
@@ -117,6 +144,53 @@ module JsonRecordType =
             E = arg_4
             F = arg_5
         }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing methods for the InternalTypeNotExtension type
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module internal InternalTypeNotExtension =
+    /// Parse from a JSON node.
+    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : InternalTypeNotExtension =
+        let arg_0 =
+            (match node.[(Literals.something)] with
+             | null ->
+                 raise (
+                     System.Collections.Generic.KeyNotFoundException (
+                         sprintf "Required key '%s' not found on JSON object" ((Literals.something))
+                     )
+                 )
+             | v -> v)
+                .AsValue()
+                .GetValue<string> ()
+
+        {
+            InternalThing = arg_0
+        }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the InternalTypeExtension type
+[<AutoOpen>]
+module internal InternalTypeExtensionJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type InternalTypeExtension with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : InternalTypeExtension =
+            let arg_0 =
+                (match node.[(Literals.something)] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ((Literals.something))
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<string> ()
+
+            {
+                ExternalThing = arg_0
+            }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing extension members for the ToGetExtensionMethod type

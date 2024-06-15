@@ -4,10 +4,11 @@
     "^refs/heads/main$"
   ],
   "pathFilters": [
-    ":/",
-    ":^WoofWare.Myriad.Plugins.Test/",
-    ":^WoofWare.Myriad.Plugins.Attributes/Test/",
-    ":^/.github/",
-    ":^/CHANGELOG.md"
+    "./",
+    ":/WoofWare.Myriad.Plugins.Attributes",
+    "^:/WoofWare.Myriad.Plugins.Attributes/WoofWare.Myriad.Plugins.Attributes.Test",
+    ":/global.json",
+    ":/README.md",
+    ":/Directory.Build.props"
   ]
 }
