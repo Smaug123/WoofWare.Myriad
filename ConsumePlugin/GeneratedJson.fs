@@ -4,6 +4,33 @@
 //------------------------------------------------------------------------------
 
 
+namespace ConsumePlugin
+
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing methods for the InternalTypeNotExtensionSerial type
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module internal InternalTypeNotExtensionSerial =
+    /// Serialize to a JSON node
+    let toJsonNode (input : InternalTypeNotExtensionSerial) : System.Text.Json.Nodes.JsonNode =
+        let node = System.Text.Json.Nodes.JsonObject ()
+        do node.Add ((Literals.something), System.Text.Json.Nodes.JsonValue.Create<string> input.InternalThing2)
+        node :> _
+namespace ConsumePlugin
+
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the InternalTypeExtension type
+[<AutoOpen>]
+module internal InternalTypeExtensionJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type InternalTypeExtension with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : InternalTypeExtension) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+            do node.Add ((Literals.something), System.Text.Json.Nodes.JsonValue.Create<string> input.ExternalThing)
+            node :> _
 
 namespace ConsumePlugin
 
