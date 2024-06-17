@@ -262,7 +262,7 @@ jobs:
   nuget-publish-attribute:
     runs-on: ubuntu-latest
     if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
-    needs: [attestation]
+    needs: [all-required-checks-complete]
     environment: main-deploy
     permissions:
       id-token: write
@@ -284,12 +284,12 @@ jobs:
         id: publish-success
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: 'nix develop --command bash ./.github/workflows/nuget-push.sh "packed/WoofWare.DotnetRuntimeLocator.*.nupkg"'
+        run: 'nix develop --command bash ./.github/workflows/nuget-push.sh "packed/WoofWare.Myriad.Plugins.Attributes.*.nupkg"'
       - name: Wait for availability
         if: steps.publish-success.outputs.result == 'published'
         env:
           PACKAGE_VERSION: ${{ steps.publish-success.outputs.version }}
-        run: 'echo "$PACKAGE_VERSION" && while ! curl -L --fail -o from-nuget.nupkg "https://www.nuget.org/api/v2/package/WoofWare.DotnetRuntimeLocator/$PACKAGE_VERSION" ; do sleep 10; done'
+        run: 'echo "$PACKAGE_VERSION" && while ! curl -L --fail -o from-nuget.nupkg "https://www.nuget.org/api/v2/package/WoofWare.Myriad.Plugins.Attributes/$PACKAGE_VERSION" ; do sleep 10; done'
       # Astonishingly, NuGet.org considers it to be "more secure" to tamper with my package after upload (https://devblogs.microsoft.com/nuget/introducing-repository-signatures/).
       # So we have to *re-attest* it after it's uploaded. Mind-blowing.
       - name: Assert package contents
@@ -304,7 +304,7 @@ jobs:
   nuget-publish-plugin:
     runs-on: ubuntu-latest
     if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
-    needs: [attestation]
+    needs: [all-required-checks-complete]
     environment: main-deploy
     permissions:
       id-token: write
@@ -326,12 +326,12 @@ jobs:
         id: publish-success
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: 'nix develop --command bash ./.github/workflows/nuget-push.sh "packed/WoofWare.DotnetRuntimeLocator.*.nupkg"'
+        run: 'nix develop --command bash ./.github/workflows/nuget-push.sh "packed/WoofWare.Myriad.Plugins.*.nupkg"'
       - name: Wait for availability
         if: steps.publish-success.outputs.result == 'published'
         env:
           PACKAGE_VERSION: ${{ steps.publish-success.outputs.version }}
-        run: 'echo "$PACKAGE_VERSION" && while ! curl -L --fail -o from-nuget.nupkg "https://www.nuget.org/api/v2/package/WoofWare.DotnetRuntimeLocator/$PACKAGE_VERSION" ; do sleep 10; done'
+        run: 'echo "$PACKAGE_VERSION" && while ! curl -L --fail -o from-nuget.nupkg "https://www.nuget.org/api/v2/package/WoofWare.Myriad.Plugins/$PACKAGE_VERSION" ; do sleep 10; done'
       # Astonishingly, NuGet.org considers it to be "more secure" to tamper with my package after upload (https://devblogs.microsoft.com/nuget/introducing-repository-signatures/).
       # So we have to *re-attest* it after it's uploaded. Mind-blowing.
       - name: Assert package contents
