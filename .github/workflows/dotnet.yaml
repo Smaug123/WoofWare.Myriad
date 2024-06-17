@@ -221,11 +221,53 @@ jobs:
     steps:
       - run: echo "All required checks complete."
 
-  nuget-publish:
+  attestation-attribute:
+    runs-on: ubuntu-latest
+    needs: [all-required-checks-complete]
+    if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
+    steps:
+      - name: Download NuGet artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-attribute
+          path: packed
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@897ed5eab6ed058a474202017ada7f40bfa52940 # v1.0.0
+        with:
+          subject-path: "packed/*.nupkg"
+
+  attestation-plugin:
+    runs-on: ubuntu-latest
+    needs: [all-required-checks-complete]
+    if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
+    steps:
+      - name: Download NuGet artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-plugin
+          path: packed
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@897ed5eab6ed058a474202017ada7f40bfa52940 # v1.0.0
+        with:
+          subject-path: "packed/*.nupkg"
+
+  nuget-publish-attribute:
     runs-on: ubuntu-latest
     if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
-    needs: [all-required-checks-complete]
+    needs: [attestation]
     environment: main-deploy
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Install Nix
@@ -233,20 +275,73 @@ jobs:
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - name: Download NuGet artifact (plugin)
-        uses: actions/download-artifact@v4
-        with:
-          name: nuget-package-plugin
-          path: packed-plugin
-      - name: Publish to NuGet (plugin)
-        run: nix develop --command dotnet nuget push "packed-plugin/WoofWare.Myriad.Plugins.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-      - name: Download NuGet artifact (attribute)
+      - name: Download NuGet artifact
         uses: actions/download-artifact@v4
         with:
           name: nuget-package-attribute
-          path: packed-attribute
-      - name: Publish to NuGet (attribute)
-        run: nix develop --command dotnet nuget push "packed-attribute/WoofWare.Myriad.Plugins.Attributes.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          path: packed
+      - name: Publish to NuGet
+        id: publish-success
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: 'nix develop --command bash ./.github/workflows/nuget-push.sh "packed/WoofWare.DotnetRuntimeLocator.*.nupkg"'
+      - name: Wait for availability
+        if: steps.publish-success.outputs.result == 'published'
+        env:
+          PACKAGE_VERSION: ${{ steps.publish-success.outputs.version }}
+        run: 'echo "$PACKAGE_VERSION" && while ! curl -L --fail -o from-nuget.nupkg "https://www.nuget.org/api/v2/package/WoofWare.DotnetRuntimeLocator/$PACKAGE_VERSION" ; do sleep 10; done'
+      # Astonishingly, NuGet.org considers it to be "more secure" to tamper with my package after upload (https://devblogs.microsoft.com/nuget/introducing-repository-signatures/).
+      # So we have to *re-attest* it after it's uploaded. Mind-blowing.
+      - name: Assert package contents
+        if: steps.publish-success.outputs.result == 'published'
+        run: 'bash ./.github/workflows/assert-contents.sh'
+      - name: Attest Build Provenance
+        if: steps.publish-success.outputs.result == 'published'
+        uses: actions/attest-build-provenance@897ed5eab6ed058a474202017ada7f40bfa52940 # v1.0.0
+        with:
+          subject-path: "from-nuget.nupkg"
+
+  nuget-publish-plugin:
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
+    needs: [attestation]
+    environment: main-deploy
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@V27
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - name: Download NuGet artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-plugin
+          path: packed
+      - name: Publish to NuGet
+        id: publish-success
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: 'nix develop --command bash ./.github/workflows/nuget-push.sh "packed/WoofWare.DotnetRuntimeLocator.*.nupkg"'
+      - name: Wait for availability
+        if: steps.publish-success.outputs.result == 'published'
+        env:
+          PACKAGE_VERSION: ${{ steps.publish-success.outputs.version }}
+        run: 'echo "$PACKAGE_VERSION" && while ! curl -L --fail -o from-nuget.nupkg "https://www.nuget.org/api/v2/package/WoofWare.DotnetRuntimeLocator/$PACKAGE_VERSION" ; do sleep 10; done'
+      # Astonishingly, NuGet.org considers it to be "more secure" to tamper with my package after upload (https://devblogs.microsoft.com/nuget/introducing-repository-signatures/).
+      # So we have to *re-attest* it after it's uploaded. Mind-blowing.
+      - name: Assert package contents
+        if: steps.publish-success.outputs.result == 'published'
+        run: 'bash ./.github/workflows/assert-contents.sh'
+      - name: Attest Build Provenance
+        if: steps.publish-success.outputs.result == 'published'
+        uses: actions/attest-build-provenance@897ed5eab6ed058a474202017ada7f40bfa52940 # v1.0.0
+        with:
+          subject-path: "from-nuget.nupkg"
 
   github-release-plugin:
     runs-on: ubuntu-latest
