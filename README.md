@@ -8,22 +8,19 @@
 
 Some helpers in [Myriad](https://github.com/MoiraeSoftware/myriad/) which might be useful.
 
-These are currently somewhat experimental, and I personally am their primary customer.
-The `RemoveOptions` generator in particular is extremely half-baked.
+Currently implemented:
+
+* `JsonParse` (to stamp out `jsonParse : JsonNode -> 'T` methods).
+* `JsonSerialize` (to stamp out `toJsonNode : 'T -> JsonNode` methods).
+* `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
+* `GenerateMock` (to stamp out a record type corresponding to an interface, like a compile-time [Foq](https://github.com/fsprojects/Foq)).
+* `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
+* `RemoveOptions` (to strip `option` modifiers from a type) - this one is particularly half-baked!
 
 If you would like to ensure that your particular use-case remains unbroken, please do contribute tests to this repository.
 The `ConsumePlugin` assembly contains a number of invocations of these source generators,
 so you just need to add copies of your types to that assembly to ensure that I will at least notice if I break the build;
 and if you add tests to `WoofWare.Myriad.Plugins.Test` then I will also notice if I break the runtime semantics of the generated code.
-
-Currently implemented:
-
-* `JsonParse` (to stamp out `jsonParse : JsonNode -> 'T` methods);
-* `JsonSerialize` (to stamp out `toJsonNode : 'T -> JsonNode` methods);
-* `RemoveOptions` (to strip `option` modifiers from a type).
-* `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
-* `GenerateMock` (to stamp out a record type corresponding to an interface).
-* `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
 
 ## `JsonParse`
 
