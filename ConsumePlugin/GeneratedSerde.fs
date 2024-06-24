@@ -136,7 +136,7 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "f",
+                    "arr",
                     (fun field ->
                         let arr = System.Text.Json.Nodes.JsonArray ()
 
@@ -145,8 +145,20 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
 
                         arr
                     )
-                        input.F
+                        input.Arr
                 )
+
+                node.Add ("byte", System.Text.Json.Nodes.JsonValue.Create<byte<measure>> input.Byte)
+                node.Add ("sbyte", System.Text.Json.Nodes.JsonValue.Create<sbyte<measure>> input.Sbyte)
+                node.Add ("i", System.Text.Json.Nodes.JsonValue.Create<int<measure>> input.I)
+                node.Add ("i32", System.Text.Json.Nodes.JsonValue.Create<int32<measure>> input.I32)
+                node.Add ("i64", System.Text.Json.Nodes.JsonValue.Create<int64<measure>> input.I64)
+                node.Add ("u", System.Text.Json.Nodes.JsonValue.Create<uint<measure>> input.U)
+                node.Add ("u32", System.Text.Json.Nodes.JsonValue.Create<uint32<measure>> input.U32)
+                node.Add ("u64", System.Text.Json.Nodes.JsonValue.Create<uint64<measure>> input.U64)
+                node.Add ("f", System.Text.Json.Nodes.JsonValue.Create<float<measure>> input.F)
+                node.Add ("f32", System.Text.Json.Nodes.JsonValue.Create<float32<measure>> input.F32)
+                node.Add ("single", System.Text.Json.Nodes.JsonValue.Create<single<measure>> input.Single)
 
             node :> _
 namespace ConsumePlugin
@@ -221,7 +233,7 @@ module InnerTypeWithBothJsonParseExtension =
                     .AsObject ()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key) |> System.Uri
-                    let value = (kvp.Value).AsValue().GetValue<bool> ()
+                    let value = (kvp.Value).AsValue().GetValue<System.Boolean> ()
                     key, value
                 )
                 |> dict
@@ -295,7 +307,33 @@ module JsonRecordTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
-            let arg_5 =
+            let arg_16 =
+                (match node.["single"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("single")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Single> ()
+                |> LanguagePrimitives.Float32WithMeasure
+
+            let arg_15 =
+                (match node.["f32"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("f32")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Single> ()
+                |> LanguagePrimitives.Float32WithMeasure
+
+            let arg_14 =
                 (match node.["f"] with
                  | null ->
                      raise (
@@ -304,8 +342,125 @@ module JsonRecordTypeWithBothJsonParseExtension =
                          )
                      )
                  | v -> v)
+                    .AsValue()
+                    .GetValue<System.Double> ()
+                |> LanguagePrimitives.FloatWithMeasure
+
+            let arg_13 =
+                (match node.["u64"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("u64")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.UInt64> ()
+                |> LanguagePrimitives.UInt64WithMeasure
+
+            let arg_12 =
+                (match node.["u32"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("u32")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.UInt32> ()
+                |> LanguagePrimitives.UInt32WithMeasure
+
+            let arg_11 =
+                (match node.["u"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("u")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.UInt32> ()
+                |> LanguagePrimitives.UInt32WithMeasure
+
+            let arg_10 =
+                (match node.["i64"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("i64")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Int64> ()
+                |> LanguagePrimitives.Int64WithMeasure
+
+            let arg_9 =
+                (match node.["i32"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("i32")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Int32> ()
+                |> LanguagePrimitives.Int32WithMeasure
+
+            let arg_8 =
+                (match node.["i"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("i")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Int32> ()
+                |> LanguagePrimitives.Int32WithMeasure
+
+            let arg_7 =
+                (match node.["sbyte"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("sbyte")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.SByte> ()
+                |> LanguagePrimitives.SByteWithMeasure
+
+            let arg_6 =
+                (match node.["byte"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("byte")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.Byte> ()
+                |> LanguagePrimitives.ByteWithMeasure
+
+            let arg_5 =
+                (match node.["arr"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("arr")
+                         )
+                     )
+                 | v -> v)
                     .AsArray ()
-                |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
+                |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                 |> Array.ofSeq
 
             let arg_4 =
@@ -318,7 +473,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
-                |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+                |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                 |> Array.ofSeq
 
             let arg_3 =
@@ -343,7 +498,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
-                |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
+                |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                 |> List.ofSeq
 
             let arg_1 =
@@ -356,7 +511,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_0 =
                 (match node.["a"] with
@@ -368,7 +523,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<int> ()
+                    .GetValue<System.Int32> ()
 
             {
                 A = arg_0
@@ -376,7 +531,18 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 C = arg_2
                 D = arg_3
                 E = arg_4
-                F = arg_5
+                Arr = arg_5
+                Byte = arg_6
+                Sbyte = arg_7
+                I = arg_8
+                I32 = arg_9
+                I64 = arg_10
+                U = arg_11
+                U32 = arg_12
+                U64 = arg_13
+                F = arg_14
+                F32 = arg_15
+                Single = arg_16
             }
 namespace ConsumePlugin
 
@@ -422,7 +588,7 @@ module FirstDuJsonParseExtension =
                          )
                      | v -> v)
                         .AsValue()
-                        .GetValue<string> ()
+                        .GetValue<System.String> ()
                 )
             | "case2" ->
                 let node =
@@ -455,6 +621,6 @@ module FirstDuJsonParseExtension =
                          )
                      | v -> v)
                         .AsValue()
-                        .GetValue<int> ()
+                        .GetValue<System.Int32> ()
                 )
             | v -> failwith ("Unrecognised 'type' field value: " + v)

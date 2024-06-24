@@ -55,7 +55,7 @@ module GymOpeningHours =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> List.ofSeq
 
         let arg_0 =
@@ -68,7 +68,7 @@ module GymOpeningHours =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         {
             IsAlwaysOpen = arg_0
@@ -91,7 +91,7 @@ module GymAccessOptions =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         let arg_0 =
             (match node.["pinAccess"] with
@@ -103,7 +103,7 @@ module GymAccessOptions =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         {
             PinAccess = arg_0
@@ -127,7 +127,7 @@ module GymLocation =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<float> ()
+                    .GetValue<System.Double> ()
             with :? System.InvalidOperationException as exc ->
                 if exc.Message.Contains "cannot be converted to" then
                     if
@@ -161,7 +161,7 @@ module GymLocation =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<float> ()
+                    .GetValue<System.Double> ()
             with :? System.InvalidOperationException as exc ->
                 if exc.Message.Contains "cannot be converted to" then
                     if
@@ -204,12 +204,12 @@ module GymAddress =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_4 =
             match node.["county"] with
             | null -> None
-            | v -> v.AsValue().GetValue<string> () |> Some
+            | v -> v.AsValue().GetValue<System.String> () |> Some
 
         let arg_3 =
             (match node.["town"] with
@@ -221,17 +221,17 @@ module GymAddress =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_2 =
             match node.["addressLine3"] with
             | null -> None
-            | v -> v.AsValue().GetValue<string> () |> Some
+            | v -> v.AsValue().GetValue<System.String> () |> Some
 
         let arg_1 =
             match node.["addressLine2"] with
             | null -> None
-            | v -> v.AsValue().GetValue<string> () |> Some
+            | v -> v.AsValue().GetValue<System.String> () |> Some
 
         let arg_0 =
             (match node.["addressLine1"] with
@@ -243,7 +243,7 @@ module GymAddress =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         {
             AddressLine1 = arg_0
@@ -270,7 +270,7 @@ module Gym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_9 =
             (match node.["timeZone"] with
@@ -282,7 +282,7 @@ module Gym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_8 =
             GymLocation.jsonParse (
@@ -330,7 +330,7 @@ module Gym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_4 =
             (match node.["phoneNumber"] with
@@ -342,7 +342,7 @@ module Gym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_3 =
             GymAddress.jsonParse (
@@ -366,7 +366,7 @@ module Gym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_1 =
             (match node.["id"] with
@@ -378,7 +378,7 @@ module Gym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_0 =
             (match node.["name"] with
@@ -390,7 +390,7 @@ module Gym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         {
             Name = arg_0
@@ -425,7 +425,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<int> ()
+                    .GetValue<System.Int32> ()
 
             let arg_13 =
                 (match node.["suspendedReason"] with
@@ -437,7 +437,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<int> ()
+                    .GetValue<System.Int32> ()
 
             let arg_12 =
                 (match node.["membershipLevel"] with
@@ -449,7 +449,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<int> ()
+                    .GetValue<System.Int32> ()
 
             let arg_11 =
                 (match node.["membershipName"] with
@@ -461,7 +461,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_10 =
                 (match node.["postCode"] with
@@ -473,7 +473,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_9 =
                 (match node.["mobileNumber"] with
@@ -485,7 +485,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_8 =
                 (match node.["dateofBirth"] with
@@ -510,7 +510,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_6 =
                 (match node.["emailAddress"] with
@@ -522,7 +522,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_5 =
                 (match node.["homeGymName"] with
@@ -534,7 +534,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_4 =
                 (match node.["homeGymId"] with
@@ -546,7 +546,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<int> ()
+                    .GetValue<System.Int32> ()
 
             let arg_3 =
                 (match node.["lastName"] with
@@ -558,7 +558,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_2 =
                 (match node.["firstName"] with
@@ -570,7 +570,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_1 =
                 (match node.["compoundMemberId"] with
@@ -582,7 +582,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             let arg_0 =
                 (match node.["id"] with
@@ -594,7 +594,7 @@ module MemberJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<int> ()
+                    .GetValue<System.Int32> ()
 
             {
                 Id = arg_0
@@ -630,7 +630,7 @@ module GymAttendance =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_7 =
             (match node.["lastRefreshedPeopleInClasses"] with
@@ -681,12 +681,12 @@ module GymAttendance =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         let arg_3 =
             match node.["totalPeopleSuffix"] with
             | null -> None
-            | v -> v.AsValue().GetValue<string> () |> Some
+            | v -> v.AsValue().GetValue<System.String> () |> Some
 
         let arg_2 =
             (match node.["totalPeopleInClasses"] with
@@ -698,7 +698,7 @@ module GymAttendance =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_1 =
             (match node.["totalPeopleInGym"] with
@@ -710,7 +710,7 @@ module GymAttendance =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_0 =
             (match node.["description"] with
@@ -722,7 +722,7 @@ module GymAttendance =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         {
             Description = arg_0
@@ -765,7 +765,7 @@ module MemberActivityDto =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         let arg_3 =
             (match node.["totalClasses"] with
@@ -777,7 +777,7 @@ module MemberActivityDto =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_2 =
             (match node.["totalVisits"] with
@@ -789,7 +789,7 @@ module MemberActivityDto =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_1 =
             (match node.["averageDuration"] with
@@ -801,7 +801,7 @@ module MemberActivityDto =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_0 =
             (match node.["totalDuration"] with
@@ -813,7 +813,7 @@ module MemberActivityDto =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         {
             TotalDuration = arg_0
@@ -840,7 +840,7 @@ module SessionsAggregate =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_1 =
             (match node.["Visits"] with
@@ -852,7 +852,7 @@ module SessionsAggregate =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_0 =
             (match node.["Activities"] with
@@ -864,7 +864,7 @@ module SessionsAggregate =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         {
             Activities = arg_0
@@ -888,7 +888,7 @@ module VisitGym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_1 =
             (match node.["Name"] with
@@ -900,7 +900,7 @@ module VisitGym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_0 =
             (match node.["Id"] with
@@ -912,7 +912,7 @@ module VisitGym =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         {
             Id = arg_0
@@ -948,7 +948,7 @@ module Visit =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_1 =
             (match node.["StartTime"] with
@@ -973,7 +973,7 @@ module Visit =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         {
             IsDurationEstimated = arg_0

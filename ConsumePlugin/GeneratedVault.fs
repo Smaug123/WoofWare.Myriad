@@ -22,7 +22,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_9 =
             (match node.["orphan"] with
@@ -34,7 +34,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         let arg_8 =
             (match node.["entity_id"] with
@@ -46,7 +46,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_7 =
             (match node.["token_type"] with
@@ -58,7 +58,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_6 =
             (match node.["renewable"] with
@@ -70,7 +70,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         let arg_5 =
             (match node.["lease_duration"] with
@@ -82,7 +82,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_4 =
             (match node.["identity_policies"] with
@@ -94,7 +94,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> List.ofSeq
 
         let arg_3 =
@@ -107,7 +107,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> List.ofSeq
 
         let arg_2 =
@@ -120,7 +120,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> List.ofSeq
 
         let arg_1 =
@@ -133,7 +133,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_0 =
             (match node.["client_token"] with
@@ -145,7 +145,7 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         {
             ClientToken = arg_0
@@ -189,7 +189,7 @@ module JwtVaultResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_2 =
             (match node.["renewable"] with
@@ -201,7 +201,7 @@ module JwtVaultResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         let arg_1 =
             (match node.["lease_id"] with
@@ -213,7 +213,7 @@ module JwtVaultResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_0 =
             (match node.["request_id"] with
@@ -225,7 +225,7 @@ module JwtVaultResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         {
             RequestId = arg_0
@@ -271,7 +271,7 @@ module JwtSecretResponse =
                 .AsObject ()
             |> Seq.map (fun kvp ->
                 let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<int> ()
+                let value = (kvp.Value).AsValue().GetValue<System.Int32> ()
                 key, value
             )
             |> Map.ofSeq
@@ -288,7 +288,7 @@ module JwtSecretResponse =
                 .AsObject ()
             |> Seq.map (fun kvp ->
                 let key = (kvp.Key) |> System.Uri
-                let value = (kvp.Value).AsValue().GetValue<string> ()
+                let value = (kvp.Value).AsValue().GetValue<System.String> ()
                 key, value
             )
             |> dict
@@ -305,7 +305,7 @@ module JwtSecretResponse =
                 .AsObject ()
             |> Seq.map (fun kvp ->
                 let key = (kvp.Key) |> System.Uri
-                let value = (kvp.Value).AsValue().GetValue<string> ()
+                let value = (kvp.Value).AsValue().GetValue<System.String> ()
                 key, value
             )
             |> readOnlyDict
@@ -322,7 +322,7 @@ module JwtSecretResponse =
                 .AsObject ()
             |> Seq.map (fun kvp ->
                 let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<string> ()
+                let value = (kvp.Value).AsValue().GetValue<System.String> ()
                 key, value
             )
             |> Map.ofSeq
@@ -339,7 +339,7 @@ module JwtSecretResponse =
                 .AsObject ()
             |> Seq.map (fun kvp ->
                 let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<string> ()
+                let value = (kvp.Value).AsValue().GetValue<System.String> ()
                 key, value
             )
             |> Seq.map System.Collections.Generic.KeyValuePair
@@ -357,7 +357,7 @@ module JwtSecretResponse =
                 .AsObject ()
             |> Seq.map (fun kvp ->
                 let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<string> ()
+                let value = (kvp.Value).AsValue().GetValue<System.String> ()
                 key, value
             )
             |> dict
@@ -374,7 +374,7 @@ module JwtSecretResponse =
                 .AsObject ()
             |> Seq.map (fun kvp ->
                 let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<string> ()
+                let value = (kvp.Value).AsValue().GetValue<System.String> ()
                 key, value
             )
             |> readOnlyDict
@@ -389,7 +389,7 @@ module JwtSecretResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         let arg_2 =
             (match node.["renewable"] with
@@ -401,7 +401,7 @@ module JwtSecretResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<bool> ()
+                .GetValue<System.Boolean> ()
 
         let arg_1 =
             (match node.["lease_id"] with
@@ -413,7 +413,7 @@ module JwtSecretResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_0 =
             (match node.["request_id"] with
@@ -425,7 +425,7 @@ module JwtSecretResponse =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         {
             RequestId = arg_0

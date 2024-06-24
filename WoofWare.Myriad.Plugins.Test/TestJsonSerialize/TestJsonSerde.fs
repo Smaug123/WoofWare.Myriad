@@ -77,7 +77,18 @@ module TestJsonSerde =
             let! depth = Gen.choose (0, 2)
             let! d = innerGen depth
             let! e = Gen.arrayOf Arb.generate<NonNull<string>>
-            let! f = Gen.arrayOf Arb.generate<int>
+            let! arr = Gen.arrayOf Arb.generate<int>
+            let! byte = Arb.generate
+            let! sbyte = Arb.generate
+            let! i = Arb.generate
+            let! i32 = Arb.generate
+            let! i64 = Arb.generate
+            let! u = Arb.generate
+            let! u32 = Arb.generate
+            let! u64 = Arb.generate
+            let! f = Arb.generate |> Gen.filter (fun s -> Double.IsFinite (s / 1.0<measure>))
+            let! f32 = Arb.generate |> Gen.filter (fun s -> Single.IsFinite (s / 1.0f<measure>))
+            let! single = Arb.generate |> Gen.filter (fun s -> Single.IsFinite (s / 1.0f<measure>))
 
             return
                 {
@@ -86,7 +97,18 @@ module TestJsonSerde =
                     C = c
                     D = d
                     E = e |> Array.map _.Get
+                    Arr = arr
+                    Byte = byte
+                    Sbyte = sbyte
+                    I = i
+                    I32 = i32
+                    I64 = i64
+                    U = u
+                    U32 = u32
+                    U64 = u64
                     F = f
+                    F32 = f32
+                    Single = single
                 }
         }
 
@@ -140,8 +162,7 @@ module TestJsonSerde =
         }
 
     let sanitiseRec (r : JsonRecordTypeWithBoth) : JsonRecordTypeWithBoth =
-        {
-            A = r.A
+        { r with
             B = if isNull r.B then "<null>" else r.B
             C =
                 if Object.ReferenceEquals (r.C, (null : obj)) then
@@ -150,11 +171,11 @@ module TestJsonSerde =
                     r.C
             D = sanitiseInner r.D
             E = if isNull r.E then [||] else r.E
-            F =
-                if Object.ReferenceEquals (r.F, (null : obj)) then
+            Arr =
+                if Object.ReferenceEquals (r.Arr, (null : obj)) then
                     [||]
                 else
-                    r.F
+                    r.Arr
         }
 
     let duGen =
