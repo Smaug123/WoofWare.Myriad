@@ -1,5 +1,10 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 2.1.45, WoofWare.Myriad.Plugins.Attributes 3.1.7
+
+The NuGet packages are now attested to through [GitHub Attestations](https://github.blog/2024-05-02-introducing-artifact-attestations-now-in-public-beta/).
+You can run `gh attestation verify ~/.nuget/packages/woofware.myriad.plugins/2.1.45/woofware.myriad.plugins.2.1.45.nupkg -o Smaug123`, for example, to verify with GitHub that the GitHub Actions pipeline on this repository produced a nupkg file with the same hash as the one you were served from NuGet.
+
 # WoofWare.Myriad.Plugins 2.1.33
 
 `JsonParse` can now deserialize the discriminated unions which `JsonSerialize` wrote out.
