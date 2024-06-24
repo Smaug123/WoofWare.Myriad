@@ -21,6 +21,7 @@ module internal JsonSerializeGenerator =
         | DateOnly
         | DateTime
         | NumberType _
+        | Measure _
         | PrimitiveType _
         | Guid
         | Uri ->

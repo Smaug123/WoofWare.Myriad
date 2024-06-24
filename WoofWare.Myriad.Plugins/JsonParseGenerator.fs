@@ -106,14 +106,8 @@ module internal JsonParseGenerator =
         ]
         |> SynExpr.createMatch node
 
-    /// Given e.g. "float", returns "System.Double.Parse"
-    let parseFunction (typeName : string) : LongIdent =
-        let qualified =
-            match Primitives.qualifyType typeName with
-            | Some x -> x
-            | None -> failwith $"Could not recognise type %s{typeName} as a primitive."
-
-        List.append qualified [ Ident.create "Parse" ]
+    let dotParse (typeName : LongIdent) : LongIdent =
+        List.append typeName [ Ident.create "Parse" ]
 
     /// fun kvp -> let key = {key(kvp)} in let value = {value(kvp)} in (key, value))
     /// The inputs will be fed with appropriate SynExprs to apply them to the `kvp.Key` and `kvp.Value` args.
@@ -144,9 +138,9 @@ module internal JsonParseGenerator =
         (options : JsonParseOption)
         (propertyName : SynExpr option)
         (node : SynExpr)
-        (typeName : string)
+        (typeName : LongIdent)
         =
-        let basic = asValueGetValue propertyName typeName node
+        let basic = asValueGetValueIdent propertyName typeName node
 
         match options.JsonNumberHandlingArg with
         | None -> basic
@@ -157,7 +151,7 @@ module internal JsonParseGenerator =
 
             let handler =
                 asValueGetValue propertyName "string" node
-                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' (parseFunction typeName))
+                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' (typeName |> dotParse))
                 |> SynExpr.ifThenElse
                     (SynExpr.equals
                         option
@@ -269,13 +263,8 @@ module internal JsonParseGenerator =
             |> SynExpr.paren
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Numerics" ; "BigInteger" ; "Parse" ])
         | Measure (_measure, primType) ->
-            let qualified =
-                match Primitives.qualifyType primType with
-                | None -> failwith $"did not recognise type %s{primType} to assign measure"
-                | Some t -> t
-
             parseNumberType options propertyName node primType
-            |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure qualified)
+            |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure primType)
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =

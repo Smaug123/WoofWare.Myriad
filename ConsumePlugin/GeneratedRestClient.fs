@@ -302,7 +302,7 @@ module PureGymApi =
                             v.AsObject ()
                             |> Seq.map (fun kvp ->
                                 let key = (kvp.Key)
-                                let value = (kvp.Value).AsValue().GetValue<string> ()
+                                let value = (kvp.Value).AsValue().GetValue<System.String> ()
                                 key, value
                             )
                             |> Map.ofSeq

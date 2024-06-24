@@ -193,11 +193,20 @@ module internal SynTypePatterns =
         match fieldType with
         | SynType.LongIdent ident ->
             match ident.LongIdent with
-            | [ i ] -> [ "string" ; "float" ; "int" ; "bool" ] |> List.tryFind (fun s -> s = i.idText)
+            | [ i ] ->
+                // We won't bother with the case that the user has done e.g. `Single` (relying on `System` being open).
+                match Primitives.qualifyType i.idText with
+                | Some qualified ->
+                    match i.idText with
+                    | "char"
+                    | "string" -> None
+                    | _ -> Some qualified
+                | None -> None
             | _ -> None
         | _ -> None
 
-    let (|Measure|_|) (fieldType : SynType) : (Ident * string) option =
+    /// Returns the name of the measure, and the outer type.
+    let (|Measure|_|) (fieldType : SynType) : (Ident * LongIdent) option =
         match fieldType with
         | SynType.App (NumberType outer,
                        _,

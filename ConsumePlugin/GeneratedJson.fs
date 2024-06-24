@@ -49,7 +49,7 @@ module InnerType =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         {
             Thing = arg_0
@@ -71,7 +71,7 @@ module JsonRecordType =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
             |> Array.ofSeq
 
         let arg_4 =
@@ -84,7 +84,7 @@ module JsonRecordType =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<string> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> Array.ofSeq
 
         let arg_3 =
@@ -109,7 +109,7 @@ module JsonRecordType =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<int> ())
+            |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
             |> List.ofSeq
 
         let arg_1 =
@@ -122,7 +122,7 @@ module JsonRecordType =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         let arg_0 =
             (match node.["a"] with
@@ -134,7 +134,7 @@ module JsonRecordType =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<int> ()
+                .GetValue<System.Int32> ()
 
         {
             A = arg_0
@@ -161,7 +161,7 @@ module internal InternalTypeNotExtension =
                  )
              | v -> v)
                 .AsValue()
-                .GetValue<string> ()
+                .GetValue<System.String> ()
 
         {
             InternalThing = arg_0
@@ -186,7 +186,7 @@ module internal InternalTypeExtensionJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             {
                 ExternalThing = arg_0
@@ -345,7 +345,7 @@ module ToGetExtensionMethodJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<int> ()
+                    .GetValue<System.Int32> ()
 
             let arg_7 =
                 (match node.["hotel"] with
@@ -417,7 +417,7 @@ module ToGetExtensionMethodJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<float> ()
+                    .GetValue<System.Double> ()
 
             let arg_1 =
                 (match node.["bravo"] with
@@ -442,7 +442,7 @@ module ToGetExtensionMethodJsonParseExtension =
                      )
                  | v -> v)
                     .AsValue()
-                    .GetValue<string> ()
+                    .GetValue<System.String> ()
 
             {
                 Alpha = arg_0

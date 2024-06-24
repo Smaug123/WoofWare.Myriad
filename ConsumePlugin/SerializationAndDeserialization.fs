@@ -16,6 +16,9 @@ type InnerTypeWithBoth =
         ConcreteDict : Dictionary<string, InnerTypeWithBoth>
     }
 
+[<Measure>]
+type measure
+
 [<WoofWare.Myriad.Plugins.JsonParse true>]
 [<WoofWare.Myriad.Plugins.JsonSerialize true>]
 type JsonRecordTypeWithBoth =
@@ -25,7 +28,18 @@ type JsonRecordTypeWithBoth =
         C : int list
         D : InnerTypeWithBoth
         E : string array
-        F : int[]
+        Arr : int[]
+        Byte : byte<measure>
+        Sbyte : sbyte<measure>
+        I : int<measure>
+        I32 : int32<measure>
+        I64 : int64<measure>
+        U : uint<measure>
+        U32 : uint32<measure>
+        U64 : uint64<measure>
+        F : float<measure>
+        F32 : float32<measure>
+        Single : single<measure>
     }
 
 [<WoofWare.Myriad.Plugins.JsonSerialize true>]

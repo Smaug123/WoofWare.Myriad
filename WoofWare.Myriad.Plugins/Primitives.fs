@@ -26,5 +26,7 @@ module internal Primitives =
         | "uint64" -> [ "System" ; "UInt64" ] |> Some
         | "char" -> [ "System" ; "Char" ] |> Some
         | "decimal" -> [ "System" ; "Decimal" ] |> Some
+        | "string" -> [ "System" ; "String" ] |> Some
+        | "bool" -> [ "System" ; "Boolean" ] |> Some
         | _ -> None
         |> Option.map (List.map (fun i -> (Ident (i, range0))))
