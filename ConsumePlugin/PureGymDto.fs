@@ -19,13 +19,16 @@ type GymAccessOptions =
         QrCodeAccess : bool
     }
 
+[<Measure>]
+type measure
+
 [<WoofWare.Myriad.Plugins.JsonParse>]
 type GymLocation =
     {
         [<JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)>]
         Longitude : float
         [<JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)>]
-        Latitude : float
+        Latitude : float<measure>
     }
 
 [<WoofWare.Myriad.Plugins.JsonParse>]

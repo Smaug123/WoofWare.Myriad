@@ -58,7 +58,7 @@ module PureGymDtos =
         [
             """{"latitude": 1.0, "longitude": 3.0}""",
             {
-                GymLocation.Latitude = 1.0
+                GymLocation.Latitude = 1.0<measure>
                 Longitude = 3.0
             }
         ]
@@ -96,7 +96,7 @@ module PureGymDtos =
                 Location =
                     {
                         Longitude = -0.110252
-                        Latitude = 51.480401
+                        Latitude = 51.480401<measure>
                     }
                 TimeZone = "Europe/London"
                 ReopenDate = "2021-04-12T00:00:00+01 Europe/London"

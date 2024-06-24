@@ -197,6 +197,17 @@ module internal SynTypePatterns =
             | _ -> None
         | _ -> None
 
+    let (|Measure|_|) (fieldType : SynType) : (Ident * string) option =
+        match fieldType with
+        | SynType.App (NumberType outer,
+                       _,
+                       [ SynType.LongIdent (SynLongIdent.SynLongIdent ([ ident ], _, _)) ],
+                       _,
+                       _,
+                       _,
+                       _) -> Some (ident, outer)
+        | _ -> None
+
     let (|DateOnly|_|) (fieldType : SynType) =
         match fieldType with
         | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->

@@ -148,6 +148,7 @@ module GymLocation =
                         reraise ()
                 else
                     reraise ()
+            |> LanguagePrimitives.FloatWithMeasure
 
         let arg_0 =
             try
