@@ -117,16 +117,37 @@ module GymLocation =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : GymLocation =
         let arg_1 =
-            (match node.["latitude"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("latitude")
+            try
+                (match node.["latitude"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("latitude")
+                         )
                      )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Double> ()
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<float> ()
+            with :? System.InvalidOperationException as exc ->
+                if exc.Message.Contains "cannot be converted to" then
+                    if
+                        System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+                    then
+                        (match node.["latitude"] with
+                         | null ->
+                             raise (
+                                 System.Collections.Generic.KeyNotFoundException (
+                                     sprintf "Required key '%s' not found on JSON object" ("latitude")
+                                 )
+                             )
+                         | v -> v)
+                            .AsValue()
+                            .GetValue<string> ()
+                        |> System.Double.Parse
+                    else
+                        reraise ()
+                else
+                    reraise ()
             |> LanguagePrimitives.FloatWithMeasure
 
         let arg_0 =
