@@ -261,6 +261,19 @@ module internal JsonParseGenerator =
             |> SynExpr.callMethod "ToJsonString"
             |> SynExpr.paren
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Numerics" ; "BigInteger" ; "Parse" ])
+        | Measure (_measure, primType) ->
+            let qualified =
+                match primType with
+                | [ unqualified ] ->
+                    match Primitives.qualifyType unqualified.idText with
+                    | Some qualified -> qualified
+                    | None ->
+                        // Best-effort: try shoving `System` on the front
+                        [ Ident.create "System" ; unqualified ]
+                | t -> t
+
+            asValueGetValueIdent propertyName primType node
+            |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure qualified)
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =

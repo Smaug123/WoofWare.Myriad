@@ -87,6 +87,20 @@ module internal SynExpr =
         )
         |> applyTo b
 
+    /// {a} * {b}
+    let times (a : SynExpr) (b : SynExpr) =
+        SynExpr.CreateAppInfix (
+            SynExpr.CreateLongIdent (
+                SynLongIdent.SynLongIdent (
+                    Ident.CreateLong "op_Multiply",
+                    [],
+                    [ Some (IdentTrivia.OriginalNotation "*") ]
+                )
+            ),
+            a
+        )
+        |> applyTo b
+
     let rec stripOptionalParen (expr : SynExpr) : SynExpr =
         match expr with
         | SynExpr.Paren (expr, _, _, _) -> stripOptionalParen expr
