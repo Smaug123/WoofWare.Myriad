@@ -129,17 +129,6 @@ module internal SynTypePatterns =
             | _ -> None
         | _ -> None
 
-    let (|Measure|_|) (fieldType : SynType) : (Ident * LongIdent) option =
-        match fieldType with
-        | SynType.App (PrimitiveType outer,
-                       _,
-                       [ SynType.LongIdent (SynLongIdent.SynLongIdent ([ ident ], _, _)) ],
-                       _,
-                       _,
-                       _,
-                       _) -> Some (ident, outer)
-        | _ -> None
-
     let (|String|_|) (fieldType : SynType) : unit option =
         match fieldType with
         | SynType.LongIdent ident ->
@@ -206,6 +195,17 @@ module internal SynTypePatterns =
             match ident.LongIdent with
             | [ i ] -> [ "string" ; "float" ; "int" ; "bool" ] |> List.tryFind (fun s -> s = i.idText)
             | _ -> None
+        | _ -> None
+
+    let (|Measure|_|) (fieldType : SynType) : (Ident * string) option =
+        match fieldType with
+        | SynType.App (NumberType outer,
+                       _,
+                       [ SynType.LongIdent (SynLongIdent.SynLongIdent ([ ident ], _, _)) ],
+                       _,
+                       _,
+                       _,
+                       _) -> Some (ident, outer)
         | _ -> None
 
     let (|DateOnly|_|) (fieldType : SynType) =

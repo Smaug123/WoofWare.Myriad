@@ -140,6 +140,47 @@ module internal JsonParseGenerator =
             failwithf
                 $"Unable to parse the key type %+A{desiredType} of a JSON object. Keys are strings, and this plugin does not know how to convert to that from a string."
 
+    let private parseNumberType
+        (options : JsonParseOption)
+        (propertyName : SynExpr option)
+        (node : SynExpr)
+        (typeName : string)
+        =
+        let basic = asValueGetValue propertyName typeName node
+
+        match options.JsonNumberHandlingArg with
+        | None -> basic
+        | Some option ->
+            let cond =
+                SynExpr.DotGet (SynExpr.createIdent "exc", range0, SynLongIdent.createS "Message", range0)
+                |> SynExpr.callMethodArg "Contains" (SynExpr.CreateConst "cannot be converted to")
+
+            let handler =
+                asValueGetValue propertyName "string" node
+                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' (parseFunction typeName))
+                |> SynExpr.ifThenElse
+                    (SynExpr.equals
+                        option
+                        (SynExpr.createLongIdent
+                            [
+                                "System"
+                                "Text"
+                                "Json"
+                                "Serialization"
+                                "JsonNumberHandling"
+                                "AllowReadingFromString"
+                            ]))
+                    SynExpr.reraise
+                |> SynExpr.ifThenElse cond SynExpr.reraise
+
+            basic
+            |> SynExpr.pipeThroughTryWith
+                (SynPat.IsInst (
+                    SynType.LongIdent (SynLongIdent.createS' [ "System" ; "InvalidOperationException" ]),
+                    range0
+                ))
+                handler
+
     /// Given `node.["town"]`, for example, choose how to obtain a JSON value from it.
     /// The property name is used in error messages at runtime to show where a JSON
     /// parse error occurred; supply `None` to indicate "don't validate".
@@ -168,41 +209,7 @@ module internal JsonParseGenerator =
             node
             |> asValueGetValue propertyName "string"
             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "DateTime" ; "Parse" ])
-        | NumberType typeName ->
-            let basic = asValueGetValue propertyName typeName node
-
-            match options.JsonNumberHandlingArg with
-            | None -> basic
-            | Some option ->
-                let cond =
-                    SynExpr.DotGet (SynExpr.createIdent "exc", range0, SynLongIdent.createS "Message", range0)
-                    |> SynExpr.callMethodArg "Contains" (SynExpr.CreateConst "cannot be converted to")
-
-                let handler =
-                    asValueGetValue propertyName "string" node
-                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' (parseFunction typeName))
-                    |> SynExpr.ifThenElse
-                        (SynExpr.equals
-                            option
-                            (SynExpr.createLongIdent
-                                [
-                                    "System"
-                                    "Text"
-                                    "Json"
-                                    "Serialization"
-                                    "JsonNumberHandling"
-                                    "AllowReadingFromString"
-                                ]))
-                        SynExpr.reraise
-                    |> SynExpr.ifThenElse cond SynExpr.reraise
-
-                basic
-                |> SynExpr.pipeThroughTryWith
-                    (SynPat.IsInst (
-                        SynType.LongIdent (SynLongIdent.createS' [ "System" ; "InvalidOperationException" ]),
-                        range0
-                    ))
-                    handler
+        | NumberType typeName -> parseNumberType options propertyName node typeName
         | PrimitiveType typeName -> asValueGetValueIdent propertyName typeName node
         | OptionType ty ->
             parseNode None options ty (SynExpr.createIdent "v")
@@ -263,16 +270,11 @@ module internal JsonParseGenerator =
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Numerics" ; "BigInteger" ; "Parse" ])
         | Measure (_measure, primType) ->
             let qualified =
-                match primType with
-                | [ unqualified ] ->
-                    match Primitives.qualifyType unqualified.idText with
-                    | Some qualified -> qualified
-                    | None ->
-                        // Best-effort: try shoving `System` on the front
-                        [ Ident.create "System" ; unqualified ]
-                | t -> t
+                match Primitives.qualifyType primType with
+                | None -> failwith $"did not recognise type %s{primType} to assign measure"
+                | Some t -> t
 
-            asValueGetValueIdent propertyName primType node
+            parseNumberType options propertyName node primType
             |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure qualified)
         | _ ->
             // Let's just hope that we've also got our own type annotation!
