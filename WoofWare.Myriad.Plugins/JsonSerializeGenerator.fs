@@ -34,15 +34,8 @@ module internal JsonSerializeGenerator =
         | Guid
         | Uri ->
             // JsonValue.Create<type>
-            SynExpr.TypeApp (
-                SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ],
-                range0,
-                [ fieldType ],
-                [],
-                Some range0,
-                range0,
-                range0
-            )
+            SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]
+            |> SynExpr.typeApp [ fieldType ]
         | NullableType ty ->
             // fun field -> if field.HasValue then {serializeNode ty} field.Value else JsonValue.Create null
             SynExpr.applyFunction (serializeNode ty) (SynExpr.createLongIdent [ "field" ; "Value" ])

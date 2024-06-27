@@ -121,29 +121,18 @@ module internal SynExpr =
     let callMethod (meth : string) (obj : SynExpr) : SynExpr =
         callMethodArg meth (SynExpr.CreateConst ()) obj
 
+    let typeApp (types : SynType list) (operand : SynExpr) =
+        SynExpr.TypeApp (operand, range0, types, List.replicate (types.Length - 1) range0, Some range0, range0, range0)
+
     let callGenericMethod (meth : string) (ty : LongIdent) (obj : SynExpr) : SynExpr =
-        SynExpr.TypeApp (
-            SynExpr.DotGet (obj, range0, SynLongIdent.createS meth, range0),
-            range0,
-            [ SynType.LongIdent (SynLongIdent.create ty) ],
-            [],
-            Some range0,
-            range0,
-            range0
-        )
+        SynExpr.DotGet (obj, range0, SynLongIdent.createS meth, range0)
+        |> typeApp [ SynType.LongIdent (SynLongIdent.create ty) ]
         |> applyTo (SynExpr.CreateConst ())
 
     /// {obj}.{meth}<ty>()
     let callGenericMethod' (meth : string) (ty : string) (obj : SynExpr) : SynExpr =
-        SynExpr.TypeApp (
-            SynExpr.DotGet (obj, range0, SynLongIdent.createS meth, range0),
-            range0,
-            [ SynType.createLongIdent' [ ty ] ],
-            [],
-            Some range0,
-            range0,
-            range0
-        )
+        SynExpr.DotGet (obj, range0, SynLongIdent.createS meth, range0)
+        |> typeApp [ SynType.createLongIdent' [ ty ] ]
         |> applyTo (SynExpr.CreateConst ())
 
     let inline index (property : SynExpr) (obj : SynExpr) : SynExpr =

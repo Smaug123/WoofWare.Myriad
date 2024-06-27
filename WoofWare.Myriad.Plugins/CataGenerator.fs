@@ -1070,17 +1070,11 @@ module internal CataGenerator =
                 body
                 |> SynExpr.createLet
                     [
-                        SynExpr.TypeApp (
-                            SynExpr.createIdent "ResizeArray",
-                            range0,
+                        (SynExpr.createIdent "ResizeArray")
+                        |> SynExpr.typeApp
                             [
                                 SynType.var (SynTypar.SynTypar (unionCase.GenericName, TyparStaticReq.None, false))
-                            ],
-                            [],
-                            Some range0,
-                            range0,
-                            range0
-                        )
+                            ]
                         |> SynExpr.applyTo (SynExpr.CreateConst ())
                         |> SynBinding.basic [ unionCase.StackName ] []
                     ]

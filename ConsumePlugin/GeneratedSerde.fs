@@ -325,6 +325,24 @@ module InnerTypeWithBothJsonParseExtension =
             }
 namespace ConsumePlugin
 
+/// Module containing JSON parsing extension members for the SomeEnum type
+[<AutoOpen>]
+module SomeEnumJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type SomeEnum with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : SomeEnum =
+            match node.GetValueKind () with
+            | System.Text.Json.JsonValueKind.Number -> node.AsValue().GetValue<int> () |> enum<SomeEnum>
+            | System.Text.Json.JsonValueKind.String ->
+                match node.AsValue().GetValue<string>().ToLowerInvariant () with
+                | "blah" -> SomeEnum.Blah
+                | "thing" -> SomeEnum.Thing
+                | v -> failwith ("Unrecognised string value for enum: " + v)
+            | _ -> failwith ("Unrecognised kind for enum of type: " + "SomeEnum")
+namespace ConsumePlugin
+
 /// Module containing JSON parsing extension members for the JsonRecordTypeWithBoth type
 [<AutoOpen>]
 module JsonRecordTypeWithBothJsonParseExtension =
