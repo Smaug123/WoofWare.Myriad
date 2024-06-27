@@ -70,6 +70,12 @@ module internal SynLongIdent =
         // TODO: consider Microsoft.FSharp.Option or whatever it is
         | _ -> false
 
+    let isNullable (ident : SynLongIdent) : bool =
+        match ident.LongIdent |> List.map _.idText with
+        | [ "System" ; "Nullable" ]
+        | [ "Nullable" ] -> true
+        | _ -> false
+
     let isResponse (ident : SynLongIdent) : bool =
         match ident.LongIdent |> List.map _.idText with
         | [ "Response" ]

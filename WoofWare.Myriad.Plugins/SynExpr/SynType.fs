@@ -59,6 +59,12 @@ module internal SynTypePatterns =
             Some innerType
         | _ -> None
 
+    let (|NullableType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when SynLongIdent.isNullable ident ->
+            Some innerType
+        | _ -> None
+
     let (|UnitType|_|) (fieldType : SynType) : unit option =
         match fieldType with
         | SynType.LongIdent ident when SynLongIdent.isUnit ident -> Some ()

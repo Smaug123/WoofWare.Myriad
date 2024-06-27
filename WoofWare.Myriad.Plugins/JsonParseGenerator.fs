@@ -95,17 +95,6 @@ module internal JsonParseGenerator =
         )
         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ collectionType ; "ofSeq" ])
 
-    /// match {node} with | null -> None | v -> {body} |> Some
-    /// Use the variable `v` to get access to the `Some`.
-    let createParseLineOption (node : SynExpr) (body : SynExpr) : SynExpr =
-        let body = SynExpr.pipeThroughFunction (SynExpr.createIdent "Some") body
-
-        [
-            SynMatchClause.create SynPat.createNull (SynExpr.createIdent "None")
-            SynMatchClause.create (SynPat.named "v") body
-        ]
-        |> SynExpr.createMatch node
-
     let dotParse (typeName : LongIdent) : LongIdent =
         List.append typeName [ Ident.create "Parse" ]
 
@@ -206,8 +195,29 @@ module internal JsonParseGenerator =
         | NumberType typeName -> parseNumberType options propertyName node typeName
         | PrimitiveType typeName -> asValueGetValueIdent propertyName typeName node
         | OptionType ty ->
-            parseNode None options ty (SynExpr.createIdent "v")
-            |> createParseLineOption node
+            let someClause =
+                parseNode None options ty (SynExpr.createIdent "v")
+                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                |> SynMatchClause.create (SynPat.named "v")
+
+            [
+                SynMatchClause.create SynPat.createNull (SynExpr.createIdent "None")
+                someClause
+            ]
+            |> SynExpr.createMatch node
+        | NullableType ty ->
+            let someClause =
+                parseNode None options ty (SynExpr.createIdent "v")
+                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Nullable" ])
+                |> SynMatchClause.create (SynPat.named "v")
+
+            [
+                SynMatchClause.create
+                    SynPat.createNull
+                    (SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Nullable" ]) (SynExpr.CreateConst ()))
+                someClause
+            ]
+            |> SynExpr.createMatch node
         | ListType ty ->
             parseNode None options ty (SynExpr.createIdent "elt")
             |> asArrayMapped propertyName "List" node

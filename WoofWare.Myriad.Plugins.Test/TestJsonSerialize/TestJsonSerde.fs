@@ -89,6 +89,8 @@ module TestJsonSerde =
             let! f = Arb.generate |> Gen.filter (fun s -> Double.IsFinite (s / 1.0<measure>))
             let! f32 = Arb.generate |> Gen.filter (fun s -> Single.IsFinite (s / 1.0f<measure>))
             let! single = Arb.generate |> Gen.filter (fun s -> Single.IsFinite (s / 1.0f<measure>))
+            let! intMeasureOption = Arb.generate
+            let! intMeasureNullable = Arb.generate
 
             return
                 {
@@ -109,6 +111,8 @@ module TestJsonSerde =
                     F = f
                     F32 = f32
                     Single = single
+                    IntMeasureOption = intMeasureOption
+                    IntMeasureNullable = intMeasureNullable
                 }
         }
 
