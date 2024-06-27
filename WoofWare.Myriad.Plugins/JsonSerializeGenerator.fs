@@ -151,6 +151,7 @@ module internal JsonSerializeGenerator =
             SynExpr.pipeThroughFunction
                 (serializeNode fieldType)
                 (SynExpr.createLongIdent' [ Ident.create "input" ; fieldId ])
+            |> SynExpr.paren
         ]
         |> SynExpr.tuple
         |> SynExpr.applyFunction (SynExpr.createLongIdent [ "node" ; "Add" ])

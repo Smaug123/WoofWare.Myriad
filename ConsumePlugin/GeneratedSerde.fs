@@ -21,69 +21,69 @@ module InnerTypeWithBothJsonSerializeExtension =
             let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add (("it's-a-me"), input.Thing |> System.Text.Json.Nodes.JsonValue.Create<Guid>)
+                node.Add (("it's-a-me"), (input.Thing |> System.Text.Json.Nodes.JsonValue.Create<Guid>))
 
                 node.Add (
                     "map",
-                    input.Map
-                    |> (fun field ->
-                        let ret = System.Text.Json.Nodes.JsonObject ()
+                    (input.Map
+                     |> (fun field ->
+                         let ret = System.Text.Json.Nodes.JsonObject ()
 
-                        for (KeyValue (key, value)) in field do
-                            ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<Uri> value)
+                         for (KeyValue (key, value)) in field do
+                             ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<Uri> value)
 
-                        ret
-                    )
+                         ret
+                     ))
                 )
 
                 node.Add (
                     "readOnlyDict",
-                    input.ReadOnlyDict
-                    |> (fun field ->
-                        let ret = System.Text.Json.Nodes.JsonObject ()
+                    (input.ReadOnlyDict
+                     |> (fun field ->
+                         let ret = System.Text.Json.Nodes.JsonObject ()
 
-                        for (KeyValue (key, value)) in field do
-                            ret.Add (
-                                key.ToString (),
-                                (fun field ->
-                                    let arr = System.Text.Json.Nodes.JsonArray ()
+                         for (KeyValue (key, value)) in field do
+                             ret.Add (
+                                 key.ToString (),
+                                 (fun field ->
+                                     let arr = System.Text.Json.Nodes.JsonArray ()
 
-                                    for mem in field do
-                                        arr.Add (System.Text.Json.Nodes.JsonValue.Create<char> mem)
+                                     for mem in field do
+                                         arr.Add (System.Text.Json.Nodes.JsonValue.Create<char> mem)
 
-                                    arr
-                                )
-                                    value
-                            )
+                                     arr
+                                 )
+                                     value
+                             )
 
-                        ret
-                    )
+                         ret
+                     ))
                 )
 
                 node.Add (
                     "dict",
-                    input.Dict
-                    |> (fun field ->
-                        let ret = System.Text.Json.Nodes.JsonObject ()
+                    (input.Dict
+                     |> (fun field ->
+                         let ret = System.Text.Json.Nodes.JsonObject ()
 
-                        for (KeyValue (key, value)) in field do
-                            ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<bool> value)
+                         for (KeyValue (key, value)) in field do
+                             ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<bool> value)
 
-                        ret
-                    )
+                         ret
+                     ))
                 )
 
                 node.Add (
                     "concreteDict",
-                    input.ConcreteDict
-                    |> (fun field ->
-                        let ret = System.Text.Json.Nodes.JsonObject ()
+                    (input.ConcreteDict
+                     |> (fun field ->
+                         let ret = System.Text.Json.Nodes.JsonObject ()
 
-                        for (KeyValue (key, value)) in field do
-                            ret.Add (key.ToString (), InnerTypeWithBoth.toJsonNode value)
+                         for (KeyValue (key, value)) in field do
+                             ret.Add (key.ToString (), InnerTypeWithBoth.toJsonNode value)
 
-                        ret
-                    )
+                         ret
+                     ))
                 )
 
             node :> _
@@ -104,84 +104,84 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
             let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add ("a", input.A |> System.Text.Json.Nodes.JsonValue.Create<int>)
-                node.Add ("b", input.B |> System.Text.Json.Nodes.JsonValue.Create<string>)
+                node.Add ("a", (input.A |> System.Text.Json.Nodes.JsonValue.Create<int>))
+                node.Add ("b", (input.B |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
                     "c",
-                    input.C
-                    |> (fun field ->
-                        let arr = System.Text.Json.Nodes.JsonArray ()
+                    (input.C
+                     |> (fun field ->
+                         let arr = System.Text.Json.Nodes.JsonArray ()
 
-                        for mem in field do
-                            arr.Add (System.Text.Json.Nodes.JsonValue.Create<int> mem)
+                         for mem in field do
+                             arr.Add (System.Text.Json.Nodes.JsonValue.Create<int> mem)
 
-                        arr
-                    )
+                         arr
+                     ))
                 )
 
-                node.Add ("d", input.D |> InnerTypeWithBoth.toJsonNode)
+                node.Add ("d", (input.D |> InnerTypeWithBoth.toJsonNode))
 
                 node.Add (
                     "e",
-                    input.E
-                    |> (fun field ->
-                        let arr = System.Text.Json.Nodes.JsonArray ()
+                    (input.E
+                     |> (fun field ->
+                         let arr = System.Text.Json.Nodes.JsonArray ()
 
-                        for mem in field do
-                            arr.Add (System.Text.Json.Nodes.JsonValue.Create<string> mem)
+                         for mem in field do
+                             arr.Add (System.Text.Json.Nodes.JsonValue.Create<string> mem)
 
-                        arr
-                    )
+                         arr
+                     ))
                 )
 
                 node.Add (
                     "arr",
-                    input.Arr
-                    |> (fun field ->
-                        let arr = System.Text.Json.Nodes.JsonArray ()
+                    (input.Arr
+                     |> (fun field ->
+                         let arr = System.Text.Json.Nodes.JsonArray ()
 
-                        for mem in field do
-                            arr.Add (System.Text.Json.Nodes.JsonValue.Create<int> mem)
+                         for mem in field do
+                             arr.Add (System.Text.Json.Nodes.JsonValue.Create<int> mem)
 
-                        arr
-                    )
+                         arr
+                     ))
                 )
 
-                node.Add ("byte", input.Byte |> System.Text.Json.Nodes.JsonValue.Create<byte<measure>>)
-                node.Add ("sbyte", input.Sbyte |> System.Text.Json.Nodes.JsonValue.Create<sbyte<measure>>)
-                node.Add ("i", input.I |> System.Text.Json.Nodes.JsonValue.Create<int<measure>>)
-                node.Add ("i32", input.I32 |> System.Text.Json.Nodes.JsonValue.Create<int32<measure>>)
-                node.Add ("i64", input.I64 |> System.Text.Json.Nodes.JsonValue.Create<int64<measure>>)
-                node.Add ("u", input.U |> System.Text.Json.Nodes.JsonValue.Create<uint<measure>>)
-                node.Add ("u32", input.U32 |> System.Text.Json.Nodes.JsonValue.Create<uint32<measure>>)
-                node.Add ("u64", input.U64 |> System.Text.Json.Nodes.JsonValue.Create<uint64<measure>>)
-                node.Add ("f", input.F |> System.Text.Json.Nodes.JsonValue.Create<float<measure>>)
-                node.Add ("f32", input.F32 |> System.Text.Json.Nodes.JsonValue.Create<float32<measure>>)
-                node.Add ("single", input.Single |> System.Text.Json.Nodes.JsonValue.Create<single<measure>>)
+                node.Add ("byte", (input.Byte |> System.Text.Json.Nodes.JsonValue.Create<byte<measure>>))
+                node.Add ("sbyte", (input.Sbyte |> System.Text.Json.Nodes.JsonValue.Create<sbyte<measure>>))
+                node.Add ("i", (input.I |> System.Text.Json.Nodes.JsonValue.Create<int<measure>>))
+                node.Add ("i32", (input.I32 |> System.Text.Json.Nodes.JsonValue.Create<int32<measure>>))
+                node.Add ("i64", (input.I64 |> System.Text.Json.Nodes.JsonValue.Create<int64<measure>>))
+                node.Add ("u", (input.U |> System.Text.Json.Nodes.JsonValue.Create<uint<measure>>))
+                node.Add ("u32", (input.U32 |> System.Text.Json.Nodes.JsonValue.Create<uint32<measure>>))
+                node.Add ("u64", (input.U64 |> System.Text.Json.Nodes.JsonValue.Create<uint64<measure>>))
+                node.Add ("f", (input.F |> System.Text.Json.Nodes.JsonValue.Create<float<measure>>))
+                node.Add ("f32", (input.F32 |> System.Text.Json.Nodes.JsonValue.Create<float32<measure>>))
+                node.Add ("single", (input.Single |> System.Text.Json.Nodes.JsonValue.Create<single<measure>>))
 
                 node.Add (
                     "intMeasureOption",
-                    input.IntMeasureOption
-                    |> (fun field ->
-                        match field with
-                        | None -> null :> System.Text.Json.Nodes.JsonNode
-                        | Some field ->
-                            (System.Text.Json.Nodes.JsonValue.Create<int<measure>> field)
-                            :> System.Text.Json.Nodes.JsonNode
-                    )
+                    (input.IntMeasureOption
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int<measure>> field)
+                             :> System.Text.Json.Nodes.JsonNode
+                     ))
                 )
 
                 node.Add (
                     "intMeasureNullable",
-                    input.IntMeasureNullable
-                    |> (fun field ->
-                        if field.HasValue then
-                            System.Text.Json.Nodes.JsonValue.Create<int<measure>> field.Value
-                            :> System.Text.Json.Nodes.JsonNode
-                        else
-                            null :> System.Text.Json.Nodes.JsonNode
-                    )
+                    (input.IntMeasureNullable
+                     |> (fun field ->
+                         if field.HasValue then
+                             System.Text.Json.Nodes.JsonValue.Create<int<measure>> field.Value
+                             :> System.Text.Json.Nodes.JsonNode
+                         else
+                             null :> System.Text.Json.Nodes.JsonNode
+                     ))
                 )
 
             node :> _

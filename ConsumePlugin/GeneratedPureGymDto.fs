@@ -20,21 +20,26 @@ module MemberJsonSerializeExtension =
             let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add ("id", input.Id |> System.Text.Json.Nodes.JsonValue.Create<int>)
-                node.Add ("compoundMemberId", input.CompoundMemberId |> System.Text.Json.Nodes.JsonValue.Create<string>)
-                node.Add ("firstName", input.FirstName |> System.Text.Json.Nodes.JsonValue.Create<string>)
-                node.Add ("lastName", input.LastName |> System.Text.Json.Nodes.JsonValue.Create<string>)
-                node.Add ("homeGymId", input.HomeGymId |> System.Text.Json.Nodes.JsonValue.Create<int>)
-                node.Add ("homeGymName", input.HomeGymName |> System.Text.Json.Nodes.JsonValue.Create<string>)
-                node.Add ("emailAddress", input.EmailAddress |> System.Text.Json.Nodes.JsonValue.Create<string>)
-                node.Add ("gymAccessPin", input.GymAccessPin |> System.Text.Json.Nodes.JsonValue.Create<string>)
-                node.Add ("dateofBirth", input.DateOfBirth |> System.Text.Json.Nodes.JsonValue.Create<DateOnly>)
-                node.Add ("mobileNumber", input.MobileNumber |> System.Text.Json.Nodes.JsonValue.Create<string>)
-                node.Add ("postCode", input.Postcode |> System.Text.Json.Nodes.JsonValue.Create<string>)
-                node.Add ("membershipName", input.MembershipName |> System.Text.Json.Nodes.JsonValue.Create<string>)
-                node.Add ("membershipLevel", input.MembershipLevel |> System.Text.Json.Nodes.JsonValue.Create<int>)
-                node.Add ("suspendedReason", input.SuspendedReason |> System.Text.Json.Nodes.JsonValue.Create<int>)
-                node.Add ("memberStatus", input.MemberStatus |> System.Text.Json.Nodes.JsonValue.Create<int>)
+                node.Add ("id", (input.Id |> System.Text.Json.Nodes.JsonValue.Create<int>))
+
+                node.Add (
+                    "compoundMemberId",
+                    (input.CompoundMemberId |> System.Text.Json.Nodes.JsonValue.Create<string>)
+                )
+
+                node.Add ("firstName", (input.FirstName |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("lastName", (input.LastName |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("homeGymId", (input.HomeGymId |> System.Text.Json.Nodes.JsonValue.Create<int>))
+                node.Add ("homeGymName", (input.HomeGymName |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("emailAddress", (input.EmailAddress |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("gymAccessPin", (input.GymAccessPin |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("dateofBirth", (input.DateOfBirth |> System.Text.Json.Nodes.JsonValue.Create<DateOnly>))
+                node.Add ("mobileNumber", (input.MobileNumber |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("postCode", (input.Postcode |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("membershipName", (input.MembershipName |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("membershipLevel", (input.MembershipLevel |> System.Text.Json.Nodes.JsonValue.Create<int>))
+                node.Add ("suspendedReason", (input.SuspendedReason |> System.Text.Json.Nodes.JsonValue.Create<int>))
+                node.Add ("memberStatus", (input.MemberStatus |> System.Text.Json.Nodes.JsonValue.Create<int>))
 
             node :> _
 
