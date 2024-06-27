@@ -49,3 +49,15 @@ module TestJsonParse =
 
         let actual = s |> JsonNode.Parse |> InnerType.jsonParse
         actual |> shouldEqual expected
+
+    [<TestCase("thing", SomeEnum.Thing)>]
+    [<TestCase("Thing", SomeEnum.Thing)>]
+    [<TestCase("THING", SomeEnum.Thing)>]
+    [<TestCase("blah", SomeEnum.Blah)>]
+    [<TestCase("Blah", SomeEnum.Blah)>]
+    [<TestCase("BLAH", SomeEnum.Blah)>]
+    let ``Can deserialise enum`` (str : string, expected : SomeEnum) =
+        sprintf "\"%s\"" str
+        |> JsonNode.Parse
+        |> SomeEnum.jsonParse
+        |> shouldEqual expected

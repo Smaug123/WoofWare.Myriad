@@ -93,6 +93,24 @@ open System
 open System.Collections.Generic
 open System.Text.Json.Serialization
 
+/// Module containing JSON serializing extension members for the SomeEnum type
+[<AutoOpen>]
+module SomeEnumJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type SomeEnum with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : SomeEnum) : System.Text.Json.Nodes.JsonNode =
+            match input with
+            | SomeEnum.Blah -> System.Text.Json.Nodes.JsonValue.Create 1
+            | SomeEnum.Thing -> System.Text.Json.Nodes.JsonValue.Create 0
+            | v -> failwith (sprintf "Unrecognised value for enum: %O" v)
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
 /// Module containing JSON serializing extension members for the JsonRecordTypeWithBoth type
 [<AutoOpen>]
 module JsonRecordTypeWithBothJsonSerializeExtension =
@@ -339,7 +357,7 @@ module SomeEnumJsonParseExtension =
                 match node.AsValue().GetValue<string>().ToLowerInvariant () with
                 | "blah" -> SomeEnum.Blah
                 | "thing" -> SomeEnum.Thing
-                | v -> failwith ("Unrecognised string value for enum: " + v)
+                | v -> failwith ("Unrecognised value for enum: %i" + v)
             | _ -> failwith ("Unrecognised kind for enum of type: " + "SomeEnum")
 namespace ConsumePlugin
 

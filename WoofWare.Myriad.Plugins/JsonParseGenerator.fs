@@ -510,7 +510,7 @@ module internal JsonParseGenerator =
             |> SynExpr.applyFunction (SynExpr.createIdent "failwith")
 
         let failString =
-            SynExpr.plus (SynExpr.CreateConst "Unrecognised string value for enum: ") (SynExpr.createIdent "v")
+            SynExpr.plus (SynExpr.CreateConst "Unrecognised value for enum: %i") (SynExpr.createIdent "v")
             |> SynExpr.paren
             |> SynExpr.applyFunction (SynExpr.createIdent "failwith")
 

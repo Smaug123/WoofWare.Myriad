@@ -11,30 +11,30 @@
   <ItemGroup>
     <None Include="myriad.toml"/>
     <Compile Include="AssemblyInfo.fs" />
-    <None Include="RecordFile.fs"/>
-    <None Include="GeneratedRecord.fs">
+    <Compile Include="RecordFile.fs"/>
+    <Compile Include="GeneratedRecord.fs">
       <MyriadFile>RecordFile.fs</MyriadFile>
-    </None>
-    <None Include="JsonRecord.fs"/>
-    <None Include="GeneratedJson.fs">
+    </Compile>
+    <Compile Include="JsonRecord.fs"/>
+    <Compile Include="GeneratedJson.fs">
       <MyriadFile>JsonRecord.fs</MyriadFile>
-    </None>
-    <None Include="PureGymDto.fs"/>
-    <None Include="GeneratedPureGymDto.fs">
+    </Compile>
+    <Compile Include="PureGymDto.fs"/>
+    <Compile Include="GeneratedPureGymDto.fs">
       <MyriadFile>PureGymDto.fs</MyriadFile>
-    </None>
-    <None Include="RestApiExample.fs"/>
-    <None Include="GeneratedRestClient.fs">
+    </Compile>
+    <Compile Include="RestApiExample.fs"/>
+    <Compile Include="GeneratedRestClient.fs">
       <MyriadFile>RestApiExample.fs</MyriadFile>
-    </None>
-    <None Include="MockExample.fs"/>
-    <None Include="GeneratedMock.fs">
+    </Compile>
+    <Compile Include="MockExample.fs"/>
+    <Compile Include="GeneratedMock.fs">
       <MyriadFile>MockExample.fs</MyriadFile>
-    </None>
-    <None Include="Vault.fs" />
-    <None Include="GeneratedVault.fs">
+    </Compile>
+    <Compile Include="Vault.fs" />
+    <Compile Include="GeneratedVault.fs">
       <MyriadFile>Vault.fs</MyriadFile>
-    </None>
+    </Compile>
     <Compile Include="SerializationAndDeserialization.fs" />
     <Compile Include="GeneratedSerde.fs">
       <MyriadFile>SerializationAndDeserialization.fs</MyriadFile>
