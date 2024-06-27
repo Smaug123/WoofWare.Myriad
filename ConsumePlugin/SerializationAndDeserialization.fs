@@ -16,6 +16,12 @@ type InnerTypeWithBoth =
         ConcreteDict : Dictionary<string, InnerTypeWithBoth>
     }
 
+[<WoofWare.Myriad.Plugins.JsonParse true>]
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
+type SomeEnum =
+    | Blah = 1
+    | Thing = 0
+
 [<Measure>]
 type measure
 
@@ -42,6 +48,7 @@ type JsonRecordTypeWithBoth =
         Single : single<measure>
         IntMeasureOption : int<measure> option
         IntMeasureNullable : int<measure> Nullable
+        Enum : SomeEnum
     }
 
 [<WoofWare.Myriad.Plugins.JsonSerialize true>]

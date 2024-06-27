@@ -24,7 +24,7 @@ module internal JsonParseGenerator =
                 JsonNumberHandlingArg = None
             }
 
-    /// (match {indexed} with | null -> raise (System.Collections.Generic.KeyNotFoundException ()) | v -> v)
+    /// (match {indexed} with | null -> raise (System.Collections.Generic.KeyNotFoundException ({propertyName} not found)) | v -> v)
     let assertNotNull (propertyName : SynExpr) (indexed : SynExpr) =
         let raiseExpr =
             SynExpr.applyFunction
@@ -488,6 +488,59 @@ module internal JsonParseGenerator =
                 |> SynBinding.basic [ Ident.create "ty" ] []
             ]
 
+    let createEnumMaker
+        (spec : JsonParseOutputSpec)
+        (typeName : LongIdent)
+        (fields : (Ident * SynExpr) list)
+        : SynExpr
+        =
+        let numberKind =
+            [ "System" ; "Text" ; "Json" ; "JsonValueKind" ; "Number" ]
+            |> List.map Ident.create
+
+        let stringKind =
+            [ "System" ; "Text" ; "Json" ; "JsonValueKind" ; "String" ]
+            |> List.map Ident.create
+
+        let fail =
+            SynExpr.plus
+                (SynExpr.CreateConst "Unrecognised kind for enum of type: ")
+                (SynExpr.CreateConst (typeName |> List.map _.idText |> String.concat "."))
+            |> SynExpr.paren
+            |> SynExpr.applyFunction (SynExpr.createIdent "failwith")
+
+        let failString =
+            SynExpr.plus (SynExpr.CreateConst "Unrecognised value for enum: %i") (SynExpr.createIdent "v")
+            |> SynExpr.paren
+            |> SynExpr.applyFunction (SynExpr.createIdent "failwith")
+
+        let parseString =
+            fields
+            |> List.map (fun (ident, _) ->
+                SynMatchClause.create
+                    (SynPat.createConst (
+                        SynConst.String (ident.idText.ToLowerInvariant (), SynStringKind.Regular, range0)
+                    ))
+                    (SynExpr.createLongIdent' (typeName @ [ ident ]))
+            )
+            |> fun l -> l @ [ SynMatchClause.create (SynPat.named "v") failString ]
+            |> SynExpr.createMatch (
+                asValueGetValue None "string" (SynExpr.createIdent "node")
+                |> SynExpr.callMethod "ToLowerInvariant"
+            )
+
+        [
+            SynMatchClause.create
+                (SynPat.identWithArgs numberKind (SynArgPats.create []))
+                (asValueGetValue None "int" (SynExpr.createIdent "node")
+                 |> SynExpr.pipeThroughFunction (
+                     SynExpr.typeApp [ SynType.createLongIdent typeName ] (SynExpr.createIdent "enum")
+                 ))
+            SynMatchClause.create (SynPat.identWithArgs stringKind (SynArgPats.create [])) parseString
+            SynMatchClause.create (SynPat.named "_") fail
+        ]
+        |> SynExpr.createMatch (SynExpr.callMethod "GetValueKind" (SynExpr.createIdent "node"))
+
     let createModule (namespaceId : LongIdent) (spec : JsonParseOutputSpec) (typeDefn : SynTypeDefn) =
         let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
             typeDefn
@@ -548,6 +601,13 @@ module internal JsonParseGenerator =
                 |> List.map SynUnionCase.extract
                 |> List.map (UnionCase.mapIdentFields optionGet)
                 |> createUnionMaker spec ident
+            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Enum (cases, _range), _) ->
+                cases
+                |> List.map (fun c ->
+                    match c with
+                    | SynEnumCase.SynEnumCase (_, SynIdent.SynIdent (ident, _), value, _, _, _) -> ident, value
+                )
+                |> createEnumMaker spec ident
             | _ -> failwithf "Not a record or union type"
 
         [ scaffolding spec ident decl ]
@@ -569,20 +629,21 @@ type JsonParseGenerator () =
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
-            let recordsAndUnions =
+            let relevantTypes =
                 Ast.extractTypeDefn ast
                 |> List.map (fun (name, defns) ->
                     defns
                     |> List.choose (fun defn ->
                         if Ast.isRecord defn then Some defn
                         elif Ast.isDu defn then Some defn
+                        elif AstHelper.isEnum defn then Some defn
                         else None
                     )
                     |> fun defns -> name, defns
                 )
 
             let namespaceAndTypes =
-                recordsAndUnions
+                relevantTypes
                 |> List.choose (fun (ns, types) ->
                     types
                     |> List.choose (fun typeDef ->

@@ -93,6 +93,24 @@ open System
 open System.Collections.Generic
 open System.Text.Json.Serialization
 
+/// Module containing JSON serializing extension members for the SomeEnum type
+[<AutoOpen>]
+module SomeEnumJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type SomeEnum with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : SomeEnum) : System.Text.Json.Nodes.JsonNode =
+            match input with
+            | SomeEnum.Blah -> System.Text.Json.Nodes.JsonValue.Create 1
+            | SomeEnum.Thing -> System.Text.Json.Nodes.JsonValue.Create 0
+            | v -> failwith (sprintf "Unrecognised value for enum: %O" v)
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
 /// Module containing JSON serializing extension members for the JsonRecordTypeWithBoth type
 [<AutoOpen>]
 module JsonRecordTypeWithBothJsonSerializeExtension =
@@ -183,6 +201,8 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                              null :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
+
+                node.Add ("enum", (input.Enum |> SomeEnum.toJsonNode))
 
             node :> _
 namespace ConsumePlugin
@@ -323,6 +343,24 @@ module InnerTypeWithBothJsonParseExtension =
             }
 namespace ConsumePlugin
 
+/// Module containing JSON parsing extension members for the SomeEnum type
+[<AutoOpen>]
+module SomeEnumJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type SomeEnum with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : SomeEnum =
+            match node.GetValueKind () with
+            | System.Text.Json.JsonValueKind.Number -> node.AsValue().GetValue<int> () |> enum<SomeEnum>
+            | System.Text.Json.JsonValueKind.String ->
+                match node.AsValue().GetValue<string>().ToLowerInvariant () with
+                | "blah" -> SomeEnum.Blah
+                | "thing" -> SomeEnum.Thing
+                | v -> failwith ("Unrecognised value for enum: %i" + v)
+            | _ -> failwith ("Unrecognised kind for enum of type: " + "SomeEnum")
+namespace ConsumePlugin
+
 /// Module containing JSON parsing extension members for the JsonRecordTypeWithBoth type
 [<AutoOpen>]
 module JsonRecordTypeWithBothJsonParseExtension =
@@ -331,6 +369,18 @@ module JsonRecordTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
+            let arg_19 =
+                SomeEnum.jsonParse (
+                    match node.["enum"] with
+                    | null ->
+                        raise (
+                            System.Collections.Generic.KeyNotFoundException (
+                                sprintf "Required key '%s' not found on JSON object" ("enum")
+                            )
+                        )
+                    | v -> v
+                )
+
             let arg_18 =
                 match node.["intMeasureNullable"] with
                 | null -> System.Nullable ()
@@ -585,6 +635,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 Single = arg_16
                 IntMeasureOption = arg_17
                 IntMeasureNullable = arg_18
+                Enum = arg_19
             }
 namespace ConsumePlugin
 

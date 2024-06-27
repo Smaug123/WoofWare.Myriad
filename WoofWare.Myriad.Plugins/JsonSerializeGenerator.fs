@@ -34,15 +34,8 @@ module internal JsonSerializeGenerator =
         | Guid
         | Uri ->
             // JsonValue.Create<type>
-            SynExpr.TypeApp (
-                SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ],
-                range0,
-                [ fieldType ],
-                [],
-                Some range0,
-                range0,
-                range0
-            )
+            SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]
+            |> SynExpr.typeApp [ fieldType ]
         | NullableType ty ->
             // fun field -> if field.HasValue then {serializeNode ty} field.Value else JsonValue.Create null
             SynExpr.applyFunction (serializeNode ty) (SynExpr.createLongIdent [ "field" ; "Value" ])
@@ -238,8 +231,7 @@ module internal JsonSerializeGenerator =
             |> SynBinding.withXmlDoc xmlDoc
             |> SynModuleDecl.createLet
 
-    let recordModule (spec : JsonSerializeOutputSpec) (typeName : LongIdent) (fields : SynField list) =
-        let inputArg = Ident.create "input"
+    let recordModule (spec : JsonSerializeOutputSpec) (_typeName : LongIdent) (fields : SynField list) =
         let fields = fields |> List.map SynField.extractWithIdent
 
         fields
@@ -249,7 +241,6 @@ module internal JsonSerializeGenerator =
         )
         |> SynExpr.sequential
         |> fun expr -> SynExpr.Do (expr, range0)
-        |> scaffolding spec typeName inputArg
 
     let unionModule (spec : JsonSerializeOutputSpec) (typeName : LongIdent) (cases : SynUnionCase list) =
         let inputArg = Ident.create "input"
@@ -322,7 +313,68 @@ module internal JsonSerializeGenerator =
             SynMatchClause.create pattern action
         )
         |> SynExpr.createMatch (SynExpr.createIdent' inputArg)
-        |> scaffolding spec typeName inputArg
+
+    let enumModule
+        (spec : JsonSerializeOutputSpec)
+        (typeName : LongIdent)
+        (cases : (Ident * SynExpr) list)
+        : SynModuleDecl
+        =
+        let fail =
+            SynExpr.CreateConst "Unrecognised value for enum: %O"
+            |> SynExpr.applyFunction (SynExpr.createIdent "sprintf")
+            |> SynExpr.applyTo (SynExpr.createIdent "v")
+            |> SynExpr.paren
+            |> SynExpr.applyFunction (SynExpr.createIdent "failwith")
+
+        let body =
+            cases
+            |> List.map (fun (caseName, value) ->
+                value
+                |> SynExpr.applyFunction (
+                    SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]
+                )
+                |> SynMatchClause.create (SynPat.identWithArgs (typeName @ [ caseName ]) (SynArgPats.create []))
+            )
+            |> fun l -> l @ [ SynMatchClause.create (SynPat.named "v") fail ]
+            |> SynExpr.createMatch (SynExpr.createIdent "input")
+
+        let xmlDoc = PreXmlDoc.create "Serialize to a JSON node"
+
+        let returnInfo =
+            SynLongIdent.createS' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
+            |> SynType.LongIdent
+
+        let functionName = Ident.create "toJsonNode"
+
+        let pattern =
+            SynPat.named "input"
+            |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.create typeName))
+
+        if spec.ExtensionMethods then
+            let componentInfo =
+                SynComponentInfo.createLong typeName
+                |> SynComponentInfo.withDocString (PreXmlDoc.create "Extension methods for JSON parsing")
+
+            let memberDef =
+                body
+                |> SynBinding.basic [ functionName ] [ pattern ]
+                |> SynBinding.withXmlDoc xmlDoc
+                |> SynBinding.withReturnAnnotation returnInfo
+                |> SynMemberDefn.staticMember
+
+            let containingType =
+                SynTypeDefnRepr.augmentation ()
+                |> SynTypeDefn.create componentInfo
+                |> SynTypeDefn.withMemberDefns [ memberDef ]
+
+            SynModuleDecl.Types ([ containingType ], range0)
+        else
+            body
+            |> SynBinding.basic [ functionName ] [ pattern ]
+            |> SynBinding.withReturnAnnotation returnInfo
+            |> SynBinding.withXmlDoc xmlDoc
+            |> SynModuleDecl.createLet
 
     let createModule
         (namespaceId : LongIdent)
@@ -378,14 +430,23 @@ module internal JsonSerializeGenerator =
         let decls =
             match synTypeDefnRepr with
             | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (_accessibility, recordFields, _range), _) ->
-                [ recordModule spec ident recordFields ]
+                recordModule spec ident recordFields
+                |> scaffolding spec ident (Ident.create "input")
             | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (_accessibility, unionFields, _range), _) ->
-                [ unionModule spec ident unionFields ]
-            | _ -> failwithf "Only record types currently supported."
+                unionModule spec ident unionFields
+                |> scaffolding spec ident (Ident.create "input")
+            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Enum (cases, _range), _) ->
+                cases
+                |> List.map (fun c ->
+                    match c with
+                    | SynEnumCase.SynEnumCase (_, SynIdent.SynIdent (ident, _), value, _, _, _) -> ident, value
+                )
+                |> enumModule spec ident
+            | ty -> failwithf "Unsupported type: got %O" ty
 
         [
             yield! opens |> List.map SynModuleDecl.openAny
-            yield SynModuleDecl.nestedModule info decls
+            yield decls |> List.singleton |> SynModuleDecl.nestedModule info
         ]
         |> SynModuleOrNamespace.createNamespace namespaceId
 
@@ -403,20 +464,21 @@ type JsonSerializeGenerator () =
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
-            let recordsAndUnions =
+            let relevantTypes =
                 Ast.extractTypeDefn ast
                 |> List.map (fun (name, defns) ->
                     defns
                     |> List.choose (fun defn ->
                         if Ast.isRecord defn then Some defn
                         elif Ast.isDu defn then Some defn
+                        elif AstHelper.isEnum defn then Some defn
                         else None
                     )
                     |> fun defns -> name, defns
                 )
 
             let namespaceAndTypes =
-                recordsAndUnions
+                relevantTypes
                 |> List.choose (fun (ns, types) ->
                     types
                     |> List.choose (fun typeDef ->

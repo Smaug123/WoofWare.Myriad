@@ -91,6 +91,7 @@ module TestJsonSerde =
             let! single = Arb.generate |> Gen.filter (fun s -> Single.IsFinite (s / 1.0f<measure>))
             let! intMeasureOption = Arb.generate
             let! intMeasureNullable = Arb.generate
+            let! someEnum = Gen.choose (0, 1)
 
             return
                 {
@@ -113,6 +114,7 @@ module TestJsonSerde =
                     Single = single
                     IntMeasureOption = intMeasureOption
                     IntMeasureNullable = intMeasureNullable
+                    Enum = enum<SomeEnum> someEnum
                 }
         }
 

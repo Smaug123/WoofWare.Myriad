@@ -96,6 +96,11 @@ type internal AdtProduct =
 [<RequireQualifiedAccess>]
 module internal AstHelper =
 
+    let isEnum (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _)) : bool =
+        match repr with
+        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Enum _, _) -> true
+        | _ -> false
+
     let instantiateRecord (fields : (RecordFieldName * SynExpr option) list) : SynExpr =
         let fields =
             fields
