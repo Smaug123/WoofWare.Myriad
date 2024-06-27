@@ -14,7 +14,7 @@ module internal InternalTypeNotExtensionSerial =
     /// Serialize to a JSON node
     let toJsonNode (input : InternalTypeNotExtensionSerial) : System.Text.Json.Nodes.JsonNode =
         let node = System.Text.Json.Nodes.JsonObject ()
-        do node.Add ((Literals.something), System.Text.Json.Nodes.JsonValue.Create<string> input.InternalThing2)
+        do node.Add ((Literals.something), input.InternalThing2 |> System.Text.Json.Nodes.JsonValue.Create<string>)
         node :> _
 namespace ConsumePlugin
 
@@ -29,7 +29,7 @@ module internal InternalTypeExtensionJsonSerializeExtension =
         /// Serialize to a JSON node
         static member toJsonNode (input : InternalTypeExtension) : System.Text.Json.Nodes.JsonNode =
             let node = System.Text.Json.Nodes.JsonObject ()
-            do node.Add ((Literals.something), System.Text.Json.Nodes.JsonValue.Create<string> input.ExternalThing)
+            do node.Add ((Literals.something), input.ExternalThing |> System.Text.Json.Nodes.JsonValue.Create<string>)
             node :> _
 
 namespace ConsumePlugin

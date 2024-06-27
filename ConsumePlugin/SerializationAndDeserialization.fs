@@ -40,6 +40,8 @@ type JsonRecordTypeWithBoth =
         F : float<measure>
         F32 : float32<measure>
         Single : single<measure>
+        IntMeasureOption : int<measure> option
+        IntMeasureNullable : int<measure> Nullable
     }
 
 [<WoofWare.Myriad.Plugins.JsonSerialize true>]

@@ -21,11 +21,12 @@ module InnerTypeWithBothJsonSerializeExtension =
             let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add (("it's-a-me"), System.Text.Json.Nodes.JsonValue.Create<Guid> input.Thing)
+                node.Add (("it's-a-me"), input.Thing |> System.Text.Json.Nodes.JsonValue.Create<Guid>)
 
                 node.Add (
                     "map",
-                    (fun field ->
+                    input.Map
+                    |> (fun field ->
                         let ret = System.Text.Json.Nodes.JsonObject ()
 
                         for (KeyValue (key, value)) in field do
@@ -33,12 +34,12 @@ module InnerTypeWithBothJsonSerializeExtension =
 
                         ret
                     )
-                        input.Map
                 )
 
                 node.Add (
                     "readOnlyDict",
-                    (fun field ->
+                    input.ReadOnlyDict
+                    |> (fun field ->
                         let ret = System.Text.Json.Nodes.JsonObject ()
 
                         for (KeyValue (key, value)) in field do
@@ -57,12 +58,12 @@ module InnerTypeWithBothJsonSerializeExtension =
 
                         ret
                     )
-                        input.ReadOnlyDict
                 )
 
                 node.Add (
                     "dict",
-                    (fun field ->
+                    input.Dict
+                    |> (fun field ->
                         let ret = System.Text.Json.Nodes.JsonObject ()
 
                         for (KeyValue (key, value)) in field do
@@ -70,12 +71,12 @@ module InnerTypeWithBothJsonSerializeExtension =
 
                         ret
                     )
-                        input.Dict
                 )
 
                 node.Add (
                     "concreteDict",
-                    (fun field ->
+                    input.ConcreteDict
+                    |> (fun field ->
                         let ret = System.Text.Json.Nodes.JsonObject ()
 
                         for (KeyValue (key, value)) in field do
@@ -83,7 +84,6 @@ module InnerTypeWithBothJsonSerializeExtension =
 
                         ret
                     )
-                        input.ConcreteDict
                 )
 
             node :> _
@@ -104,12 +104,13 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
             let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add ("a", System.Text.Json.Nodes.JsonValue.Create<int> input.A)
-                node.Add ("b", System.Text.Json.Nodes.JsonValue.Create<string> input.B)
+                node.Add ("a", input.A |> System.Text.Json.Nodes.JsonValue.Create<int>)
+                node.Add ("b", input.B |> System.Text.Json.Nodes.JsonValue.Create<string>)
 
                 node.Add (
                     "c",
-                    (fun field ->
+                    input.C
+                    |> (fun field ->
                         let arr = System.Text.Json.Nodes.JsonArray ()
 
                         for mem in field do
@@ -117,14 +118,14 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
 
                         arr
                     )
-                        input.C
                 )
 
-                node.Add ("d", InnerTypeWithBoth.toJsonNode input.D)
+                node.Add ("d", input.D |> InnerTypeWithBoth.toJsonNode)
 
                 node.Add (
                     "e",
-                    (fun field ->
+                    input.E
+                    |> (fun field ->
                         let arr = System.Text.Json.Nodes.JsonArray ()
 
                         for mem in field do
@@ -132,12 +133,12 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
 
                         arr
                     )
-                        input.E
                 )
 
                 node.Add (
                     "arr",
-                    (fun field ->
+                    input.Arr
+                    |> (fun field ->
                         let arr = System.Text.Json.Nodes.JsonArray ()
 
                         for mem in field do
@@ -145,20 +146,43 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
 
                         arr
                     )
-                        input.Arr
                 )
 
-                node.Add ("byte", System.Text.Json.Nodes.JsonValue.Create<byte<measure>> input.Byte)
-                node.Add ("sbyte", System.Text.Json.Nodes.JsonValue.Create<sbyte<measure>> input.Sbyte)
-                node.Add ("i", System.Text.Json.Nodes.JsonValue.Create<int<measure>> input.I)
-                node.Add ("i32", System.Text.Json.Nodes.JsonValue.Create<int32<measure>> input.I32)
-                node.Add ("i64", System.Text.Json.Nodes.JsonValue.Create<int64<measure>> input.I64)
-                node.Add ("u", System.Text.Json.Nodes.JsonValue.Create<uint<measure>> input.U)
-                node.Add ("u32", System.Text.Json.Nodes.JsonValue.Create<uint32<measure>> input.U32)
-                node.Add ("u64", System.Text.Json.Nodes.JsonValue.Create<uint64<measure>> input.U64)
-                node.Add ("f", System.Text.Json.Nodes.JsonValue.Create<float<measure>> input.F)
-                node.Add ("f32", System.Text.Json.Nodes.JsonValue.Create<float32<measure>> input.F32)
-                node.Add ("single", System.Text.Json.Nodes.JsonValue.Create<single<measure>> input.Single)
+                node.Add ("byte", input.Byte |> System.Text.Json.Nodes.JsonValue.Create<byte<measure>>)
+                node.Add ("sbyte", input.Sbyte |> System.Text.Json.Nodes.JsonValue.Create<sbyte<measure>>)
+                node.Add ("i", input.I |> System.Text.Json.Nodes.JsonValue.Create<int<measure>>)
+                node.Add ("i32", input.I32 |> System.Text.Json.Nodes.JsonValue.Create<int32<measure>>)
+                node.Add ("i64", input.I64 |> System.Text.Json.Nodes.JsonValue.Create<int64<measure>>)
+                node.Add ("u", input.U |> System.Text.Json.Nodes.JsonValue.Create<uint<measure>>)
+                node.Add ("u32", input.U32 |> System.Text.Json.Nodes.JsonValue.Create<uint32<measure>>)
+                node.Add ("u64", input.U64 |> System.Text.Json.Nodes.JsonValue.Create<uint64<measure>>)
+                node.Add ("f", input.F |> System.Text.Json.Nodes.JsonValue.Create<float<measure>>)
+                node.Add ("f32", input.F32 |> System.Text.Json.Nodes.JsonValue.Create<float32<measure>>)
+                node.Add ("single", input.Single |> System.Text.Json.Nodes.JsonValue.Create<single<measure>>)
+
+                node.Add (
+                    "intMeasureOption",
+                    input.IntMeasureOption
+                    |> (fun field ->
+                        match field with
+                        | None -> null :> System.Text.Json.Nodes.JsonNode
+                        | Some field ->
+                            (System.Text.Json.Nodes.JsonValue.Create<int<measure>> field)
+                            :> System.Text.Json.Nodes.JsonNode
+                    )
+                )
+
+                node.Add (
+                    "intMeasureNullable",
+                    input.IntMeasureNullable
+                    |> (fun field ->
+                        if field.HasValue then
+                            System.Text.Json.Nodes.JsonValue.Create<int<measure>> field.Value
+                            :> System.Text.Json.Nodes.JsonNode
+                        else
+                            null :> System.Text.Json.Nodes.JsonNode
+                    )
+                )
 
             node :> _
 namespace ConsumePlugin
@@ -307,6 +331,22 @@ module JsonRecordTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
+            let arg_18 =
+                match node.["intMeasureNullable"] with
+                | null -> System.Nullable ()
+                | v ->
+                    v.AsValue().GetValue<System.Int32> ()
+                    |> LanguagePrimitives.Int32WithMeasure
+                    |> System.Nullable
+
+            let arg_17 =
+                match node.["intMeasureOption"] with
+                | null -> None
+                | v ->
+                    v.AsValue().GetValue<System.Int32> ()
+                    |> LanguagePrimitives.Int32WithMeasure
+                    |> Some
+
             let arg_16 =
                 (match node.["single"] with
                  | null ->
@@ -543,6 +583,8 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 F = arg_14
                 F32 = arg_15
                 Single = arg_16
+                IntMeasureOption = arg_17
+                IntMeasureNullable = arg_18
             }
 namespace ConsumePlugin
 

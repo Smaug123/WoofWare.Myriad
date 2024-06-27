@@ -13,6 +13,14 @@ type internal JsonSerializeOutputSpec =
 module internal JsonSerializeGenerator =
     open Fantomas.FCS.Text.Range
 
+
+    // The absolutely galaxy-brained implementation of JsonValue has `JsonValue.Parse "null"`
+    // identically equal to null. We have to work around this later, but we might as well just
+    // be efficient here and whip up the null directly.
+    let private jsonNull () =
+        SynExpr.createNull ()
+        |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+
     /// Given `input.Ident`, for example, choose how to add it to the ambient `node`.
     /// The result is a line like `(fun ident -> InnerType.toJsonNode ident)` or `(fun ident -> JsonValue.Create ident)`.
     let rec serializeNode (fieldType : SynType) : SynExpr =
@@ -35,15 +43,15 @@ module internal JsonSerializeGenerator =
                 range0,
                 range0
             )
+        | NullableType ty ->
+            // fun field -> if field.HasValue then {serializeNode ty} field.Value else JsonValue.Create null
+            SynExpr.applyFunction (serializeNode ty) (SynExpr.createLongIdent [ "field" ; "Value" ])
+            |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+            |> SynExpr.ifThenElse (SynExpr.createLongIdent [ "field" ; "HasValue" ]) (jsonNull ())
+            |> SynExpr.createLambda "field"
         | OptionType ty ->
             // fun field -> match field with | None -> JsonValue.Create null | Some v -> {serializeNode ty} field
-            let noneClause =
-                // The absolutely galaxy-brained implementation of JsonValue has `JsonValue.Parse "null"`
-                // identically equal to null. We have to work around this later, but we might as well just
-                // be efficient here and whip up the null directly.
-                SynExpr.createNull ()
-                |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
-                |> SynMatchClause.create (SynPat.named "None")
+            let noneClause = jsonNull () |> SynMatchClause.create (SynPat.named "None")
 
             let someClause =
                 SynExpr.applyFunction (serializeNode ty) (SynExpr.createIdent "field")
@@ -140,7 +148,7 @@ module internal JsonSerializeGenerator =
     let createSerializeRhsRecord (propertyName : SynExpr) (fieldId : Ident) (fieldType : SynType) : SynExpr =
         [
             propertyName
-            SynExpr.applyFunction
+            SynExpr.pipeThroughFunction
                 (serializeNode fieldType)
                 (SynExpr.createLongIdent' [ Ident.create "input" ; fieldId ])
         ]

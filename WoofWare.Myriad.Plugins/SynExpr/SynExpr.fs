@@ -106,15 +106,16 @@ module internal SynExpr =
         | SynExpr.Paren (expr, _, _, _) -> stripOptionalParen expr
         | expr -> expr
 
-    /// {obj}.{meth} {arg}
-    let callMethodArg (meth : string) (arg : SynExpr) (obj : SynExpr) : SynExpr =
+    let dotGet (field : string) (obj : SynExpr) : SynExpr =
         SynExpr.DotGet (
             obj,
             range0,
-            SynLongIdent.SynLongIdent (id = [ Ident.create meth ], dotRanges = [], trivia = [ None ]),
+            SynLongIdent.SynLongIdent (id = [ Ident.create field ], dotRanges = [], trivia = [ None ]),
             range0
         )
-        |> applyTo arg
+
+    /// {obj}.{meth} {arg}
+    let callMethodArg (meth : string) (arg : SynExpr) (obj : SynExpr) : SynExpr = dotGet meth obj |> applyTo arg
 
     /// {obj}.{meth}()
     let callMethod (meth : string) (obj : SynExpr) : SynExpr =
