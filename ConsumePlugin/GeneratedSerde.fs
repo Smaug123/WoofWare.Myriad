@@ -184,6 +184,8 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                      ))
                 )
 
+                node.Add ("enum", (input.Enum |> SomeEnum.toJsonNode))
+
             node :> _
 namespace ConsumePlugin
 
@@ -331,6 +333,18 @@ module JsonRecordTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
+            let arg_19 =
+                SomeEnum.jsonParse (
+                    match node.["enum"] with
+                    | null ->
+                        raise (
+                            System.Collections.Generic.KeyNotFoundException (
+                                sprintf "Required key '%s' not found on JSON object" ("enum")
+                            )
+                        )
+                    | v -> v
+                )
+
             let arg_18 =
                 match node.["intMeasureNullable"] with
                 | null -> System.Nullable ()
@@ -585,6 +599,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 Single = arg_16
                 IntMeasureOption = arg_17
                 IntMeasureNullable = arg_18
+                Enum = arg_19
             }
 namespace ConsumePlugin
 
