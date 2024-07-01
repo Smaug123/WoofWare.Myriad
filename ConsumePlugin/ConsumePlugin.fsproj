@@ -51,6 +51,7 @@
     <Compile Include="ListCata.fs">
       <MyriadFile>List.fs</MyriadFile>
     </Compile>
+    <Compile Include="Args.fs" />
   </ItemGroup>
 
   <ItemGroup>
