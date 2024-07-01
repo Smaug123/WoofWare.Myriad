@@ -49,6 +49,7 @@ type JsonRecordTypeWithBoth =
         IntMeasureOption : int<measure> option
         IntMeasureNullable : int<measure> Nullable
         Enum : SomeEnum
+        Timestamp : DateTimeOffset
     }
 
 [<WoofWare.Myriad.Plugins.JsonSerialize true>]
@@ -67,6 +68,7 @@ type HeaderAndValue =
     }
 
 [<WoofWare.Myriad.Plugins.JsonSerialize true>]
+[<WoofWare.Myriad.Plugins.JsonParse true>]
 type Foo =
     {
         Message : HeaderAndValue option

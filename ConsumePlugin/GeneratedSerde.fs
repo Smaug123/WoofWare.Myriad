@@ -204,6 +204,12 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
 
                 node.Add ("enum", (input.Enum |> SomeEnum.toJsonNode))
 
+                node.Add (
+                    "timestamp",
+                    (input.Timestamp
+                     |> (fun field -> field.ToString "o" |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                )
+
             node :> _
 namespace ConsumePlugin
 
@@ -418,6 +424,19 @@ module JsonRecordTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
+            let arg_20 =
+                (match node.["timestamp"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("timestamp")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<string> ()
+                |> System.DateTimeOffset.Parse
+
             let arg_19 =
                 SomeEnum.jsonParse (
                     match node.["enum"] with
@@ -685,6 +704,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 IntMeasureOption = arg_17
                 IntMeasureNullable = arg_18
                 Enum = arg_19
+                Timestamp = arg_20
             }
 namespace ConsumePlugin
 
@@ -803,4 +823,22 @@ module HeaderAndValueJsonParseExtension =
             {
                 Header = arg_0
                 Value = arg_1
+            }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the Foo type
+[<AutoOpen>]
+module FooJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type Foo with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Foo =
+            let arg_0 =
+                match node.["message"] with
+                | null -> None
+                | v -> HeaderAndValue.jsonParse v |> Some
+
+            {
+                Message = arg_0
             }

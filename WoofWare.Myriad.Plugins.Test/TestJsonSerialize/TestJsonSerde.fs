@@ -92,6 +92,7 @@ module TestJsonSerde =
             let! intMeasureOption = Arb.generate
             let! intMeasureNullable = Arb.generate
             let! someEnum = Gen.choose (0, 1)
+            let! timestamp = Arb.generate
 
             return
                 {
@@ -115,6 +116,7 @@ module TestJsonSerde =
                     IntMeasureOption = intMeasureOption
                     IntMeasureNullable = intMeasureNullable
                     Enum = enum<SomeEnum> someEnum
+                    Timestamp = timestamp
                 }
         }
 

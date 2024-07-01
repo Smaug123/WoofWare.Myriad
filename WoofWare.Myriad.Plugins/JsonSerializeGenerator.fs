@@ -38,6 +38,17 @@ module internal JsonSerializeGenerator =
             SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]
             |> SynExpr.typeApp [ fieldType ]
             |> fun e -> e, false
+        | DateTimeOffset ->
+            // fun field -> field.ToString("o") |> JsonValue.Create<string>
+            let create =
+                SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]
+                |> SynExpr.typeApp [ SynType.named "string" ]
+
+            SynExpr.createIdent "field"
+            |> SynExpr.callMethodArg "ToString" (SynExpr.CreateConst "o")
+            |> SynExpr.pipeThroughFunction create
+            |> SynExpr.createLambda "field"
+            |> fun e -> e, false
         | NullableType ty ->
             // fun field -> if field.HasValue then {serializeNode ty} field.Value else JsonValue.Create null
             let inner, innerIsJsonNode = serializeNode ty
