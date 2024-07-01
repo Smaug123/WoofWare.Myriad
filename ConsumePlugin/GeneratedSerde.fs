@@ -236,6 +236,55 @@ module FirstDuJsonSerializeExtension =
                 node.Add ("data", dataNode)
 
             node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the HeaderAndValue type
+[<AutoOpen>]
+module HeaderAndValueJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type HeaderAndValue with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : HeaderAndValue) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                node.Add ("header", (input.Header |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("value", (input.Value |> System.Text.Json.Nodes.JsonValue.Create<string>))
+
+            node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the Foo type
+[<AutoOpen>]
+module FooJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type Foo with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : Foo) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                node.Add (
+                    "message",
+                    (input.Message
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field -> HeaderAndValue.toJsonNode field
+                     ))
+                )
+
+            node :> _
 
 namespace ConsumePlugin
 
@@ -717,3 +766,41 @@ module FirstDuJsonParseExtension =
                         .GetValue<System.Int32> ()
                 )
             | v -> failwith ("Unrecognised 'type' field value: " + v)
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the HeaderAndValue type
+[<AutoOpen>]
+module HeaderAndValueJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type HeaderAndValue with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : HeaderAndValue =
+            let arg_1 =
+                (match node.["value"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("value")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.String> ()
+
+            let arg_0 =
+                (match node.["header"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("header")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.String> ()
+
+            {
+                Header = arg_0
+                Value = arg_1
+            }

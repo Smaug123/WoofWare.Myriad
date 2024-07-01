@@ -449,7 +449,7 @@ module internal HttpClientGenerator =
                             SynExpr.createNew
                                 (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "StringContent" ])
                                 (SynExpr.createIdent' bodyParamName
-                                 |> SynExpr.pipeThroughFunction (JsonSerializeGenerator.serializeNode ty)
+                                 |> SynExpr.pipeThroughFunction (fst (JsonSerializeGenerator.serializeNode ty))
                                  |> SynExpr.pipeThroughFunction (
                                      SynExpr.createLambda
                                          "node"
