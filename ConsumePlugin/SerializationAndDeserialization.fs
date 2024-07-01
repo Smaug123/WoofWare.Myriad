@@ -57,3 +57,17 @@ type FirstDu =
     | EmptyCase
     | Case1 of data : string
     | Case2 of record : JsonRecordTypeWithBoth * i : int
+
+[<WoofWare.Myriad.Plugins.JsonParse true>]
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
+type HeaderAndValue =
+    {
+        Header : string
+        Value : string
+    }
+
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
+type Foo =
+    {
+        Message : HeaderAndValue option
+    }
