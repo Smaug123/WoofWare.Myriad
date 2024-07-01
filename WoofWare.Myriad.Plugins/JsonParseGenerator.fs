@@ -192,6 +192,10 @@ module internal JsonParseGenerator =
             node
             |> asValueGetValue propertyName "string"
             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "DateTime" ; "Parse" ])
+        | DateTimeOffset ->
+            node
+            |> asValueGetValue propertyName "string"
+            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "DateTimeOffset" ; "Parse" ])
         | NumberType typeName -> parseNumberType options propertyName node typeName
         | PrimitiveType typeName -> asValueGetValueIdent propertyName typeName node
         | OptionType ty ->
