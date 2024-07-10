@@ -73,6 +73,8 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Build
         run: nix build
+      - name: Reproducibility check
+        run: nix build --rebuild
 
   check-dotnet-format:
     runs-on: ubuntu-latest
