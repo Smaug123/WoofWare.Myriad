@@ -28,10 +28,10 @@ jobs:
         run: 'nix build .#default.passthru.fetch-deps'
 
       - name: Run passthru
-        run: 'cp "$(nix develop .#ci --command ./result | grep "Successfully wrote " | cut -d / -f 2-)" nix/deps.nix'
+        run: 'cp "$(nix develop --command ./result | grep "Successfully wrote " | cut -d / -f 2-)" nix/deps.nix'
 
       - name: Format
-        run: 'nix develop .#ci --command alejandra .'
+        run: 'nix develop --command alejandra .'
 
       - name: Create Pull Request
         id: cpr
