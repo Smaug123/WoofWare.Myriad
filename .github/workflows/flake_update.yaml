@@ -20,7 +20,16 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Nix flake
-        run: nix flake update
+        run: 'nix flake update'
+
+      - name: Build passthru
+        run: 'nix build .#default.passthru.fetch-deps'
+
+      - name: Run passthru
+        run: 'cp "$(./result | grep "Successfully wrote " | cut -d / -f 2-)" nix/deps.nix'
+
+      - name: Format
+        run: 'nix develop .#ci --command alejandra .'
 
       - name: Create Pull Request
         id: cpr
