@@ -219,9 +219,10 @@ jobs:
 
   all-required-checks-complete:
     needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack, github-release-plugin-dry-run]
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-      - uses: Smaug123/all-required-checks-complete-action@c7d97a518e6c031c6b873be29982dfea9df75679
+      - uses: Smaug123/all-required-checks-complete-action@05b40a8c47ef0b175ea326e9abb09802cb67b44e
         with:
           needs-context: ${{ toJSON(needs) }}
 
