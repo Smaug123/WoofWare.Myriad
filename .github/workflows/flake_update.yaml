@@ -35,15 +35,6 @@ jobs:
       - name: Format
         run: 'nix develop --command alejandra .'
 
-      - uses: crazy-max/ghaction-import-gpg@v5
-        with:
-          gpg_private_key: ${{ secrets.BOT_GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.BOT_GPG_PASSPHRASE }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
-          git_committer_name: patrick-conscriptus
-          git_committer_email: '41898282+github-actions[bot]@users.noreply.github.com'
-
       - name: Create token
         id: generate-token
         uses: actions/create-github-app-token@v1
@@ -51,6 +42,14 @@ jobs:
           # https://github.com/actions/create-github-app-token/issues/136
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Prepare to create commit
+        run: python -m venv /tmp/venv && /tmp/venv/bin/python -m pip install -r .github/workflows/requirements.txt
+
+      - name: Create commit
+        env:
+            BEARER_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: /tmp/venv/bin/python .github/workflows/commit.py
 
       - name: Create Pull Request
         id: cpr
@@ -61,11 +60,6 @@ jobs:
           title: Weekly Nix flake update
           body: |
             This is an automated pull request to update the Nix flake.
-
-            Changes:
-            ```
-            ${{ steps.create-diff.outputs.diff }}
-            ```
           branch: nix-flake-update
           base: main
           delete-branch: true
