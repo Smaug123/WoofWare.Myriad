@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
+name: Weekly Nix Flake Update
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Runs at 00:00 every Sunday
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  update-nix-flake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@V27
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Nix flake
+        run: 'nix flake update'
+
+      - name: Build passthru
+        run: 'nix build .#default.passthru.fetch-deps'
+
+      - name: Run passthru
+        run: 'cp "$(./result | grep "Successfully wrote " | cut -d / -f 2-)" nix/deps.nix'
+
+      - name: Format
+        run: 'nix develop .#ci --command alejandra .'
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v6.1.0
+        with:
+          commit-message: Update Nix flake
+          title: Weekly Nix flake update
+          body: |
+            This is an automated pull request to update the Nix flake.
+
+            Changes:
+            ```
+            ${{ steps.create-diff.outputs.diff }}
+            ```
+          branch: nix-flake-update
+          delete-branch: true
+
+      - name: Enable Pull Request Automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
