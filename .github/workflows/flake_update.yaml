@@ -28,10 +28,12 @@ jobs:
 
       - name: Run passthru
         run: |
-            mkfifo /tmp/pipe && tee /tmp/passthru.txt /tmp/pipe &
-            ./result > /tmp/pipe
+            pipefile="$(mktemp)"
+            rm "$pipefile"
+            mkfifo "$pipefile" && tee /tmp/passthru.txt "$pipefile" &
+            ./result > "$pipefile"
             exit=$?
-            rm /tmp/pipe
+            rm "$pipefile"
             exit "$exit"
 
       - name: Copy into place
