@@ -62,6 +62,7 @@ def create_commit(tree_sha, parent_sha, message):
         "parents": [parent_sha]
     }
     response = requests.post(url, headers=headers, json=data)
+    print(f"Commit response: {response.text}")
     json = response.json()
     print(f"Commit: {json}")
     return json["sha"]
