@@ -46,6 +46,7 @@ jobs:
 
       - name: Create pull request
         env:
+            DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
             BEARER_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: /tmp/venv/bin/python .github/workflows/commit.py
 

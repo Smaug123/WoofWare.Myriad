@@ -21,9 +21,9 @@ if not GITHUB_TOKEN:
 REPO = os.environ.get("GITHUB_REPOSITORY")
 if not REPO:
     raise Exception("Supply GITHUB_REPOSITORY env var")
-GITHUB_BASE_REF = os.environ.get("GITHUB_BASE_REF") or ""
-if not GITHUB_BASE_REF:
-    raise Exception("Supply GITHUB_BASE_REF env var")
+DEFAULT_BRANCH = os.environ.get("DEFAULT_BRANCH") or ""
+if not DEFAULT_BRANCH:
+    raise Exception("Supply DEFAULT_BRANCH env var")
 GITHUB_OUTPUT = os.environ.get("GITHUB_OUTPUT") or ""
 if not GITHUB_OUTPUT:
     raise Exception("Supply GITHUB_OUTPUT env var")
@@ -155,7 +155,7 @@ def main():
     create_branch(branch_name, new_commit_sha)
     print(f"Branch created: {branch_name}")
 
-    url, pr_num = create_pull_request(title="Upgrade Nix flake and deps", branch_name=branch_name, base_branch=GITHUB_BASE_REF)
+    url, pr_num = create_pull_request(title="Upgrade Nix flake and deps", branch_name=branch_name, base_branch=DEFAULT_BRANCH)
     print(f"See PR at: {url}")
 
     with open(GITHUB_OUTPUT, "a") as output_file:
