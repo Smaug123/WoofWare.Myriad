@@ -27,7 +27,15 @@ jobs:
         run: 'nix build ".#default.passthru.fetch-deps"'
 
       - name: Run passthru
-        run: 'cp "$(nix develop --command ./result | grep "Successfully wrote " | cut -d / -f 2-)" nix/deps.nix'
+        run: |
+            mkfifo /tmp/pipe && tee /tmp/passthru.txt /tmp/pipe &
+            ./result > /tmp/pipe
+            exit=$?
+            rm /tmp/pipe
+            exit "$exit"
+
+      - name: Copy into place
+        run: 'cp $(cat /tmp/passthru.txt | grep "Successfully wrote " | cut -d / -f 2-) nix/deps.nix'
 
       - name: Format
         run: 'nix develop --command alejandra .'
