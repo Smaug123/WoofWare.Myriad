@@ -49,6 +49,7 @@ jobs:
             ${{ steps.create-diff.outputs.diff }}
             ```
           branch: nix-flake-update
+          base: main
           delete-branch: true
 
       - name: Enable Pull Request Automerge
