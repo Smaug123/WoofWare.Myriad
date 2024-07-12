@@ -122,6 +122,8 @@ def create_pull_request(title: str, branch_name: str, base_branch: str) -> tuple
 
 def main():
     changed_files = get_git_diff()
+    if not changed_files:
+        return
 
     # Create blobs and prepare tree changes
     tree_changes = []
