@@ -30,10 +30,7 @@ jobs:
         run: |
             set -o pipefail
             ./result | tee /tmp/passthru.txt
-            echo Catting
-            cat /tmp/passthru.txt
-            echo Catted
-            cp /"$(cat /tmp/passthru.txt | grep "Successfully wrote " | cut -d / -f 2-)" nix/deps.nix
+            cp /"$(cat /tmp/passthru.txt | grep " wrote lockfile to " | cut -d / -f 2-)" nix/deps.nix
 
       - name: Format
         run: 'nix develop --command alejandra .'
