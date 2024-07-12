@@ -10,3 +10,4 @@ result
 .analyzerpackages/
 analysis.sarif
 .direnv/
+.venv/
