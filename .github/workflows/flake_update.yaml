@@ -41,6 +41,8 @@ jobs:
           passphrase: ${{ secrets.BOT_GPG_PASSPHRASE }}
           git_user_signingkey: true
           git_commit_gpgsign: true
+          git_committer_name: patrick-conscriptus
+          git_committer_email: '41898282+github-actions[bot]@users.noreply.github.com'
 
       - name: Create token
         id: generate-token
