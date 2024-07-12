@@ -1,3 +1,5 @@
+import datetime
+import time
 import subprocess
 import requests
 import os
@@ -19,6 +21,12 @@ if not GITHUB_TOKEN:
 REPO = os.environ.get("GITHUB_REPOSITORY")
 if not REPO:
     raise Exception("Supply GITHUB_REPOSITORY env var")
+GITHUB_BASE_REF = os.environ.get("GITHUB_BASE_REF") or ""
+if not GITHUB_BASE_REF:
+    raise Exception("Supply GITHUB_BASE_REF env var")
+GITHUB_OUTPUT = os.environ.get("GITHUB_OUTPUT") or ""
+if not GITHUB_OUTPUT:
+    raise Exception("Supply GITHUB_OUTPUT env var")
 
 headers = {
     "Accept": "application/vnd.github+json",
@@ -82,6 +90,35 @@ def get_current_commit() -> str:
 def get_current_tree() -> str:
     return [line for line in subprocess.check_output(["git", "cat-file", "-p", "HEAD"]).decode("utf-8").splitlines() if line.startswith('tree ')][0][5:]
 
+def create_branch(branch_name: str, commit_sha: str) -> None:
+    url = f"{GITHUB_API_URL}/repos/{REPO}/git/refs"
+    data = {
+        "ref": f"refs/heads/{branch_name}",
+        "sha": commit_sha
+    }
+    print(f"Branch creation request body: {data}")
+    response = requests.post(url, headers=headers, json=data)
+    if not response.ok:
+        raise Exception(f"bad response: {response}")
+    print(f"Branch creation response: {response.text}")
+
+def create_pull_request(title: str, branch_name: str, base_branch: str) -> tuple[str, int]:
+    """Returns the URL of the new PR."""
+    url = f"{GITHUB_API_URL}/repos/{REPO}/pulls"
+    data = {
+        "title": title,
+        "head": branch_name,
+        "base": base_branch,
+        "body": "Automated pull request.",
+        "maintainer_can_modify": True
+    }
+    print(f"PR creation request body: {data}")
+    response = requests.post(url, headers=headers, json=data)
+    if not response.ok:
+        raise Exception(f"bad response: {response}")
+    print(f"PR creation response: {response.text}")
+    json = response.json()
+    return json["url"], json["number"]
 
 def main():
     changed_files = get_git_diff()
@@ -112,8 +149,18 @@ def main():
     # Create a new commit
     commit_message = "Automated commit"
     new_commit_sha = create_commit(new_tree_sha, get_current_commit(), commit_message)
-
     print(f"New commit created: {new_commit_sha}")
+
+    branch_name = f"flake_update" + datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d-%H_%M_%S_%f')
+    create_branch(branch_name, new_commit_sha)
+    print(f"Branch created: {branch_name}")
+
+    url, pr_num = create_pull_request(title="Upgrade Nix flake and deps", branch_name=branch_name, base_branch=GITHUB_BASE_REF)
+    print(f"See PR at: {url}")
+
+    with open(GITHUB_OUTPUT, "a") as output_file:
+        output_file.write(f"pull-request-number={pr_num}")
+
 
 if __name__ == "__main__":
     main()
