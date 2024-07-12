@@ -222,6 +222,7 @@ jobs:
     needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack, github-release-plugin-dry-run]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Check job statuses
         env:
             RESULTS: ${{ toJSON(needs) }}
