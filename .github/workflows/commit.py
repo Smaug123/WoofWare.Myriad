@@ -67,6 +67,7 @@ def create_commit(tree_sha: str, parent_sha: str, message: str):
         "tree": tree_sha,
         "parents": [parent_sha]
     }
+    print(f"Commit request body: {data}")
     response = requests.post(url, headers=headers, json=data)
     if not response.ok:
         raise Exception(f"bad response: {response}")
