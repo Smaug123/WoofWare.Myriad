@@ -28,13 +28,8 @@ jobs:
 
       - name: Run passthru
         run: |
-            pipefile="$(mktemp)"
-            rm "$pipefile"
-            mkfifo "$pipefile" && tee /tmp/passthru.txt "$pipefile" &
-            ./result > "$pipefile"
-            exit=$?
-            rm "$pipefile"
-            exit "$exit"
+            set -o pipefail
+            ./result | tee /tmp/passthru.txt
 
       - name: Copy into place
         run: 'cp $(cat /tmp/passthru.txt | grep "Successfully wrote " | cut -d / -f 2-) nix/deps.nix'
