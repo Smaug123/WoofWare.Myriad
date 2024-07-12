@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
+name: Weekly Nix Flake Update
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Runs at 00:00 every Sunday
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  update-nix-flake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v20
+
+      - name: Update Nix flake
+        run: nix flake update
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: Update Nix flake
+          title: Weekly Nix flake update
+          body: |
+            This is an automated pull request to update the Nix flake.
+
+            Changes:
+            ```
+            ${{ steps.create-diff.outputs.diff }}
+            ```
+          branch: nix-flake-update
+          delete-branch: true
+
+      - name: Enable Pull Request Automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
