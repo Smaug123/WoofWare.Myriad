@@ -218,10 +218,15 @@ jobs:
         run: sh .github/workflows/tag.sh
 
   all-required-checks-complete:
+    if: ${{ always() }}
     needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack, github-release-plugin-dry-run]
     runs-on: ubuntu-latest
     steps:
-      - run: echo "All required checks complete."
+      - uses: actions/checkout@v4
+      - name: Check job statuses
+        env:
+            RESULTS: ${{ toJSON(needs) }}
+        run: python .github/workflows/required_checks.py
 
   attestation-attribute:
     runs-on: ubuntu-latest
