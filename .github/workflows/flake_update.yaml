@@ -20,11 +20,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-          # - name: Update Nix flake
-          #   run: 'nix flake update'
+      - name: Update Nix flake
+        run: 'nix flake update'
 
       - name: Build passthru
-        run: 'nix build .#default.passthru.fetch-deps'
+        run: 'nix build ".#default.passthru.fetch-deps"'
 
       - name: Run passthru
         run: 'cp "$(nix develop --command ./result | grep "Successfully wrote " | cut -d / -f 2-)" nix/deps.nix'
