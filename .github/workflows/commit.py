@@ -19,7 +19,7 @@ if not GITHUB_TOKEN:
 REPO = os.environ.get("GITHUB_REPOSITORY")
 if not REPO:
     raise Exception("Supply GITHUB_REPOSITORY env var")
-GITHUB_BASE_REF = os.environ.get("GITHUB_REF")
+GITHUB_BASE_REF = os.environ.get("GITHUB_REF") or ""
 if not GITHUB_BASE_REF:
     raise Exception("Supply GITHUB_REF env var")
 
@@ -41,9 +41,12 @@ def create_blob(content, encoding="utf-8"):
         "encoding": encoding
     }
     response = requests.post(url, headers=headers, json=data)
+    if not response.ok:
+        raise Exception(f"bad response: {response}")
+    print(f"Blob response: {response.text}")
     return response.json()["sha"]
 
-def create_tree(base_tree: str, changes: list[TreeEntry]):
+def create_tree(base_tree: str, changes: list[TreeEntry]) -> str:
     """Create a new tree with the given changes."""
     url = f"{GITHUB_API_URL}/repos/{REPO}/git/trees"
     data = {
@@ -51,9 +54,12 @@ def create_tree(base_tree: str, changes: list[TreeEntry]):
         "tree": changes
     }
     response = requests.post(url, headers=headers, json=data)
+    if not response.ok:
+        raise Exception(f"bad response: {response}")
+    print(f"Tree response: {response.text}")
     return response.json()["sha"]
 
-def create_commit(tree_sha, parent_sha, message):
+def create_commit(tree_sha: str, parent_sha: str, message: str):
     """Create a new commit."""
     url = f"{GITHUB_API_URL}/repos/{REPO}/git/commits"
     data = {
@@ -62,6 +68,8 @@ def create_commit(tree_sha, parent_sha, message):
         "parents": [parent_sha]
     }
     response = requests.post(url, headers=headers, json=data)
+    if not response.ok:
+        raise Exception(f"bad response: {response}")
     print(f"Commit response: {response.text}")
     json = response.json()
     print(f"Commit: {json}")
