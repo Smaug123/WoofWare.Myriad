@@ -221,7 +221,7 @@ jobs:
     needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack, github-release-plugin-dry-run]
     runs-on: ubuntu-latest
     steps:
-      - uses: Smaug123/all-required-checks-complete-action@657f57440e9ad2aecb8b78d015f5027c4e4244e5
+      - uses: Smaug123/all-required-checks-complete-action@c7d97a518e6c031c6b873be29982dfea9df75679
         with:
           needs-context: ${{ toJSON(needs) }}
 
