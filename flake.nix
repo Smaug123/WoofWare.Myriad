@@ -17,7 +17,7 @@
       dotnet-sdk = pkgs.dotnet-sdk_8;
       dotnet-runtime = pkgs.dotnetCorePackages.runtime_8_0;
       version = "0.1";
-      doTool = dllOverride: toolName: toolVersion: hash:
+      dotnetTool = dllOverride: toolName: toolVersion: hash:
         pkgs.stdenvNoCC.mkDerivation rec {
           name = toolName;
           version = toolVersion;
