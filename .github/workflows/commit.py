@@ -101,7 +101,7 @@ def main():
 
     # Create a new commit
     commit_message = "Automated commit"
-    new_commit_sha = create_commit(new_tree_sha, base_tree, commit_message)
+    new_commit_sha = create_commit(new_tree_sha, GITHUB_BASE_REF, commit_message)
 
     print(f"New commit created: {new_commit_sha}")
 
