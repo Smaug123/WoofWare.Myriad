@@ -44,10 +44,11 @@ jobs:
 
       - name: Create token
         id: generate-token
-        uses: tibdex/github-app-token@v2
+        uses: actions/create-github-app-token@v1
         with:
-          app_id: ${{ secrets.CLIENT_ID }}
-          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          # https://github.com/actions/create-github-app-token/issues/136
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Create Pull Request
         id: cpr
