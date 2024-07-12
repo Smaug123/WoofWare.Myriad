@@ -62,7 +62,9 @@ def create_commit(tree_sha, parent_sha, message):
         "parents": [parent_sha]
     }
     response = requests.post(url, headers=headers, json=data)
-    return response.json()["sha"]
+    json = response.json()
+    print(f"Commit: {json}")
+    return json["sha"]
 
 def is_executable(filepath: str):
     return os.path.isfile(filepath) and os.access(filepath, os.X_OK)
@@ -95,6 +97,7 @@ def main():
 
     # Create a new tree
     new_tree_sha = create_tree(base_tree, tree_changes)
+    print(f"Tree: {new_tree_sha}")
 
     # Create a new commit
     commit_message = "Automated commit"
