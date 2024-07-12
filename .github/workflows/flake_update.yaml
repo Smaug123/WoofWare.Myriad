@@ -2,6 +2,8 @@
 name: Weekly Nix Flake Update
 
 on:
+  pull_request:
+    branches: [ main ]
   schedule:
     - cron: '0 0 * * 0'  # Runs at 00:00 every Sunday
   workflow_dispatch:  # Allows manual triggering
@@ -14,43 +16,45 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Nix
-        uses: cachix/install-nix-action@V27
+        uses: DeterminateSystems/nix-installer-action@main
         with:
-          extra_nix_config: |
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Nix flake
         run: 'nix flake update'
 
       - name: Build passthru
-        run: 'nix build .#default.passthru.fetch-deps'
+        run: 'nix build ".#default.passthru.fetch-deps"'
 
       - name: Run passthru
-        run: 'cp "$(./result | grep "Successfully wrote " | cut -d / -f 2-)" nix/deps.nix'
+        run: |
+            set -o pipefail
+            ./result | tee /tmp/passthru.txt
+            cp /"$(cat /tmp/passthru.txt | grep " wrote lockfile to " | cut -d / -f 2-)" nix/deps.nix
 
       - name: Format
-        run: 'nix develop .#ci --command alejandra .'
+        run: 'nix develop --command alejandra .'
 
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v6.1.0
+      - name: Create token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
         with:
-          commit-message: Update Nix flake
-          title: Weekly Nix flake update
-          body: |
-            This is an automated pull request to update the Nix flake.
+          # https://github.com/actions/create-github-app-token/issues/136
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-            Changes:
-            ```
-            ${{ steps.create-diff.outputs.diff }}
-            ```
-          branch: nix-flake-update
-          delete-branch: true
+      - name: Prepare to create commit
+        run: python -m venv /tmp/venv && /tmp/venv/bin/python -m pip install -r .github/workflows/requirements.txt
+
+      - name: Create pull request
+        env:
+            BEARER_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: /tmp/venv/bin/python .github/workflows/commit.py
 
       - name: Enable Pull Request Automerge
         if: steps.cpr.outputs.pull-request-operation == 'created'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.generate-token.outputs.token }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
           merge-method: squash
