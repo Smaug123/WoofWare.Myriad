@@ -20,11 +20,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upgrade Nix
-        run: 'sudo -i nix upgrade-nix'
-
-      - name: Update Nix flake
-        run: 'nix flake update'
+          # - name: Update Nix flake
+          #   run: 'nix flake update'
 
       - name: Build passthru
         run: 'nix build .#default.passthru.fetch-deps'
