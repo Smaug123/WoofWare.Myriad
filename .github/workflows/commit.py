@@ -19,9 +19,6 @@ if not GITHUB_TOKEN:
 REPO = os.environ.get("GITHUB_REPOSITORY")
 if not REPO:
     raise Exception("Supply GITHUB_REPOSITORY env var")
-GITHUB_BASE_REF = os.environ.get("GITHUB_REF") or ""
-if not GITHUB_BASE_REF:
-    raise Exception("Supply GITHUB_REF env var")
 
 headers = {
     "Accept": "application/vnd.github+json",
@@ -79,6 +76,9 @@ def create_commit(tree_sha: str, parent_sha: str, message: str):
 def is_executable(filepath: str):
     return os.path.isfile(filepath) and os.access(filepath, os.X_OK)
 
+def get_current_commit() -> str:
+    return subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("utf-8").strip()
+
 def get_current_tree() -> str:
     return [line for line in subprocess.check_output(["git", "cat-file", "-p", "HEAD"]).decode("utf-8").splitlines() if line.startswith('tree ')][0][5:]
 
@@ -111,7 +111,7 @@ def main():
 
     # Create a new commit
     commit_message = "Automated commit"
-    new_commit_sha = create_commit(new_tree_sha, GITHUB_BASE_REF, commit_message)
+    new_commit_sha = create_commit(new_tree_sha, get_current_commit(), commit_message)
 
     print(f"New commit created: {new_commit_sha}")
 
