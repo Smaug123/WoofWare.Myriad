@@ -221,7 +221,26 @@ jobs:
     needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack, github-release-plugin-dry-run]
     runs-on: ubuntu-latest
     steps:
-      - run: echo "All required checks complete."
+      - name: Check job statuses
+        run: |
+          failed_jobs=()
+          echo "Checking status of required jobs:"
+
+          for job in ${{ join(needs.*.result, ' ') }}; do
+            job_name=$(echo $job | cut -d= -f1)
+            job_result=$(echo $job | cut -d= -f2)
+            echo "$job_name: $job_result"
+            if [ "$job_result" != "success" ]; then
+              failed_jobs+=($job_name)
+            fi
+          done
+
+          if [ ${#failed_jobs[@]} -ne 0 ]; then
+            echo "The following jobs failed: ${failed_jobs[*]}"
+            exit 1
+          else
+            echo "All required checks completed successfully."
+          fi
 
   attestation-attribute:
     runs-on: ubuntu-latest
