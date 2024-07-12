@@ -1,7 +1,6 @@
 import os
 import json
 import sys
-from typing import Any, Protocol, runtime_checkable
 
 results_json = os.environ.get('RESULTS', '{}') or sys.exit(1)
 
@@ -12,13 +11,8 @@ except json.JSONDecodeError:
     exit(1)
 
 
-@runtime_checkable
-class HasOutputs(Protocol):
-    result: str
-    outputs: Any
 
-
-def process_job(job_name: str, job_data: HasOutputs) -> int:
+def process_job(job_name: str, job_data) -> int:
     """
     Returns 0 on success and 1 on error.
     """
@@ -41,10 +35,6 @@ def process_job(job_name: str, job_data: HasOutputs) -> int:
 # Iterate over each job
 exit_status = 0
 for job_name, job_data in results.items():
-    if not isinstance(job_data, HasOutputs):
-        print(f"Unexpected shape at key {job_name}: {job_data}")
-        exit(2)
-
     exit_status += process_job(job_name, job_data)
 
 if exit_status > 0:
