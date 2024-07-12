@@ -13,20 +13,15 @@ except json.JSONDecodeError:
 
 
 @runtime_checkable
-class HasStatus(Protocol):
-    status: str
-
-
-@runtime_checkable
 class HasOutputs(Protocol):
-    outputs: HasStatus
+    result: str
 
 
 def process_job(job_name: str, job_data: HasOutputs) -> int:
     """
     Returns 0 on success and 1 on error.
     """
-    status = job_data.outputs.status
+    status = job_data.result
     print(f"Processing job: {job_name} with status: {status}")
 
     if status == "success":
@@ -34,6 +29,9 @@ def process_job(job_name: str, job_data: HasOutputs) -> int:
         return 0
     elif status == "failure":
         print(f"Job {job_name} failed!")
+        return 1
+    elif status == "cancelled":
+        print(f"Job {job_name} cancelled!")
         return 1
     else:
         print(f"Job {job_name} has unknown status: {status}!")
