@@ -224,7 +224,7 @@ jobs:
     steps:
       - name: Check job statuses
         env:
-            RESULTS: ${{ needs.* }}
+            RESULTS: ${{ toJSON(needs) }}
         run: python .github/workflows/required_checks.py
 
   attestation-attribute:
