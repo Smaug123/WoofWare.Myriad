@@ -241,7 +241,7 @@ jobs:
           name: nuget-package-attribute
           path: packed
       - name: Attest Build Provenance
-        uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+        uses: actions/attest-build-provenance@5e9cb68e95676991667494a6a4e59b8a2f13e1d0 # v1.3.3
         with:
           subject-path: "packed/*.nupkg"
 
@@ -260,7 +260,7 @@ jobs:
           name: nuget-package-plugin
           path: packed
       - name: Attest Build Provenance
-        uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+        uses: actions/attest-build-provenance@5e9cb68e95676991667494a6a4e59b8a2f13e1d0 # v1.3.3
         with:
           subject-path: "packed/*.nupkg"
 
@@ -302,7 +302,7 @@ jobs:
         run: 'bash ./.github/workflows/assert-contents.sh'
       - name: Attest Build Provenance
         if: steps.publish-success.outputs.result == 'published'
-        uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+        uses: actions/attest-build-provenance@5e9cb68e95676991667494a6a4e59b8a2f13e1d0 # v1.3.3
         with:
           subject-path: "from-nuget.nupkg"
 
@@ -344,7 +344,7 @@ jobs:
         run: 'bash ./.github/workflows/assert-contents.sh'
       - name: Attest Build Provenance
         if: steps.publish-success.outputs.result == 'published'
-        uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+        uses: actions/attest-build-provenance@5e9cb68e95676991667494a6a4e59b8a2f13e1d0 # v1.3.3
         with:
           subject-path: "from-nuget.nupkg"
 
