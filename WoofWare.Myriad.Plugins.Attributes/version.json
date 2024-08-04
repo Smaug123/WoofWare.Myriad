@@ -10,6 +10,6 @@
     ":/Directory.Build.props",
     ":/global.json",
     "./",
-    "^./Test"
+    ":^Test"
   ]
 }
