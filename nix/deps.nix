@@ -228,8 +228,8 @@
   })
   (fetchNuGet {
     pname = "NUnit3TestAdapter";
-    version = "4.5.0";
-    hash = "sha256-ER3ogl0L5FYyc6pVVPY1ch+AQxG/WgFcnWECnYQJPes=";
+    version = "4.6.0";
+    hash = "sha256-9Yav2fYhC4w0OgsyUwU4/5rDy4FVDTpKnWHuwl/uKJQ=";
   })
   (fetchNuGet {
     pname = "RestEase";
