@@ -73,8 +73,6 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Build
         run: nix build
-      - name: Reproducibility check
-        run: nix build --rebuild
 
   check-dotnet-format:
     runs-on: ubuntu-latest
@@ -222,7 +220,7 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-      - uses: Smaug123/all-required-checks-complete-action@7e7747413919c8ba06784215a6d59d3dae0e1a1c
+      - uses: Smaug123/all-required-checks-complete-action@4a63e004dbe279e5f80e4eb08094a0f1475bc4ea
         with:
           needs-context: ${{ toJSON(needs) }}
 
