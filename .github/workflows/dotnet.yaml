@@ -285,26 +285,17 @@ jobs:
         with:
           name: nuget-package-attribute
           path: packed
+      - name: Identify `dotnet`
+        id: dotnet-identify
+        run: nix develop --command bash -c 'echo "dotnet=$(which dotnet)" >> $GITHUB_OUTPUT'
       - name: Publish to NuGet
         id: publish-success
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: 'nix develop --command bash ./.github/workflows/nuget-push.sh "packed/WoofWare.Myriad.Plugins.Attributes.*.nupkg"'
-      - name: Wait for availability
-        if: steps.publish-success.outputs.result == 'published'
-        env:
-          PACKAGE_VERSION: ${{ steps.publish-success.outputs.version }}
-        run: 'echo "$PACKAGE_VERSION" && while ! curl -L --fail -o from-nuget.nupkg "https://www.nuget.org/api/v2/package/WoofWare.Myriad.Plugins.Attributes/$PACKAGE_VERSION" ; do sleep 10; done'
-      # Astonishingly, NuGet.org considers it to be "more secure" to tamper with my package after upload (https://devblogs.microsoft.com/nuget/introducing-repository-signatures/).
-      # So we have to *re-attest* it after it's uploaded. Mind-blowing.
-      - name: Assert package contents
-        if: steps.publish-success.outputs.result == 'published'
-        run: 'bash ./.github/workflows/assert-contents.sh'
-      - name: Attest Build Provenance
-        if: steps.publish-success.outputs.result == 'published'
-        uses: actions/attest-build-provenance@310b0a4a3b0b78ef57ecda988ee04b132db73ef8 # v1.4.1
+        uses: Smaug123/publish-nuget-action@0cde38eae4a32ebe5f3c882e7027ac57ef513a7f
         with:
-          subject-path: "from-nuget.nupkg"
+          package-name: WoofWare.Myriad.Plugins.Attributes
+          nuget-key: ${{ secrets.NUGET_API_KEY }}
+          nupkg-dir: packed/
+          dotnet: ${{ steps.dotnet-identify.outputs.dotnet }}
 
   nuget-publish-plugin:
     runs-on: ubuntu-latest
@@ -327,26 +318,17 @@ jobs:
         with:
           name: nuget-package-plugin
           path: packed
+      - name: Identify `dotnet`
+        id: dotnet-identify
+        run: nix develop --command bash -c 'echo "dotnet=$(which dotnet)" >> $GITHUB_OUTPUT'
       - name: Publish to NuGet
         id: publish-success
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: 'nix develop --command bash ./.github/workflows/nuget-push.sh "packed/WoofWare.Myriad.Plugins.*.nupkg"'
-      - name: Wait for availability
-        if: steps.publish-success.outputs.result == 'published'
-        env:
-          PACKAGE_VERSION: ${{ steps.publish-success.outputs.version }}
-        run: 'echo "$PACKAGE_VERSION" && while ! curl -L --fail -o from-nuget.nupkg "https://www.nuget.org/api/v2/package/WoofWare.Myriad.Plugins/$PACKAGE_VERSION" ; do sleep 10; done'
-      # Astonishingly, NuGet.org considers it to be "more secure" to tamper with my package after upload (https://devblogs.microsoft.com/nuget/introducing-repository-signatures/).
-      # So we have to *re-attest* it after it's uploaded. Mind-blowing.
-      - name: Assert package contents
-        if: steps.publish-success.outputs.result == 'published'
-        run: 'bash ./.github/workflows/assert-contents.sh'
-      - name: Attest Build Provenance
-        if: steps.publish-success.outputs.result == 'published'
-        uses: actions/attest-build-provenance@310b0a4a3b0b78ef57ecda988ee04b132db73ef8 # v1.4.1
+        uses: Smaug123/publish-nuget-action@0cde38eae4a32ebe5f3c882e7027ac57ef513a7f
         with:
-          subject-path: "from-nuget.nupkg"
+          package-name: WoofWare.Myriad.Plugins
+          nuget-key: ${{ secrets.NUGET_API_KEY }}
+          nupkg-dir: packed/
+          dotnet: ${{ steps.dotnet-identify.outputs.dotnet }}
 
   github-release-plugin:
     runs-on: ubuntu-latest
