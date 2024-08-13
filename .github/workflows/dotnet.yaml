@@ -72,7 +72,7 @@ jobs:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Build
-        run: nix build
+        run: exit 3
 
   check-dotnet-format:
     runs-on: ubuntu-latest
