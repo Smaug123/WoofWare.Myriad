@@ -222,7 +222,7 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-      - uses: Smaug123/all-required-checks-complete-action@05b40a8c47ef0b175ea326e9abb09802cb67b44e
+      - uses: Smaug123/all-required-checks-complete-action@e1901b86e7a562253712778bb13ad32fdbc86c81
         with:
           needs-context: ${{ toJSON(needs) }}
 
