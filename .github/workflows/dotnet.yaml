@@ -290,7 +290,7 @@ jobs:
         run: nix develop --command bash -c 'echo "dotnet=$(which dotnet)" >> $GITHUB_OUTPUT'
       - name: Publish to NuGet
         id: publish-success
-        uses: Smaug123/publish-nuget-action@0cde38eae4a32ebe5f3c882e7027ac57ef513a7f
+        uses: Smaug123/publish-nuget-action@76df889166633c2dc613560c092882aabe260df0
         with:
           package-name: WoofWare.Myriad.Plugins.Attributes
           nuget-key: ${{ secrets.NUGET_API_KEY }}
@@ -323,7 +323,7 @@ jobs:
         run: nix develop --command bash -c 'echo "dotnet=$(which dotnet)" >> $GITHUB_OUTPUT'
       - name: Publish to NuGet
         id: publish-success
-        uses: Smaug123/publish-nuget-action@0cde38eae4a32ebe5f3c882e7027ac57ef513a7f
+        uses: Smaug123/publish-nuget-action@76df889166633c2dc613560c092882aabe260df0
         with:
           package-name: WoofWare.Myriad.Plugins
           nuget-key: ${{ secrets.NUGET_API_KEY }}
