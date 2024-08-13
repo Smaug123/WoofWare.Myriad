@@ -144,8 +144,6 @@ jobs:
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - name: Flake check
-        run: exit 2
 
   nuget-pack:
     runs-on: ubuntu-latest
