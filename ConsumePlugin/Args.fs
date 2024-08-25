@@ -54,7 +54,7 @@ type LoadsOfTypes =
         YetAnotherOptionalThing : Choice<string, string>
     }
 
-    static member DefaultOptionalThing () = false
+    static member DefaultOptionalThing () = true
 
     static member DefaultAnotherOptionalThing () = 3
 

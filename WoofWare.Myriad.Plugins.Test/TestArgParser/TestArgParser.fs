@@ -82,7 +82,7 @@ module TestArgParser =
 --foo  int32 : This is a foo!
 --bar  string
 --baz  bool
---rest  string (positional args) (can be repeated) : Herre's where the rest of the args go"""
+--rest  string (positional args) (can be repeated) : Here's where the rest of the args go"""
 
     [<Test>]
     let ``Can supply positional args with key`` () =
@@ -238,11 +238,21 @@ Required argument '--baz' was missing"""
             "hi!"
 
         let args =
-            [ "--foo" ; "3" ; "--bar=some string" ; "--baz" ; "--some-file=/path/to/file" ]
+            [
+                "--foo"
+                "3"
+                "--bar=some string"
+                "--baz=true"
+                "--some-file=/path/to/file"
+                "--some-directory"
+                "/a/dir"
+                "--another-optional-thing"
+                "3000"
+            ]
 
         let result = LoadsOfTypes.parse' getEnvVar args
 
-        result.OptionalThing |> shouldEqual (Choice2Of2 false)
+        result.OptionalThing |> shouldEqual (Choice2Of2 true)
         result.OptionalThingWithNoDefault |> shouldEqual None
-        result.AnotherOptionalThing |> shouldEqual (Choice1Of2 3)
+        result.AnotherOptionalThing |> shouldEqual (Choice1Of2 3000)
         result.YetAnotherOptionalThing |> shouldEqual (Choice2Of2 "hi!")

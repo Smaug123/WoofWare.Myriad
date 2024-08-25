@@ -158,6 +158,7 @@ Takes a record like this:
 ```fsharp
 type Foo =
     {
+        [<ArgumentHelpText "Enable the frobnicator">]
         SomeFlag : bool
         A : int option
         [<ArgumentDefaultFunction>]
@@ -183,6 +184,9 @@ module Foo =
     let parse (args : string list) : Foo = ...
 ```
 
+Default arguments are handled as `Choice<'a, 'a>`:
+you get a `Choice1Of2` if the user provided the input, or a `Choice2Of2` if the parser filled in your specified default value.
+
 ### What's the point?
 
 I got fed up of waiting for us to find time to rewrite the in-house one at work.
@@ -196,13 +200,15 @@ Answer: I got annoyed with having to construct my records by hand even after Arg
 
 ### Limitations
 
-This is very bare-bones.
+This is very bare-bones, but do raise GitHub issues if you like (or if you find cases where the parser does the wrong thing).
 
 * Help is signalled by throwing an exception, so you'll get an unsightly stack trace and a nonzero exit code.
 * Help doesn't take into account any args the user has entered. Ideally you'd get contextual information like an identification of which args the user has supplied at the point where the parse failed or help was requested.
 * I don't handle very many types, and in particular a real arg parser would handle DUs and records with nesting.
 * I don't try very hard to find a valid parse. It may well be possible to find a case where I fail to parse despite there existing a valid parse.
 * There's no subcommand support (you'll have to do that yourself).
+
+It should work fine if you just want to compose a few primitive types, though.
 
 ## `RemoveOptions`
 
