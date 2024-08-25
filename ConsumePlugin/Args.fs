@@ -9,14 +9,17 @@ type BasicNoPositionals =
         Foo : int
         Bar : string
         Baz : bool
+        Rest : int list
     }
 
 [<ArgParser>]
 type Basic =
     {
+        [<ArgumentHelpText "This is a foo!">]
         Foo : int
         Bar : string
         Baz : bool
+        [<ArgumentHelpText "Here's where the rest of the args go">]
         [<PositionalArgs>]
         Rest : string list
     }

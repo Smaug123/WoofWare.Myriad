@@ -33,3 +33,8 @@ type ArgumentDefaultFunctionAttribute () =
 /// or Choice2Of2 if the input was obtained by pulling a value from `Environment.GetEnvironmentVariable`.
 type ArgumentDefaultEnvironmentVariableAttribute (envVar : string) =
     inherit Attribute ()
+
+/// Attribute indicating that this field shall have the given help text, when `--help` is invoked
+/// or when a parse error causes us to print help text.
+type ArgumentHelpTextAttribute (helpText : string) =
+    inherit Attribute ()

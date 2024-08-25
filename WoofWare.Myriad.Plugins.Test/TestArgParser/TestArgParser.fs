@@ -76,7 +76,93 @@ module TestArgParser =
 
         envCalls.Value |> shouldEqual 0
 
-        exc.Message |> shouldEqual "Unable to process supplied arg --non-existent"
+        exc.Message
+        |> shouldEqual
+            """Unable to process supplied arg --non-existent. Help text follows.
+--foo  int32 : This is a foo!
+--bar  string
+--baz  bool
+--rest  string (positional args) (can be repeated) : Herre's where the rest of the args go"""
+
+    [<Test>]
+    let ``Can supply positional args with key`` () =
+        let envCalls = ref 0
+
+        let getEnvVar (_ : string) =
+            Interlocked.Increment envCalls |> ignore<int>
+            ""
+
+        let property (args : (int * bool) list) (afterDoubleDash : int list option) =
+            let flatArgs =
+                args
+                |> List.collect (fun (value, sep) ->
+                    if sep then
+                        [ $"--rest=%i{value}" ]
+                    else
+                        [ "--rest" ; string<int> value ]
+                )
+                |> fun l -> l @ [ "--foo=3" ; "--bar=4" ; "--baz=true" ]
+
+            let flatArgs, expected =
+                match afterDoubleDash with
+                | None -> flatArgs, List.map fst args
+                | Some rest -> flatArgs @ [ "--" ] @ (List.map string<int> rest), List.map fst args @ rest
+
+            BasicWithIntPositionals.parse' getEnvVar flatArgs
+            |> shouldEqual
+                {
+                    Foo = 3
+                    Bar = "4"
+                    Baz = true
+                    Rest = expected
+                }
+
+        Check.QuickThrowOnFailure property
+        envCalls.Value |> shouldEqual 0
+
+    [<Test>]
+    let ``Consume multiple occurrences of required arg`` () =
+        let envCalls = ref 0
+
+        let getEnvVar (_ : string) =
+            Interlocked.Increment envCalls |> ignore<int>
+            ""
+
+        let args = [ "--foo=3" ; "--rest" ; "7" ; "--bar=4" ; "--baz=true" ; "--rest=8" ]
+
+        let result = BasicNoPositionals.parse' getEnvVar args
+
+        envCalls.Value |> shouldEqual 0
+
+        result
+        |> shouldEqual
+            {
+                Foo = 3
+                Bar = "4"
+                Baz = true
+                Rest = [ 7 ; 8 ]
+            }
+
+    [<Test>]
+    let ``Gracefully handle invalid multiple occurrences of required arg`` () =
+        let envCalls = ref 0
+
+        let getEnvVar (_ : string) =
+            Interlocked.Increment envCalls |> ignore<int>
+            ""
+
+        let args = [ "--foo=3" ; "--foo" ; "9" ; "--bar=4" ; "--baz=true" ; "--baz=false" ]
+
+        let exc =
+            Assert.Throws<exn> (fun () -> Basic.parse' getEnvVar args |> ignore<Basic>)
+
+        envCalls.Value |> shouldEqual 0
+
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+Argument '--foo' was supplied multiple times: 3 and 9
+Argument '--baz' was supplied multiple times: True and false"""
 
     [<Test>]
     let ``Args appearing after double dash are positional`` () =
@@ -99,6 +185,51 @@ Required argument '--bar' was missing
 Required argument '--baz' was missing"""
 
         envCalls.Value |> shouldEqual 0
+
+    [<Test>]
+    let ``Help text`` () =
+        let getEnvVar (s : string) =
+            s |> shouldEqual "CONSUMEPLUGIN_THINGS"
+            "hi!"
+
+        let exc =
+            Assert.Throws<exn> (fun () -> Basic.parse' getEnvVar [ "--help" ] |> ignore<Basic>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--foo  int32 : This is a foo!
+--bar  string
+--baz  bool
+--rest  string (positional args) (can be repeated) : Here's where the rest of the args go"""
+
+    [<Test>]
+    let ``Help text, with default values`` () =
+        let envVars = ref 0
+
+        let getEnvVar (_ : string) =
+            Interlocked.Increment envVars |> ignore<int>
+            ""
+
+        let exc =
+            Assert.Throws<exn> (fun () -> LoadsOfTypes.parse' getEnvVar [ "--help" ] |> ignore<LoadsOfTypes>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--foo  int32
+--bar  string
+--baz  bool
+--some-file  FileInfo
+--some-directory  DirectoryInfo
+--some-list  DirectoryInfo (can be repeated)
+--optional-thing-with-no-default  int32 (optional)
+--optional-thing  bool (default value: False)
+--another-optional-thing  int32 (default value: 3)
+--yet-another-optional-thing  string (default value populated from env var CONSUMEPLUGIN_THINGS)
+--positionals  int32 (positional args) (can be repeated)"""
+
+        envVars.Value |> shouldEqual 0
 
     [<Test>]
     let ``Default values`` () =

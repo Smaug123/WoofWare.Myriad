@@ -4,6 +4,8 @@ WoofWare.Myriad.Plugins.ArgumentDefaultEnvironmentVariableAttribute inherit Syst
 WoofWare.Myriad.Plugins.ArgumentDefaultEnvironmentVariableAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.ArgumentDefaultFunctionAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.ArgumentDefaultFunctionAttribute..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.ArgumentHelpTextAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.ArgumentHelpTextAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.GenerateMockAttribute inherit System.Attribute
