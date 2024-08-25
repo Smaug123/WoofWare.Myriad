@@ -4,7 +4,35 @@ open System.IO
 open WoofWare.Myriad.Plugins
 
 [<ArgParser>]
-type Args =
+type BasicNoPositionals =
+    {
+        Foo : int
+        Bar : string
+        Baz : bool
+    }
+
+[<ArgParser>]
+type Basic =
+    {
+        Foo : int
+        Bar : string
+        Baz : bool
+        [<PositionalArgs>]
+        Rest : string list
+    }
+
+[<ArgParser>]
+type BasicWithIntPositionals =
+    {
+        Foo : int
+        Bar : string
+        Baz : bool
+        [<PositionalArgs>]
+        Rest : int list
+    }
+
+[<ArgParser>]
+type LoadsOfTypes =
     {
         Foo : int
         Bar : string
@@ -28,7 +56,7 @@ type Args =
     static member DefaultAnotherOptionalThing () = 3
 
 [<ArgParser>]
-type ArgsNoPositionals =
+type LoadsOfTypesNoPositionals =
     {
         Foo : int
         Bar : string

@@ -455,19 +455,22 @@ module internal ArgParserGenerator =
                          ))))
 
         let processValue =
+            let fail =
+                SynExpr.applyFunction
+                    (SynExpr.applyFunction
+                        (SynExpr.applyFunction
+                            (SynExpr.createIdent "failwithf")
+                            (SynExpr.CreateConst "Unable to process value %s for arg %s"))
+                        (SynExpr.createIdent "arg"))
+                    (SynExpr.createIdent "key")
+
             SynExpr.ifThenElse
                 (SynExpr.applyFunction
                     (SynExpr.applyFunction (SynExpr.createIdent "processKeyValue") (SynExpr.createIdent "key"))
                     (SynExpr.createIdent "arg"))
                 (SynExpr.ifThenElse
                     (SynExpr.applyFunction (SynExpr.createIdent "setFlagValue") (SynExpr.createIdent "key"))
-                    (SynExpr.applyFunction
-                        (SynExpr.applyFunction
-                            (SynExpr.applyFunction
-                                (SynExpr.createIdent "failwithf")
-                                (SynExpr.CreateConst "Unable to process value %s for arg %s"))
-                            (SynExpr.createIdent "arg"))
-                        (SynExpr.createIdent "key"))
+                    fail
                     (SynExpr.applyFunction
                         (SynExpr.applyFunction
                             (SynExpr.createIdent "go")
@@ -587,6 +590,12 @@ module internal ArgParserGenerator =
 
             bindings, bindingName, leftoverArgsParser
 
+        let argParseErrors = Ident.create "ArgParser_errors"
+
+        let unchecked =
+            SynExpr.createLongIdent [ "Unchecked" ; "defaultof" ]
+            |> SynExpr.typeApp [ SynType.anon ]
+
         // Determine whether any required arg is missing, and freeze args into immutable form.
         let freezeNonPositionalArgs =
             spec.NonPositionals
@@ -600,17 +609,28 @@ module internal ArgParserGenerator =
                                 name
                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "getEnvironmentVariable")
 
+                            let errorMessage =
+                                SynExpr.applyFunction
+                                    (SynExpr.applyFunction
+                                        (SynExpr.applyFunction
+                                            (SynExpr.createIdent "sprintf")
+                                            (SynExpr.CreateConst
+                                                "No value was supplied for %s, nor was environment variable %s set"))
+                                        (SynExpr.CreateConst pf.ArgForm))
+                                    name
+
                             [
                                 SynMatchClause.create
                                     SynPat.createNull
-                                    (SynExpr.applyFunction
-                                        (SynExpr.applyFunction
-                                            (SynExpr.applyFunction
-                                                (SynExpr.createIdent "failwithf")
-                                                (SynExpr.CreateConst
-                                                    "No value was supplied for %s, nor was environment variable %s set"))
-                                            (SynExpr.CreateConst pf.ArgForm))
-                                        name)
+                                    (SynExpr.sequential
+                                        [
+                                            errorMessage
+                                            |> SynExpr.pipeThroughFunction (
+                                                SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
+                                            )
+                                            unchecked
+                                        ])
+
                                 SynMatchClause.create
                                     (SynPat.named "x")
                                     (SynExpr.createIdent "x" |> SynExpr.pipeThroughFunction pf.Parser)
@@ -639,12 +659,23 @@ module internal ArgParserGenerator =
                         (SynExpr.createIdent' pf.TargetVariable
                          |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ]))
                 | Accumulation.Required ->
+                    let errorMessage =
+                        SynExpr.createIdent "sprintf"
+                        |> SynExpr.applyTo (SynExpr.CreateConst "Required argument '%s' was missing")
+                        |> SynExpr.applyTo (SynExpr.CreateConst (argify pf.TargetVariable))
+
                     [
                         SynMatchClause.create
                             (SynPat.named "None")
-                            (SynExpr.createIdent "failwithf"
-                             |> SynExpr.applyTo (SynExpr.CreateConst "Required argument '%s' was missing")
-                             |> SynExpr.applyTo (SynExpr.CreateConst (argify pf.TargetVariable)))
+                            (SynExpr.sequential
+                                [
+                                    errorMessage
+                                    |> SynExpr.pipeThroughFunction (
+                                        SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
+                                    )
+                                    unchecked
+                                ])
+
                         SynMatchClause.create
                             (SynPat.identWithArgs [ Ident.create "Some" ] (SynArgPats.create [ Ident.create "x" ]))
                             (SynExpr.createIdent "x")
@@ -657,7 +688,7 @@ module internal ArgParserGenerator =
             match spec.Positionals with
             | None ->
                 // Check if there are leftover args. If there are, throw.
-                let throw =
+                let errorMessage =
                     SynExpr.createIdent' leftoverArgsName
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.applyFunction
@@ -666,14 +697,19 @@ module internal ArgParserGenerator =
                     )
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.applyFunction
-                            (SynExpr.createIdent "failwithf")
+                            (SynExpr.createIdent "sprintf")
                             (SynExpr.CreateConst "There were leftover args: %s")
                     )
 
                 SynExpr.ifThenElse
                     (SynExpr.dotGet "Count" (SynExpr.createIdent' leftoverArgsName)
                      |> SynExpr.equals (SynExpr.CreateConst 0))
-                    throw
+                    (SynExpr.sequential
+                        [
+                            errorMessage
+                            |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors))
+                            unchecked
+                        ])
                     (SynExpr.CreateConst ())
             | Some _ ->
                 SynExpr.createIdent' leftoverArgsName
@@ -681,7 +717,12 @@ module internal ArgParserGenerator =
             |> SynBinding.basic [ leftoverArgsName ] []
             |> List.singleton
 
-        let freezeArgs = freezePositional @ freezeNonPositionalArgs
+        let errorCollection : SynBinding =
+            SynExpr.createIdent "ResizeArray"
+            |> SynExpr.applyTo (SynExpr.CreateConst ())
+            |> SynBinding.basic [ argParseErrors ] []
+
+        let freezeArgs = errorCollection :: (freezePositional @ freezeNonPositionalArgs)
 
         let retPositional =
             match spec.Positionals with
@@ -692,10 +733,27 @@ module internal ArgParserGenerator =
                 ]
 
         let retValue =
-            spec.NonPositionals
-            |> List.map (fun pf -> SynLongIdent.createI pf.TargetVariable, SynExpr.createIdent' pf.TargetVariable)
-            |> fun np -> retPositional @ np
-            |> AstHelper.instantiateRecord
+            let happyPath =
+                spec.NonPositionals
+                |> List.map (fun pf -> SynLongIdent.createI pf.TargetVariable, SynExpr.createIdent' pf.TargetVariable)
+                |> fun np -> retPositional @ np
+                |> AstHelper.instantiateRecord
+
+            let sadPath =
+                SynExpr.createIdent' argParseErrors
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction (SynExpr.createLongIdent [ "String" ; "concat" ]) (SynExpr.CreateConst @"\n")
+                )
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.createIdent "failwithf"
+                    |> SynExpr.applyTo (SynExpr.CreateConst @"Errors during parse!\n%s")
+                )
+
+            let areErrors =
+                SynExpr.dotGet "Count" (SynExpr.createIdent' argParseErrors)
+                |> SynExpr.equals (SynExpr.CreateConst 0)
+
+            SynExpr.ifThenElse areErrors sadPath happyPath
 
         let flags =
             spec.NonPositionals

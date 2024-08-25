@@ -298,6 +298,8 @@ module internal SynType =
     let unit : SynType = named "unit"
     let int : SynType = named "int"
 
+    let anon : SynType = SynType.Anon range0
+
     let string : SynType = named "string"
 
     /// Given ['a1, 'a2] and 'ret, returns 'a1 -> 'a2 -> 'ret.
