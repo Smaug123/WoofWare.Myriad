@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
+name: Weekly Nix Flake Update
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Runs at 00:00 every Sunday
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  update-nix-flake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Nix flake
+        run: 'nix flake update'
+
+      - name: Build passthru
+        run: 'nix build ".#default.passthru.fetch-deps"'
+
+      - name: Run passthru
+        run: |
+            set -o pipefail
+            ./result | tee /tmp/passthru.txt
+            cp /"$(cat /tmp/passthru.txt | grep " wrote lockfile to " | cut -d / -f 2-)" nix/deps.nix
+
+      - name: Format
+        run: 'nix develop --command alejandra .'
+
+      - name: Create token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          # https://github.com/actions/create-github-app-token/issues/136
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Raise pull request
+        uses: Smaug123/commit-action@cc25e6d80a796c49669dda4a0aa36c54c573983d
+        id: cpr
+        with:
+            bearer-token: ${{ steps.generate-token.outputs.token }}
+            pr-title: "Upgrade Nix flake and deps"
+
+      - name: Enable Pull Request Automerge
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash

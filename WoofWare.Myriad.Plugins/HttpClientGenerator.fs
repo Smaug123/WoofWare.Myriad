@@ -449,7 +449,7 @@ module internal HttpClientGenerator =
                             SynExpr.createNew
                                 (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "StringContent" ])
                                 (SynExpr.createIdent' bodyParamName
-                                 |> SynExpr.pipeThroughFunction (JsonSerializeGenerator.serializeNode ty)
+                                 |> SynExpr.pipeThroughFunction (fst (JsonSerializeGenerator.serializeNode ty))
                                  |> SynExpr.pipeThroughFunction (
                                      SynExpr.createLambda
                                          "node"
@@ -695,7 +695,7 @@ module internal HttpClientGenerator =
                 let headerInfo =
                     match extractHeaderInformation pi.Attributes with
                     | [ [ x ] ] -> x
-                    | [ xs ] ->
+                    | [ _ ] ->
                         failwith
                             "Expected exactly one Header parameter on the member, with exactly one arg; got one Header parameter with non-1-many args"
                     | [] ->

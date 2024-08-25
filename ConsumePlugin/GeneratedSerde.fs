@@ -204,6 +204,12 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
 
                 node.Add ("enum", (input.Enum |> SomeEnum.toJsonNode))
 
+                node.Add (
+                    "timestamp",
+                    (input.Timestamp
+                     |> (fun field -> field.ToString "o" |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                )
+
             node :> _
 namespace ConsumePlugin
 
@@ -234,6 +240,55 @@ module FirstDuJsonSerializeExtension =
                 dataNode.Add ("record", JsonRecordTypeWithBoth.toJsonNode arg0)
                 dataNode.Add ("i", System.Text.Json.Nodes.JsonValue.Create<int> arg1)
                 node.Add ("data", dataNode)
+
+            node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the HeaderAndValue type
+[<AutoOpen>]
+module HeaderAndValueJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type HeaderAndValue with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : HeaderAndValue) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                node.Add ("header", (input.Header |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("value", (input.Value |> System.Text.Json.Nodes.JsonValue.Create<string>))
+
+            node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the Foo type
+[<AutoOpen>]
+module FooJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type Foo with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : Foo) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                node.Add (
+                    "message",
+                    (input.Message
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field -> HeaderAndValue.toJsonNode field
+                     ))
+                )
 
             node :> _
 
@@ -369,6 +424,19 @@ module JsonRecordTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
+            let arg_20 =
+                (match node.["timestamp"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("timestamp")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<string> ()
+                |> System.DateTimeOffset.Parse
+
             let arg_19 =
                 SomeEnum.jsonParse (
                     match node.["enum"] with
@@ -636,6 +704,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 IntMeasureOption = arg_17
                 IntMeasureNullable = arg_18
                 Enum = arg_19
+                Timestamp = arg_20
             }
 namespace ConsumePlugin
 
@@ -717,3 +786,59 @@ module FirstDuJsonParseExtension =
                         .GetValue<System.Int32> ()
                 )
             | v -> failwith ("Unrecognised 'type' field value: " + v)
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the HeaderAndValue type
+[<AutoOpen>]
+module HeaderAndValueJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type HeaderAndValue with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : HeaderAndValue =
+            let arg_1 =
+                (match node.["value"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("value")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.String> ()
+
+            let arg_0 =
+                (match node.["header"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("header")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.String> ()
+
+            {
+                Header = arg_0
+                Value = arg_1
+            }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the Foo type
+[<AutoOpen>]
+module FooJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type Foo with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Foo =
+            let arg_0 =
+                match node.["message"] with
+                | null -> None
+                | v -> HeaderAndValue.jsonParse v |> Some
+
+            {
+                Message = arg_0
+            }

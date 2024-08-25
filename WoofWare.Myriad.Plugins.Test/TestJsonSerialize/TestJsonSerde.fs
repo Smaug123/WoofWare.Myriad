@@ -92,6 +92,7 @@ module TestJsonSerde =
             let! intMeasureOption = Arb.generate
             let! intMeasureNullable = Arb.generate
             let! someEnum = Gen.choose (0, 1)
+            let! timestamp = Arb.generate
 
             return
                 {
@@ -115,6 +116,7 @@ module TestJsonSerde =
                     IntMeasureOption = intMeasureOption
                     IntMeasureNullable = intMeasureNullable
                     Enum = enum<SomeEnum> someEnum
+                    Timestamp = timestamp
                 }
         }
 
@@ -131,6 +133,80 @@ module TestJsonSerde =
             true
 
         property |> Prop.forAll (Arb.fromGen outerGen) |> Check.QuickThrowOnFailure
+
+    [<Test>]
+    let ``Single example of big record`` () =
+        let guid = Guid.Parse "dfe24db5-9f8d-447b-8463-4c0bcf1166d5"
+
+        let data =
+            {
+                A = 3
+                B = "hello!"
+                C = [ 1 ; -9 ]
+                D =
+                    {
+                        Thing = guid
+                        Map = Map.ofList []
+                        ReadOnlyDict = readOnlyDict []
+                        Dict = dict []
+                        ConcreteDict = Dictionary ()
+                    }
+                E = [| "I'm-a-string" |]
+                Arr = [| -18883 ; 9100 |]
+                Byte = 87uy<measure>
+                Sbyte = 89y<measure>
+                I = 199993345<measure>
+                I32 = -485832<measure>
+                I64 = -13458625689L<measure>
+                U = 458582u<measure>
+                U32 = 857362147u<measure>
+                U64 = 1234567892123414596UL<measure>
+                F = 8833345667.1<measure>
+                F32 = 1000.98f<measure>
+                Single = 0.334f<measure>
+                IntMeasureOption = Some 981<measure>
+                IntMeasureNullable = Nullable -883<measure>
+                Enum = enum<SomeEnum> 1
+                Timestamp = DateTimeOffset (2024, 07, 01, 17, 54, 00, TimeSpan.FromHours 1.0)
+            }
+
+        let expected =
+            """{
+    "a": 3,
+    "b": "hello!",
+    "c": [1, -9],
+    "d": {
+      "it\u0027s-a-me": "dfe24db5-9f8d-447b-8463-4c0bcf1166d5",
+      "map": {},
+      "readOnlyDict": {},
+      "dict": {},
+      "concreteDict": {}
+    },
+    "e": ["I\u0027m-a-string"],
+    "arr": [-18883, 9100],
+    "byte": 87,
+    "sbyte": 89,
+    "i": 199993345,
+    "i32": -485832,
+    "i64": -13458625689,
+    "u": 458582,
+    "u32": 857362147,
+    "u64": 1234567892123414596,
+    "f": 8833345667.1,
+    "f32": 1000.98,
+    "single": 0.334,
+    "intMeasureOption": 981,
+    "intMeasureNullable": -883,
+    "enum": 1,
+    "timestamp": "2024-07-01T17:54:00.0000000\u002B01:00"
+}
+"""
+            |> fun s -> s.ToCharArray ()
+            |> Array.filter (fun c -> not (Char.IsWhiteSpace c))
+            |> fun s -> new String (s)
+
+        JsonRecordTypeWithBoth.toJsonNode(data).ToJsonString () |> shouldEqual expected
+        JsonRecordTypeWithBoth.jsonParse (JsonNode.Parse expected) |> shouldEqual data
 
     [<Test>]
     let ``Guids are treated just like strings`` () =
