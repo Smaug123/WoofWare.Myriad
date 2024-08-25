@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <OtherFlags>--reflectionfree $(OtherFlags)</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
     <MyriadSdkGenerator Include="$(MSBuildThisFileDirectory)..\WoofWare.Myriad.Plugins\bin\$(Configuration)\net6.0\WoofWare.Myriad.Plugins.dll"/>
@@ -56,9 +57,8 @@
   <ItemGroup>
     <PackageReference Include="RestEase" Version="1.6.4"/>
     <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj" />
-    <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj"/>
-    <PackageReference Include="Myriad.Sdk" Version="0.8.3"/>
-    <PackageReference Include="Myriad.Core" Version="0.8.3"/>
+    <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj" PrivateAssets="all" />
+    <PackageReference Include="Myriad.Sdk" Version="0.8.3" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

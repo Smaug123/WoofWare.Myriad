@@ -13,6 +13,13 @@ module internal SynExprExtensions =
 
         static member CreateConst () : SynExpr = SynExpr.Const (SynConst.Unit, range0)
 
+        static member CreateConst (b : bool) : SynExpr = SynExpr.Const (SynConst.Bool b, range0)
+
+        static member CreateConst (c : char) : SynExpr =
+            // apparent Myriad bug: `IndexOf '?'` gets formatted as `IndexOf ?` which is clearly wrong
+            SynExpr.CreateApp (SynExpr.Ident (Ident.Create "char"), SynExpr.CreateConst (int c))
+            |> fun e -> SynExpr.Paren (e, range0, Some range0, range0)
+
         static member CreateConst (i : int32) : SynExpr =
             SynExpr.Const (SynConst.Int32 i, range0)
 
@@ -138,6 +145,14 @@ module internal SynExpr =
     let inline index (property : SynExpr) (obj : SynExpr) : SynExpr =
         SynExpr.DotIndexedGet (obj, property, range0, range0)
 
+    let inline arrayIndexRange (start : SynExpr option) (endRange : SynExpr option) (arr : SynExpr) : SynExpr =
+        SynExpr.DotIndexedGet (
+            arr,
+            (SynExpr.IndexRange (start, range0, endRange, range0, range0, range0)),
+            range0,
+            range0
+        )
+
     let inline paren (e : SynExpr) : SynExpr =
         SynExpr.Paren (e, range0, Some range0, range0)
 
@@ -201,6 +216,18 @@ module internal SynExpr =
             |> createLambda "a"
 
         pipeThroughFunction lambda body
+
+    let inline createForEach (pat : SynPat) (enumExpr : SynExpr) (body : SynExpr) : SynExpr =
+        SynExpr.ForEach (
+            DebugPointAtFor.No,
+            DebugPointAtInOrTo.No,
+            SeqExprOnly.SeqExprOnly false,
+            true,
+            pat,
+            enumExpr,
+            body,
+            range0
+        )
 
     let inline createLet (bindings : SynBinding list) (body : SynExpr) : SynExpr =
         SynExpr.LetOrUse (false, false, bindings, body, range0, SynExprLetOrUseTrivia.empty)
@@ -296,9 +323,37 @@ module internal SynExpr =
 
     /// {y} > {x}
     let greaterThan (x : SynExpr) (y : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.ge, y) |> applyTo x
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.gt, y) |> applyTo x
+
+    /// {y} < {x}
+    let lessThan (x : SynExpr) (y : SynExpr) : SynExpr =
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.lt, y) |> applyTo x
 
     /// {y} >= {x}
     let greaterThanOrEqual (x : SynExpr) (y : SynExpr) : SynExpr =
         SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.geq, y)
         |> applyTo x
+
+    /// {y} <= {x}
+    let lessThanOrEqual (x : SynExpr) (y : SynExpr) : SynExpr =
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.leq, y)
+        |> applyTo x
+
+    /// {x} :: {y}
+    let listCons (x : SynExpr) (y : SynExpr) : SynExpr =
+        SynExpr.CreateAppInfix (
+            SynExpr.LongIdent (
+                false,
+                SynLongIdent.SynLongIdent (
+                    [ Ident.create "op_ColonColon" ],
+                    [],
+                    [ Some (IdentTrivia.OriginalNotation "::") ]
+                ),
+                None,
+                range0
+            ),
+            tupleNoParen [ x ; y ]
+        )
+        |> paren
+
+    let assign (lhs : SynLongIdent) (rhs : SynExpr) : SynExpr = SynExpr.LongIdentSet (lhs, rhs, range0)

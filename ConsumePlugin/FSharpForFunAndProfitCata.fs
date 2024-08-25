@@ -30,6 +30,12 @@ type ChocolateType =
     | Milk
     | SeventyPercent
 
+    override this.ToString () =
+        match this with
+        | ChocolateType.Dark -> "Dark"
+        | ChocolateType.Milk -> "Milk"
+        | ChocolateType.SeventyPercent -> "SeventyPercent"
+
 type Chocolate =
     {
         chocType : ChocolateType
@@ -42,6 +48,12 @@ type WrappingPaperStyle =
     | HappyBirthday
     | HappyHolidays
     | SolidColor
+
+    override this.ToString () =
+        match this with
+        | WrappingPaperStyle.HappyBirthday -> "HappyBirthday"
+        | WrappingPaperStyle.HappyHolidays -> "HappyHolidays"
+        | WrappingPaperStyle.SolidColor -> "SolidColor"
 
 [<CreateCatamorphism "GiftCata">]
 type Gift =

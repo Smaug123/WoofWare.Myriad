@@ -14,6 +14,8 @@ module internal SynModuleDecl =
 
     let inline createLet (binding : SynBinding) : SynModuleDecl = createLets [ binding ]
 
+    let inline createTypes (tys : SynTypeDefn list) : SynModuleDecl = SynModuleDecl.Types (tys, range0)
+
     let nestedModule (info : SynComponentInfo) (decls : SynModuleDecl list) : SynModuleDecl =
         SynModuleDecl.NestedModule (
             info,

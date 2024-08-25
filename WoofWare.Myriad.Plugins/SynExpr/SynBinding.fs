@@ -62,6 +62,35 @@ module internal SynBinding =
             triviaZero false
         )
 
+    let withMutability (mut : bool) (binding : SynBinding) : SynBinding =
+        match binding with
+        | SynBinding (pat, kind, inl, _, attrs, xml, valData, headPat, returnInfo, expr, range, debugPoint, trivia) ->
+            SynBinding (pat, kind, inl, mut, attrs, xml, valData, headPat, returnInfo, expr, range, debugPoint, trivia)
+
+    let withRecursion (isRec : bool) (binding : SynBinding) : SynBinding =
+        match binding with
+        | SynBinding (pat, kind, inl, mut, attrs, xml, valData, headPat, returnInfo, expr, range, debugPoint, trivia) ->
+            let trivia =
+                { trivia with
+                    LeadingKeyword =
+                        match trivia.LeadingKeyword with
+                        | SynLeadingKeyword.Let _ ->
+                            if isRec then
+                                SynLeadingKeyword.LetRec (range0, range0)
+                            else
+                                trivia.LeadingKeyword
+                        | SynLeadingKeyword.LetRec _ ->
+                            if isRec then
+                                trivia.LeadingKeyword
+                            else
+                                trivia.LeadingKeyword
+                        | existing ->
+                            failwith
+                                $"WoofWare.Myriad doesn't yet let you adjust the recursion modifier on a binding with modifier %O{existing}"
+                }
+
+            SynBinding (pat, kind, inl, mut, attrs, xml, valData, headPat, returnInfo, expr, range, debugPoint, trivia)
+
     let withAccessibility (acc : SynAccess option) (binding : SynBinding) : SynBinding =
         match binding with
         | SynBinding (_, kind, inl, mut, attrs, xml, valData, headPat, returnInfo, expr, range, debugPoint, trivia) ->

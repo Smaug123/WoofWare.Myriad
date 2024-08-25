@@ -1,9 +1,5 @@
 namespace ConsumePlugin
 
-type ParseState =
-    | AwaitingKey
-    | AwaitingValue of string
-
 /// My whatnot
 [<WoofWare.Myriad.Plugins.RemoveOptions>]
 type RecordType =

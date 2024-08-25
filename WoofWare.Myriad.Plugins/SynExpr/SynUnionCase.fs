@@ -1,6 +1,9 @@
 namespace WoofWare.Myriad.Plugins
 
 open Fantomas.FCS.Syntax
+open Fantomas.FCS.Text.Range
+open Fantomas.FCS.Xml
+open Fantomas.FCS.SyntaxTrivia
 
 type internal UnionCase<'Ident> =
     {
@@ -39,3 +42,34 @@ module internal SynUnionCase =
             Attrs = attrs
             Ident = id
         }
+
+    let create (case : UnionCase<Ident>) : SynUnionCase =
+        let fields =
+            case.Fields
+            |> List.map (fun field ->
+                SynField.SynField (
+                    SynAttributes.ofAttrs field.Attrs,
+                    false,
+                    Some field.Ident,
+                    field.Type,
+                    false,
+                    PreXmlDoc.Empty,
+                    None,
+                    range0,
+                    {
+                        LeadingKeyword = None
+                    }
+                )
+            )
+
+        SynUnionCase.SynUnionCase (
+            SynAttributes.ofAttrs case.Attrs,
+            SynIdent.SynIdent (case.Ident, None),
+            SynUnionCaseKind.Fields fields,
+            PreXmlDoc.Empty,
+            None,
+            range0,
+            {
+                BarRange = Some range0
+            }
+        )
