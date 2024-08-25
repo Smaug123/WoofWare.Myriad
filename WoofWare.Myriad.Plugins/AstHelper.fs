@@ -62,12 +62,53 @@ type internal InterfaceType =
 type internal RecordType =
     {
         Name : Ident
-        Fields : SynField seq
+        Fields : SynField list
+        /// Any additional members which are not record fields.
         Members : SynMemberDefns option
         XmlDoc : PreXmlDoc option
         Generics : SynTyparDecls option
         Accessibility : SynAccess option
+        Attributes : SynAttribute list
     }
+
+    /// Parse from the AST.
+    static member OfRecord (record : SynTypeDefn) : RecordType =
+        match record with
+        | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (synAttributeLists,
+                                                                      synTyparDeclsOption,
+                                                                      _,
+                                                                      longId,
+                                                                      preXmlDoc,
+                                                                      _,
+                                                                      accessOption,
+                                                                      _),
+                                   SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (synAccessOption,
+                                                                                         recordFields,
+                                                                                         _),
+                                                           _),
+                                   synMemberDefns,
+                                   synMemberDefnOption,
+                                   _,
+                                   _) ->
+            if accessOption <> synAccessOption then
+                failwith
+                    $"TODO what's happened, two different accessibility modifiers: %A{accessOption} and %A{synAccessOption}"
+
+            match synMemberDefnOption with
+            | Some v -> failwith $"TODO what's happened, got a synMemberDefn of {v}"
+            | None -> ()
+
+            {
+                Name = List.last longId
+                Fields = recordFields
+                Members = if synMemberDefns.IsEmpty then None else Some synMemberDefns
+                XmlDoc = if preXmlDoc.IsEmpty then None else Some preXmlDoc
+                Generics = synTyparDeclsOption
+                Accessibility = synAccessOption
+                Attributes = synAttributeLists |> List.collect (fun l -> l.Attributes)
+            }
+        | _ -> failwith $"expected a record; got: %+A{record}"
+
 
 /// Anything that is part of an ADT.
 /// A record is a product of stuff; this type represents one of those stuffs.
@@ -101,10 +142,10 @@ module internal AstHelper =
         | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Enum _, _) -> true
         | _ -> false
 
-    let instantiateRecord (fields : (RecordFieldName * SynExpr option) list) : SynExpr =
+    let instantiateRecord (fields : (SynLongIdent * SynExpr) list) : SynExpr =
         let fields =
             fields
-            |> List.map (fun (rfn, synExpr) -> SynExprRecordField (rfn, Some range0, synExpr, None))
+            |> List.map (fun (rfn, synExpr) -> SynExprRecordField ((rfn, true), Some range0, Some synExpr, None))
 
         SynExpr.Record (None, None, fields, range0)
 

@@ -29,6 +29,9 @@ module internal SynType =
     let inline appPostfix (name : string) (arg : SynType) : SynType =
         SynType.App (named name, None, [ arg ], [], None, true, range0)
 
+    let inline appPostfix' (name : string list) (arg : SynType) : SynType =
+        SynType.App (createLongIdent' name, None, [ arg ], [], None, true, range0)
+
     let inline funFromDomain (domain : SynType) (range : SynType) : SynType =
         SynType.Fun (
             domain,
@@ -46,6 +49,8 @@ module internal SynType =
 
     let unit : SynType = named "unit"
     let int : SynType = named "int"
+
+    let string : SynType = named "string"
 
     /// Given ['a1, 'a2] and 'ret, returns 'a1 -> 'a2 -> 'ret.
     let toFun (inputs : SynType list) (ret : SynType) : SynType =
@@ -270,5 +275,25 @@ module internal SynTypePatterns =
                 match args with
                 | [ arg ] -> Some arg
                 | _ -> failwithf "Expected Task to be applied to exactly one arg, but got: %+A" args
+            | _ -> None
+        | _ -> None
+
+    let (|DirectoryInfo|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            match ident |> List.map (fun i -> i.idText) with
+            | [ "System" ; "IO" ; "DirectoryInfo" ]
+            | [ "IO" ; "DirectoryInfo" ]
+            | [ "DirectoryInfo" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
+    let (|FileInfo|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            match ident |> List.map (fun i -> i.idText) with
+            | [ "System" ; "IO" ; "FileInfo" ]
+            | [ "IO" ; "FileInfo" ]
+            | [ "FileInfo" ] -> Some ()
             | _ -> None
         | _ -> None

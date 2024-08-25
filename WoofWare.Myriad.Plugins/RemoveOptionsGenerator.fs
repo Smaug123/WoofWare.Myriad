@@ -42,6 +42,7 @@ module internal RemoveOptionsGenerator =
         (accessibility : SynAccess option)
         (generics : SynTyparDecls option)
         (fields : SynField list)
+        : SynModuleDecl
         =
         let fields : SynField list = fields |> List.map removeOption
         let name = Ident.create "Short"
@@ -54,6 +55,7 @@ module internal RemoveOptionsGenerator =
                 XmlDoc = xmlDoc
                 Generics = generics
                 Accessibility = accessibility
+                Attributes = []
             }
 
         let typeDecl = AstHelper.defineRecordType record
@@ -91,7 +93,7 @@ module internal RemoveOptionsGenerator =
                         )
                     | _ -> accessor
 
-                (SynLongIdent.createI fieldData.Ident, true), Some body
+                SynLongIdent.createI fieldData.Ident, body
             )
             |> AstHelper.instantiateRecord
 

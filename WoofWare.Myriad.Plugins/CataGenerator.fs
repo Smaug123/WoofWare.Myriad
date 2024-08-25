@@ -1100,7 +1100,7 @@ module internal CataGenerator =
         let moduleName = parentName + "Cata" |> Ident.create
 
         let modInfo =
-            SynComponentInfo.create (parentName + "Cata" |> Ident.create)
+            SynComponentInfo.create moduleName
             |> SynComponentInfo.withDocString (
                 PreXmlDoc.Create $" Methods to perform a catamorphism over the type %s{parentName}"
             )

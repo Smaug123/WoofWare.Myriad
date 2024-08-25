@@ -26,6 +26,7 @@
   <ItemGroup>
     <Compile Include="List.fs"/>
     <Compile Include="Primitives.fs" />
+    <Compile Include="SynExpr\SynAttributes.fs" />
     <Compile Include="SynExpr\PreXmlDoc.fs" />
     <Compile Include="SynExpr\Ident.fs" />
     <Compile Include="SynExpr\SynLongIdent.fs" />
@@ -54,6 +55,7 @@
     <Compile Include="JsonParseGenerator.fs"/>
     <Compile Include="HttpClientGenerator.fs"/>
     <Compile Include="CataGenerator.fs" />
+    <Compile Include="ArgParserGenerator.fs" />
     <EmbeddedResource Include="version.json"/>
     <EmbeddedResource Include="SurfaceBaseline.txt"/>
     <None Include="..\README.md">

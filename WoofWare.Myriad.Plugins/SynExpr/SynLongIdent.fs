@@ -14,8 +14,18 @@ module internal SynLongIdent =
             [ Some (IdentTrivia.OriginalNotation ">=") ]
         )
 
-    let ge =
+    let leq =
+        SynLongIdent.SynLongIdent (
+            [ Ident.create "op_LessThanOrEqual" ],
+            [],
+            [ Some (IdentTrivia.OriginalNotation "<=") ]
+        )
+
+    let gt =
         SynLongIdent.SynLongIdent ([ Ident.create "op_GreaterThan" ], [], [ Some (IdentTrivia.OriginalNotation ">") ])
+
+    let lt =
+        SynLongIdent.SynLongIdent ([ Ident.create "op_LessThan" ], [], [ Some (IdentTrivia.OriginalNotation "<") ])
 
     let sub =
         SynLongIdent.SynLongIdent ([ Ident.create "op_Subtraction" ], [], [ Some (IdentTrivia.OriginalNotation "-") ])
