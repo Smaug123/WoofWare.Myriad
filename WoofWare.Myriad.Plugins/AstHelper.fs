@@ -62,12 +62,45 @@ type internal InterfaceType =
 type internal RecordType =
     {
         Name : Ident
-        Fields : SynField seq
+        Fields : SynField list
+        /// Any additional members which are not record fields.
         Members : SynMemberDefns option
         XmlDoc : PreXmlDoc option
         Generics : SynTyparDecls option
         Accessibility : SynAccess option
+        Attributes : SynAttribute list
     }
+
+    /// Parse from the AST.
+    static member OfRecord (record : SynTypeDefn) : RecordType =
+        let sci, sdr, smd, smdo =
+            match record with
+            | SynTypeDefn.SynTypeDefn (sci, sdr, smd, smdo, _, _) -> sci, sdr, smd, smdo
+
+        let synAccessOption, recordFields =
+            match sdr with
+            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (sa, fields, _), _) -> sa, fields
+            | _ -> failwith $"expected a record; got: %+A{record}"
+
+        match sci with
+        | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, access, _) ->
+            if access <> synAccessOption then
+                failwith
+                    $"TODO what's happened, two different accessibility modifiers: %O{access} and %O{synAccessOption}"
+
+            match smdo with
+            | Some v -> failwith $"TODO what's happened, got a synMemberDefn of %O{v}"
+            | None -> ()
+
+            {
+                Name = List.last longId
+                Fields = recordFields
+                Members = if smd.IsEmpty then None else Some smd
+                XmlDoc = if doc.IsEmpty then None else Some doc
+                Generics = typars
+                Accessibility = synAccessOption
+                Attributes = attrs |> List.collect (fun l -> l.Attributes)
+            }
 
 /// Anything that is part of an ADT.
 /// A record is a product of stuff; this type represents one of those stuffs.
@@ -101,10 +134,10 @@ module internal AstHelper =
         | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Enum _, _) -> true
         | _ -> false
 
-    let instantiateRecord (fields : (RecordFieldName * SynExpr option) list) : SynExpr =
+    let instantiateRecord (fields : (SynLongIdent * SynExpr) list) : SynExpr =
         let fields =
             fields
-            |> List.map (fun (rfn, synExpr) -> SynExprRecordField (rfn, Some range0, synExpr, None))
+            |> List.map (fun (rfn, synExpr) -> SynExprRecordField ((rfn, true), Some range0, Some synExpr, None))
 
         SynExpr.Record (None, None, fields, range0)
 

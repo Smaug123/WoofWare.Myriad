@@ -71,13 +71,13 @@ module internal InterfaceMockGenerator =
                 if inherits.Contains KnownInheritance.IDisposable then
                     let unitFun = SynExpr.createThunk (SynExpr.CreateConst ())
 
-                    [ (SynLongIdent.createS "Dispose", true), Some unitFun ]
+                    [ SynLongIdent.createS "Dispose", unitFun ]
                 else
                     []
 
             let nonExtras =
                 fields
-                |> List.map (fun field -> (SynLongIdent.createI (getName field), true), Some (failwithFun field))
+                |> List.map (fun field -> SynLongIdent.createI (getName field), failwithFun field)
 
             extras @ nonExtras
 
@@ -213,6 +213,7 @@ module internal InterfaceMockGenerator =
                 XmlDoc = Some xmlDoc
                 Generics = interfaceType.Generics
                 Accessibility = Some access
+                Attributes = []
             }
 
         let typeDecl = AstHelper.defineRecordType record

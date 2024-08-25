@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Myriad.Core" Version="0.8.3" PrivateAssets="all"/>
+    <PackageReference Include="Myriad.Core" Version="0.8.3" />
     <!-- the lowest version allowed by Myriad.Core -->
     <PackageReference Update="FSharp.Core" Version="6.0.1" PrivateAssets="all"/>
   </ItemGroup>
@@ -26,6 +26,7 @@
   <ItemGroup>
     <Compile Include="List.fs"/>
     <Compile Include="Primitives.fs" />
+    <Compile Include="SynExpr\SynAttributes.fs" />
     <Compile Include="SynExpr\PreXmlDoc.fs" />
     <Compile Include="SynExpr\Ident.fs" />
     <Compile Include="SynExpr\SynLongIdent.fs" />

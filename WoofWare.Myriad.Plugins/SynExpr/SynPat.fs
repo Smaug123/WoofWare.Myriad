@@ -33,3 +33,17 @@ module internal SynPat =
     let unit = createConst SynConst.Unit
 
     let createNull = SynPat.Null range0
+
+    let emptyList = SynPat.ArrayOrList (false, [], range0)
+
+    let listCons (lhs : SynPat) (rhs : SynPat) =
+        SynPat.ListCons (
+            lhs,
+            rhs,
+            range0,
+            {
+                ColonColonRange = range0
+            }
+        )
+
+    let emptyArray = SynPat.ArrayOrList (true, [], range0)

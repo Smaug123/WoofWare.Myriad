@@ -257,11 +257,7 @@ module internal HttpClientGenerator =
                     | Some id -> id
 
                 let urlSeparator =
-                    // apparent Myriad bug: `IndexOf '?'` gets formatted as `IndexOf ?` which is clearly wrong
-                    let questionMark =
-                        SynExpr.CreateConst 63
-                        |> SynExpr.applyFunction (SynExpr.createIdent "char")
-                        |> SynExpr.paren
+                    let questionMark = SynExpr.CreateConst '?'
 
                     let containsQuestion =
                         info.UrlTemplate
@@ -425,21 +421,17 @@ module internal HttpClientGenerator =
                                 (SynExpr.createIdent' bodyParamName)
                         )
                         Do (
-                            SynExpr.LongIdentSet (
-                                SynLongIdent.createS' [ "httpMessage" ; "Content" ],
-                                SynExpr.createIdent "queryParams",
-                                range0
-                            )
+                            SynExpr.assign
+                                (SynLongIdent.createS' [ "httpMessage" ; "Content" ])
+                                (SynExpr.createIdent "queryParams")
                         )
                     ]
                 | BodyParamMethods.HttpContent ->
                     [
                         Do (
-                            SynExpr.LongIdentSet (
-                                SynLongIdent.createS' [ "httpMessage" ; "Content" ],
-                                SynExpr.createIdent' bodyParamName,
-                                range0
-                            )
+                            SynExpr.assign
+                                (SynLongIdent.createS' [ "httpMessage" ; "Content" ])
+                                (SynExpr.createIdent' bodyParamName)
                         )
                     ]
                 | BodyParamMethods.Serialise ty ->
@@ -464,11 +456,9 @@ module internal HttpClientGenerator =
                                  ))
                         )
                         Do (
-                            SynExpr.LongIdentSet (
-                                SynLongIdent.createS' [ "httpMessage" ; "Content" ],
-                                SynExpr.createIdent "queryParams",
-                                range0
-                            )
+                            SynExpr.assign
+                                (SynLongIdent.createS' [ "httpMessage" ; "Content" ])
+                                (SynExpr.createIdent "queryParams")
                         )
                     ]
 
