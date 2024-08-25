@@ -1,3 +1,9 @@
+WoofWare.Myriad.Plugins.ArgParserAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.ArgParserAttribute..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.ArgumentDefaultEnvironmentVariableAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.ArgumentDefaultEnvironmentVariableAttribute..ctor [constructor]: string
+WoofWare.Myriad.Plugins.ArgumentDefaultFunctionAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.ArgumentDefaultFunctionAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.GenerateMockAttribute inherit System.Attribute
@@ -20,6 +26,8 @@ WoofWare.Myriad.Plugins.JsonSerializeAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.JsonSerializeAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonSerializeAttribute.DefaultIsExtensionMethod [static property]: [read-only] bool
 WoofWare.Myriad.Plugins.JsonSerializeAttribute.get_DefaultIsExtensionMethod [static method]: unit -> bool
+WoofWare.Myriad.Plugins.PositionalArgsAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.PositionalArgsAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RemoveOptionsAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RemoveOptionsAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RestEase inherit obj
