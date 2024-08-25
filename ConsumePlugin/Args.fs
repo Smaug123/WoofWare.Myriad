@@ -27,7 +27,6 @@ type Args =
 
     static member DefaultAnotherOptionalThing () = 3
 
-
 [<ArgParser>]
 type ArgsNoPositionals =
     {

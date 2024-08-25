@@ -20,7 +20,7 @@ module Args =
         | AwaitingKey
         | AwaitingValue of key : string
 
-    let parse (args : string list) : Args =
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : Args =
         let Positionals : int ResizeArray = ResizeArray ()
         let mutable Foo : int option = None
         let mutable Bar : string option = None
@@ -36,37 +36,37 @@ module Args =
         /// Processes the key-value pair, returning false if no key was matched. Also throws if an invalid value was received.
         let processKeyValue (key : string) (value : string) : bool =
             if
-                System.String.Equals (key, "---yet-another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, "--yet-another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match YetAnotherOptionalThing with
                 | Some x ->
                     failwithf
                         "Argument '%s' was supplied multiple times: %O and %O"
-                        "---yet-another-optional-thing"
+                        "--yet-another-optional-thing"
                         x
                         value
                 | None ->
                     YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
                     true
             else if
-                System.String.Equals (key, "---another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, "--another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match AnotherOptionalThing with
                 | Some x ->
-                    failwithf "Argument '%s' was supplied multiple times: %O and %O" "---another-optional-thing" x value
+                    failwithf "Argument '%s' was supplied multiple times: %O and %O" "--another-optional-thing" x value
                 | None ->
                     AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
                     true
-            else if System.String.Equals (key, "---optional-thing", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--optional-thing", System.StringComparison.OrdinalIgnoreCase) then
                 match OptionalThing with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---optional-thing" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--optional-thing" x value
                 | None ->
                     OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
                     true
             else if
                 System.String.Equals (
                     key,
-                    "---optional-thing-with-no-default",
+                    "--optional-thing-with-no-default",
                     System.StringComparison.OrdinalIgnoreCase
                 )
             then
@@ -74,42 +74,42 @@ module Args =
                 | Some x ->
                     failwithf
                         "Argument '%s' was supplied multiple times: %O and %O"
-                        "---optional-thing-with-no-default"
+                        "--optional-thing-with-no-default"
                         x
                         value
                 | None ->
                     OptionalThingWithNoDefault <- value |> (fun x -> System.Int32.Parse x) |> Some
                     true
-            else if System.String.Equals (key, "---some-list", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--some-list", System.StringComparison.OrdinalIgnoreCase) then
                 (fun x -> System.IO.DirectoryInfo x) value |> SomeList.Add
                 true
-            else if System.String.Equals (key, "---some-directory", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--some-directory", System.StringComparison.OrdinalIgnoreCase) then
                 match SomeDirectory with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---some-directory" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--some-directory" x value
                 | None ->
                     SomeDirectory <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
                     true
-            else if System.String.Equals (key, "---some-file", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--some-file", System.StringComparison.OrdinalIgnoreCase) then
                 match SomeFile with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---some-file" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--some-file" x value
                 | None ->
                     SomeFile <- value |> (fun x -> System.IO.FileInfo x) |> Some
                     true
-            else if System.String.Equals (key, "---baz", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
                 match Baz with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---baz" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--baz" x value
                 | None ->
                     Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
                     true
-            else if System.String.Equals (key, "---bar", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--bar", System.StringComparison.OrdinalIgnoreCase) then
                 match Bar with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---bar" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--bar" x value
                 | None ->
                     Bar <- value |> (fun x -> x) |> Some
                     true
-            else if System.String.Equals (key, "---foo", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--foo", System.StringComparison.OrdinalIgnoreCase) then
                 match Foo with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---foo" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--foo" x value
                 | None ->
                     Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
                     true
@@ -118,15 +118,15 @@ module Args =
 
         /// Returns false if we didn't set a value.
         let setFlagValue (key : string) : bool =
-            if System.String.Equals (key, "---optional-thing", System.StringComparison.OrdinalIgnoreCase) then
+            if System.String.Equals (key, "--optional-thing", System.StringComparison.OrdinalIgnoreCase) then
                 match OptionalThing with
-                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "---optional-thing" x x
+                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "--optional-thing" x x
                 | None ->
                     OptionalThing <- Some true
                     true
-            else if System.String.Equals (key, "---baz", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
                 match Baz with
-                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "---baz" x x
+                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "--baz" x x
                 | None ->
                     Baz <- Some true
                     true
@@ -135,7 +135,16 @@ module Args =
 
         let rec go (state : ParseState) (args : string list) =
             match args with
-            | [] -> ()
+            | [] ->
+                match state with
+                | ParseState.AwaitingKey -> ()
+                | ParseState.AwaitingValue key ->
+                    if setFlagValue key then
+                        ()
+                    else
+                        failwithf
+                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                            key
             | "--" :: rest -> Positionals.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
             | arg :: args ->
                 match state with
@@ -143,8 +152,8 @@ module Args =
                     if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                         let equals = arg.IndexOf (char 61)
 
-                        if equals > 0 then
-                            go ParseState.AwaitingKey args
+                        if equals < 0 then
+                            args |> go (ParseState.AwaitingValue arg)
                         else
                             let key = arg.[0 .. equals - 1]
                             let value = arg.[equals + 1 ..]
@@ -169,27 +178,27 @@ module Args =
 
         let Foo =
             match Foo with
-            | None -> failwithf "Required argument '%s' was missing" "---foo"
+            | None -> failwithf "Required argument '%s' was missing" "--foo"
             | Some x -> x
 
         let Bar =
             match Bar with
-            | None -> failwithf "Required argument '%s' was missing" "---bar"
+            | None -> failwithf "Required argument '%s' was missing" "--bar"
             | Some x -> x
 
         let Baz =
             match Baz with
-            | None -> failwithf "Required argument '%s' was missing" "---baz"
+            | None -> failwithf "Required argument '%s' was missing" "--baz"
             | Some x -> x
 
         let SomeFile =
             match SomeFile with
-            | None -> failwithf "Required argument '%s' was missing" "---some-file"
+            | None -> failwithf "Required argument '%s' was missing" "--some-file"
             | Some x -> x
 
         let SomeDirectory =
             match SomeDirectory with
-            | None -> failwithf "Required argument '%s' was missing" "---some-directory"
+            | None -> failwithf "Required argument '%s' was missing" "--some-directory"
             | Some x -> x
 
         let SomeList = SomeList |> Seq.toList
@@ -208,11 +217,11 @@ module Args =
         let YetAnotherOptionalThing =
             match YetAnotherOptionalThing with
             | None ->
-                match "CONSUMEPLUGIN_THINGS" |> System.Environment.GetEnvironmentVariable with
+                match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
                 | null ->
                     failwithf
                         "No value was supplied for %s, nor was environment variable %s set"
-                        "---yet-another-optional-thing"
+                        "--yet-another-optional-thing"
                         "CONSUMEPLUGIN_THINGS"
                 | x -> x |> (fun x -> x)
                 |> Choice2Of2
@@ -231,6 +240,9 @@ module Args =
             AnotherOptionalThing = AnotherOptionalThing
             YetAnotherOptionalThing = YetAnotherOptionalThing
         }
+
+    let parse (args : string list) : Args =
+        parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
 open System.IO
@@ -243,7 +255,7 @@ module ArgsNoPositionals =
         | AwaitingKey
         | AwaitingValue of key : string
 
-    let parse (args : string list) : ArgsNoPositionals =
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : ArgsNoPositionals =
         let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
         let mutable Foo : int option = None
         let mutable Bar : string option = None
@@ -259,37 +271,37 @@ module ArgsNoPositionals =
         /// Processes the key-value pair, returning false if no key was matched. Also throws if an invalid value was received.
         let processKeyValue (key : string) (value : string) : bool =
             if
-                System.String.Equals (key, "---yet-another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, "--yet-another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match YetAnotherOptionalThing with
                 | Some x ->
                     failwithf
                         "Argument '%s' was supplied multiple times: %O and %O"
-                        "---yet-another-optional-thing"
+                        "--yet-another-optional-thing"
                         x
                         value
                 | None ->
                     YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
                     true
             else if
-                System.String.Equals (key, "---another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, "--another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match AnotherOptionalThing with
                 | Some x ->
-                    failwithf "Argument '%s' was supplied multiple times: %O and %O" "---another-optional-thing" x value
+                    failwithf "Argument '%s' was supplied multiple times: %O and %O" "--another-optional-thing" x value
                 | None ->
                     AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
                     true
-            else if System.String.Equals (key, "---optional-thing", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--optional-thing", System.StringComparison.OrdinalIgnoreCase) then
                 match OptionalThing with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---optional-thing" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--optional-thing" x value
                 | None ->
                     OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
                     true
             else if
                 System.String.Equals (
                     key,
-                    "---optional-thing-with-no-default",
+                    "--optional-thing-with-no-default",
                     System.StringComparison.OrdinalIgnoreCase
                 )
             then
@@ -297,42 +309,42 @@ module ArgsNoPositionals =
                 | Some x ->
                     failwithf
                         "Argument '%s' was supplied multiple times: %O and %O"
-                        "---optional-thing-with-no-default"
+                        "--optional-thing-with-no-default"
                         x
                         value
                 | None ->
                     OptionalThingWithNoDefault <- value |> (fun x -> System.Int32.Parse x) |> Some
                     true
-            else if System.String.Equals (key, "---some-list", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--some-list", System.StringComparison.OrdinalIgnoreCase) then
                 (fun x -> System.IO.DirectoryInfo x) value |> SomeList.Add
                 true
-            else if System.String.Equals (key, "---some-directory", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--some-directory", System.StringComparison.OrdinalIgnoreCase) then
                 match SomeDirectory with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---some-directory" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--some-directory" x value
                 | None ->
                     SomeDirectory <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
                     true
-            else if System.String.Equals (key, "---some-file", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--some-file", System.StringComparison.OrdinalIgnoreCase) then
                 match SomeFile with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---some-file" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--some-file" x value
                 | None ->
                     SomeFile <- value |> (fun x -> System.IO.FileInfo x) |> Some
                     true
-            else if System.String.Equals (key, "---baz", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
                 match Baz with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---baz" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--baz" x value
                 | None ->
                     Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
                     true
-            else if System.String.Equals (key, "---bar", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--bar", System.StringComparison.OrdinalIgnoreCase) then
                 match Bar with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---bar" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--bar" x value
                 | None ->
                     Bar <- value |> (fun x -> x) |> Some
                     true
-            else if System.String.Equals (key, "---foo", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--foo", System.StringComparison.OrdinalIgnoreCase) then
                 match Foo with
-                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---foo" x value
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "--foo" x value
                 | None ->
                     Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
                     true
@@ -341,15 +353,15 @@ module ArgsNoPositionals =
 
         /// Returns false if we didn't set a value.
         let setFlagValue (key : string) : bool =
-            if System.String.Equals (key, "---optional-thing", System.StringComparison.OrdinalIgnoreCase) then
+            if System.String.Equals (key, "--optional-thing", System.StringComparison.OrdinalIgnoreCase) then
                 match OptionalThing with
-                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "---optional-thing" x x
+                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "--optional-thing" x x
                 | None ->
                     OptionalThing <- Some true
                     true
-            else if System.String.Equals (key, "---baz", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
                 match Baz with
-                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "---baz" x x
+                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "--baz" x x
                 | None ->
                     Baz <- Some true
                     true
@@ -358,7 +370,16 @@ module ArgsNoPositionals =
 
         let rec go (state : ParseState) (args : string list) =
             match args with
-            | [] -> ()
+            | [] ->
+                match state with
+                | ParseState.AwaitingKey -> ()
+                | ParseState.AwaitingValue key ->
+                    if setFlagValue key then
+                        ()
+                    else
+                        failwithf
+                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                            key
             | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
@@ -366,8 +387,8 @@ module ArgsNoPositionals =
                     if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                         let equals = arg.IndexOf (char 61)
 
-                        if equals > 0 then
-                            go ParseState.AwaitingKey args
+                        if equals < 0 then
+                            args |> go (ParseState.AwaitingValue arg)
                         else
                             let key = arg.[0 .. equals - 1]
                             let value = arg.[equals + 1 ..]
@@ -399,27 +420,27 @@ module ArgsNoPositionals =
 
         let Foo =
             match Foo with
-            | None -> failwithf "Required argument '%s' was missing" "---foo"
+            | None -> failwithf "Required argument '%s' was missing" "--foo"
             | Some x -> x
 
         let Bar =
             match Bar with
-            | None -> failwithf "Required argument '%s' was missing" "---bar"
+            | None -> failwithf "Required argument '%s' was missing" "--bar"
             | Some x -> x
 
         let Baz =
             match Baz with
-            | None -> failwithf "Required argument '%s' was missing" "---baz"
+            | None -> failwithf "Required argument '%s' was missing" "--baz"
             | Some x -> x
 
         let SomeFile =
             match SomeFile with
-            | None -> failwithf "Required argument '%s' was missing" "---some-file"
+            | None -> failwithf "Required argument '%s' was missing" "--some-file"
             | Some x -> x
 
         let SomeDirectory =
             match SomeDirectory with
-            | None -> failwithf "Required argument '%s' was missing" "---some-directory"
+            | None -> failwithf "Required argument '%s' was missing" "--some-directory"
             | Some x -> x
 
         let SomeList = SomeList |> Seq.toList
@@ -438,11 +459,11 @@ module ArgsNoPositionals =
         let YetAnotherOptionalThing =
             match YetAnotherOptionalThing with
             | None ->
-                match "CONSUMEPLUGIN_THINGS" |> System.Environment.GetEnvironmentVariable with
+                match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
                 | null ->
                     failwithf
                         "No value was supplied for %s, nor was environment variable %s set"
-                        "---yet-another-optional-thing"
+                        "--yet-another-optional-thing"
                         "CONSUMEPLUGIN_THINGS"
                 | x -> x |> (fun x -> x)
                 |> Choice2Of2
@@ -460,3 +481,6 @@ module ArgsNoPositionals =
             AnotherOptionalThing = AnotherOptionalThing
             YetAnotherOptionalThing = YetAnotherOptionalThing
         }
+
+    let parse (args : string list) : ArgsNoPositionals =
+        parse' System.Environment.GetEnvironmentVariable args

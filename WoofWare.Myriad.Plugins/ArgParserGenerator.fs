@@ -54,7 +54,7 @@ module internal ArgParserGenerator =
     /// Convert e.g. "Foo" into "--foo".
     let argify (ident : Ident) : string =
         let result = StringBuilder ()
-        result.Append "--" |> ignore<StringBuilder>
+        result.Append "-" |> ignore<StringBuilder>
 
         for c in ident.idText do
             if Char.IsUpper c then
@@ -403,7 +403,7 @@ module internal ArgParserGenerator =
                             (SynExpr.callMethodArg "IndexOf" (SynExpr.CreateConst '=') (SynExpr.createIdent "arg"))
                     ]
                     (SynExpr.ifThenElse
-                        (SynExpr.greaterThan (SynExpr.CreateConst 0) (SynExpr.createIdent "equals"))
+                        (SynExpr.lessThan (SynExpr.CreateConst 0) (SynExpr.createIdent "equals"))
                         (SynExpr.createLet
                             [
                                 SynBinding.basic
@@ -442,11 +442,16 @@ module internal ArgParserGenerator =
                                         (SynExpr.createIdent "go")
                                         (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
                                     (SynExpr.createIdent "args"))))
-                        (SynExpr.applyFunction
-                            (SynExpr.applyFunction
-                                (SynExpr.createIdent "go")
-                                (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
-                            (SynExpr.createIdent "args"))))
+                        (SynExpr.createIdent "args"
+                         |> SynExpr.pipeThroughFunction (
+                             SynExpr.applyFunction
+                                 (SynExpr.createIdent "go")
+                                 (SynExpr.paren (
+                                     SynExpr.applyFunction
+                                         (SynExpr.createLongIdent [ "ParseState" ; "AwaitingValue" ])
+                                         (SynExpr.createIdent "arg")
+                                 ))
+                         ))))
 
         let processValue =
             SynExpr.ifThenElse
@@ -490,7 +495,32 @@ module internal ArgParserGenerator =
 
         let body =
             [
-                SynMatchClause.create SynPat.emptyList (SynExpr.CreateConst ())
+                SynMatchClause.create
+                    SynPat.emptyList
+                    (SynExpr.createMatch
+                        (SynExpr.createIdent "state")
+                        [
+                            SynMatchClause.create
+                                (SynPat.identWithArgs
+                                    [ Ident.create "ParseState" ; Ident.create "AwaitingKey" ]
+                                    (SynArgPats.create []))
+                                (SynExpr.CreateConst ())
+                            SynMatchClause.create
+                                (SynPat.identWithArgs
+                                    [ Ident.create "ParseState" ; Ident.create "AwaitingValue" ]
+                                    (SynArgPats.create [ Ident.create "key" ]))
+                                (SynExpr.ifThenElse
+                                    (SynExpr.applyFunction
+                                        (SynExpr.createIdent "setFlagValue")
+                                        (SynExpr.createIdent "key"))
+                                    (SynExpr.applyFunction
+                                        (SynExpr.applyFunction
+                                            (SynExpr.createIdent "failwithf")
+                                            (SynExpr.CreateConst
+                                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."))
+                                        (SynExpr.createIdent "key"))
+                                    (SynExpr.CreateConst ()))
+                        ])
                 SynMatchClause.create
                     (SynPat.listCons (SynPat.createConst (SynConst.CreateString "--")) (SynPat.named "rest"))
                     (SynExpr.callMethodArg
@@ -567,9 +597,7 @@ module internal ArgParserGenerator =
                         | ArgumentDefaultSpec.EnvironmentVariable name ->
                             let result =
                                 name
-                                |> SynExpr.pipeThroughFunction (
-                                    SynExpr.createLongIdent [ "System" ; "Environment" ; "GetEnvironmentVariable" ]
-                                )
+                                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "getEnvironmentVariable")
 
                             [
                                 SynMatchClause.create
@@ -740,16 +768,30 @@ module internal ArgParserGenerator =
             |> SynModuleDecl.createTypes
 
         let taggedMod =
+            let argsParam =
+                SynPat.named "args"
+                |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
+
             [
                 parseStateType
 
                 createRecordParse taggedType
                 |> SynBinding.basic
-                    [ Ident.create "parse" ]
+                    [ Ident.create "parse'" ]
                     [
-                        SynPat.named "args"
-                        |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
+                        SynPat.named "getEnvironmentVariable"
+                        |> SynPat.annotateType (SynType.funFromDomain SynType.string SynType.string)
+                        argsParam
                     ]
+                |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ taggedType.Name ])
+                |> SynModuleDecl.createLet
+
+                SynExpr.applyFunction
+                    (SynExpr.applyFunction
+                        (SynExpr.createIdent "parse'")
+                        (SynExpr.createLongIdent [ "System" ; "Environment" ; "GetEnvironmentVariable" ]))
+                    (SynExpr.createIdent "args")
+                |> SynBinding.basic [ Ident.create "parse" ] [ argsParam ]
                 |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ taggedType.Name ])
                 |> SynModuleDecl.createLet
             ]

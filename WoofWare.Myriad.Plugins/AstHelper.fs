@@ -73,42 +73,34 @@ type internal RecordType =
 
     /// Parse from the AST.
     static member OfRecord (record : SynTypeDefn) : RecordType =
-        match record with
-        | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (synAttributeLists,
-                                                                      synTyparDeclsOption,
-                                                                      _,
-                                                                      longId,
-                                                                      preXmlDoc,
-                                                                      _,
-                                                                      accessOption,
-                                                                      _),
-                                   SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (synAccessOption,
-                                                                                         recordFields,
-                                                                                         _),
-                                                           _),
-                                   synMemberDefns,
-                                   synMemberDefnOption,
-                                   _,
-                                   _) ->
-            if accessOption <> synAccessOption then
-                failwith
-                    $"TODO what's happened, two different accessibility modifiers: %A{accessOption} and %A{synAccessOption}"
+        let sci, sdr, smd, smdo =
+            match record with
+            | SynTypeDefn.SynTypeDefn (sci, sdr, smd, smdo, _, _) -> sci, sdr, smd, smdo
 
-            match synMemberDefnOption with
+        let synAccessOption, recordFields =
+            match sdr with
+            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (sa, fields, _), _) -> sa, fields
+            | _ -> failwith $"expected a record; got: %+A{record}"
+
+        match sci with
+        | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, access, _) ->
+            if access <> synAccessOption then
+                failwith
+                    $"TODO what's happened, two different accessibility modifiers: %A{access} and %A{synAccessOption}"
+
+            match smdo with
             | Some v -> failwith $"TODO what's happened, got a synMemberDefn of {v}"
             | None -> ()
 
             {
                 Name = List.last longId
                 Fields = recordFields
-                Members = if synMemberDefns.IsEmpty then None else Some synMemberDefns
-                XmlDoc = if preXmlDoc.IsEmpty then None else Some preXmlDoc
-                Generics = synTyparDeclsOption
+                Members = if smd.IsEmpty then None else Some smd
+                XmlDoc = if doc.IsEmpty then None else Some doc
+                Generics = typars
                 Accessibility = synAccessOption
-                Attributes = synAttributeLists |> List.collect (fun l -> l.Attributes)
+                Attributes = attrs |> List.collect (fun l -> l.Attributes)
             }
-        | _ -> failwith $"expected a record; got: %+A{record}"
-
 
 /// Anything that is part of an ADT.
 /// A record is a product of stuff; this type represents one of those stuffs.
