@@ -62,6 +62,23 @@ module TestArgParser =
         Check.QuickThrowOnFailure property
 
     [<Test>]
+    let ``Arg-like thing appearing before double dash`` () =
+        let envCalls = ref 0
+
+        let getEnvVar (_ : string) =
+            Interlocked.Increment envCalls |> ignore<int>
+            ""
+
+        let args = [ "--foo=3" ; "--non-existent" ; "--bar=4" ; "--baz=true" ]
+
+        let exc =
+            Assert.Throws<exn> (fun () -> Basic.parse' getEnvVar args |> ignore<Basic>)
+
+        envCalls.Value |> shouldEqual 0
+
+        exc.Message |> shouldEqual "Unable to process supplied arg --non-existent"
+
+    [<Test>]
     let ``Args appearing after double dash are positional`` () =
         let envCalls = ref 0
 

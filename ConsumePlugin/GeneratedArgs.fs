@@ -98,7 +98,7 @@ module BasicNoPositionals =
                     else if setFlagValue key then
                         go ParseState.AwaitingKey (arg :: args)
                     else
-                        failwithf "Unable to process value %s for arg %s" arg key
+                        failwithf "Unable to process supplied arg %s" key
 
         go ParseState.AwaitingKey args
         let ArgParser_errors = ResizeArray ()
@@ -236,7 +236,7 @@ module Basic =
                     else if setFlagValue key then
                         go ParseState.AwaitingKey (arg :: args)
                     else
-                        failwithf "Unable to process value %s for arg %s" arg key
+                        failwithf "Unable to process supplied arg %s" key
 
         go ParseState.AwaitingKey args
         let ArgParser_errors = ResizeArray ()
@@ -365,7 +365,7 @@ module BasicWithIntPositionals =
                     else if setFlagValue key then
                         go ParseState.AwaitingKey (arg :: args)
                     else
-                        failwithf "Unable to process value %s for arg %s" arg key
+                        failwithf "Unable to process supplied arg %s" key
 
         go ParseState.AwaitingKey args
         let ArgParser_errors = ResizeArray ()
@@ -567,7 +567,7 @@ module LoadsOfTypes =
                     else if setFlagValue key then
                         go ParseState.AwaitingKey (arg :: args)
                     else
-                        failwithf "Unable to process value %s for arg %s" arg key
+                        failwithf "Unable to process supplied arg %s" key
 
         go ParseState.AwaitingKey args
         let ArgParser_errors = ResizeArray ()
@@ -823,7 +823,7 @@ module LoadsOfTypesNoPositionals =
                     else if setFlagValue key then
                         go ParseState.AwaitingKey (arg :: args)
                     else
-                        failwithf "Unable to process value %s for arg %s" arg key
+                        failwithf "Unable to process supplied arg %s" key
 
         go ParseState.AwaitingKey args
         let ArgParser_errors = ResizeArray ()

@@ -458,10 +458,8 @@ module internal ArgParserGenerator =
             let fail =
                 SynExpr.applyFunction
                     (SynExpr.applyFunction
-                        (SynExpr.applyFunction
-                            (SynExpr.createIdent "failwithf")
-                            (SynExpr.CreateConst "Unable to process value %s for arg %s"))
-                        (SynExpr.createIdent "arg"))
+                        (SynExpr.createIdent "failwithf")
+                        (SynExpr.CreateConst "Unable to process supplied arg %s"))
                     (SynExpr.createIdent "key")
 
             SynExpr.ifThenElse
