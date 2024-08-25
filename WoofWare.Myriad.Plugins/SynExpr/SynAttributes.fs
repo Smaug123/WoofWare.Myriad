@@ -4,7 +4,7 @@ open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
 
 [<RequireQualifiedAccess>]
-module SynAttributes =
+module internal SynAttributes =
     let ofAttrs (attrs : SynAttribute list) : SynAttributes =
         attrs
         |> List.map (fun a ->

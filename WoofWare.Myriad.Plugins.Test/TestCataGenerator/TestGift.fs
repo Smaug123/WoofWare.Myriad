@@ -43,7 +43,7 @@ module TestGift =
                     member _.WithACard g message =
                         $"%s{g} with a card saying '%s{message}'"
 
-                    member _.Wrapped g paper = $"%s{g} wrapped in %A{paper} paper"
+                    member _.Wrapped g paper = $"%s{g} wrapped in %O{paper} paper"
                 }
         }
 

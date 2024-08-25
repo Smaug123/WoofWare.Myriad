@@ -6,14 +6,20 @@ open Fantomas.FCS.Syntax
 open Fantomas.FCS.Xml
 open Myriad.Core
 
-type private DefaultSpec =
+/// The default value of an argument which admits default values can be pulled from different sources.
+/// This defines which source a particular default value comes from.
+type private ArgumentDefaultSpec =
+    /// From parsing the environment variable with the given name (e.g. "WOOFWARE_DISABLE_FOO" or whatever).
     | EnvironmentVariable of name : SynExpr
+    /// From calling the static member `{typeWeParseInto}.Default{name}()`
+    /// For example, if `type MyArgs = { Thing : Choice<int, int> }`, then
+    /// we would use `MyArgs.DefaultThing () : int`.
     | FunctionCall of name : Ident
 
 type private Accumulation =
     | Required
     | Optional
-    | Choice of DefaultSpec
+    | Choice of ArgumentDefaultSpec
     | List
 
 type private ParseFunction =
@@ -142,7 +148,8 @@ module internal ArgParserGenerator =
                         | [ "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunction" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ] ->
-                            DefaultSpec.FunctionCall (Ident.create ("Default" + fieldName.idText)) |> Some
+                            ArgumentDefaultSpec.FunctionCall (Ident.create ("Default" + fieldName.idText))
+                            |> Some
                         | [ "ArgumentDefaultEnvironmentVariable" ]
                         | [ "ArgumentDefaultEnvironmentVariableAttribute" ]
                         | [ "Plugins" ; "ArgumentDefaultEnvironmentVariable" ]
@@ -151,7 +158,7 @@ module internal ArgParserGenerator =
                         | [ "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariable" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ] ->
-                            DefaultSpec.EnvironmentVariable attr.ArgExpr |> Some
+                            ArgumentDefaultSpec.EnvironmentVariable attr.ArgExpr |> Some
                         | _ -> None
                     )
 
@@ -557,7 +564,7 @@ module internal ArgParserGenerator =
                 | Accumulation.Choice spec ->
                     let getDefaultValue =
                         match spec with
-                        | DefaultSpec.EnvironmentVariable name ->
+                        | ArgumentDefaultSpec.EnvironmentVariable name ->
                             let result =
                                 name
                                 |> SynExpr.pipeThroughFunction (
@@ -580,7 +587,7 @@ module internal ArgParserGenerator =
                                     (SynExpr.createIdent "x" |> SynExpr.pipeThroughFunction pf.Parser)
                             ]
                             |> SynExpr.createMatch result
-                        | DefaultSpec.FunctionCall name ->
+                        | ArgumentDefaultSpec.FunctionCall name ->
                             SynExpr.callMethod name.idText (SynExpr.createIdent' recordType.Name)
 
                     [
