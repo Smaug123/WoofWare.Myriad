@@ -51,8 +51,11 @@ module BasicNoPositionals =
 
                     true
                 | None ->
-                    Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                    true
+                    try
+                        Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--bar", System.StringComparison.OrdinalIgnoreCase) then
                 match Bar with
                 | Some x ->
@@ -61,8 +64,11 @@ module BasicNoPositionals =
 
                     true
                 | None ->
-                    Bar <- value |> (fun x -> x) |> Some
-                    true
+                    try
+                        Bar <- value |> (fun x -> x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--foo", System.StringComparison.OrdinalIgnoreCase) then
                 match Foo with
                 | Some x ->
@@ -71,8 +77,11 @@ module BasicNoPositionals =
 
                     true
                 | None ->
-                    Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
-                    true
+                    try
+                        Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else
                 false
 
@@ -225,8 +234,11 @@ module Basic =
 
                     true
                 | None ->
-                    Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                    true
+                    try
+                        Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--bar", System.StringComparison.OrdinalIgnoreCase) then
                 match Bar with
                 | Some x ->
@@ -235,8 +247,11 @@ module Basic =
 
                     true
                 | None ->
-                    Bar <- value |> (fun x -> x) |> Some
-                    true
+                    try
+                        Bar <- value |> (fun x -> x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--foo", System.StringComparison.OrdinalIgnoreCase) then
                 match Foo with
                 | Some x ->
@@ -245,8 +260,11 @@ module Basic =
 
                     true
                 | None ->
-                    Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
-                    true
+                    try
+                        Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--rest", System.StringComparison.OrdinalIgnoreCase) then
                 (fun x -> x) value |> Rest.Add
                 true
@@ -387,8 +405,11 @@ module BasicWithIntPositionals =
 
                     true
                 | None ->
-                    Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                    true
+                    try
+                        Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--bar", System.StringComparison.OrdinalIgnoreCase) then
                 match Bar with
                 | Some x ->
@@ -397,8 +418,11 @@ module BasicWithIntPositionals =
 
                     true
                 | None ->
-                    Bar <- value |> (fun x -> x) |> Some
-                    true
+                    try
+                        Bar <- value |> (fun x -> x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--foo", System.StringComparison.OrdinalIgnoreCase) then
                 match Foo with
                 | Some x ->
@@ -407,8 +431,11 @@ module BasicWithIntPositionals =
 
                     true
                 | None ->
-                    Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
-                    true
+                    try
+                        Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--rest", System.StringComparison.OrdinalIgnoreCase) then
                 (fun x -> System.Int32.Parse x) value |> Rest.Add
                 true
@@ -581,8 +608,11 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
-                    true
+                    try
+                        YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if
                 System.String.Equals (key, "--another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
@@ -593,8 +623,11 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
-                    true
+                    try
+                        AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--optional-thing", System.StringComparison.OrdinalIgnoreCase) then
                 match OptionalThing with
                 | Some x ->
@@ -603,8 +636,11 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                    true
+                    try
+                        OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if
                 System.String.Equals (
                     key,
@@ -623,8 +659,11 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    OptionalThingWithNoDefault <- value |> (fun x -> System.Int32.Parse x) |> Some
-                    true
+                    try
+                        OptionalThingWithNoDefault <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--some-list", System.StringComparison.OrdinalIgnoreCase) then
                 (fun x -> System.IO.DirectoryInfo x) value |> SomeList.Add
                 true
@@ -636,8 +675,11 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    SomeDirectory <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
-                    true
+                    try
+                        SomeDirectory <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--some-file", System.StringComparison.OrdinalIgnoreCase) then
                 match SomeFile with
                 | Some x ->
@@ -646,8 +688,11 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    SomeFile <- value |> (fun x -> System.IO.FileInfo x) |> Some
-                    true
+                    try
+                        SomeFile <- value |> (fun x -> System.IO.FileInfo x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
                 match Baz with
                 | Some x ->
@@ -656,8 +701,11 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                    true
+                    try
+                        Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--bar", System.StringComparison.OrdinalIgnoreCase) then
                 match Bar with
                 | Some x ->
@@ -666,8 +714,11 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    Bar <- value |> (fun x -> x) |> Some
-                    true
+                    try
+                        Bar <- value |> (fun x -> x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--foo", System.StringComparison.OrdinalIgnoreCase) then
                 match Foo with
                 | Some x ->
@@ -676,8 +727,11 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
-                    true
+                    try
+                        Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--positionals", System.StringComparison.OrdinalIgnoreCase) then
                 (fun x -> System.Int32.Parse x) value |> Positionals.Add
                 true
@@ -914,8 +968,11 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
-                    true
+                    try
+                        YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if
                 System.String.Equals (key, "--another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
@@ -926,8 +983,11 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
-                    true
+                    try
+                        AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--optional-thing", System.StringComparison.OrdinalIgnoreCase) then
                 match OptionalThing with
                 | Some x ->
@@ -936,8 +996,11 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                    true
+                    try
+                        OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if
                 System.String.Equals (
                     key,
@@ -956,8 +1019,11 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    OptionalThingWithNoDefault <- value |> (fun x -> System.Int32.Parse x) |> Some
-                    true
+                    try
+                        OptionalThingWithNoDefault <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--some-list", System.StringComparison.OrdinalIgnoreCase) then
                 (fun x -> System.IO.DirectoryInfo x) value |> SomeList.Add
                 true
@@ -969,8 +1035,11 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    SomeDirectory <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
-                    true
+                    try
+                        SomeDirectory <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--some-file", System.StringComparison.OrdinalIgnoreCase) then
                 match SomeFile with
                 | Some x ->
@@ -979,8 +1048,11 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    SomeFile <- value |> (fun x -> System.IO.FileInfo x) |> Some
-                    true
+                    try
+                        SomeFile <- value |> (fun x -> System.IO.FileInfo x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
                 match Baz with
                 | Some x ->
@@ -989,8 +1061,11 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                    true
+                    try
+                        Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--bar", System.StringComparison.OrdinalIgnoreCase) then
                 match Bar with
                 | Some x ->
@@ -999,8 +1074,11 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    Bar <- value |> (fun x -> x) |> Some
-                    true
+                    try
+                        Bar <- value |> (fun x -> x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else if System.String.Equals (key, "--foo", System.StringComparison.OrdinalIgnoreCase) then
                 match Foo with
                 | Some x ->
@@ -1009,8 +1087,11 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
-                    true
+                    try
+                        Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        true
+                    with _ as exc ->
+                        false
             else
                 false
 

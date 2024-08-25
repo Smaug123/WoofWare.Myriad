@@ -7,6 +7,8 @@ open Fantomas.FCS.Text.Range
 module internal SynPat =
     let inline paren (pat : SynPat) : SynPat = SynPat.Paren (pat, range0)
 
+    let anon : SynPat = SynPat.Wild range0
+
     let inline annotateTypeNoParen (ty : SynType) (pat : SynPat) = SynPat.Typed (pat, ty, range0)
 
     let inline annotateType (ty : SynType) (pat : SynPat) = paren (annotateTypeNoParen ty pat)

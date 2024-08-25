@@ -361,6 +361,17 @@ module internal ArgParserGenerator =
                             (SynExpr.createIdent "x"))
                         (SynExpr.createIdent "value")
 
+                let performAssignment =
+                    SynExpr.sequential
+                        [
+                            SynExpr.assign
+                                (SynLongIdent.createI arg.TargetVariable)
+                                (SynExpr.pipeThroughFunction
+                                    (SynExpr.createIdent "Some")
+                                    (SynExpr.createIdent "value" |> SynExpr.pipeThroughFunction arg.Parser))
+                            SynExpr.CreateConst true
+                        ]
+
                 [
                     SynMatchClause.create
                         (SynPat.identWithArgs [ Ident.create "Some" ] (SynArgPats.create [ Ident.create "x" ]))
@@ -374,15 +385,7 @@ module internal ArgParserGenerator =
                             ])
                     SynMatchClause.create
                         (SynPat.named "None")
-                        (SynExpr.sequential
-                            [
-                                SynExpr.assign
-                                    (SynLongIdent.createI arg.TargetVariable)
-                                    (SynExpr.pipeThroughFunction
-                                        (SynExpr.createIdent "Some")
-                                        (SynExpr.createIdent "value" |> SynExpr.pipeThroughFunction arg.Parser))
-                                SynExpr.CreateConst true
-                            ])
+                        (SynExpr.pipeThroughTryWith SynPat.anon (SynExpr.CreateConst false) performAssignment)
                 ]
                 |> SynExpr.createMatch (SynExpr.createIdent' arg.TargetVariable)
             | Accumulation.List ->

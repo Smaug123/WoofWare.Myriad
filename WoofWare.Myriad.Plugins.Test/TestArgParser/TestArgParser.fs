@@ -224,7 +224,7 @@ Required argument '--baz' was missing"""
 --some-directory  DirectoryInfo
 --some-list  DirectoryInfo (can be repeated)
 --optional-thing-with-no-default  int32 (optional)
---optional-thing  bool (default value: False)
+--optional-thing  bool (default value: True)
 --another-optional-thing  int32 (default value: 3)
 --yet-another-optional-thing  string (default value populated from env var CONSUMEPLUGIN_THINGS)
 --positionals  int32 (positional args) (can be repeated)"""
@@ -242,7 +242,7 @@ Required argument '--baz' was missing"""
                 "--foo"
                 "3"
                 "--bar=some string"
-                "--baz=true"
+                "--baz"
                 "--some-file=/path/to/file"
                 "--some-directory"
                 "/a/dir"
