@@ -86,10 +86,10 @@ type internal RecordType =
         | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, access, _) ->
             if access <> synAccessOption then
                 failwith
-                    $"TODO what's happened, two different accessibility modifiers: %A{access} and %A{synAccessOption}"
+                    $"TODO what's happened, two different accessibility modifiers: %O{access} and %O{synAccessOption}"
 
             match smdo with
-            | Some v -> failwith $"TODO what's happened, got a synMemberDefn of {v}"
+            | Some v -> failwith $"TODO what's happened, got a synMemberDefn of %O{v}"
             | None -> ()
 
             {

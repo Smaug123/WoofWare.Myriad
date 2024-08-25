@@ -29,6 +29,7 @@ type private ParseFunction =
         /// A function string -> %TargetType%, where TargetVariable is probably a `%TargetType% option`.
         /// (Depending on `Accumulation`, we'll remove the `option` at the end of the parse, asserting that the
         /// argument was supplied.)
+        /// This is allowed to throw if it fails to parse.
         Parser : SynExpr
         /// If `Accumulation` is `List`, then this is the type of the list *element*; analogously for optionals
         /// and choices and so on.
