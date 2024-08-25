@@ -12,5 +12,3 @@ WoofWare.Myriad.Plugins.JsonSerializeGenerator inherit obj, implements Myriad.Co
 WoofWare.Myriad.Plugins.JsonSerializeGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RemoveOptionsGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.RemoveOptionsGenerator..ctor [constructor]: unit
-WoofWare.Myriad.Plugins.SynAttributes inherit obj
-WoofWare.Myriad.Plugins.SynAttributes.ofAttrs [static method]: Fantomas.FCS.Syntax.SynAttribute list -> Fantomas.FCS.Syntax.SynAttributeList list
