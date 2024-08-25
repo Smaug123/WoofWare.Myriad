@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -55,7 +55,6 @@
     <Compile Include="JsonParseGenerator.fs"/>
     <Compile Include="HttpClientGenerator.fs"/>
     <Compile Include="CataGenerator.fs" />
-    <Compile Include="ArgParserGenerator.fs" />
     <EmbeddedResource Include="version.json"/>
     <EmbeddedResource Include="SurfaceBaseline.txt"/>
     <None Include="..\README.md">
