@@ -14,6 +14,7 @@ Currently implemented:
 * `JsonSerialize` (to stamp out `toJsonNode : 'T -> JsonNode` methods).
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
 * `GenerateMock` (to stamp out a record type corresponding to an interface, like a compile-time [Foq](https://github.com/fsprojects/Foq)).
+* `ArgParser` (to stamp out a basic argument parser)
 * `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
 * `RemoveOptions` (to strip `option` modifiers from a type) - this one is particularly half-baked!
 
@@ -149,6 +150,59 @@ which will cause Myriad to stamp out an extension method rather than a module wi
 The same limitations generally apply to `JsonSerialize` as do to `JsonParse`.
 
 For an example of using both `JsonParse` and `JsonSerialize` together with complex types, see [the type definitions](./ConsumePlugin/SerializationAndDeserialization.fs) and [tests](./WoofWare.Myriad.Plugins.Test/TestJsonSerialize/TestJsonSerde.fs).
+
+## `ArgParser`
+
+Takes a record like this:
+
+```fsharp
+type Foo =
+    {
+        SomeFlag : bool
+        A : int option
+        [<ArgumentDefaultFunction>]
+        B : Choice<int, int>
+        [<ArgumentDefaultEnvironmentVariable "MY_ENV_VAR">]
+        BWithEnv : Choice<int, int>
+        C : float list
+        // optionally:
+        [<PositionalArgs>]
+        Rest : string list // or e.g. `int list` if you want them parsed into a type too
+    }
+    static member DefaultB () = 4
+```
+
+and stamps out a `parse` method of this signature:
+
+```fsharp
+[<RequireQualifiedAccess>]
+module Foo =
+    // in case you want to test it
+    let parse' (getEnvVar : string -> string) (args : string list) : Foo = ...
+    // the one we expect you actually want to use
+    let parse (args : string list) : Foo = ...
+```
+
+### What's the point?
+
+I got fed up of waiting for us to find time to rewrite the in-house one at work.
+That one has a bunch of nice compositional properties, which my version lacks:
+I can basically only deal with primitive types, and e.g. you can't stack records and DUs inside each other.
+
+But I *do* want an F#-native argument parser suitable for AOT-compilation.
+
+Why not [Argu](https://fsprojects.github.io/Argu/)?
+Answer: I got annoyed with having to construct my records by hand even after Argu returned and said the parsing was all "done".
+
+### Limitations
+
+This is very bare-bones.
+
+* Help is signalled by throwing an exception, so you'll get an unsightly stack trace and a nonzero exit code.
+* Help doesn't take into account any args the user has entered. Ideally you'd get contextual information like an identification of which args the user has supplied at the point where the parse failed or help was requested.
+* I don't handle very many types, and in particular a real arg parser would handle DUs and records with nesting.
+* I don't try very hard to find a valid parse. It may well be possible to find a case where I fail to parse despite there existing a valid parse.
+* There's no subcommand support (you'll have to do that yourself).
 
 ## `RemoveOptions`
 
