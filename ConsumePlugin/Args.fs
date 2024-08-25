@@ -15,14 +15,12 @@ type Args =
         OptionalThingWithNoDefault : int option
         [<PositionalArgs>]
         Positionals : int list
-    (*
         [<ArgumentDefaultFunction>]
         OptionalThing : Choice<bool, bool>
         [<ArgumentDefaultFunction>]
         AnotherOptionalThing : Choice<int, int>
         [<ArgumentDefaultEnvironmentVariable "CONSUMEPLUGIN_THINGS">]
         YetAnotherOptionalThing : Choice<string, string>
-        *)
     }
 
     static member DefaultOptionalThing () = false
@@ -40,14 +38,12 @@ type ArgsNoPositionals =
         SomeDirectory : DirectoryInfo
         SomeList : DirectoryInfo list
         OptionalThingWithNoDefault : int option
-    (*
         [<ArgumentDefaultFunction>]
         OptionalThing : Choice<bool, bool>
         [<ArgumentDefaultFunction>]
         AnotherOptionalThing : Choice<int, int>
         [<ArgumentDefaultEnvironmentVariable "CONSUMEPLUGIN_THINGS">]
         YetAnotherOptionalThing : Choice<string, string>
-        *)
     }
 
     static member DefaultOptionalThing () = false

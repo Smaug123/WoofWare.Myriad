@@ -80,6 +80,12 @@ module internal SynLongIdent =
         // TODO: consider Microsoft.FSharp.Option or whatever it is
         | _ -> false
 
+    let isChoice (ident : SynLongIdent) : bool =
+        match ident.LongIdent with
+        | [ i ] when System.String.Equals (i.idText, "Choice", System.StringComparison.Ordinal) -> true
+        // TODO: consider Microsoft.FSharp.Choice or whatever it is
+        | _ -> false
+
     let isNullable (ident : SynLongIdent) : bool =
         match ident.LongIdent |> List.map _.idText with
         | [ "System" ; "Nullable" ]

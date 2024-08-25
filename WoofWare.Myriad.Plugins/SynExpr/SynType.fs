@@ -1,60 +1,8 @@
 namespace WoofWare.Myriad.Plugins
 
+open System
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
-
-[<RequireQualifiedAccess>]
-module internal SynType =
-    let rec stripOptionalParen (ty : SynType) : SynType =
-        match ty with
-        | SynType.Paren (ty, _) -> stripOptionalParen ty
-        | ty -> ty
-
-    let inline createLongIdent (ident : LongIdent) : SynType =
-        SynType.LongIdent (SynLongIdent.create ident)
-
-    let inline createLongIdent' (ident : string list) : SynType =
-        SynType.LongIdent (SynLongIdent.createS' ident)
-
-    let inline named (name : string) = createLongIdent' [ name ]
-
-    let inline app' (name : SynType) (args : SynType list) : SynType =
-        if args.IsEmpty then
-            failwith "Type cannot be applied to no arguments"
-
-        SynType.App (name, Some range0, args, List.replicate (args.Length - 1) range0, Some range0, false, range0)
-
-    let inline app (name : string) (args : SynType list) : SynType = app' (named name) args
-
-    let inline appPostfix (name : string) (arg : SynType) : SynType =
-        SynType.App (named name, None, [ arg ], [], None, true, range0)
-
-    let inline appPostfix' (name : string list) (arg : SynType) : SynType =
-        SynType.App (createLongIdent' name, None, [ arg ], [], None, true, range0)
-
-    let inline funFromDomain (domain : SynType) (range : SynType) : SynType =
-        SynType.Fun (
-            domain,
-            range,
-            range0,
-            {
-                ArrowRange = range0
-            }
-        )
-
-    let inline signatureParamOfType (ty : SynType) (name : Ident option) : SynType =
-        SynType.SignatureParameter ([], false, name, ty, range0)
-
-    let inline var (ty : SynTypar) : SynType = SynType.Var (ty, range0)
-
-    let unit : SynType = named "unit"
-    let int : SynType = named "int"
-
-    let string : SynType = named "string"
-
-    /// Given ['a1, 'a2] and 'ret, returns 'a1 -> 'a2 -> 'ret.
-    let toFun (inputs : SynType list) (ret : SynType) : SynType =
-        (ret, List.rev inputs) ||> List.fold (fun ty input -> funFromDomain input ty)
 
 [<AutoOpen>]
 module internal SynTypePatterns =
@@ -62,6 +10,11 @@ module internal SynTypePatterns =
         match fieldType with
         | SynType.App (SynType.LongIdent ident, _, [ innerType ], _, _, _, _) when SynLongIdent.isOption ident ->
             Some innerType
+        | _ -> None
+
+    let (|ChoiceType|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.App (SynType.LongIdent ident, _, inner, _, _, _, _) when SynLongIdent.isChoice ident -> Some inner
         | _ -> None
 
     let (|NullableType|_|) (fieldType : SynType) =
@@ -297,3 +250,147 @@ module internal SynTypePatterns =
             | [ "FileInfo" ] -> Some ()
             | _ -> None
         | _ -> None
+
+[<RequireQualifiedAccess>]
+module internal SynType =
+    let rec stripOptionalParen (ty : SynType) : SynType =
+        match ty with
+        | SynType.Paren (ty, _) -> stripOptionalParen ty
+        | ty -> ty
+
+    let inline createLongIdent (ident : LongIdent) : SynType =
+        SynType.LongIdent (SynLongIdent.create ident)
+
+    let inline createLongIdent' (ident : string list) : SynType =
+        SynType.LongIdent (SynLongIdent.createS' ident)
+
+    let inline named (name : string) = createLongIdent' [ name ]
+
+    let inline app' (name : SynType) (args : SynType list) : SynType =
+        if args.IsEmpty then
+            failwith "Type cannot be applied to no arguments"
+
+        SynType.App (name, Some range0, args, List.replicate (args.Length - 1) range0, Some range0, false, range0)
+
+    let inline app (name : string) (args : SynType list) : SynType = app' (named name) args
+
+    let inline appPostfix (name : string) (arg : SynType) : SynType =
+        SynType.App (named name, None, [ arg ], [], None, true, range0)
+
+    let inline appPostfix' (name : string list) (arg : SynType) : SynType =
+        SynType.App (createLongIdent' name, None, [ arg ], [], None, true, range0)
+
+    let inline funFromDomain (domain : SynType) (range : SynType) : SynType =
+        SynType.Fun (
+            domain,
+            range,
+            range0,
+            {
+                ArrowRange = range0
+            }
+        )
+
+    let inline signatureParamOfType (ty : SynType) (name : Ident option) : SynType =
+        SynType.SignatureParameter ([], false, name, ty, range0)
+
+    let inline var (ty : SynTypar) : SynType = SynType.Var (ty, range0)
+
+    let unit : SynType = named "unit"
+    let int : SynType = named "int"
+
+    let string : SynType = named "string"
+
+    /// Given ['a1, 'a2] and 'ret, returns 'a1 -> 'a2 -> 'ret.
+    let toFun (inputs : SynType list) (ret : SynType) : SynType =
+        (ret, List.rev inputs) ||> List.fold (fun ty input -> funFromDomain input ty)
+
+    /// Guess whether the types are equal. We err on the side of saying "no, they're different".
+    let rec provablyEqual (ty1 : SynType) (ty2 : SynType) : bool =
+        if Object.ReferenceEquals (ty1, ty2) then
+            true
+        else
+
+        match ty1 with
+        | PrimitiveType t1 ->
+            match ty2 with
+            | PrimitiveType t2 -> (t1 |> List.map _.idText) = (t2 |> List.map _.idText)
+            | _ -> false
+        | OptionType t1 ->
+            match ty2 with
+            | OptionType t2 -> provablyEqual t1 t2
+            | _ -> false
+        | NullableType t1 ->
+            match ty2 with
+            | NullableType t2 -> provablyEqual t1 t2
+            | _ -> false
+        | ChoiceType t1 ->
+            match ty2 with
+            | ChoiceType t2 ->
+                t1.Length = t2.Length
+                && List.forall (fun (a, b) -> provablyEqual a b) (List.zip t1 t2)
+            | _ -> false
+        | DictionaryType (k1, v1) ->
+            match ty2 with
+            | DictionaryType (k2, v2) -> provablyEqual k1 k2 && provablyEqual v1 v2
+            | _ -> false
+        | IDictionaryType (k1, v1) ->
+            match ty2 with
+            | IDictionaryType (k2, v2) -> provablyEqual k1 k2 && provablyEqual v1 v2
+            | _ -> false
+        | IReadOnlyDictionaryType (k1, v1) ->
+            match ty2 with
+            | IReadOnlyDictionaryType (k2, v2) -> provablyEqual k1 k2 && provablyEqual v1 v2
+            | _ -> false
+        | MapType (k1, v1) ->
+            match ty2 with
+            | MapType (k2, v2) -> provablyEqual k1 k2 && provablyEqual v1 v2
+            | _ -> false
+        | ListType t1 ->
+            match ty2 with
+            | ListType t2 -> provablyEqual t1 t2
+            | _ -> false
+        | ArrayType t1 ->
+            match ty2 with
+            | ArrayType t2 -> provablyEqual t1 t2
+            | _ -> false
+        | Task t1 ->
+            match ty2 with
+            | Task t2 -> provablyEqual t1 t2
+            | _ -> false
+        | UnitType ->
+            match ty2 with
+            | UnitType -> true
+            | _ -> false
+        | FileInfo ->
+            match ty2 with
+            | FileInfo -> true
+            | _ -> false
+        | DirectoryInfo ->
+            match ty2 with
+            | DirectoryInfo -> true
+            | _ -> false
+        | Uri ->
+            match ty2 with
+            | Uri -> true
+            | _ -> false
+        | Stream ->
+            match ty2 with
+            | Stream -> true
+            | _ -> false
+        | Guid ->
+            match ty2 with
+            | Guid -> true
+            | _ -> false
+        | BigInt ->
+            match ty2 with
+            | BigInt -> true
+            | _ -> false
+        | DateTimeOffset ->
+            match ty2 with
+            | DateTimeOffset -> true
+            | _ -> false
+        | DateOnly ->
+            match ty2 with
+            | DateOnly -> true
+            | _ -> false
+        | _ -> false

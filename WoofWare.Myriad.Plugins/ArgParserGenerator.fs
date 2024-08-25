@@ -3,13 +3,17 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Text
 open Fantomas.FCS.Syntax
-open Fantomas.FCS.Text.Range
 open Fantomas.FCS.Xml
 open Myriad.Core
+
+type private DefaultSpec =
+    | EnvironmentVariable of name : SynExpr
+    | FunctionCall of name : Ident
 
 type private Accumulation =
     | Required
     | Optional
+    | Choice of DefaultSpec
     | List
 
 type private ParseFunction =
@@ -20,7 +24,8 @@ type private ParseFunction =
         /// (Depending on `Accumulation`, we'll remove the `option` at the end of the parse, asserting that the
         /// argument was supplied.)
         Parser : SynExpr
-        /// If `Accumulation` is `List`, then this is the type of the list *element*.
+        /// If `Accumulation` is `List`, then this is the type of the list *element*; analogously for optionals
+        /// and choices and so on.
         TargetType : SynType
         Accumulation : Accumulation
     }
@@ -57,7 +62,12 @@ module internal ArgParserGenerator =
     /// for example, maybe it returns a `ty option` or a `ty list`).
     /// The resulting SynType is the type of the *element* being parsed; so if the Accumulation is List, the SynType
     /// is the list element.
-    let rec private createParseFunction (ty : SynType) : SynExpr * Accumulation * SynType =
+    let rec private createParseFunction
+        (fieldName : Ident)
+        (attrs : SynAttribute list)
+        (ty : SynType)
+        : SynExpr * Accumulation * SynType
+        =
         match ty with
         | String -> SynExpr.createLambda "x" (SynExpr.createIdent "x"), Accumulation.Required, SynType.string
         | PrimitiveType pt ->
@@ -85,20 +95,94 @@ module internal ArgParserGenerator =
             Accumulation.Required,
             ty
         | OptionType eltTy ->
-            let parseElt, acc, childTy = createParseFunction eltTy
+            let parseElt, acc, childTy = createParseFunction fieldName attrs eltTy
 
             match acc with
-            | Accumulation.Optional -> failwith $"ArgParser does not support optionals containing options: %O{ty}"
-            | Accumulation.List -> failwith $"ArgParser does not support optional lists: %O{ty}"
+            | Accumulation.Optional ->
+                failwith
+                    $"ArgParser does not support optionals containing options at field %s{fieldName.idText}: %O{ty}"
+            | Accumulation.Choice _ ->
+                failwith
+                    $"ArgParser does not support optionals containing choices at field %s{fieldName.idText}: %O{ty}"
+            | Accumulation.List ->
+                failwith $"ArgParser does not support optional lists at field %s{fieldName.idText}: %O{ty}"
             | Accumulation.Required -> parseElt, Accumulation.Optional, childTy
+        | ChoiceType elts ->
+            match elts with
+            | [ elt1 ; elt2 ] ->
+                if not (SynType.provablyEqual elt1 elt2) then
+                    failwith
+                        $"ArgParser was unable to prove types %O{elt1} and %O{elt2} to be equal in a Choice. We require them to be equal."
+
+                let parseElt, acc, childTy = createParseFunction fieldName attrs elt1
+
+                match acc with
+                | Accumulation.Optional ->
+                    failwith
+                        $"ArgParser does not support choices containing options at field %s{fieldName.idText}: %O{ty}"
+                | Accumulation.List ->
+                    failwith
+                        $"ArgParser does not support choices containing lists at field %s{fieldName.idText}: %O{ty}"
+                | Accumulation.Choice _ ->
+                    failwith
+                        $"ArgParser does not support choices containing choices at field %s{fieldName.idText}: %O{ty}"
+                | Accumulation.Required ->
+
+                let relevantAttrs =
+                    attrs
+                    |> List.choose (fun attr ->
+                        let (SynLongIdent.SynLongIdent (name, _, _)) = attr.TypeName
+
+                        match name |> List.map _.idText with
+                        | [ "ArgumentDefaultFunction" ]
+                        | [ "ArgumentDefaultFunctionAttribute" ]
+                        | [ "Plugins" ; "ArgumentDefaultFunction" ]
+                        | [ "Plugins" ; "ArgumentDefaultFunctionAttribute" ]
+                        | [ "Myriad" ; "Plugins" ; "ArgumentDefaultFunction" ]
+                        | [ "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ]
+                        | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunction" ]
+                        | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ] ->
+                            DefaultSpec.FunctionCall (Ident.create ("Default" + fieldName.idText)) |> Some
+                        | [ "ArgumentDefaultEnvironmentVariable" ]
+                        | [ "ArgumentDefaultEnvironmentVariableAttribute" ]
+                        | [ "Plugins" ; "ArgumentDefaultEnvironmentVariable" ]
+                        | [ "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ]
+                        | [ "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariable" ]
+                        | [ "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ]
+                        | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariable" ]
+                        | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ] ->
+                            DefaultSpec.EnvironmentVariable attr.ArgExpr |> Some
+                        | _ -> None
+                    )
+
+                let relevantAttr =
+                    match relevantAttrs with
+                    | [] ->
+                        failwith
+                            $"Expected Choice to be annotated with ArgumentDefaultFunction or similar, but it was not. Field: %s{fieldName.idText}"
+                    | [ x ] -> x
+                    | _ ->
+                        failwith
+                            $"Expected Choice to be annotated with exactly one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: %s{fieldName.idText}"
+
+                parseElt, Accumulation.Choice relevantAttr, childTy
+            | elts ->
+                let elts = elts |> List.map string<SynType> |> String.concat ", "
+
+                failwith
+                    $"ArgParser requires Choice to be of the form Choice<'a, 'a>; that is, two arguments, both the same. For field %s{fieldName.idText}, got: %s{elts}"
         | ListType eltTy ->
-            let parseElt, acc, childTy = createParseFunction eltTy
+            let parseElt, acc, childTy = createParseFunction fieldName attrs eltTy
 
             match acc with
-            | Accumulation.List -> failwith $"ArgParser does not support nested lists: %O{ty}"
-            | Accumulation.Optional -> failwith $"ArgParser does not support lists of options: %O{ty}"
+            | Accumulation.List ->
+                failwith $"ArgParser does not support nested lists at field %s{fieldName.idText}: %O{ty}"
+            | Accumulation.Choice _ ->
+                failwith $"ArgParser does not support lists containing choices at field %s{fieldName.idText}: %O{ty}"
+            | Accumulation.Optional ->
+                failwith $"ArgParser does not support lists of options at field %s{fieldName.idText}: %O{ty}"
             | Accumulation.Required -> parseElt, Accumulation.List, childTy
-        | _ -> failwith $"Could not decide how to parse arguments of type %O{ty}"
+        | _ -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
     let private toParseSpec (finalRecord : RecordType) : ParserSpec =
         finalRecord.Fields
@@ -110,9 +194,10 @@ module internal ArgParserGenerator =
         let args : ArgToParse list =
             finalRecord.Fields
             |> List.map (fun (SynField.SynField (attrs, _, identOption, fieldType, _, _, _, _, _)) ->
+                let attrs = attrs |> List.collect (fun a -> a.Attributes)
+
                 let positionalArgAttr =
                     attrs
-                    |> List.collect (fun a -> a.Attributes)
                     |> List.tryFind (fun a ->
                         match (List.last a.TypeName.LongIdent).idText with
                         | "PositionalArgsAttribute"
@@ -125,7 +210,7 @@ module internal ArgParserGenerator =
                     | None -> failwith "expected args field to have a name, but it did not"
                     | Some i -> i
 
-                let parser, accumulation, parseTy = createParseFunction fieldType
+                let parser, accumulation, parseTy = createParseFunction ident attrs fieldType
 
                 match positionalArgAttr with
                 | Some _ ->
@@ -178,6 +263,7 @@ module internal ArgParserGenerator =
         ||> List.fold (fun finalBranch arg ->
             match arg.Accumulation with
             | Accumulation.Required
+            | Accumulation.Choice _
             | Accumulation.Optional ->
                 [
                     SynMatchClause.create
@@ -432,6 +518,7 @@ module internal ArgParserGenerator =
             |> List.map (fun pf ->
                 match pf.Accumulation with
                 | Accumulation.Required
+                | Accumulation.Choice _
                 | Accumulation.Optional ->
                     SynExpr.createIdent "None"
                     |> SynBinding.basic [ pf.TargetVariable ] []
@@ -467,6 +554,46 @@ module internal ArgParserGenerator =
             spec.NonPositionals
             |> List.map (fun pf ->
                 match pf.Accumulation with
+                | Accumulation.Choice spec ->
+                    let getDefaultValue =
+                        match spec with
+                        | DefaultSpec.EnvironmentVariable name ->
+                            let result =
+                                name
+                                |> SynExpr.pipeThroughFunction (
+                                    SynExpr.createLongIdent [ "System" ; "Environment" ; "GetEnvironmentVariable" ]
+                                )
+
+                            [
+                                SynMatchClause.create
+                                    SynPat.createNull
+                                    (SynExpr.applyFunction
+                                        (SynExpr.applyFunction
+                                            (SynExpr.applyFunction
+                                                (SynExpr.createIdent "failwithf")
+                                                (SynExpr.CreateConst
+                                                    "No value was supplied for %s, nor was environment variable %s set"))
+                                            (SynExpr.CreateConst pf.ArgForm))
+                                        name)
+                                SynMatchClause.create
+                                    (SynPat.named "x")
+                                    (SynExpr.createIdent "x" |> SynExpr.pipeThroughFunction pf.Parser)
+                            ]
+                            |> SynExpr.createMatch result
+                        | DefaultSpec.FunctionCall name ->
+                            SynExpr.callMethod name.idText (SynExpr.createIdent' recordType.Name)
+
+                    [
+                        SynMatchClause.create
+                            (SynPat.named "None")
+                            (getDefaultValue
+                             |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice2Of2"))
+                        SynMatchClause.create
+                            (SynPat.identWithArgs [ Ident.create "Some" ] (SynArgPats.create [ Ident.create "x" ]))
+                            (SynExpr.applyFunction (SynExpr.createIdent "Choice1Of2") (SynExpr.createIdent "x"))
+                    ]
+                    |> SynExpr.createMatch (SynExpr.createIdent' pf.TargetVariable)
+                    |> SynBinding.basic [ pf.TargetVariable ] []
                 | Accumulation.Optional ->
                     SynBinding.basic [ pf.TargetVariable ] [] (SynExpr.createIdent' pf.TargetVariable)
                 | Accumulation.List ->

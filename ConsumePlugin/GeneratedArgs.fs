@@ -29,10 +29,41 @@ module Args =
         let mutable SomeDirectory : DirectoryInfo option = None
         let SomeList : DirectoryInfo ResizeArray = ResizeArray ()
         let mutable OptionalThingWithNoDefault : int option = None
+        let mutable OptionalThing : bool option = None
+        let mutable AnotherOptionalThing : int option = None
+        let mutable YetAnotherOptionalThing : string option = None
 
         /// Processes the key-value pair, returning false if no key was matched. Also throws if an invalid value was received.
         let processKeyValue (key : string) (value : string) : bool =
             if
+                System.String.Equals (key, "---yet-another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match YetAnotherOptionalThing with
+                | Some x ->
+                    failwithf
+                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "---yet-another-optional-thing"
+                        x
+                        value
+                | None ->
+                    YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
+                    true
+            else if
+                System.String.Equals (key, "---another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match AnotherOptionalThing with
+                | Some x ->
+                    failwithf "Argument '%s' was supplied multiple times: %O and %O" "---another-optional-thing" x value
+                | None ->
+                    AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
+                    true
+            else if System.String.Equals (key, "---optional-thing", System.StringComparison.OrdinalIgnoreCase) then
+                match OptionalThing with
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---optional-thing" x value
+                | None ->
+                    OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                    true
+            else if
                 System.String.Equals (
                     key,
                     "---optional-thing-with-no-default",
@@ -87,7 +118,13 @@ module Args =
 
         /// Returns false if we didn't set a value.
         let setFlagValue (key : string) : bool =
-            if System.String.Equals (key, "---baz", System.StringComparison.OrdinalIgnoreCase) then
+            if System.String.Equals (key, "---optional-thing", System.StringComparison.OrdinalIgnoreCase) then
+                match OptionalThing with
+                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "---optional-thing" x x
+                | None ->
+                    OptionalThing <- Some true
+                    true
+            else if System.String.Equals (key, "---baz", System.StringComparison.OrdinalIgnoreCase) then
                 match Baz with
                 | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "---baz" x x
                 | None ->
@@ -158,6 +195,29 @@ module Args =
         let SomeList = SomeList |> Seq.toList
         let OptionalThingWithNoDefault = OptionalThingWithNoDefault
 
+        let OptionalThing =
+            match OptionalThing with
+            | None -> Args.DefaultOptionalThing () |> Choice2Of2
+            | Some x -> Choice1Of2 x
+
+        let AnotherOptionalThing =
+            match AnotherOptionalThing with
+            | None -> Args.DefaultAnotherOptionalThing () |> Choice2Of2
+            | Some x -> Choice1Of2 x
+
+        let YetAnotherOptionalThing =
+            match YetAnotherOptionalThing with
+            | None ->
+                match "CONSUMEPLUGIN_THINGS" |> System.Environment.GetEnvironmentVariable with
+                | null ->
+                    failwithf
+                        "No value was supplied for %s, nor was environment variable %s set"
+                        "---yet-another-optional-thing"
+                        "CONSUMEPLUGIN_THINGS"
+                | x -> x |> (fun x -> x)
+                |> Choice2Of2
+            | Some x -> Choice1Of2 x
+
         {
             Positionals = Positionals
             Foo = Foo
@@ -167,6 +227,9 @@ module Args =
             SomeDirectory = SomeDirectory
             SomeList = SomeList
             OptionalThingWithNoDefault = OptionalThingWithNoDefault
+            OptionalThing = OptionalThing
+            AnotherOptionalThing = AnotherOptionalThing
+            YetAnotherOptionalThing = YetAnotherOptionalThing
         }
 namespace ConsumePlugin
 
@@ -189,10 +252,41 @@ module ArgsNoPositionals =
         let mutable SomeDirectory : DirectoryInfo option = None
         let SomeList : DirectoryInfo ResizeArray = ResizeArray ()
         let mutable OptionalThingWithNoDefault : int option = None
+        let mutable OptionalThing : bool option = None
+        let mutable AnotherOptionalThing : int option = None
+        let mutable YetAnotherOptionalThing : string option = None
 
         /// Processes the key-value pair, returning false if no key was matched. Also throws if an invalid value was received.
         let processKeyValue (key : string) (value : string) : bool =
             if
+                System.String.Equals (key, "---yet-another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match YetAnotherOptionalThing with
+                | Some x ->
+                    failwithf
+                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "---yet-another-optional-thing"
+                        x
+                        value
+                | None ->
+                    YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
+                    true
+            else if
+                System.String.Equals (key, "---another-optional-thing", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match AnotherOptionalThing with
+                | Some x ->
+                    failwithf "Argument '%s' was supplied multiple times: %O and %O" "---another-optional-thing" x value
+                | None ->
+                    AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
+                    true
+            else if System.String.Equals (key, "---optional-thing", System.StringComparison.OrdinalIgnoreCase) then
+                match OptionalThing with
+                | Some x -> failwithf "Argument '%s' was supplied multiple times: %O and %O" "---optional-thing" x value
+                | None ->
+                    OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                    true
+            else if
                 System.String.Equals (
                     key,
                     "---optional-thing-with-no-default",
@@ -247,7 +341,13 @@ module ArgsNoPositionals =
 
         /// Returns false if we didn't set a value.
         let setFlagValue (key : string) : bool =
-            if System.String.Equals (key, "---baz", System.StringComparison.OrdinalIgnoreCase) then
+            if System.String.Equals (key, "---optional-thing", System.StringComparison.OrdinalIgnoreCase) then
+                match OptionalThing with
+                | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "---optional-thing" x x
+                | None ->
+                    OptionalThing <- Some true
+                    true
+            else if System.String.Equals (key, "---baz", System.StringComparison.OrdinalIgnoreCase) then
                 match Baz with
                 | Some x -> failwithf "Flag '%s' was supplied multiple times: %O and %O" "---baz" x x
                 | None ->
@@ -325,6 +425,29 @@ module ArgsNoPositionals =
         let SomeList = SomeList |> Seq.toList
         let OptionalThingWithNoDefault = OptionalThingWithNoDefault
 
+        let OptionalThing =
+            match OptionalThing with
+            | None -> ArgsNoPositionals.DefaultOptionalThing () |> Choice2Of2
+            | Some x -> Choice1Of2 x
+
+        let AnotherOptionalThing =
+            match AnotherOptionalThing with
+            | None -> ArgsNoPositionals.DefaultAnotherOptionalThing () |> Choice2Of2
+            | Some x -> Choice1Of2 x
+
+        let YetAnotherOptionalThing =
+            match YetAnotherOptionalThing with
+            | None ->
+                match "CONSUMEPLUGIN_THINGS" |> System.Environment.GetEnvironmentVariable with
+                | null ->
+                    failwithf
+                        "No value was supplied for %s, nor was environment variable %s set"
+                        "---yet-another-optional-thing"
+                        "CONSUMEPLUGIN_THINGS"
+                | x -> x |> (fun x -> x)
+                |> Choice2Of2
+            | Some x -> Choice1Of2 x
+
         {
             Foo = Foo
             Bar = Bar
@@ -333,4 +456,7 @@ module ArgsNoPositionals =
             SomeDirectory = SomeDirectory
             SomeList = SomeList
             OptionalThingWithNoDefault = OptionalThingWithNoDefault
+            OptionalThing = OptionalThing
+            AnotherOptionalThing = AnotherOptionalThing
+            YetAnotherOptionalThing = YetAnotherOptionalThing
         }
