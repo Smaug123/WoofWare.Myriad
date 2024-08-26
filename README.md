@@ -156,6 +156,7 @@ For an example of using both `JsonParse` and `JsonSerialize` together with compl
 Takes a record like this:
 
 ```fsharp
+[<ArgParser>]
 type Foo =
     {
         [<ArgumentHelpText "Enable the frobnicator">]
@@ -173,7 +174,7 @@ type Foo =
     static member DefaultB () = 4
 ```
 
-and stamps out a `parse` method of this signature:
+and stamps out a basic `parse` method of this signature:
 
 ```fsharp
 [<RequireQualifiedAccess>]
@@ -189,11 +190,16 @@ you get a `Choice1Of2` if the user provided the input, or a `Choice2Of2` if the 
 
 You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<ParseExact @"hh\:mm\:ss">]` attributes.
 
+You can generate extension methods for the type, instead of a module with the type's name, using `[<ArgParser (* isExtensionMethod = *) true>]`.
+
+If `--help` appears in a position where the parser is expecting a key (e.g. in the first position, or after a `--foo=bar`), the parser fails with help text.
+The parser also makes a limited effort to supply help text when encountering an invalid parse.
+
 ### What's the point?
 
 I got fed up of waiting for us to find time to rewrite the in-house one at work.
 That one has a bunch of nice compositional properties, which my version lacks:
-I can basically only deal with primitive types, and e.g. you can't stack records and DUs inside each other.
+I can basically only deal with primitive types, and e.g. you can't stack records and discriminated unions inside each other.
 
 But I *do* want an F#-native argument parser suitable for AOT-compilation.
 
@@ -205,7 +211,7 @@ Answer: I got annoyed with having to construct my records by hand even after Arg
 This is very bare-bones, but do raise GitHub issues if you like (or if you find cases where the parser does the wrong thing).
 
 * Help is signalled by throwing an exception, so you'll get an unsightly stack trace and a nonzero exit code.
-* Help doesn't take into account any args the user has entered. Ideally you'd get contextual information like an identification of which args the user has supplied at the point where the parse failed or help was requested.
+* Help doesn't take into account any arguments the user has entered. Ideally you'd get contextual information like an identification of which args the user has supplied at the point where the parse failed or help was requested.
 * I don't handle very many types, and in particular a real arg parser would handle DUs and records with nesting.
 * I don't try very hard to find a valid parse. It may well be possible to find a case where I fail to parse despite there existing a valid parse.
 * There's no subcommand support (you'll have to do that yourself).
