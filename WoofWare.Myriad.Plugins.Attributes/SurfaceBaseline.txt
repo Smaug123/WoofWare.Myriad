@@ -18,6 +18,8 @@ WoofWare.Myriad.Plugins.HttpClientAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.HttpClientAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.HttpClientAttribute.DefaultIsExtensionMethod [static property]: [read-only] bool
 WoofWare.Myriad.Plugins.HttpClientAttribute.get_DefaultIsExtensionMethod [static method]: unit -> bool
+WoofWare.Myriad.Plugins.InvariantCultureAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.InvariantCultureAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonParseAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.JsonParseAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.JsonParseAttribute..ctor [constructor]: unit
@@ -28,6 +30,8 @@ WoofWare.Myriad.Plugins.JsonSerializeAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.JsonSerializeAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonSerializeAttribute.DefaultIsExtensionMethod [static property]: [read-only] bool
 WoofWare.Myriad.Plugins.JsonSerializeAttribute.get_DefaultIsExtensionMethod [static method]: unit -> bool
+WoofWare.Myriad.Plugins.ParseExactAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.ParseExactAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.PositionalArgsAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.PositionalArgsAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RemoveOptionsAttribute inherit System.Attribute

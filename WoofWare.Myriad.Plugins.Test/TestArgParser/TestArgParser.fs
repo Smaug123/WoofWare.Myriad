@@ -181,9 +181,9 @@ Argument '--baz' was supplied multiple times: True and false"""
         exc.Message
         |> shouldEqual
             """Errors during parse!
-Required argument '--foo' was missing
-Required argument '--bar' was missing
-Required argument '--baz' was missing"""
+Required argument '--foo' received no value
+Required argument '--bar' received no value
+Required argument '--baz' received no value"""
 
         envCalls.Value |> shouldEqual 0
 
@@ -297,8 +297,8 @@ Required argument '--baz' was missing"""
         exc.Message
         |> shouldEqual
             """Errors during parse!
-Input string was not in a correct format.
-Required argument '--invariant-exact' was missing"""
+Input string was not in a correct format. (at arg --invariant-exact=23:59)
+Required argument '--invariant-exact' received no value"""
 
         let exc =
             Assert.Throws<exn> (fun () ->
@@ -314,6 +314,12 @@ Required argument '--invariant-exact' was missing"""
             )
 
         exc.Message
-        |> shouldEqual "Unable to process argument --exact=11:34 as key --exact and value 11:34"
+        |> shouldEqual
+            """Errors during parse!
+Input string was not in a correct format. (at arg --exact=11:34)
+Required argument '--plain' received no value
+Required argument '--invariant' received no value
+Required argument '--exact' received no value
+Required argument '--invariant-exact' received no value"""
 
         count.Value |> shouldEqual 0
