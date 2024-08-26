@@ -18,9 +18,5 @@ module internal SynArgPats =
     let create (pats : SynPat list) : SynArgPats =
         match pats.Length with
         | 0 -> SynArgPats.Pats []
-        | 1 -> [pats.[0]] |> SynArgPats.Pats
-        | _ ->
-            pats
-            |> SynPat.tuple
-            |> List.singleton
-            |> SynArgPats.Pats
+        | 1 -> [ pats.[0] ] |> SynArgPats.Pats
+        | _ -> pats |> SynPat.tuple |> List.singleton |> SynArgPats.Pats

@@ -126,9 +126,7 @@ module internal JsonSerializeGenerator =
                     SeqExprOnly.SeqExprOnly false,
                     true,
                     SynPat.paren (
-                        SynPat.identWithArgs
-                            [ Ident.create "KeyValue" ]
-                            (SynArgPats.createNamed [ "key" ; "value" ])
+                        SynPat.identWithArgs [ Ident.create "KeyValue" ] (SynArgPats.createNamed [ "key" ; "value" ])
                     ),
                     SynExpr.createIdent "field",
                     SynExpr.applyFunction

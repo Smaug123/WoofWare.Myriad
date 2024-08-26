@@ -95,10 +95,10 @@ module internal ArgParserGenerator =
                     | SynLongIdent.SynLongIdent (idents, _, _) ->
                         match idents |> List.map (fun i -> i.idText) |> List.tryLast with
                         | Some "ParseExactAttribute"
-                        | Some "ParseExact" ->
-                            Some attr.ArgExpr
+                        | Some "ParseExact" -> Some attr.ArgExpr
                         | _ -> None
                 )
+
             let culture =
                 attrs
                 |> List.tryPick (fun attr ->
@@ -106,8 +106,7 @@ module internal ArgParserGenerator =
                     | SynLongIdent.SynLongIdent (idents, _, _) ->
                         match idents |> List.map (fun i -> i.idText) |> List.tryLast with
                         | Some "InvariantCultureAttribute"
-                        | Some "InvariantCulture" ->
-                            Some ()
+                        | Some "InvariantCulture" -> Some ()
                         | _ -> None
                 )
 
@@ -117,15 +116,26 @@ module internal ArgParserGenerator =
                     SynExpr.createIdent "x"
                     |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "TimeSpan" ; "Parse" ])
                 | Some format, None ->
-                    [SynExpr.createIdent "x" ; format ; SynExpr.createLongIdent ["System" ; "Globalization" ; "CultureInfo" ; "CurrentCulture"]]
+                    [
+                        SynExpr.createIdent "x"
+                        format
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "CurrentCulture" ]
+                    ]
                     |> SynExpr.tuple
                     |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "TimeSpan" ; "ParseExact" ])
                 | None, Some () ->
-                    [SynExpr.createIdent "x" ; SynExpr.createLongIdent ["System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture"]]
+                    [
+                        SynExpr.createIdent "x"
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture" ]
+                    ]
                     |> SynExpr.tuple
                     |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "TimeSpan" ; "Parse" ])
                 | Some format, Some () ->
-                    [SynExpr.createIdent "x" ; format ; SynExpr.createLongIdent ["System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture"]]
+                    [
+                        SynExpr.createIdent "x"
+                        format
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture" ]
+                    ]
                     |> SynExpr.tuple
                     |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "TimeSpan" ; "ParseExact" ])
                 |> SynExpr.createLambda "x"
@@ -432,12 +442,12 @@ module internal ArgParserGenerator =
                             ])
                     SynMatchClause.create
                         (SynPat.named "None")
-                        (SynExpr.pipeThroughTryWith SynPat.anon
-                            (
-                                SynExpr.createLongIdent ["exc" ; "Message"]
-                                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
-                                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error")
-                    ) performAssignment)
+                        (SynExpr.pipeThroughTryWith
+                            SynPat.anon
+                            (SynExpr.createLongIdent [ "exc" ; "Message" ]
+                             |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                             |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+                            performAssignment)
                 ]
                 |> SynExpr.createMatch (SynExpr.createIdent' arg.TargetVariable)
             | Accumulation.List ->
@@ -467,12 +477,14 @@ module internal ArgParserGenerator =
                 SynPat.annotateType SynType.string (SynPat.named "key")
                 SynPat.annotateType SynType.string (SynPat.named "value")
             ]
-        |> SynBinding.withReturnAnnotation (SynType.app "Result" [SynType.unit ; SynType.appPostfix "option" SynType.string])
+        |> SynBinding.withReturnAnnotation (
+            SynType.app "Result" [ SynType.unit ; SynType.appPostfix "option" SynType.string ]
+        )
         |> SynBinding.withXmlDoc (
             """Processes the key-value pair, returning Error if no key was matched.
 If the key is an arg which can arity 1, but throws when consuming that arg, we return Error ("the message").
 This can nevertheless be a successful parse, e.g. when the key may have arity 0."""
-            |> fun s -> s.Replace("\n", @"\n")
+            |> fun s -> s.Replace ("\n", @"\n")
             |> PreXmlDoc.create
         )
 
@@ -586,13 +598,20 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                                             (SynExpr.createIdent "key"))
                                         (SynExpr.createIdent "value"))
                                     [
-                                        SynMatchClause.create (SynPat.identWithArgs [Ident.create "Ok"] (SynArgPats.create [SynPat.unit])) (SynExpr.applyFunction
-                                                                                                                                                                                    (SynExpr.applyFunction
-                                                                                                                                                                                        (SynExpr.createIdent "go")
-                                                                                                                                                                                        (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
-                                                                                                                                                                                    (SynExpr.createIdent "args"))
+                                        SynMatchClause.create
+                                            (SynPat.identWithArgs
+                                                [ Ident.create "Ok" ]
+                                                (SynArgPats.create [ SynPat.unit ]))
+                                            (SynExpr.applyFunction
+                                                (SynExpr.applyFunction
+                                                    (SynExpr.createIdent "go")
+                                                    (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
+                                                (SynExpr.createIdent "args"))
 
-                                        SynMatchClause.create (SynPat.identWithArgs [Ident.create "Error"] (SynArgPats.createNamed ["None"]))
+                                        SynMatchClause.create
+                                            (SynPat.identWithArgs
+                                                [ Ident.create "Error" ]
+                                                (SynArgPats.createNamed [ "None" ]))
                                             (SynExpr.applyFunction
                                                 (SynExpr.applyFunction
                                                     (SynExpr.applyFunction
@@ -603,10 +622,21 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                                                         (SynExpr.createIdent "arg"))
                                                     (SynExpr.createIdent "key"))
                                                 (SynExpr.createIdent "value"))
-                                        SynMatchClause.create (SynPat.identWithArgs [Ident.create "Error"] (SynArgPats.create [SynPat.paren (SynPat.identWithArgs [Ident.create "Some"] (SynArgPats.createNamed ["msg"]))])) (
-                                            SynExpr.createIdent "msg"
-                                            |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc))
-                                        )
+                                        SynMatchClause.create
+                                            (SynPat.identWithArgs
+                                                [ Ident.create "Error" ]
+                                                (SynArgPats.create
+                                                    [
+                                                        SynPat.paren (
+                                                            SynPat.identWithArgs
+                                                                [ Ident.create "Some" ]
+                                                                (SynArgPats.createNamed [ "msg" ])
+                                                        )
+                                                    ]))
+                                            (SynExpr.createIdent "msg"
+                                             |> SynExpr.pipeThroughFunction (
+                                                 SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc)
+                                             ))
                                     ]))
                             (SynExpr.createIdent "args"
                              |> SynExpr.pipeThroughFunction (
@@ -644,24 +674,27 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
 
                     SynExpr.createIdent "msg"
                     |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc))
-                    |> SynMatchClause.create (SynPat.identWithArgs [Ident.create "Some"] (SynArgPats.createNamed ["msg"]))
+                    |> SynMatchClause.create (
+                        SynPat.identWithArgs [ Ident.create "Some" ] (SynArgPats.createNamed [ "msg" ])
+                    )
                 ]
                 |> SynExpr.createMatch (SynExpr.createIdent "exc")
 
             SynExpr.createMatch
                 (SynExpr.applyFunction
-                    (SynExpr.applyFunction
-                        (SynExpr.createIdent "processKeyValue")
-                        (SynExpr.createIdent "key"))
+                    (SynExpr.applyFunction (SynExpr.createIdent "processKeyValue") (SynExpr.createIdent "key"))
                     (SynExpr.createIdent "arg"))
                 [
-                    SynMatchClause.create (SynPat.identWithArgs [Ident.create "Ok"] (SynArgPats.create [SynPat.unit])) (SynExpr.applyFunction
-                                                                                                                                                     (SynExpr.applyFunction
-                                                                                                                                                         (SynExpr.createIdent "go")
-                                                                                                                                                         (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
-                                                                                                                                                     (SynExpr.createIdent "args"))
-                    SynMatchClause.create (SynPat.identWithArgs [Ident.create "Error"] (SynArgPats.createNamed ["exc"])) (
-                        SynExpr.ifThenElse
+                    SynMatchClause.create
+                        (SynPat.identWithArgs [ Ident.create "Ok" ] (SynArgPats.create [ SynPat.unit ]))
+                        (SynExpr.applyFunction
+                            (SynExpr.applyFunction
+                                (SynExpr.createIdent "go")
+                                (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
+                            (SynExpr.createIdent "args"))
+                    SynMatchClause.create
+                        (SynPat.identWithArgs [ Ident.create "Error" ] (SynArgPats.createNamed [ "exc" ]))
+                        (SynExpr.ifThenElse
                             (SynExpr.applyFunction (SynExpr.createIdent "setFlagValue") (SynExpr.createIdent "key"))
                             fail
                             (SynExpr.applyFunction
