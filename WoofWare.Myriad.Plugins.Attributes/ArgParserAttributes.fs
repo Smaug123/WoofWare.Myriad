@@ -4,8 +4,18 @@ open System
 
 /// Attribute indicating a record type to which the "build arg parser" Myriad
 /// generator should apply during build.
-type ArgParserAttribute () =
+///
+/// If you supply isExtensionMethod = true, you will get extension methods.
+/// These can only be consumed from F#, but the benefit is that they don't use up the module name
+/// (since by default we create a module called "{TypeName}").
+type ArgParserAttribute (isExtensionMethod : bool) =
     inherit Attribute ()
+
+    /// The default value of `isExtensionMethod`, the optional argument to the ArgParserAttribute constructor.
+    static member DefaultIsExtensionMethod = false
+
+    /// Shorthand for the "isExtensionMethod = false" constructor; see documentation there for details.
+    new () = ArgParserAttribute ArgParserAttribute.DefaultIsExtensionMethod
 
 /// Attribute indicating that this field shall accumulate all unmatched args,
 /// as well as any that appear after a bare `--`.

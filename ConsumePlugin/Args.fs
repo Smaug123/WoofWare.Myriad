@@ -81,7 +81,7 @@ type LoadsOfTypesNoPositionals =
 
     static member DefaultAnotherOptionalThing () = 3
 
-[<ArgParser>]
+[<ArgParser true>]
 type DatesAndTimes =
     {
         Plain : TimeSpan

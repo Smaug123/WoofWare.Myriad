@@ -3,8 +3,14 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Text
 open Fantomas.FCS.Syntax
+open Fantomas.FCS.Text.Range
 open Fantomas.FCS.Xml
 open Myriad.Core
+
+type internal ArgParserOutputSpec =
+    {
+        ExtensionMethods : bool
+    }
 
 /// The default value of an argument which admits default values can be pulled from different sources.
 /// This defines which source a particular default value comes from.
@@ -431,26 +437,22 @@ module internal ArgParserGenerator =
             | Accumulation.Choice _
             | Accumulation.Optional ->
                 let multipleErrorMessage =
-                    SynExpr.applyFunction
-                        (SynExpr.applyFunction
-                            (SynExpr.applyFunction
-                                (SynExpr.applyFunction
-                                    (SynExpr.createIdent "sprintf")
-                                    (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %O and %O"))
-                                (SynExpr.CreateConst arg.ArgForm))
-                            (SynExpr.createIdent "x"))
-                        (SynExpr.createIdent "value")
+                    SynExpr.createIdent "sprintf"
+                    |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %O and %O")
+                    |> SynExpr.applyTo (SynExpr.CreateConst arg.ArgForm)
+                    |> SynExpr.applyTo (SynExpr.createIdent "x")
+                    |> SynExpr.applyTo (SynExpr.createIdent "value")
 
                 let performAssignment =
-                    SynExpr.sequential
-                        [
-                            SynExpr.assign
-                                (SynLongIdent.createI arg.TargetVariable)
-                                (SynExpr.pipeThroughFunction
-                                    (SynExpr.createIdent "Some")
-                                    (SynExpr.createIdent "value" |> SynExpr.pipeThroughFunction arg.Parser))
-                            SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
-                        ]
+                    [
+                        SynExpr.createIdent "value"
+                        |> SynExpr.pipeThroughFunction arg.Parser
+                        |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                        |> SynExpr.assign (SynLongIdent.createI arg.TargetVariable)
+
+                        SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                    ]
+                    |> SynExpr.sequential
 
                 [
                     SynMatchClause.create
@@ -461,7 +463,7 @@ module internal ArgParserGenerator =
                                 |> SynExpr.pipeThroughFunction (
                                     SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
                                 )
-                                SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
+                                SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
                             ])
                     SynMatchClause.create
                         (SynPat.named "None")
@@ -504,27 +506,22 @@ module internal ArgParserGenerator =
             SynType.app "Result" [ SynType.unit ; SynType.appPostfix "option" SynType.string ]
         )
         |> SynBinding.withXmlDoc (
-            """Processes the key-value pair, returning Error if no key was matched.
-If the key is an arg which can arity 1, but throws when consuming that arg, we return Error ("the message").
-This can nevertheless be a successful parse, e.g. when the key may have arity 0."""
-            |> fun s -> s.Replace ("\n", @"\n")
-            |> PreXmlDoc.create
+            [
+                " Processes the key-value pair, returning Error if no key was matched."
+                " If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>)."
+                " This can nevertheless be a successful parse, e.g. when the key may have arity 0."
+            ]
+            |> PreXmlDoc.create'
         )
 
     /// `let setFlagValue (key : string) : bool = ...`
-    let private setFlagValue (argParseErrors : Ident) (flags : ParseFunction list) : SynBinding =
+    let private setFlagValue (parseState : Ident) (argParseErrors : Ident) (flags : ParseFunction list) : SynBinding =
         (SynExpr.CreateConst false, flags)
         ||> List.fold (fun finalExpr flag ->
             let multipleErrorMessage =
-                SynExpr.applyFunction
-                    (SynExpr.applyFunction
-                        (SynExpr.applyFunction
-                            (SynExpr.applyFunction
-                                (SynExpr.createIdent "sprintf")
-                                (SynExpr.CreateConst "Flag '%s' was supplied multiple times: %O and %O"))
-                            (SynExpr.CreateConst flag.ArgForm))
-                        (SynExpr.createIdent "x"))
-                    (SynExpr.createIdent "x")
+                SynExpr.createIdent "sprintf"
+                |> SynExpr.applyTo (SynExpr.CreateConst "Flag '%s' was supplied multiple times")
+                |> SynExpr.applyTo (SynExpr.CreateConst flag.ArgForm)
 
             [
                 SynMatchClause.create
@@ -563,28 +560,59 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         |> SynBinding.withReturnAnnotation (SynType.named "bool")
         |> SynBinding.withXmlDoc (PreXmlDoc.create "Returns false if we didn't set a value.")
 
-    /// `let rec go (state : ParseState) (args : string list) : unit = ...`
-    let private mainLoop (errorAcc : Ident) (leftoverArgs : Ident) (leftoverArgParser : SynExpr) : SynBinding =
+    /// `let rec go (state : %ParseState%) (args : string list) : unit = ...`
+    let private mainLoop
+        (parseState : Ident)
+        (errorAcc : Ident)
+        (leftoverArgs : Ident)
+        (leftoverArgParser : SynExpr)
+        : SynBinding
+        =
+        /// `go (AwaitingValue arg) args
+        let recurseValue =
+            SynExpr.createIdent "go"
+            |> SynExpr.applyTo (
+                SynExpr.paren (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingValue" ])
+                        (SynExpr.createIdent "arg")
+                )
+            )
+
+        /// `go AwaitingKey args`
+        let recurseKey =
+            (SynExpr.createIdent "go")
+            |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
+            |> SynExpr.applyTo (SynExpr.createIdent "args")
+
+        /// `failwithf "Unable to process argument ..."`
+        let fail =
+            SynExpr.createIdent "failwithf"
+            |> SynExpr.applyTo (SynExpr.CreateConst "Unable to process argument %s as key %s and value %s")
+            |> SynExpr.applyTo (SynExpr.createIdent "arg")
+            |> SynExpr.applyTo (SynExpr.createIdent "key")
+            |> SynExpr.applyTo (SynExpr.createIdent "value")
+
+        let argStartsWithDashes =
+            SynExpr.createIdent "arg"
+            |> SynExpr.callMethodArg
+                "StartsWith"
+                (SynExpr.tuple
+                    [
+                        SynExpr.CreateConst "--"
+                        SynExpr.createLongIdent [ "System" ; "StringComparison" ; "Ordinal" ]
+                    ])
+
         let processKey =
             SynExpr.ifThenElse
-                (SynExpr.callMethodArg
-                    "StartsWith"
-                    (SynExpr.tuple
-                        [
-                            SynExpr.CreateConst "--"
-                            SynExpr.createLongIdent [ "System" ; "StringComparison" ; "Ordinal" ]
-                        ])
-                    (SynExpr.createIdent "arg"))
+                argStartsWithDashes
                 (SynExpr.sequential
                     [
                         (SynExpr.createIdent "arg"
                          |> SynExpr.pipeThroughFunction leftoverArgParser
                          |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ]))
-                        SynExpr.applyFunction
-                            (SynExpr.applyFunction
-                                (SynExpr.createIdent "go")
-                                (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
-                            (SynExpr.createIdent "args")
+
+                        recurseKey
                     ])
                 (SynExpr.ifThenElse
                     (SynExpr.equals (SynExpr.createIdent "arg") (SynExpr.CreateConst "--help"))
@@ -615,64 +643,31 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                                             (SynExpr.createIdent "arg"))
                                 ]
                                 (SynExpr.createMatch
-                                    (SynExpr.applyFunction
-                                        (SynExpr.applyFunction
-                                            (SynExpr.createIdent "processKeyValue")
-                                            (SynExpr.createIdent "key"))
-                                        (SynExpr.createIdent "value"))
+                                    (SynExpr.createIdent "processKeyValue"
+                                     |> SynExpr.applyTo (SynExpr.createIdent "key")
+                                     |> SynExpr.applyTo (SynExpr.createIdent "value"))
                                     [
-                                        SynMatchClause.create
-                                            (SynPat.nameWithArgs "Ok" [ SynPat.unit ])
-                                            (SynExpr.applyFunction
-                                                (SynExpr.applyFunction
-                                                    (SynExpr.createIdent "go")
-                                                    (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
-                                                (SynExpr.createIdent "args"))
+                                        SynMatchClause.create (SynPat.nameWithArgs "Ok" [ SynPat.unit ]) recurseKey
 
-                                        SynMatchClause.create
-                                            (SynPat.nameWithArgs "Error" [ SynPat.named "None" ])
-                                            (SynExpr.applyFunction
-                                                (SynExpr.applyFunction
-                                                    (SynExpr.applyFunction
-                                                        (SynExpr.applyFunction
-                                                            (SynExpr.createIdent "failwithf")
-                                                            (SynExpr.CreateConst
-                                                                "Unable to process argument %s as key %s and value %s"))
-                                                        (SynExpr.createIdent "arg"))
-                                                    (SynExpr.createIdent "key"))
-                                                (SynExpr.createIdent "value"))
+                                        SynMatchClause.create (SynPat.nameWithArgs "Error" [ SynPat.named "None" ]) fail
                                         SynMatchClause.create
                                             (SynPat.nameWithArgs
                                                 "Error"
                                                 [ SynPat.nameWithArgs "Some" [ SynPat.named "msg" ] |> SynPat.paren ])
                                             (SynExpr.sequential
                                                 [
-                                                    SynExpr.applyFunction
-                                                        (SynExpr.createIdent "sprintf")
-                                                        (SynExpr.CreateConst "%s (at arg %s)")
+                                                    SynExpr.createIdent "sprintf"
+                                                    |> SynExpr.applyTo (SynExpr.CreateConst "%s (at arg %s)")
                                                     |> SynExpr.applyTo (SynExpr.createIdent "msg")
                                                     |> SynExpr.applyTo (SynExpr.createIdent "arg")
                                                     |> SynExpr.pipeThroughFunction (
                                                         SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc)
                                                     )
 
-                                                    (SynExpr.applyFunction
-                                                        (SynExpr.applyFunction
-                                                            (SynExpr.createIdent "go")
-                                                            (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
-                                                        (SynExpr.createIdent "args"))
+                                                    recurseKey
                                                 ])
                                     ]))
-                            (SynExpr.createIdent "args"
-                             |> SynExpr.pipeThroughFunction (
-                                 SynExpr.applyFunction
-                                     (SynExpr.createIdent "go")
-                                     (SynExpr.paren (
-                                         SynExpr.applyFunction
-                                             (SynExpr.createLongIdent [ "ParseState" ; "AwaitingValue" ])
-                                             (SynExpr.createIdent "arg")
-                                     ))
-                             ))))
+                            (SynExpr.createIdent "args" |> SynExpr.pipeThroughFunction recurseValue)))
                     (SynExpr.createIdent "helpText"
                      |> SynExpr.applyTo (SynExpr.CreateConst ())
                      |> SynExpr.pipeThroughFunction (
@@ -686,11 +681,11 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
             // the value; it's in the variable `exc`.
             let fail =
                 [
-                    SynExpr.applyFunction
-                        (SynExpr.applyFunction
-                            (SynExpr.createIdent "failwithf")
-                            (SynExpr.CreateConst @"Unable to process supplied arg %s. Help text follows.\n%s"))
-                        (SynExpr.createIdent "key")
+                    SynExpr.createIdent "failwithf"
+                    |> SynExpr.applyTo (
+                        SynExpr.CreateConst @"Unable to process supplied arg %s. Help text follows.\n%s"
+                    )
+                    |> SynExpr.applyTo (SynExpr.createIdent "key")
                     |> SynExpr.applyTo (
                         SynExpr.applyFunction (SynExpr.createIdent "helpText") (SynExpr.CreateConst ())
                         |> SynExpr.paren
@@ -709,18 +704,16 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                     (SynExpr.applyFunction
                         (SynExpr.applyFunction
                             (SynExpr.createIdent "go")
-                            (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
+                            (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ]))
                         (SynExpr.createIdent "args"))
                 SynMatchClause.create
                     (SynPat.nameWithArgs "Error" [ SynPat.named "exc" ])
                     (SynExpr.ifThenElse
                         (SynExpr.applyFunction (SynExpr.createIdent "setFlagValue") (SynExpr.createIdent "key"))
                         fail
-                        (SynExpr.applyFunction
-                            (SynExpr.applyFunction
-                                (SynExpr.createIdent "go")
-                                (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
-                            (SynExpr.listCons (SynExpr.createIdent "arg") (SynExpr.createIdent "args"))))
+                        (SynExpr.createIdent "go"
+                         |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
+                         |> SynExpr.applyTo (SynExpr.listCons (SynExpr.createIdent "arg") (SynExpr.createIdent "args"))))
             ]
             |> SynExpr.createMatch (
                 SynExpr.applyFunction
@@ -731,13 +724,11 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         let argBody =
             [
                 SynMatchClause.create
-                    (SynPat.identWithArgs
-                        [ Ident.create "ParseState" ; Ident.create "AwaitingKey" ]
-                        (SynArgPats.create []))
+                    (SynPat.identWithArgs [ parseState ; Ident.create "AwaitingKey" ] (SynArgPats.create []))
                     processKey
                 SynMatchClause.create
                     (SynPat.identWithArgs
-                        [ Ident.create "ParseState" ; Ident.create "AwaitingValue" ]
+                        [ parseState ; Ident.create "AwaitingValue" ]
                         (SynArgPats.createNamed [ "key" ]))
                     processValue
             ]
@@ -745,12 +736,12 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
 
         let body =
             let trailingArgMessage =
-                SynExpr.applyFunction
-                    (SynExpr.applyFunction
-                        (SynExpr.createIdent "sprintf")
-                        (SynExpr.CreateConst
-                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."))
-                    (SynExpr.createIdent "key")
+                SynExpr.createIdent "sprintf"
+                |> SynExpr.applyTo (
+                    SynExpr.CreateConst
+                        "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                )
+                |> SynExpr.applyTo (SynExpr.createIdent "key")
 
             [
                 SynMatchClause.create
@@ -759,13 +750,11 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                         (SynExpr.createIdent "state")
                         [
                             SynMatchClause.create
-                                (SynPat.identWithArgs
-                                    [ Ident.create "ParseState" ; Ident.create "AwaitingKey" ]
-                                    (SynArgPats.create []))
+                                (SynPat.identWithArgs [ parseState ; Ident.create "AwaitingKey" ] (SynArgPats.create []))
                                 (SynExpr.CreateConst ())
                             SynMatchClause.create
                                 (SynPat.identWithArgs
-                                    [ Ident.create "ParseState" ; Ident.create "AwaitingValue" ]
+                                    [ parseState ; Ident.create "AwaitingValue" ]
                                     (SynArgPats.createNamed [ "key" ]))
                                 (SynExpr.ifThenElse
                                     (SynExpr.applyFunction
@@ -794,7 +783,8 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
 
         let args =
             [
-                SynPat.named "state" |> SynPat.annotateType (SynType.named "ParseState")
+                SynPat.named "state"
+                |> SynPat.annotateType (SynType.createLongIdent [ parseState ])
                 SynPat.named "args"
                 |> SynPat.annotateType (SynType.appPostfix "list" (SynType.string))
             ]
@@ -803,7 +793,7 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         |> SynBinding.withRecursion true
 
     /// Takes a single argument, `args : string list`, and returns something of the type indicated by `recordType`.
-    let createRecordParse (recordType : RecordType) : SynExpr =
+    let createRecordParse (parseState : Ident) (recordType : RecordType) : SynExpr =
         let spec = toParseSpec recordType
         // For each argument (positional and non-positional), create an accumulator for it.
         let bindings =
@@ -871,14 +861,13 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "getEnvironmentVariable")
 
                             let errorMessage =
-                                SynExpr.applyFunction
-                                    (SynExpr.applyFunction
-                                        (SynExpr.applyFunction
-                                            (SynExpr.createIdent "sprintf")
-                                            (SynExpr.CreateConst
-                                                "No value was supplied for %s, nor was environment variable %s set"))
-                                        (SynExpr.CreateConst pf.ArgForm))
-                                    name
+                                SynExpr.createIdent "sprintf"
+                                |> SynExpr.applyTo (
+                                    SynExpr.CreateConst
+                                        "No value was supplied for %s, nor was environment variable %s set"
+                                )
+                                |> SynExpr.applyTo (SynExpr.CreateConst pf.ArgForm)
+                                |> SynExpr.applyTo name
 
                             [
                                 SynMatchClause.create
@@ -1020,11 +1009,10 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
             )
 
         [
-            (SynExpr.applyFunction
-                (SynExpr.applyFunction
-                    (SynExpr.createIdent "go")
-                    (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
-                (SynExpr.createIdent "args"))
+            SynExpr.createIdent "go"
+            |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
+            |> SynExpr.applyTo (SynExpr.createIdent "args")
+
             SynExpr.createLet freezeArgs retValue
         ]
         |> SynExpr.sequential
@@ -1032,28 +1020,35 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
             bindings
             @ [
                 processKeyValue argParseErrors (Option.toList spec.Positionals @ spec.NonPositionals)
-                setFlagValue argParseErrors flags
-                mainLoop argParseErrors leftoverArgsName leftoverArgsParser
+                setFlagValue parseState argParseErrors flags
+                mainLoop parseState argParseErrors leftoverArgsName leftoverArgsParser
             ]
         )
 
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
-        (taggedType : SynTypeDefn)
+        ((taggedType : SynTypeDefn, spec : ArgParserOutputSpec))
         (_allUnionTypesTODO : SynTypeDefn list)
         (allRecordTypes : SynTypeDefn list)
         : SynModuleOrNamespace
         =
         let taggedType = RecordType.OfRecord taggedType
 
+        let modAttrs, modName =
+            if spec.ExtensionMethods then
+                [ SynAttribute.autoOpen ], Ident.create (taggedType.Name.idText + "ArgParse")
+            else
+                [ SynAttribute.requireQualifiedAccess ; SynAttribute.compilationRepresentation ], taggedType.Name
+
         let modInfo =
-            SynComponentInfo.create taggedType.Name
+            SynComponentInfo.create modName
             |> SynComponentInfo.withDocString (
                 PreXmlDoc.Create $" Methods to parse arguments for the type %s{taggedType.Name.idText}"
             )
-            |> SynComponentInfo.addAttributes
-                [ SynAttribute.requireQualifiedAccess ; SynAttribute.compilationRepresentation ]
+            |> SynComponentInfo.addAttributes modAttrs
+
+        let parseStateIdent = Ident.create $"ParseState_%s{taggedType.Name.idText}"
 
         let parseStateType =
             [
@@ -1078,7 +1073,10 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                     }
             ]
             |> SynTypeDefnRepr.union
-            |> SynTypeDefn.create (SynComponentInfo.create (Ident.create "ParseState"))
+            |> SynTypeDefn.create (
+                SynComponentInfo.create parseStateIdent
+                |> SynComponentInfo.setAccessibility (Some (SynAccess.Private range0))
+            )
             |> List.singleton
             |> SynModuleDecl.createTypes
 
@@ -1087,10 +1085,8 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                 SynPat.named "args"
                 |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
 
-            [
-                parseStateType
-
-                createRecordParse taggedType
+            let parsePrime =
+                createRecordParse parseStateIdent taggedType
                 |> SynBinding.basic
                     [ Ident.create "parse'" ]
                     [
@@ -1099,16 +1095,43 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                         argsParam
                     ]
                 |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ taggedType.Name ])
-                |> SynModuleDecl.createLet
 
-                SynExpr.applyFunction
-                    (SynExpr.applyFunction
-                        (SynExpr.createIdent "parse'")
-                        (SynExpr.createLongIdent [ "System" ; "Environment" ; "GetEnvironmentVariable" ]))
-                    (SynExpr.createIdent "args")
+            let parsePrimeCall =
+                if spec.ExtensionMethods then
+                    // need to fully qualify
+                    [ taggedType.Name ; Ident.create "parse'" ]
+                else
+                    [ Ident.create "parse'" ]
+
+            let parse =
+                SynExpr.createLongIdent' parsePrimeCall
+                |> SynExpr.applyTo (SynExpr.createLongIdent [ "System" ; "Environment" ; "GetEnvironmentVariable" ])
+                |> SynExpr.applyTo (SynExpr.createIdent "args")
                 |> SynBinding.basic [ Ident.create "parse" ] [ argsParam ]
                 |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ taggedType.Name ])
-                |> SynModuleDecl.createLet
+
+            [
+                yield parseStateType
+
+                if spec.ExtensionMethods then
+                    let bindingPrime = parsePrime |> SynMemberDefn.staticMember
+
+                    let binding = parse |> SynMemberDefn.staticMember
+
+                    let componentInfo =
+                        SynComponentInfo.create taggedType.Name
+                        |> SynComponentInfo.withDocString (PreXmlDoc.create "Extension methods for argument parsing")
+
+                    let containingType =
+                        SynTypeDefnRepr.augmentation ()
+                        |> SynTypeDefn.create componentInfo
+                        |> SynTypeDefn.withMemberDefns [ bindingPrime ; binding ]
+
+                    yield SynModuleDecl.createTypes [ containingType ]
+                else
+                    yield SynModuleDecl.createLet parsePrime
+
+                    yield SynModuleDecl.createLet parse
             ]
             |> SynModuleDecl.nestedModule modInfo
 
@@ -1135,7 +1158,21 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                     |> List.tryPick (fun ty ->
                         match Ast.getAttribute<ArgParserAttribute> ty with
                         | None -> None
-                        | Some _attr -> Some ty
+                        | Some attr ->
+                            let arg =
+                                match SynExpr.stripOptionalParen attr.ArgExpr with
+                                | SynExpr.Const (SynConst.Bool value, _) -> value
+                                | SynExpr.Const (SynConst.Unit, _) -> ArgParserAttribute.DefaultIsExtensionMethod
+                                | arg ->
+                                    failwith
+                                        $"Unrecognised argument %+A{arg} to [<%s{nameof ArgParserAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."
+
+                            let spec =
+                                {
+                                    ExtensionMethods = arg
+                                }
+
+                            Some (ty, spec)
                     )
 
                 match typeWithAttr with

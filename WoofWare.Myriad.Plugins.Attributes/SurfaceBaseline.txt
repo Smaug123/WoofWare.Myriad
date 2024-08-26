@@ -1,5 +1,8 @@
 WoofWare.Myriad.Plugins.ArgParserAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.ArgParserAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.ArgParserAttribute..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.ArgParserAttribute.DefaultIsExtensionMethod [static property]: [read-only] bool
+WoofWare.Myriad.Plugins.ArgParserAttribute.get_DefaultIsExtensionMethod [static method]: unit -> bool
 WoofWare.Myriad.Plugins.ArgumentDefaultEnvironmentVariableAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.ArgumentDefaultEnvironmentVariableAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.ArgumentDefaultFunctionAttribute inherit System.Attribute
