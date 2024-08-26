@@ -858,7 +858,7 @@ module internal CataGenerator =
 
         SynExpr.createMatch (SynExpr.createIdent "x") matchCases
         |> SynMatchClause.create (
-            SynPat.identWithArgs analysis.AssociatedProcessInstruction (SynArgPats.create [ Ident.create "x" ])
+            SynPat.identWithArgs analysis.AssociatedProcessInstruction (SynArgPats.createNamed [ "x" ])
         )
 
     /// Create the state-machine matches which deal with receiving the instruction
@@ -896,8 +896,8 @@ module internal CataGenerator =
                     |> Seq.mapi (fun i x -> (i, x))
                     |> Seq.choose (fun (i, case) ->
                         match case.Description with
-                        | FieldDescription.NonRecursive _ -> case.ArgName |> Some
-                        | FieldDescription.ListSelf _ -> case.ArgName |> Some
+                        | FieldDescription.NonRecursive _ -> case.ArgName |> SynPat.namedI |> Some
+                        | FieldDescription.ListSelf _ -> case.ArgName |> SynPat.namedI |> Some
                         | FieldDescription.Self _ -> None
                     )
                     |> Seq.toList

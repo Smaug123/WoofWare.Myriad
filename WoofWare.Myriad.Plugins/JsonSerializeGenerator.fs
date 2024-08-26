@@ -72,9 +72,7 @@ module internal JsonSerializeGenerator =
                     target
                     |> SynExpr.paren
                     |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
-                |> SynMatchClause.create (
-                    SynPat.identWithArgs [ Ident.create "Some" ] (SynArgPats.create [ Ident.create "field" ])
-                )
+                |> SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "field" ])
 
             [ noneClause ; someClause ]
             |> SynExpr.createMatch (SynExpr.createIdent "field")
@@ -125,11 +123,7 @@ module internal JsonSerializeGenerator =
                     DebugPointAtInOrTo.Yes range0,
                     SeqExprOnly.SeqExprOnly false,
                     true,
-                    SynPat.paren (
-                        SynPat.identWithArgs
-                            [ Ident.create "KeyValue" ]
-                            (SynArgPats.create [ Ident.create "key" ; Ident.create "value" ])
-                    ),
+                    SynPat.paren (SynPat.nameWithArgs "KeyValue" [ SynPat.named "key" ; SynPat.named "value" ]),
                     SynExpr.createIdent "field",
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "ret" ; "Add" ])
@@ -275,9 +269,9 @@ module internal JsonSerializeGenerator =
         |> List.map (fun unionCase ->
             let propertyName = getPropertyName unionCase.Ident unionCase.Attrs
 
-            let caseNames = unionCase.Fields |> List.mapi (fun i _ -> Ident.create $"arg%i{i}")
+            let caseNames = unionCase.Fields |> List.mapi (fun i _ -> $"arg%i{i}")
 
-            let argPats = SynArgPats.create caseNames
+            let argPats = SynArgPats.createNamed caseNames
 
             let pattern =
                 SynPat.LongIdent (
@@ -311,7 +305,7 @@ module internal JsonSerializeGenerator =
                     let propertyName = getPropertyName (Option.get fieldData.Ident) fieldData.Attrs
 
                     let node =
-                        SynExpr.applyFunction (fst (serializeNode fieldData.Type)) (SynExpr.createIdent' caseName)
+                        SynExpr.applyFunction (fst (serializeNode fieldData.Type)) (SynExpr.createIdent caseName)
 
                     [ propertyName ; node ]
                     |> SynExpr.tuple

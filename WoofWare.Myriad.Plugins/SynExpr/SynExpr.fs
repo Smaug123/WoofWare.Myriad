@@ -260,6 +260,12 @@ module internal SynExpr =
         exprs
         |> List.reduce (fun a b -> SynExpr.Sequential (DebugPointAtSequential.SuppressNeither, false, a, b, range0))
 
+    let listLiteral (elts : SynExpr list) : SynExpr =
+        SynExpr.ArrayOrListComputed (false, sequential elts, range0)
+
+    let arrayLiteral (elts : SynExpr list) : SynExpr =
+        SynExpr.ArrayOrListComputed (true, sequential elts, range0)
+
     /// {compExpr} { {lets} ; return {ret} }
     let createCompExpr (compExpr : string) (retBody : SynExpr) (lets : CompExprBinding list) : SynExpr =
         let retStatement = SynExpr.YieldOrReturn ((false, true), retBody, range0)

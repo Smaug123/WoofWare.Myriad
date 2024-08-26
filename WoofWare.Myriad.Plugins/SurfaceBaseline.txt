@@ -1,3 +1,5 @@
+WoofWare.Myriad.Plugins.ArgParserGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
+WoofWare.Myriad.Plugins.ArgParserGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.CreateCatamorphismGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.CreateCatamorphismGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.HttpClientGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
