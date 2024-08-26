@@ -88,6 +88,7 @@ type DatesAndTimes =
         [<InvariantCulture>]
         Invariant : TimeSpan
         [<ParseExact @"hh\:mm\:ss">]
+        [<ArgumentHelpText "An exact time please">]
         Exact : TimeSpan
         [<InvariantCulture ; ParseExact @"hh\:mm\:ss">]
         InvariantExact : TimeSpan

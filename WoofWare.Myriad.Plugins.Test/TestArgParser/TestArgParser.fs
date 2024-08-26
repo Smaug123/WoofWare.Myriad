@@ -259,6 +259,27 @@ Required argument '--baz' received no value"""
         result.YetAnotherOptionalThing |> shouldEqual (Choice2Of2 "hi!")
 
     [<Test>]
+    let ``ParseExact and help`` () =
+        let count = ref 0
+
+        let getEnvVar (_ : string) =
+            Interlocked.Increment count |> ignore<int>
+            ""
+
+        let exc =
+            Assert.Throws<exn> (fun () -> DatesAndTimes.parse' getEnvVar [ "--help" ] |> ignore<DatesAndTimes>)
+
+        exc.Message
+        |> shouldEqual
+            @"Help text requested.
+--plain  TimeSpan
+--invariant  TimeSpan
+--exact  TimeSpan : An exact time please [Parse format (.NET): hh\:mm\:ss]
+--invariant-exact  TimeSpan : [Parse format (.NET): hh\:mm\:ss]"
+
+        count.Value |> shouldEqual 0
+
+    [<Test>]
     let rec ``TimeSpans and their attributes`` () =
         let count = ref 0
 

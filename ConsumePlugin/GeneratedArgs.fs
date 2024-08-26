@@ -224,13 +224,13 @@ module Basic =
 
         let helpText () =
             [
-                (sprintf "--foo  int32%s%s" "" (sprintf " : %s" "This is a foo!"))
+                (sprintf "--foo  int32%s%s" "" (sprintf " : %s" ("This is a foo!")))
                 (sprintf "--bar  string%s%s" "" "")
                 (sprintf "--baz  bool%s%s" "" "")
                 (sprintf
                     "--rest  string (positional args)%s%s"
                     " (can be repeated)"
-                    (sprintf " : %s" "Here's where the rest of the args go"))
+                    (sprintf " : %s" ("Here's where the rest of the args go")))
             ]
             |> String.concat "\n"
 
@@ -1353,8 +1353,15 @@ module DatesAndTimes =
             [
                 (sprintf "--plain  TimeSpan%s%s" "" "")
                 (sprintf "--invariant  TimeSpan%s%s" "" "")
-                (sprintf "--exact  TimeSpan%s%s" "" "")
-                (sprintf "--invariant-exact  TimeSpan%s%s" "" "")
+
+                (sprintf
+                    "--exact  TimeSpan%s%s"
+                    ""
+                    (sprintf " : %s" (sprintf "%s [Parse format (.NET): %s]" "An exact time please" @"hh\:mm\:ss")))
+                (sprintf
+                    "--invariant-exact  TimeSpan%s%s"
+                    ""
+                    (sprintf " : %s" (sprintf "[Parse format (.NET): %s]" @"hh\:mm\:ss")))
             ]
             |> String.concat "\n"
 

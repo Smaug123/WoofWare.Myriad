@@ -269,15 +269,38 @@ module internal ArgParserGenerator =
                         | _ -> false
                     )
 
+                let parseExactModifier =
+                    attrs
+                    |> List.tryPick (fun a ->
+                        match (List.last a.TypeName.LongIdent).idText with
+                        | "ParseExactAttribute"
+                        | "ParseExact" -> Some a.ArgExpr
+                        | _ -> None
+                    )
+
                 let helpText =
                     attrs
-                    |> List.tryFind (fun a ->
+                    |> List.tryPick (fun a ->
                         match (List.last a.TypeName.LongIdent).idText with
                         | "ArgumentHelpTextAttribute"
-                        | "ArgumentHelpText" -> true
-                        | _ -> false
+                        | "ArgumentHelpText" -> Some a.ArgExpr
+                        | _ -> None
                     )
-                    |> Option.map (fun attr -> attr.ArgExpr)
+
+                let helpText =
+                    match parseExactModifier, helpText with
+                    | None, ht -> ht
+                    | Some pe, None ->
+                        SynExpr.createIdent "sprintf"
+                        |> SynExpr.applyTo (SynExpr.CreateConst "[Parse format (.NET): %s]")
+                        |> SynExpr.applyTo pe
+                        |> Some
+                    | Some pe, Some ht ->
+                        SynExpr.createIdent "sprintf"
+                        |> SynExpr.applyTo (SynExpr.CreateConst "%s [Parse format (.NET): %s]")
+                        |> SynExpr.applyTo ht
+                        |> SynExpr.applyTo pe
+                        |> Some
 
                 let ident =
                     match identOption with
@@ -350,7 +373,7 @@ module internal ArgParserGenerator =
                 | None -> SynExpr.CreateConst ""
                 | Some helpText ->
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " : %s")
-                    |> SynExpr.applyTo helpText
+                    |> SynExpr.applyTo (SynExpr.paren helpText)
                     |> SynExpr.paren
 
             let descriptor =
