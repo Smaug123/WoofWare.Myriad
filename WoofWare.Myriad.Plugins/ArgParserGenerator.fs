@@ -622,14 +622,23 @@ This can nevertheless be a successful parse, e.g. when the key may have arity 0.
                                             (SynPat.nameWithArgs
                                                 "Error"
                                                 [ SynPat.nameWithArgs "Some" [ SynPat.named "msg" ] |> SynPat.paren ])
-                                            (SynExpr.applyFunction
-                                                (SynExpr.createIdent "sprintf")
-                                                (SynExpr.CreateConst "%s (at arg %s)")
-                                             |> SynExpr.applyTo (SynExpr.createIdent "msg")
-                                             |> SynExpr.applyTo (SynExpr.createIdent "arg")
-                                             |> SynExpr.pipeThroughFunction (
-                                                 SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc)
-                                             ))
+                                            (SynExpr.sequential
+                                                [
+                                                    SynExpr.applyFunction
+                                                        (SynExpr.createIdent "sprintf")
+                                                        (SynExpr.CreateConst "%s (at arg %s)")
+                                                    |> SynExpr.applyTo (SynExpr.createIdent "msg")
+                                                    |> SynExpr.applyTo (SynExpr.createIdent "arg")
+                                                    |> SynExpr.pipeThroughFunction (
+                                                        SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc)
+                                                    )
+
+                                                    (SynExpr.applyFunction
+                                                        (SynExpr.applyFunction
+                                                            (SynExpr.createIdent "go")
+                                                            (SynExpr.createLongIdent [ "ParseState" ; "AwaitingKey" ]))
+                                                        (SynExpr.createIdent "args"))
+                                                ])
                                     ]))
                             (SynExpr.createIdent "args"
                              |> SynExpr.pipeThroughFunction (

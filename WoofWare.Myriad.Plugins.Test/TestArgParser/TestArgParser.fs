@@ -317,9 +317,6 @@ Required argument '--invariant-exact' received no value"""
         |> shouldEqual
             """Errors during parse!
 Input string was not in a correct format. (at arg --exact=11:34)
-Required argument '--plain' received no value
-Required argument '--invariant' received no value
-Required argument '--exact' received no value
-Required argument '--invariant-exact' received no value"""
+Required argument '--exact' received no value"""
 
         count.Value |> shouldEqual 0
