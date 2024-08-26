@@ -251,6 +251,15 @@ module internal SynTypePatterns =
             | _ -> None
         | _ -> None
 
+    let (|TimeSpan|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            match ident |> List.map (fun i -> i.idText) with
+            | [ "System" ; "TimeSpan" ]
+            | [ "TimeSpan" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
 [<RequireQualifiedAccess>]
 module internal SynType =
     let rec stripOptionalParen (ty : SynType) : SynType =
@@ -305,6 +314,56 @@ module internal SynType =
     /// Given ['a1, 'a2] and 'ret, returns 'a1 -> 'a2 -> 'ret.
     let toFun (inputs : SynType list) (ret : SynType) : SynType =
         (ret, List.rev inputs) ||> List.fold (fun ty input -> funFromDomain input ty)
+
+    let primitiveToHumanReadableString (name : LongIdent) : string =
+        match name |> List.map _.idText with
+        | [ "System" ; "Single" ] -> "single"
+        | [ "System" ; "Double" ] -> "double"
+        | [ "System" ; "Byte" ] -> "byte"
+        | [ "System" ; "SByte" ] -> "signed byte"
+        | [ "System" ; "Int16" ] -> "int16"
+        | [ "System" ; "Int32" ] -> "int32"
+        | [ "System" ; "Int64" ] -> "int64"
+        | [ "System" ; "UInt16" ] -> "uint16"
+        | [ "System" ; "UInt32" ] -> "uint32"
+        | [ "System" ; "UInt64" ] -> "uint64"
+        | [ "System" ; "Char" ] -> "char"
+        | [ "System" ; "Decimal" ] -> "decimal"
+        | [ "System" ; "String" ] -> "string"
+        | [ "System" ; "Boolean" ] -> "bool"
+        | ty ->
+            ty
+            |> String.concat "."
+            |> failwithf "could not create human-readable string for primitive type %s"
+
+    let rec toHumanReadableString (ty : SynType) : string =
+        match ty with
+        | PrimitiveType t1 -> primitiveToHumanReadableString t1
+        | OptionType t1 -> toHumanReadableString t1 + " option"
+        | NullableType t1 -> toHumanReadableString t1 + " Nullable"
+        | ChoiceType ts ->
+            ts
+            |> List.map toHumanReadableString
+            |> String.concat ", "
+            |> sprintf "Choice<%s>"
+        | MapType (k, v)
+        | DictionaryType (k, v)
+        | IDictionaryType (k, v)
+        | IReadOnlyDictionaryType (k, v) -> sprintf "map<%s, %s>" (toHumanReadableString k) (toHumanReadableString v)
+        | ListType t1 -> toHumanReadableString t1 + " list"
+        | ArrayType t1 -> toHumanReadableString t1 + " array"
+        | Task t1 -> toHumanReadableString t1 + " Task"
+        | UnitType -> "unit"
+        | FileInfo -> "FileInfo"
+        | DirectoryInfo -> "DirectoryInfo"
+        | Uri -> "URI"
+        | Stream -> "Stream"
+        | Guid -> "GUID"
+        | BigInt -> "bigint"
+        | DateTimeOffset -> "DateTimeOffset"
+        | DateOnly -> "DateOnly"
+        | TimeSpan -> "TimeSpan"
+        | ty -> failwithf "could not compute human-readable string for type: %O" ty
 
     /// Guess whether the types are equal. We err on the side of saying "no, they're different".
     let rec provablyEqual (ty1 : SynType) (ty2 : SynType) : bool =

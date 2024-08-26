@@ -833,7 +833,7 @@ module internal HttpClientGenerator =
                     |> SynTypeDefn.create componentInfo
                     |> SynTypeDefn.withMemberDefns [ binding ]
 
-                SynModuleDecl.Types ([ containingType ], range0)
+                SynModuleDecl.createTypes [ containingType ]
 
             else
                 SynBinding.basic [ Ident.create "make" ] (headerArgs @ [ clientCreationArg ]) interfaceImpl

@@ -31,13 +31,13 @@
     <Compile Include="SynExpr\Ident.fs" />
     <Compile Include="SynExpr\SynLongIdent.fs" />
     <Compile Include="SynExpr\SynExprLetOrUseTrivia.fs" />
+    <Compile Include="SynExpr\SynArgPats.fs" />
     <Compile Include="SynExpr\SynPat.fs" />
     <Compile Include="SynExpr\SynBinding.fs" />
     <Compile Include="SynExpr\SynType.fs" />
     <Compile Include="SynExpr\SynMatchClause.fs" />
     <Compile Include="SynExpr\CompExpr.fs" />
     <Compile Include="SynExpr\SynExpr.fs" />
-    <Compile Include="SynExpr\SynArgPats.fs" />
     <Compile Include="SynExpr\SynField.fs" />
     <Compile Include="SynExpr\SynUnionCase.fs" />
     <Compile Include="SynExpr\SynTypeDefnRepr.fs" />
@@ -55,6 +55,7 @@
     <Compile Include="JsonParseGenerator.fs"/>
     <Compile Include="HttpClientGenerator.fs"/>
     <Compile Include="CataGenerator.fs" />
+    <Compile Include="ArgParserGenerator.fs" />
     <EmbeddedResource Include="version.json"/>
     <EmbeddedResource Include="SurfaceBaseline.txt"/>
     <None Include="..\README.md">
