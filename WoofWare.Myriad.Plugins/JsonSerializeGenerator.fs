@@ -72,9 +72,7 @@ module internal JsonSerializeGenerator =
                     target
                     |> SynExpr.paren
                     |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
-                |> SynMatchClause.create (
-                    SynPat.identWithArgs [ Ident.create "Some" ] (SynArgPats.createNamed [ "field" ])
-                )
+                |> SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "field" ])
 
             [ noneClause ; someClause ]
             |> SynExpr.createMatch (SynExpr.createIdent "field")
@@ -125,9 +123,7 @@ module internal JsonSerializeGenerator =
                     DebugPointAtInOrTo.Yes range0,
                     SeqExprOnly.SeqExprOnly false,
                     true,
-                    SynPat.paren (
-                        SynPat.identWithArgs [ Ident.create "KeyValue" ] (SynArgPats.createNamed [ "key" ; "value" ])
-                    ),
+                    SynPat.paren (SynPat.nameWithArgs "KeyValue" [ SynPat.named "key" ; SynPat.named "value" ]),
                     SynExpr.createIdent "field",
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "ret" ; "Add" ])

@@ -166,21 +166,27 @@ module BasicNoPositionals =
         let Foo =
             match Foo with
             | None ->
-                sprintf "Required argument '%s' was missing" "--foo" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--foo"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Bar =
             match Bar with
             | None ->
-                sprintf "Required argument '%s' was missing" "--bar" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--bar"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Baz =
             match Baz with
             | None ->
-                sprintf "Required argument '%s' was missing" "--baz" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--baz"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
@@ -348,21 +354,27 @@ module Basic =
         let Foo =
             match Foo with
             | None ->
-                sprintf "Required argument '%s' was missing" "--foo" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--foo"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Bar =
             match Bar with
             | None ->
-                sprintf "Required argument '%s' was missing" "--bar" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--bar"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Baz =
             match Baz with
             | None ->
-                sprintf "Required argument '%s' was missing" "--baz" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--baz"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
@@ -525,21 +537,27 @@ module BasicWithIntPositionals =
         let Foo =
             match Foo with
             | None ->
-                sprintf "Required argument '%s' was missing" "--foo" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--foo"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Bar =
             match Bar with
             | None ->
-                sprintf "Required argument '%s' was missing" "--bar" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--bar"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Baz =
             match Baz with
             | None ->
-                sprintf "Required argument '%s' was missing" "--baz" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--baz"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
@@ -837,28 +855,34 @@ module LoadsOfTypes =
         let Foo =
             match Foo with
             | None ->
-                sprintf "Required argument '%s' was missing" "--foo" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--foo"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Bar =
             match Bar with
             | None ->
-                sprintf "Required argument '%s' was missing" "--bar" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--bar"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Baz =
             match Baz with
             | None ->
-                sprintf "Required argument '%s' was missing" "--baz" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--baz"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let SomeFile =
             match SomeFile with
             | None ->
-                sprintf "Required argument '%s' was missing" "--some-file"
+                sprintf "Required argument '%s' received no value" "--some-file"
                 |> ArgParser_errors.Add
 
                 Unchecked.defaultof<_>
@@ -867,7 +891,7 @@ module LoadsOfTypes =
         let SomeDirectory =
             match SomeDirectory with
             | None ->
-                sprintf "Required argument '%s' was missing" "--some-directory"
+                sprintf "Required argument '%s' received no value" "--some-directory"
                 |> ArgParser_errors.Add
 
                 Unchecked.defaultof<_>
@@ -1210,28 +1234,34 @@ module LoadsOfTypesNoPositionals =
         let Foo =
             match Foo with
             | None ->
-                sprintf "Required argument '%s' was missing" "--foo" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--foo"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Bar =
             match Bar with
             | None ->
-                sprintf "Required argument '%s' was missing" "--bar" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--bar"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Baz =
             match Baz with
             | None ->
-                sprintf "Required argument '%s' was missing" "--baz" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--baz"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let SomeFile =
             match SomeFile with
             | None ->
-                sprintf "Required argument '%s' was missing" "--some-file"
+                sprintf "Required argument '%s' received no value" "--some-file"
                 |> ArgParser_errors.Add
 
                 Unchecked.defaultof<_>
@@ -1240,7 +1270,7 @@ module LoadsOfTypesNoPositionals =
         let SomeDirectory =
             match SomeDirectory with
             | None ->
-                sprintf "Required argument '%s' was missing" "--some-directory"
+                sprintf "Required argument '%s' received no value" "--some-directory"
                 |> ArgParser_errors.Add
 
                 Unchecked.defaultof<_>
@@ -1473,14 +1503,16 @@ module DatesAndTimes =
         let Plain =
             match Plain with
             | None ->
-                sprintf "Required argument '%s' was missing" "--plain" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--plain"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let Invariant =
             match Invariant with
             | None ->
-                sprintf "Required argument '%s' was missing" "--invariant"
+                sprintf "Required argument '%s' received no value" "--invariant"
                 |> ArgParser_errors.Add
 
                 Unchecked.defaultof<_>
@@ -1489,14 +1521,16 @@ module DatesAndTimes =
         let Exact =
             match Exact with
             | None ->
-                sprintf "Required argument '%s' was missing" "--exact" |> ArgParser_errors.Add
+                sprintf "Required argument '%s' received no value" "--exact"
+                |> ArgParser_errors.Add
+
                 Unchecked.defaultof<_>
             | Some x -> x
 
         let InvariantExact =
             match InvariantExact with
             | None ->
-                sprintf "Required argument '%s' was missing" "--invariant-exact"
+                sprintf "Required argument '%s' received no value" "--invariant-exact"
                 |> ArgParser_errors.Add
 
                 Unchecked.defaultof<_>
