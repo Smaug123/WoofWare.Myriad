@@ -1,5 +1,6 @@
 namespace ConsumePlugin
 
+open System
 open System.IO
 open WoofWare.Myriad.Plugins
 
@@ -79,3 +80,15 @@ type LoadsOfTypesNoPositionals =
     static member DefaultOptionalThing () = false
 
     static member DefaultAnotherOptionalThing () = 3
+
+[<ArgParser>]
+type DatesAndTimes =
+    {
+        Plain : TimeSpan
+        [<InvariantCulture>]
+        Invariant : TimeSpan
+        [<ParseExact @"hh\:mm\:ss">]
+        Exact : TimeSpan
+        [<InvariantCulture ; ParseExact @"hh\:mm\:ss">]
+        InvariantExact : TimeSpan
+    }

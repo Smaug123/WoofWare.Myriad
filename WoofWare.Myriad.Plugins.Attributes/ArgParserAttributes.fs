@@ -38,3 +38,16 @@ type ArgumentDefaultEnvironmentVariableAttribute (envVar : string) =
 /// or when a parse error causes us to print help text.
 type ArgumentHelpTextAttribute (helpText : string) =
     inherit Attribute ()
+
+/// Attribute indicating that this field should be parsed with a ParseExact method on its type.
+/// For example, on a TimeSpan field, with [<ArgumentParseExact @"hh\:mm\:ss">], we will call
+/// `TimeSpan.ParseExact (s, @"hh\:mm\:ss", CultureInfo.CurrentCulture).
+type ParseExactAttribute (format : string) =
+    inherit Attribute ()
+
+/// Attribute indicating that this field should be parsed in the invariant culture, rather than the
+/// default current culture.
+/// For example, on a TimeSpan field, with [<InvariantCulture>] and [<ArgumentParseExact @"hh\:mm\:ss">], we will call
+/// `TimeSpan.ParseExact (s, @"hh\:mm\:ss", CultureInfo.InvariantCulture).
+type InvariantCultureAttribute () =
+    inherit Attribute ()

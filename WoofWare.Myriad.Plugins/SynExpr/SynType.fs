@@ -251,6 +251,15 @@ module internal SynTypePatterns =
             | _ -> None
         | _ -> None
 
+    let (|TimeSpan|_|) (fieldType : SynType) =
+        match fieldType with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            match ident |> List.map (fun i -> i.idText) with
+            | [ "System" ; "TimeSpan" ]
+            | [ "TimeSpan" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
 [<RequireQualifiedAccess>]
 module internal SynType =
     let rec stripOptionalParen (ty : SynType) : SynType =
@@ -353,6 +362,7 @@ module internal SynType =
         | BigInt -> "bigint"
         | DateTimeOffset -> "DateTimeOffset"
         | DateOnly -> "DateOnly"
+        | TimeSpan -> "TimeSpan"
         | ty -> failwithf "could not compute human-readable string for type: %O" ty
 
     /// Guess whether the types are equal. We err on the side of saying "no, they're different".

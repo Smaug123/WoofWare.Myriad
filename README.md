@@ -187,6 +187,8 @@ module Foo =
 Default arguments are handled as `Choice<'a, 'a>`:
 you get a `Choice1Of2` if the user provided the input, or a `Choice2Of2` if the parser filled in your specified default value.
 
+You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<ParseExact @"hh\:mm\:ss">]` attributes.
+
 ### What's the point?
 
 I got fed up of waiting for us to find time to rewrite the in-house one at work.

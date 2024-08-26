@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins.Test
 
+open System
 open System.Threading
 open NUnit.Framework
 open FsUnitTyped
@@ -256,3 +257,27 @@ Required argument '--baz' was missing"""
         result.OptionalThingWithNoDefault |> shouldEqual None
         result.AnotherOptionalThing |> shouldEqual (Choice1Of2 3000)
         result.YetAnotherOptionalThing |> shouldEqual (Choice2Of2 "hi!")
+
+    [<Test>]
+    let rec ``TimeSpans and their attributes`` () =
+        let count = ref 0
+        let getEnvVar (_ : string) =
+            Interlocked.Increment count |> ignore<int>
+            ""
+
+        let parsed = DatesAndTimes.parse' getEnvVar ["--exact=11:34:00" ; "--plain=1" ; "--invariant=23:59" ; "--invariant-exact=23:59:00"]
+
+        parsed.Plain |> shouldEqual (TimeSpan (1, 0, 0, 0))
+        parsed.Invariant |> shouldEqual ( TimeSpan (23, 59, 00))
+        parsed.Exact |> shouldEqual ( TimeSpan (11, 34, 00))
+        parsed.InvariantExact |> shouldEqual ( TimeSpan (23, 59, 00))
+
+        let exc = Assert.Throws<exn> (fun () -> DatesAndTimes.parse' getEnvVar ["--exact=11:34:00" ; "--plain=1" ; "--invariant=23:59" ; "--invariant-exact=23:59"] |> ignore<DatesAndTimes>)
+        exc.Message |> shouldEqual """Errors during parse!
+Input string was not in a correct format.
+Required argument '--invariant-exact' was missing"""
+
+        let exc = Assert.Throws<exn> (fun () -> DatesAndTimes.parse' getEnvVar ["--exact=11:34" ; "--plain=1" ; "--invariant=23:59" ; "--invariant-exact=23:59:00"] |> ignore<DatesAndTimes>)
+        exc.Message |> shouldEqual "Unable to process argument --exact=11:34 as key --exact and value 11:34"
+
+        count.Value |> shouldEqual 0
