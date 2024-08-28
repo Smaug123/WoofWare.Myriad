@@ -222,7 +222,7 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-      - uses: Smaug123/all-required-checks-complete-action@d0ef051668d922e3591cc7c97156702946437f8d
+      - uses: G-Research/common-actions/check-required-lite@2b7dc49cb14f3344fbe6019c14a31165e258c059
         with:
           needs-context: ${{ toJSON(needs) }}
 
@@ -290,7 +290,7 @@ jobs:
         run: nix develop --command bash -c 'echo "dotnet=$(which dotnet)" >> $GITHUB_OUTPUT'
       - name: Publish to NuGet
         id: publish-success
-        uses: Smaug123/publish-nuget-action@76df889166633c2dc613560c092882aabe260df0
+        uses: G-Research/common-actions/publish-nuget@2b7dc49cb14f3344fbe6019c14a31165e258c059
         with:
           package-name: WoofWare.Myriad.Plugins.Attributes
           nuget-key: ${{ secrets.NUGET_API_KEY }}
@@ -323,7 +323,7 @@ jobs:
         run: nix develop --command bash -c 'echo "dotnet=$(which dotnet)" >> $GITHUB_OUTPUT'
       - name: Publish to NuGet
         id: publish-success
-        uses: Smaug123/publish-nuget-action@76df889166633c2dc613560c092882aabe260df0
+        uses: G-Research/common-actions/publish-nuget@2b7dc49cb14f3344fbe6019c14a31165e258c059
         with:
           package-name: WoofWare.Myriad.Plugins
           nuget-key: ${{ secrets.NUGET_API_KEY }}
