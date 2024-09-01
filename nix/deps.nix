@@ -43,8 +43,8 @@
   })
   (fetchNuGet {
     pname = "FSharp.Core";
-    version = "8.0.301";
-    hash = "sha256-LyP+zHxXFNksSQ/ExQ9CGkQYGvld8W6JNmxMg6lTRCs=";
+    version = "8.0.400";
+    hash = "sha256-wlrcAjjvI5YtnHR7kFH8uRUA4GomJYmqr41K5LYjCGs=";
   })
   (fetchNuGet {
     pname = "FsUnit";
@@ -53,28 +53,28 @@
   })
   (fetchNuGet {
     pname = "Microsoft.AspNetCore.App.Ref";
-    version = "6.0.32";
-    hash = "sha256-1mQTxwruzhm20YdlZefrYuy7xrBs17pH4Vo0K3Tl7Fc=";
+    version = "6.0.33";
+    hash = "sha256-GcPiO+iI0JsHYlqURAmzWjOnDX2jDCUY4jYaIwr8ojs=";
   })
   (fetchNuGet {
     pname = "Microsoft.AspNetCore.App.Runtime.linux-arm64";
-    version = "6.0.32";
-    hash = "sha256-cIe0F+7rgwYSmh0VuFuQsUI9iEW5hn2KCD2H8Cs/k2g=";
+    version = "6.0.33";
+    hash = "sha256-g5zbB1DnCSKuCOWtF09GEqGn1uJLdlTN6kqdnSCzRjQ=";
   })
   (fetchNuGet {
     pname = "Microsoft.AspNetCore.App.Runtime.linux-x64";
-    version = "6.0.32";
-    hash = "sha256-TkYv7h9NBr3I+FIaXeLU4MawJtgT2RWhs35ewGRDKx8=";
+    version = "6.0.33";
+    hash = "sha256-ToaiqVy5qonomAVBg5PO1GgrPKL4Cc1BZTJ0z/2LquA=";
   })
   (fetchNuGet {
     pname = "Microsoft.AspNetCore.App.Runtime.osx-arm64";
-    version = "6.0.32";
-    hash = "sha256-RaC37ZQcJn7ykXJrtV7ibxh0GcalRyPKncxlqOLou+I=";
+    version = "6.0.33";
+    hash = "sha256-OY/vdqAzZ99I4lEZbOOQw12TE0AIb5pXxKTvDxO2M2Q=";
   })
   (fetchNuGet {
     pname = "Microsoft.AspNetCore.App.Runtime.osx-x64";
-    version = "6.0.32";
-    hash = "sha256-vh/e46xM/HbhbBvL5eP5/DCHwCP2Bg7WoMS28nBXWV0=";
+    version = "6.0.33";
+    hash = "sha256-53MAV3RO1kXzy5IpdZDZIOhoUzFqWHn7+A3aWwdTONQ=";
   })
   (fetchNuGet {
     pname = "Microsoft.CodeCoverage";
@@ -88,48 +88,48 @@
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.App.Host.linux-arm64";
-    version = "6.0.32";
-    hash = "sha256-yDOkSHEGuGG6u+rB5u+IC3rc2tQwvbjdqmgHcl7Gkn4=";
+    version = "6.0.33";
+    hash = "sha256-rwWOpf2Pdg84c8bKIUcMYuDTI0kXUELL/nl9psSmX+E=";
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.App.Host.linux-x64";
-    version = "6.0.32";
-    hash = "sha256-2aDGkn0QqXXHUUSAwtQQbjKl5I6S0fcQWPciqPnOiM4=";
+    version = "6.0.33";
+    hash = "sha256-5iYNZATXOePDsLA9lI80o1Gjxw4E+B4bJbwdYJJHcZY=";
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.App.Host.osx-arm64";
-    version = "6.0.32";
-    hash = "sha256-n6hks4j88TRelq1O6SCeUH5GmxoSm5BWXGwnpnYJibI=";
+    version = "6.0.33";
+    hash = "sha256-k3LenomOlacyzq4FlBY/TwV7+ClbK4U0A/O9r0pZHT4=";
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.App.Host.osx-x64";
-    version = "6.0.32";
-    hash = "sha256-nBBq4RYAgimBYOn/bN6JTFvJFYaqYXMHae2pmCzRaS8=";
+    version = "6.0.33";
+    hash = "sha256-tu72AwDH1+oAIXjOJcNbeyKm1s4pncYp0avbMSBrcJQ=";
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.App.Ref";
-    version = "6.0.32";
-    hash = "sha256-Fm3RUZNcro434rIu3c7unGviGeGBjXj2dGnr2mmrM2g=";
+    version = "6.0.33";
+    hash = "sha256-BiGUcXo1FQTlZdR6ndhUQ8lrYG3KaGXNXRVF+Fc3L28=";
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.App.Runtime.linux-arm64";
-    version = "6.0.32";
-    hash = "sha256-kdj8ia/2du2oKGg4MJdO2XytpT3gQ9UOiHVCyfiX2V8=";
+    version = "6.0.33";
+    hash = "sha256-obRKiJEVpZ5E3TE7q2oHaYwFYhI23rMiHwp+8ORkwXY=";
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.App.Runtime.linux-x64";
-    version = "6.0.32";
-    hash = "sha256-/Hti30Ba12NDJQcG8pFTg6REVUDIrxZ/hRtEZNDlgxE=";
+    version = "6.0.33";
+    hash = "sha256-2xdhvnKsFc8utDWN09zeXzZ5op+WUqkoWLuzdtQAkrA=";
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.App.Runtime.osx-arm64";
-    version = "6.0.32";
-    hash = "sha256-A8MFGOMXFROH1QGUE7xzq5b5EskDyIQCQt7SLfGdSbU=";
+    version = "6.0.33";
+    hash = "sha256-9KHubWicibZOcixiByzuBKPnJM2u5DSQC9jR3MAR1bI=";
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.App.Runtime.osx-x64";
-    version = "6.0.32";
-    hash = "sha256-y5YB62WlMrK10bR/+nNpI8luVRlD9W9ZG3GsX7AXzUM=";
+    version = "6.0.33";
+    hash = "sha256-smh6SiTtCAuFglqWrXiGGsoIDP9dhGuIKdYjmw+xCyY=";
   })
   (fetchNuGet {
     pname = "Microsoft.NETCore.Platforms";
