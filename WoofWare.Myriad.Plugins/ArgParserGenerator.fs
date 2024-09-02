@@ -6,7 +6,6 @@ open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
 open Fantomas.FCS.Xml
 open Myriad.Core
-open TypeEquality
 
 type internal ArgParserOutputSpec =
     {
@@ -57,49 +56,6 @@ type private ParserSpec =
 type private ArgToParse =
     | Positional of ParseFunction
     | NonPositional of ParseFunction
-
-type private HasPositional = HasPositional
-type private HasNoPositional = HasNoPositional
-
-[<RequireQualifiedAccess>]
-type private ParseTree<'hasPositional> =
-    | NonPositionalLeaf of ParseFunction * Teq<'hasPositional, HasNoPositional>
-    | PositionalLeaf of ParseFunction * Teq<'hasPositional, HasPositional>
-    | Branch of ParseTree<HasNoPositional> list * assemble : SynExpr * Teq<'hasPositional, HasNoPositional>
-    | BranchPos of ParseTree<HasPositional> * ParseTree<HasNoPositional> list * assemble : SynExpr * Teq<'hasPositional, HasPositional>
-
-type private ParseTreeEval<'ret> =
-    abstract Eval<'a> : ParseTree<'a> -> 'ret
-type private ParseTreeCrate =
-    abstract Apply<'ret> : ParseTreeEval<'ret> -> 'ret
-
-[<RequireQualifiedAccess>]
-module private ParseTreeCrate =
-    let make<'a> (p : ParseTree<'a>) =
-        { new ParseTreeCrate with
-            member _.Apply a = a.Eval p
-        }
-
-[<RequireQualifiedAccess>]
-module private ParseTree =
-    type State =
-        | Positional of ParseTree<HasPositional> * ParseTree<HasNoPositional> list
-        | Positional of ParseTree<HasNoPositional> list
-
-    let branch (subs : ParseTreeCrate list) : ParseTreeCrate =
-        let rec go (acc : ParseTree)
-        match subs with
-        | [] -> failwith "no empty parse trees are allowed"
-        | head :: tail ->
-            { new ParseTreeEval<_> with
-                member _.Eval tree =
-                    match tree with
-                    | ParseTree.NonPositionalLeaf(fn, teq) -> failwith "todo"
-                    | ParseTree.PositionalLeaf(fn, teq) -> failwith "todo"
-                    | ParseTree.Branch(trees, assemble, teq) -> failwith "todo"
-                    | ParseTree.BranchPos(tree, trees, assemble, teq) -> failwith "todo"
-            }
-            |> head.Apply
 
 [<RequireQualifiedAccess>]
 module internal ArgParserGenerator =
@@ -298,14 +254,14 @@ module internal ArgParserGenerator =
             | Accumulation.Required -> parseElt, Accumulation.List, childTy
         | _ -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
-    let rec private toParseSpec (ambientRecords : RecordType list) (finalRecord : RecordType) : ParserSpec =
+    let private toParseSpec (finalRecord : RecordType) : ParserSpec =
         finalRecord.Fields
         |> List.iter (fun (SynField.SynField (isStatic = isStatic)) ->
             if isStatic then
                 failwith "No static record fields allowed in ArgParserGenerator"
         )
 
-        let args : ParseTreeCrate =
+        let args : ArgToParse list =
             finalRecord.Fields
             |> List.map (fun (SynField.SynField (attrs, _, identOption, fieldType, _, _, _, _, _)) ->
                 let attrs = attrs |> List.collect (fun a -> a.Attributes)
@@ -357,22 +313,6 @@ module internal ArgParserGenerator =
                     | None -> failwith "expected args field to have a name, but it did not"
                     | Some i -> i
 
-                let ambientRecordMatch =
-                    match fieldType with
-                    | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
-                        let target = List.last(id).idText
-                        ambientRecords
-                        |> List.tryFind (fun r -> r.Name.idText = target)
-                    | _ ->
-                        None
-
-                match ambientRecordMatch with
-                | Some ambient ->
-                    // This field has a type we need to obtain from parsing another record.
-                    let subSpec = toParseSpec ambientRecords ambient
-                    failwith ""
-                | None ->
-
                 let parser, accumulation, parseTy = createParseFunction ident attrs fieldType
 
                 match positionalArgAttr with
@@ -388,8 +328,7 @@ module internal ArgParserGenerator =
                             ArgForm = argify ident
                             Help = helpText
                         }
-                        |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
-                        |> ParseTreeCrate.make
+                        |> ArgToParse.Positional
                     | _ -> failwith $"Expected positional arg accumulation type to be List, but it was %O{fieldType}"
                 | None ->
                     {
@@ -401,10 +340,8 @@ module internal ArgParserGenerator =
                         ArgForm = argify ident
                         Help = helpText
                     }
-                    |> fun t -> ParseTree.NonPositionalLeaf (t, Teq.refl)
-                    |> ParseTreeCrate.make
+                    |> ArgToParse.NonPositional
             )
-            |> ParseTreeCrate.make
 
         let positional, nonPositionals =
             let mutable p = None
@@ -631,7 +568,7 @@ module internal ArgParserGenerator =
         (leftoverArgParser : SynExpr)
         : SynBinding
         =
-        /// `go (AwaitingValue arg) args`
+        /// `go (AwaitingValue arg) args
         let recurseValue =
             SynExpr.createIdent "go"
             |> SynExpr.applyTo (
@@ -671,9 +608,9 @@ module internal ArgParserGenerator =
                 argStartsWithDashes
                 (SynExpr.sequential
                     [
-                        SynExpr.createIdent "arg"
-                        |> SynExpr.pipeThroughFunction leftoverArgParser
-                        |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
+                        (SynExpr.createIdent "arg"
+                         |> SynExpr.pipeThroughFunction leftoverArgParser
+                         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ]))
 
                         recurseKey
                     ])
@@ -849,15 +786,15 @@ module internal ArgParserGenerator =
                 SynPat.named "state"
                 |> SynPat.annotateType (SynType.createLongIdent [ parseState ])
                 SynPat.named "args"
-                |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
+                |> SynPat.annotateType (SynType.appPostfix "list" (SynType.string))
             ]
 
         SynBinding.basic [ Ident.create "go" ] args body
         |> SynBinding.withRecursion true
 
     /// Takes a single argument, `args : string list`, and returns something of the type indicated by `recordType`.
-    let createRecordParse (parseState : Ident) (ambientRecords : RecordType list) (recordType : RecordType) : SynExpr =
-        let spec = toParseSpec ambientRecords recordType
+    let createRecordParse (parseState : Ident) (recordType : RecordType) : SynExpr =
+        let spec = toParseSpec recordType
         // For each argument (positional and non-positional), create an accumulator for it.
         let bindings =
             spec.NonPositionals
@@ -1092,13 +1029,10 @@ module internal ArgParserGenerator =
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
         ((taggedType : SynTypeDefn, spec : ArgParserOutputSpec))
-        (allUnionTypes : SynTypeDefn list)
+        (_allUnionTypesTODO : SynTypeDefn list)
         (allRecordTypes : SynTypeDefn list)
         : SynModuleOrNamespace
         =
-        // The type for which we're generating args may refer to any of these records/unions.
-        let allRecordTypes = allRecordTypes |> List.map RecordType.OfRecord
-
         let taggedType = RecordType.OfRecord taggedType
 
         let modAttrs, modName =
@@ -1152,7 +1086,7 @@ module internal ArgParserGenerator =
                 |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
 
             let parsePrime =
-                createRecordParse parseStateIdent allRecordTypes taggedType
+                createRecordParse parseStateIdent taggedType
                 |> SynBinding.basic
                     [ Ident.create "parse'" ]
                     [
