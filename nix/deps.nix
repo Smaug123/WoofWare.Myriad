@@ -326,9 +326,4 @@
     version = "7.0.3";
     hash = "sha256-aSJZ17MjqaZNQkprfxm/09LaCoFtpdWmqU9BTROzWX4=";
   })
-  (fetchNuGet {
-    pname = "TypeEquality";
-    version = "0.3.0";
-    hash = "sha256-V50xAOzzyUJrY+MYPRxtnqW5MVeATXCes89wPprv1r4=";
-  })
 ]
