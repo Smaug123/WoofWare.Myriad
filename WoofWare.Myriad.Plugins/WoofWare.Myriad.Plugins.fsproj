@@ -21,6 +21,7 @@
     <PackageReference Include="Myriad.Core" Version="0.8.3" />
     <!-- the lowest version allowed by Myriad.Core -->
     <PackageReference Update="FSharp.Core" Version="6.0.1" PrivateAssets="all"/>
+    <PackageReference Include="TypeEquality" Version="0.3.0" />
   </ItemGroup>
 
   <ItemGroup>
