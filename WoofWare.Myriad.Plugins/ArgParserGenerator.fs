@@ -60,6 +60,11 @@ type private ArgToParse =
 type private HasPositional = HasPositional
 type private HasNoPositional = HasNoPositional
 
+[<AutoOpen>]
+module private TeqUtils =
+    let exFalso<'a> (_ : Teq<HasNoPositional, HasPositional>) : 'a = failwith "LOGIC ERROR!"
+    let exFalso'<'a> (_ : Teq<HasPositional, HasNoPositional>) : 'a = failwith "LOGIC ERROR!"
+
 [<RequireQualifiedAccess>]
 type private ParseTree<'hasPositional> =
     | NonPositionalLeaf of ParseFunction * Teq<'hasPositional, HasNoPositional>
@@ -137,46 +142,45 @@ module private ParseTree =
 
         go None ([], None) subs
 
+    let rec accumulatorsNonPos (tree : ParseTree<HasNoPositional>) : ParseFunction list =
+        match tree with
+        | ParseTree.PositionalLeaf (_, teq) -> exFalso teq
+        | ParseTree.BranchPos (_, _, _, _, teq) -> exFalso teq
+        | ParseTree.NonPositionalLeaf (pf, _) -> [ pf ]
+        | ParseTree.Branch (trees, _, _) -> trees |> List.collect (snd >> accumulatorsNonPos)
+
+    /// Returns the positional arg separately.
+    let rec accumulatorsPos (tree : ParseTree<HasPositional>) : ParseFunction list * ParseFunction =
+        match tree with
+        | ParseTree.PositionalLeaf (pf, _) -> [], pf
+        | ParseTree.NonPositionalLeaf (_, teq) -> exFalso' teq
+        | ParseTree.Branch (_, _, teq) -> exFalso' teq
+        | ParseTree.BranchPos (_, tree, trees, _, _) ->
+            let nonPos = trees |> List.collect (snd >> accumulatorsNonPos)
+
+            let nonPos2, pos = accumulatorsPos tree
+            nonPos @ nonPos2, pos
+
     /// Collect all the ParseFunctions which are necessary to define variables, throwing away
     /// all information relevant to composing the resulting variables into records.
     /// Returns the list of non-positional parsers, and any positional parser that exists.
-    let rec accumulators<'a> (tree : ParseTree<'a>) : ParseFunction list * ParseFunction option =
+    let accumulators<'a> (tree : ParseTree<'a>) : ParseFunction list * ParseFunction option =
+        // Sad duplication of some code here, but it was the easiest way to make it type-safe :(
         match tree with
         | ParseTree.PositionalLeaf (pf, _) -> [], Some pf
         | ParseTree.NonPositionalLeaf (pf, _) -> [ pf ], None
-        | ParseTree.Branch (trees, _, _) ->
-            trees
-            |> List.map (snd >> accumulators)
-            |> List.reduce (fun (nonPos, pos) (nonPos2, pos2) ->
-                match pos, pos2 with
-                | None, _ -> nonPos @ nonPos2, pos2
-                | Some pos, None -> nonPos @ nonPos2, Some pos
-                | Some _, Some _ ->
-                    // TODO: make this type-safe
-                    failwith "Logic error: ParseTree shouldn't contain multiple positionals"
-            )
+        | ParseTree.Branch (trees, _, _) -> trees |> List.collect (snd >> accumulatorsNonPos) |> (fun i -> i, None)
         | ParseTree.BranchPos (_, tree, trees, _, _) ->
-            let nonPos =
-                trees
-                |> List.map (snd >> accumulators)
-                |> List.collect (fun (pf, pos) ->
-                    match pos with
-                    | Some _ ->
-                        // TODO: make this type-safe
-                        failwith "Logic error: ParseTree shouldn't contain multiple positionals"
-                    | None -> pf
-                )
+            let nonPos = trees |> List.collect (snd >> accumulatorsNonPos)
 
-            let nonPos2, pos = accumulators tree
-            nonPos @ nonPos2, pos
+            let nonPos2, pos = accumulatorsPos tree
+            nonPos @ nonPos2, Some pos
 
     /// Build the return value.
     let rec instantiate<'a> (tree : ParseTree<'a>) : SynExpr =
         match tree with
         | ParseTree.NonPositionalLeaf (pf, _) -> SynExpr.createIdent' pf.TargetVariable
-        | ParseTree.PositionalLeaf (pf, _) ->
-            // TODO: test this!
-            SynExpr.createIdent' pf.TargetVariable
+        | ParseTree.PositionalLeaf (pf, _) -> SynExpr.createIdent' pf.TargetVariable
         | ParseTree.Branch (trees, assemble, _) ->
             trees
             |> List.map (fun (fieldName, contents) ->
