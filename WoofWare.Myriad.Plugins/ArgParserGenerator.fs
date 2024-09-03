@@ -129,7 +129,9 @@ module private ParseTree =
                         | ParseTree.BranchPos (_, _, _, _, teq) ->
                             match pos with
                             | None -> go selfIdent (acc, Some (fieldName, Teq.cast (cast teq) t)) subs
-                            | Some pos -> failwith "Multiple entries tried to claim positional args!"
+                            | Some (ident, _) ->
+                                failwith
+                                    $"Multiple entries tried to claim positional args! %s{ident.idText} and %s{fieldName.idText}"
                 }
                 |> sub.Apply
 
@@ -153,7 +155,7 @@ module private ParseTree =
                     // TODO: make this type-safe
                     failwith "Logic error: ParseTree shouldn't contain multiple positionals"
             )
-        | ParseTree.BranchPos (_, tree, trees, _, teq) ->
+        | ParseTree.BranchPos (_, tree, trees, _, _) ->
             let nonPos =
                 trees
                 |> List.map (snd >> accumulators)
@@ -194,18 +196,6 @@ module private ParseTree =
             |> Map.ofList
             |> Map.add posField.idText withPos
             |> assemble
-
-// let retPositional =
-//     match pos with
-//     | None -> []
-//     | Some pf ->
-//         [
-//             SynLongIdent.createI pf.TargetVariable, SynExpr.createIdent' pf.TargetVariable
-//         ]
-// nonPos
-// |> List.map (fun pf -> SynLongIdent.createI pf.TargetVariable, SynExpr.createIdent' pf.TargetVariable)
-// |> fun np -> retPositional @ np
-// |> AstHelper.instantiateRecord
 
 [<RequireQualifiedAccess>]
 module internal ArgParserGenerator =
@@ -404,115 +394,128 @@ module internal ArgParserGenerator =
             | Accumulation.Required -> parseElt, Accumulation.List, childTy
         | _ -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
-    let rec private toParseSpec (ambientRecords : RecordType list) (finalRecord : RecordType) : ParseTreeCrate =
+    let rec private toParseSpec
+        (counter : int)
+        (ambientRecords : RecordType list)
+        (finalRecord : RecordType)
+        : ParseTreeCrate * int
+        =
         finalRecord.Fields
         |> List.iter (fun (SynField.SynField (isStatic = isStatic)) ->
             if isStatic then
                 failwith "No static record fields allowed in ArgParserGenerator"
         )
 
-        finalRecord.Fields
-        |> List.map (fun (SynField.SynField (attrs, _, identOption, fieldType, _, _, _, _, _)) ->
-            let attrs = attrs |> List.collect (fun a -> a.Attributes)
+        let counter, contents =
+            ((counter, []), finalRecord.Fields)
+            ||> List.fold (fun (counter, acc) (SynField.SynField (attrs, _, identOption, fieldType, _, _, _, _, _)) ->
+                let attrs = attrs |> List.collect (fun a -> a.Attributes)
 
-            let positionalArgAttr =
-                attrs
-                |> List.tryFind (fun a ->
-                    match (List.last a.TypeName.LongIdent).idText with
-                    | "PositionalArgsAttribute"
-                    | "PositionalArgs" -> true
-                    | _ -> false
-                )
+                let positionalArgAttr =
+                    attrs
+                    |> List.tryFind (fun a ->
+                        match (List.last a.TypeName.LongIdent).idText with
+                        | "PositionalArgsAttribute"
+                        | "PositionalArgs" -> true
+                        | _ -> false
+                    )
 
-            let parseExactModifier =
-                attrs
-                |> List.tryPick (fun a ->
-                    match (List.last a.TypeName.LongIdent).idText with
-                    | "ParseExactAttribute"
-                    | "ParseExact" -> Some a.ArgExpr
+                let parseExactModifier =
+                    attrs
+                    |> List.tryPick (fun a ->
+                        match (List.last a.TypeName.LongIdent).idText with
+                        | "ParseExactAttribute"
+                        | "ParseExact" -> Some a.ArgExpr
+                        | _ -> None
+                    )
+
+                let helpText =
+                    attrs
+                    |> List.tryPick (fun a ->
+                        match (List.last a.TypeName.LongIdent).idText with
+                        | "ArgumentHelpTextAttribute"
+                        | "ArgumentHelpText" -> Some a.ArgExpr
+                        | _ -> None
+                    )
+
+                let helpText =
+                    match parseExactModifier, helpText with
+                    | None, ht -> ht
+                    | Some pe, None ->
+                        SynExpr.createIdent "sprintf"
+                        |> SynExpr.applyTo (SynExpr.CreateConst "[Parse format (.NET): %s]")
+                        |> SynExpr.applyTo pe
+                        |> Some
+                    | Some pe, Some ht ->
+                        SynExpr.createIdent "sprintf"
+                        |> SynExpr.applyTo (SynExpr.CreateConst "%s [Parse format (.NET): %s]")
+                        |> SynExpr.applyTo ht
+                        |> SynExpr.applyTo pe
+                        |> Some
+
+                let ident =
+                    match identOption with
+                    | None -> failwith "expected args field to have a name, but it did not"
+                    | Some i -> i
+
+                let ambientRecordMatch =
+                    match fieldType with
+                    | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
+                        let target = List.last(id).idText
+                        ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
                     | _ -> None
-                )
 
-            let helpText =
-                attrs
-                |> List.tryPick (fun a ->
-                    match (List.last a.TypeName.LongIdent).idText with
-                    | "ArgumentHelpTextAttribute"
-                    | "ArgumentHelpText" -> Some a.ArgExpr
-                    | _ -> None
-                )
+                match ambientRecordMatch with
+                | Some ambient ->
+                    // This field has a type we need to obtain from parsing another record.
+                    let spec, counter = toParseSpec counter ambientRecords ambient
+                    counter, (ident, spec) :: acc
+                | None ->
 
-            let helpText =
-                match parseExactModifier, helpText with
-                | None, ht -> ht
-                | Some pe, None ->
-                    SynExpr.createIdent "sprintf"
-                    |> SynExpr.applyTo (SynExpr.CreateConst "[Parse format (.NET): %s]")
-                    |> SynExpr.applyTo pe
-                    |> Some
-                | Some pe, Some ht ->
-                    SynExpr.createIdent "sprintf"
-                    |> SynExpr.applyTo (SynExpr.CreateConst "%s [Parse format (.NET): %s]")
-                    |> SynExpr.applyTo ht
-                    |> SynExpr.applyTo pe
-                    |> Some
+                let parser, accumulation, parseTy = createParseFunction ident attrs fieldType
 
-            let ident =
-                match identOption with
-                | None -> failwith "expected args field to have a name, but it did not"
-                | Some i -> i
-
-            let ambientRecordMatch =
-                match fieldType with
-                | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
-                    let target = List.last(id).idText
-                    ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
-                | _ -> None
-
-            match ambientRecordMatch with
-            | Some ambient ->
-                // This field has a type we need to obtain from parsing another record.
-                ident, toParseSpec ambientRecords ambient
-            | None ->
-
-            let parser, accumulation, parseTy = createParseFunction ident attrs fieldType
-
-            match positionalArgAttr with
-            | Some _ ->
-                match accumulation with
-                | Accumulation.List ->
+                match positionalArgAttr with
+                | Some _ ->
+                    match accumulation with
+                    | Accumulation.List ->
+                        {
+                            FieldName = ident
+                            Parser = parser
+                            TargetVariable = Ident.create $"arg_%i{counter}"
+                            Accumulation = accumulation
+                            TargetType = parseTy
+                            ArgForm = argify ident
+                            Help = helpText
+                        }
+                        |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
+                        |> ParseTreeCrate.make
+                    | _ -> failwith $"Expected positional arg accumulation type to be List, but it was %O{fieldType}"
+                | None ->
                     {
                         FieldName = ident
                         Parser = parser
-                        TargetVariable = ident
+                        TargetVariable = Ident.create $"arg_%i{counter}"
                         Accumulation = accumulation
                         TargetType = parseTy
                         ArgForm = argify ident
                         Help = helpText
                     }
-                    |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
+                    |> fun t -> ParseTree.NonPositionalLeaf (t, Teq.refl)
                     |> ParseTreeCrate.make
-                | _ -> failwith $"Expected positional arg accumulation type to be List, but it was %O{fieldType}"
-            | None ->
-                {
-                    FieldName = ident
-                    Parser = parser
-                    TargetVariable = ident
-                    Accumulation = accumulation
-                    TargetType = parseTy
-                    ArgForm = argify ident
-                    Help = helpText
-                }
-                |> fun t -> ParseTree.NonPositionalLeaf (t, Teq.refl)
-                |> ParseTreeCrate.make
-            |> fun tree -> ident, tree
-        )
-        |> ParseTree.branch (fun args ->
-            args
-            |> Map.toList
-            |> List.map (fun (ident, expr) -> SynLongIdent.create [ Ident.create ident ], expr)
-            |> AstHelper.instantiateRecord
-        )
+                |> fun tree -> counter + 1, (ident, tree) :: acc
+            )
+
+        let tree =
+            contents
+            |> List.rev
+            |> ParseTree.branch (fun args ->
+                args
+                |> Map.toList
+                |> List.map (fun (ident, expr) -> SynLongIdent.create [ Ident.create ident ], expr)
+                |> AstHelper.instantiateRecord
+            )
+
+        tree, counter
 
     /// let helpText : string = ...
     let private helpText
@@ -944,7 +947,7 @@ module internal ArgParserGenerator =
 
     /// Takes a single argument, `args : string list`, and returns something of the type indicated by `recordType`.
     let createRecordParse (parseState : Ident) (ambientRecords : RecordType list) (recordType : RecordType) : SynExpr =
-        let spec = toParseSpec ambientRecords recordType
+        let spec, _ = toParseSpec 0 ambientRecords recordType
         // For each argument (positional and non-positional), create an accumulator for it.
         let nonPos, pos =
             { new ParseTreeEval<_> with
@@ -1068,7 +1071,7 @@ module internal ArgParserGenerator =
                     let errorMessage =
                         SynExpr.createIdent "sprintf"
                         |> SynExpr.applyTo (SynExpr.CreateConst "Required argument '%s' received no value")
-                        |> SynExpr.applyTo (SynExpr.CreateConst (argify pf.TargetVariable))
+                        |> SynExpr.applyTo (SynExpr.CreateConst pf.ArgForm)
 
                     [
                         SynMatchClause.create
@@ -1300,7 +1303,7 @@ module internal ArgParserGenerator =
         let types =
             Ast.extractTypeDefn ast
             |> List.groupBy (fst >> List.map _.idText >> String.concat ".")
-            |> List.map (fun (_, v) -> fst v.[0], List.collect snd v)
+            |> List.map (fun (_, v) -> fst (List.head v), List.collect snd v)
 
         let opens = AstHelper.extractOpens ast
 
