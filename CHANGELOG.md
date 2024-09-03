@@ -1,5 +1,9 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 2.2.1, WoofWare.Myriad.Plugins.Attributes 3.2.1
+
+New generator: `ArgParser`, a basic reflection-free argument parser.
+
 # WoofWare.Myriad.Plugins 2.1.45, WoofWare.Myriad.Plugins.Attributes 3.1.7
 
 The NuGet packages are now attested to through [GitHub Attestations](https://github.blog/2024-05-02-introducing-artifact-attestations-now-in-public-beta/).
