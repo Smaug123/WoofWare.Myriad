@@ -341,3 +341,83 @@ Input string was not in a correct format. (at arg --exact=11:34)
 Required argument '--exact' received no value"""
 
         count.Value |> shouldEqual 0
+
+    [<Test>]
+    let ``Can consume stacked record without positionals`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        let parsed =
+            ParentRecord.parse' getEnvVar [ "--and-another=true" ; "--thing1=9" ; "--thing2=a thing!" ]
+
+        parsed
+        |> shouldEqual
+            {
+                Child =
+                    {
+                        Thing1 = 9
+                        Thing2 = "a thing!"
+                    }
+                AndAnother = true
+            }
+
+    [<Test>]
+    let ``Can consume stacked record, child has positionals`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        let parsed =
+            ParentRecordChildPos.parse'
+                getEnvVar
+                [ "--and-another=true" ; "--thing1=9" ; "--thing2=some" ; "--thing2=thing" ]
+
+        parsed
+        |> shouldEqual
+            {
+                Child =
+                    {
+                        Thing1 = 9
+                        Thing2 = [ "some" ; "thing" ]
+                    }
+                AndAnother = true
+            }
+
+    [<Test>]
+    let ``Can consume stacked record, child has no positionals, parent has positionals`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        let parsed =
+            ParentRecordSelfPos.parse'
+                getEnvVar
+                [
+                    "--and-another=true"
+                    "--and-another=false"
+                    "--and-another=true"
+                    "--thing1=9"
+                    "--thing2=some"
+                ]
+
+        parsed
+        |> shouldEqual
+            {
+                Child =
+                    {
+                        Thing1 = 9
+                        Thing2 = "some"
+                    }
+                AndAnother = [ true ; false ; true ]
+            }
+
+    [<Test>]
+    let ``Help text for stacked records`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ParentRecordSelfPos.parse' getEnvVar [ "--help" ] |> ignore<ParentRecordSelfPos>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--thing1  int32
+--thing2  string
+--and-another  bool (positional args) (can be repeated)"""

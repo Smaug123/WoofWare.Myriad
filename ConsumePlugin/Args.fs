@@ -117,7 +117,7 @@ type ChildRecordWithPositional =
 [<ArgParser true>]
 type ParentRecordChildPos =
     {
-        Child : ChildRecord
+        Child : ChildRecordWithPositional
         AndAnother : bool
     }
 

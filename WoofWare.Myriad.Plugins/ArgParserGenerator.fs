@@ -62,19 +62,28 @@ type private HasNoPositional = HasNoPositional
 
 [<RequireQualifiedAccess>]
 type private ParseTree<'hasPositional> =
-    | NonPositionalLeaf of selfFieldName : Ident * ParseFunction * Teq<'hasPositional, HasNoPositional>
-    | PositionalLeaf of selfFieldName : Ident * ParseFunction * Teq<'hasPositional, HasPositional>
+    | NonPositionalLeaf of ParseFunction * Teq<'hasPositional, HasNoPositional>
+    | PositionalLeaf of ParseFunction * Teq<'hasPositional, HasPositional>
     /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each `Ident` in
     /// the branch (e.g. each record field name),
     /// and composes them into a `SynExpr` (e.g. the record-typed object).
-    | Branch of selfFieldName : Ident * fields : (Ident * ParseTree<HasNoPositional>) list * assemble : (Map<string, SynExpr> -> SynExpr) * Teq<'hasPositional, HasNoPositional>
+    | Branch of
+        fields : (Ident * ParseTree<HasNoPositional>) list *
+        assemble : (Map<string, SynExpr> -> SynExpr) *
+        Teq<'hasPositional, HasNoPositional>
     /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each `Ident` in
     /// the branch (e.g. each record field name),
     /// and composes them into a `SynExpr` (e.g. the record-typed object).
-    | BranchPos of selfFieldName : Ident * fields : ParseTree<HasPositional> * (Ident * ParseTree<HasNoPositional>) list * assemble : (Map<string, SynExpr> -> SynExpr) * Teq<'hasPositional, HasPositional>
+    | BranchPos of
+        posField : Ident *
+        fields : ParseTree<HasPositional> *
+        (Ident * ParseTree<HasNoPositional>) list *
+        assemble : (Map<string, SynExpr> -> SynExpr) *
+        Teq<'hasPositional, HasPositional>
 
 type private ParseTreeEval<'ret> =
     abstract Eval<'a> : ParseTree<'a> -> 'ret
+
 type private ParseTreeCrate =
     abstract Apply<'ret> : ParseTreeEval<'ret> -> 'ret
 
@@ -94,49 +103,46 @@ module private ParseTree =
 
     let private cast (t : Teq<'a, 'b>) : Teq<ParseTree<'a>, ParseTree<'b>> = Teq.Cong.believeMe t
 
-    let branch (selfIdent : Ident) (assemble : Map<string, SynExpr> -> SynExpr) (subs : ParseTreeCrate list) : ParseTreeCrate =
+    /// The `Ident` here is the field name.
+    let branch (assemble : Map<string, SynExpr> -> SynExpr) (subs : (Ident * ParseTreeCrate) list) : ParseTreeCrate =
         let rec go
-            (selfIdent : Ident)
-            (acc : (Ident * ParseTree<HasNoPositional>) list, pos : ParseTree<HasPositional> option)
-            (subs : ParseTreeCrate list)
+            (selfIdent : Ident option)
+            (acc : (Ident * ParseTree<HasNoPositional>) list, pos : (Ident * ParseTree<HasPositional>) option)
+            (subs : (Ident * ParseTreeCrate) list)
             : ParseTreeCrate
             =
             match subs with
             | [] ->
                 match pos with
-                | None ->
-                    ParseTree.Branch (selfIdent, acc, assemble, Teq.refl)
+                | None -> ParseTree.Branch (List.rev acc, assemble, Teq.refl) |> ParseTreeCrate.make
+                | Some (posField, pos) ->
+                    ParseTree.BranchPos (posField, pos, List.rev acc, assemble, Teq.refl)
                     |> ParseTreeCrate.make
-                | Some pos ->
-                    ParseTree.BranchPos (selfIdent, pos, acc, assemble, Teq.refl)
-                    |> ParseTreeCrate.make
-            | sub :: subs ->
+            | (fieldName, sub) :: subs ->
                 { new ParseTreeEval<_> with
                     member _.Eval (t : ParseTree<'a>) =
                         match t with
-                        | ParseTree.NonPositionalLeaf (childIdent, _, teq)
-                        | ParseTree.Branch (childIdent, _, _, teq) ->
-                            go selfIdent (((childIdent, Teq.cast (cast teq) t) :: acc), pos) subs
-                        | ParseTree.PositionalLeaf (_, _, teq)
+                        | ParseTree.NonPositionalLeaf (_, teq)
+                        | ParseTree.Branch (_, _, teq) ->
+                            go selfIdent (((fieldName, Teq.cast (cast teq) t) :: acc), pos) subs
+                        | ParseTree.PositionalLeaf (_, teq)
                         | ParseTree.BranchPos (_, _, _, _, teq) ->
                             match pos with
-                            | None ->
-                                go selfIdent (acc, Some (Teq.cast (cast teq) t)) subs
-                            | Some pos ->
-                                failwith "Multiple entries tried to claim positional args!"
+                            | None -> go selfIdent (acc, Some (fieldName, Teq.cast (cast teq) t)) subs
+                            | Some pos -> failwith "Multiple entries tried to claim positional args!"
                 }
                 |> sub.Apply
 
-        go selfIdent ([], None) subs
+        go None ([], None) subs
 
     /// Collect all the ParseFunctions which are necessary to define variables, throwing away
     /// all information relevant to composing the resulting variables into records.
     /// Returns the list of non-positional parsers, and any positional parser that exists.
     let rec accumulators<'a> (tree : ParseTree<'a>) : ParseFunction list * ParseFunction option =
         match tree with
-        | ParseTree.PositionalLeaf(_, pf, _) -> [], Some pf
-        | ParseTree.NonPositionalLeaf(_, pf, _) -> [pf], None
-        | ParseTree.Branch(_, trees, _, teq) ->
+        | ParseTree.PositionalLeaf (pf, _) -> [], Some pf
+        | ParseTree.NonPositionalLeaf (pf, _) -> [ pf ], None
+        | ParseTree.Branch (trees, _, _) ->
             trees
             |> List.map (snd >> accumulators)
             |> List.reduce (fun (nonPos, pos) (nonPos2, pos2) ->
@@ -147,7 +153,7 @@ module private ParseTree =
                     // TODO: make this type-safe
                     failwith "Logic error: ParseTree shouldn't contain multiple positionals"
             )
-        | ParseTree.BranchPos(_, tree, trees, _, teq) ->
+        | ParseTree.BranchPos (_, tree, trees, _, teq) ->
             let nonPos =
                 trees
                 |> List.map (snd >> accumulators)
@@ -158,56 +164,48 @@ module private ParseTree =
                         failwith "Logic error: ParseTree shouldn't contain multiple positionals"
                     | None -> pf
                 )
+
             let nonPos2, pos = accumulators tree
             nonPos @ nonPos2, pos
 
-    /// Build the return value. Returns also the name of the positional field, if one exists.
-    let rec instantiate<'a> (tree : ParseTree<'a>) : SynExpr * Ident option =
+    /// Build the return value.
+    let rec instantiate<'a> (tree : ParseTree<'a>) : SynExpr =
         match tree with
-        | ParseTree.NonPositionalLeaf(_, pf, _) ->
-            SynExpr.createIdent' pf.TargetVariable, None
-        | ParseTree.PositionalLeaf(fieldName, pf, _) ->
+        | ParseTree.NonPositionalLeaf (pf, _) -> SynExpr.createIdent' pf.TargetVariable
+        | ParseTree.PositionalLeaf (pf, _) ->
             // TODO: test this!
-            SynExpr.createIdent' pf.TargetVariable, Some fieldName
-        | ParseTree.Branch(_, trees, assemble, _) ->
+            SynExpr.createIdent' pf.TargetVariable
+        | ParseTree.Branch (trees, assemble, _) ->
             trees
             |> List.map (fun (fieldName, contents) ->
-                // TODO: make this type-safe
-                let instantiated, bad = instantiate contents
-                match bad with
-                | Some i -> failwith "Logic error!"
-                | None -> ()
+                let instantiated = instantiate contents
                 fieldName.idText, instantiated
             )
             |> Map.ofList
             |> assemble
-            |> fun res -> res, None
-        | ParseTree.BranchPos(_, tree, trees, assemble, _) ->
-            let withPos, ident = instantiate tree
-            // TODO: make this type-safe
-            let ident =
-                match ident with
-                | None -> failwith "LOGIC ERROR"
-                | Some i -> i
-            trees
-            |> List.map (fun (fieldName, contents) ->
-                // TODO: make this type-safe
-                let instantiated, bad = instantiate contents
-                match bad with
-                | Some i -> failwith "Logic error!"
-                | None -> ()
-                fieldName.idText, instantiated
-            )
-            // TODO: should this be our own
-            |> fun l -> (ident.idText, withPos) :: l
-            |> Map.ofList
-            |> assemble
-            |> fun res -> res, Some ident
+        | ParseTree.BranchPos (posField, tree, trees, assemble, _) ->
+            let withPos = instantiate tree
 
-        // nonPos
-        // |> List.map (fun pf -> SynLongIdent.createI pf.TargetVariable, SynExpr.createIdent' pf.TargetVariable)
-        // |> fun np -> retPositional @ np
-        // |> AstHelper.instantiateRecord
+            trees
+            |> List.map (fun (fieldName, contents) ->
+                let instantiated = instantiate contents
+                fieldName.idText, instantiated
+            )
+            |> Map.ofList
+            |> Map.add posField.idText withPos
+            |> assemble
+
+// let retPositional =
+//     match pos with
+//     | None -> []
+//     | Some pf ->
+//         [
+//             SynLongIdent.createI pf.TargetVariable, SynExpr.createIdent' pf.TargetVariable
+//         ]
+// nonPos
+// |> List.map (fun pf -> SynLongIdent.createI pf.TargetVariable, SynExpr.createIdent' pf.TargetVariable)
+// |> fun np -> retPositional @ np
+// |> AstHelper.instantiateRecord
 
 [<RequireQualifiedAccess>]
 module internal ArgParserGenerator =
@@ -468,15 +466,13 @@ module internal ArgParserGenerator =
                 match fieldType with
                 | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
                     let target = List.last(id).idText
-                    ambientRecords
-                    |> List.tryFind (fun r -> r.Name.idText = target)
-                | _ ->
-                    None
+                    ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
+                | _ -> None
 
             match ambientRecordMatch with
             | Some ambient ->
                 // This field has a type we need to obtain from parsing another record.
-                toParseSpec ambientRecords ambient
+                ident, toParseSpec ambientRecords ambient
             | None ->
 
             let parser, accumulation, parseTy = createParseFunction ident attrs fieldType
@@ -494,7 +490,7 @@ module internal ArgParserGenerator =
                         ArgForm = argify ident
                         Help = helpText
                     }
-                    |> fun t -> ParseTree.PositionalLeaf (ident, t, Teq.refl)
+                    |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
                     |> ParseTreeCrate.make
                 | _ -> failwith $"Expected positional arg accumulation type to be List, but it was %O{fieldType}"
             | None ->
@@ -507,19 +503,16 @@ module internal ArgParserGenerator =
                     ArgForm = argify ident
                     Help = helpText
                 }
-                |> fun t -> ParseTree.NonPositionalLeaf (ident, t, Teq.refl)
+                |> fun t -> ParseTree.NonPositionalLeaf (t, Teq.refl)
                 |> ParseTreeCrate.make
+            |> fun tree -> ident, tree
         )
-        |> ParseTree.branch
-           (Ident.create "TODO")
-           (fun args ->
-              args
-              |> Map.toList
-              |> List.map (fun (ident, expr) ->
-                  SynLongIdent.create [Ident.create ident], expr
-              )
-              |> AstHelper.instantiateRecord
-           )
+        |> ParseTree.branch (fun args ->
+            args
+            |> Map.toList
+            |> List.map (fun (ident, expr) -> SynLongIdent.create [ Ident.create ident ], expr)
+            |> AstHelper.instantiateRecord
+        )
 
     /// let helpText : string = ...
     let private helpText
@@ -635,10 +628,10 @@ module internal ArgParserGenerator =
             | Accumulation.List ->
                 [
                     SynExpr.createIdent "value"
+                    |> SynExpr.pipeThroughFunction arg.Parser
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.createLongIdent' [ arg.TargetVariable ; Ident.create "Add" ]
                     )
-                    |> SynExpr.applyFunction arg.Parser
                     SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
                 ]
                 |> SynExpr.sequential
@@ -955,8 +948,7 @@ module internal ArgParserGenerator =
         // For each argument (positional and non-positional), create an accumulator for it.
         let nonPos, pos =
             { new ParseTreeEval<_> with
-                member _.Eval tree =
-                    ParseTree.accumulators tree
+                member _.Eval tree = ParseTree.accumulators tree
             }
             |> spec.Apply
 
@@ -1132,14 +1124,6 @@ module internal ArgParserGenerator =
             |> List.singleton
 
         let freezeArgs = freezePositional @ freezeNonPositionalArgs
-
-        let retPositional =
-            match pos with
-            | None -> []
-            | Some pf ->
-                [
-                    SynLongIdent.createI pf.TargetVariable, SynExpr.createIdent' pf.TargetVariable
-                ]
 
         let retValue =
             let happyPath =
@@ -1370,9 +1354,7 @@ module internal ArgParserGenerator =
 
         let modules =
             namespaceAndTypes
-            |> List.map (fun (ns, taggedType, unions, records) ->
-                createModule opens ns taggedType unions records
-            )
+            |> List.map (fun (ns, taggedType, unions, records) -> createModule opens ns taggedType unions records)
 
         Output.Ast modules
 
