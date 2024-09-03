@@ -93,3 +93,38 @@ type DatesAndTimes =
         [<InvariantCulture ; ParseExact @"hh\:mm\:ss">]
         InvariantExact : TimeSpan
     }
+
+type ChildRecord =
+    {
+        Thing1 : int
+        Thing2 : string
+    }
+
+[<ArgParser true>]
+type ParentRecord =
+    {
+        Child : ChildRecord
+        AndAnother : bool
+    }
+
+type ChildRecordWithPositional =
+    {
+        Thing1 : int
+        [<PositionalArgs>]
+        Thing2 : string list
+    }
+
+[<ArgParser true>]
+type ParentRecordChildPos =
+    {
+        Child : ChildRecord
+        AndAnother : bool
+    }
+
+[<ArgParser true>]
+type ParentRecordSelfPos =
+    {
+        Child : ChildRecord
+        [<PositionalArgs>]
+        AndAnother : bool list
+    }

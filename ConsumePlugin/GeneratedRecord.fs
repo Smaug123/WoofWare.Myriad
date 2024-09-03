@@ -12,17 +12,22 @@ module RecordType =
     type Short =
         {
             /// A thing!
-            A : int
+            A: int
             /// Another thing!
-            B : string
+            B: string
             /// Yet another thing!
-            C : float list
+            C: float list
         }
 
     /// Remove the optional members of the input.
-    let shorten (input : RecordType) : Short =
-        {
-            A = input.A |> Option.defaultWith RecordType.DefaultA
-            B = input.B
-            C = input.C
-        }
+    let shorten (input: RecordType) : Short =
+        { A = input.A |> Option.defaultWith RecordType.DefaultA
+          B = input.B
+          C = input.C }
+
+
+
+
+
+
+
