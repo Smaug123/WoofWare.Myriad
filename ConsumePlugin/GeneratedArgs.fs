@@ -40,7 +40,7 @@ module BasicNoPositionals =
         let arg_3 : int ResizeArray = ResizeArray ()
 
         /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         let processKeyValue (key : string) (value : string) : Result<unit, string option> =
             if System.String.Equals (key, "--rest", System.StringComparison.OrdinalIgnoreCase) then
@@ -240,7 +240,7 @@ module Basic =
         let mutable arg_2 : bool option = None
 
         /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         let processKeyValue (key : string) (value : string) : Result<unit, string option> =
             if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
@@ -425,7 +425,7 @@ module BasicWithIntPositionals =
         let mutable arg_2 : bool option = None
 
         /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         let processKeyValue (key : string) (value : string) : Result<unit, string option> =
             if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
@@ -636,7 +636,7 @@ module LoadsOfTypes =
         let mutable arg_10 : string option = None
 
         /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         let processKeyValue (key : string) (value : string) : Result<unit, string option> =
             if
@@ -1010,7 +1010,7 @@ module LoadsOfTypesNoPositionals =
         let mutable arg_9 : string option = None
 
         /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         let processKeyValue (key : string) (value : string) : Result<unit, string option> =
             if
@@ -1375,7 +1375,7 @@ module DatesAndTimesArgParse =
             let mutable arg_3 : TimeSpan option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
             let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if System.String.Equals (key, "--invariant-exact", System.StringComparison.OrdinalIgnoreCase) then
@@ -1610,7 +1610,7 @@ module ParentRecordArgParse =
             let mutable arg_2 : bool option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
             let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if System.String.Equals (key, "--and-another", System.StringComparison.OrdinalIgnoreCase) then
@@ -1810,7 +1810,7 @@ module ParentRecordChildPosArgParse =
             let mutable arg_0 : int option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
             let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if System.String.Equals (key, "--thing1", System.StringComparison.OrdinalIgnoreCase) then
@@ -1981,7 +1981,7 @@ module ParentRecordSelfPosArgParse =
             let mutable arg_1 : string option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
             let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if System.String.Equals (key, "--thing2", System.StringComparison.OrdinalIgnoreCase) then

@@ -661,14 +661,14 @@ module internal ArgParserGenerator =
         |> SynBinding.withXmlDoc (
             [
                 " Processes the key-value pair, returning Error if no key was matched."
-                " If the key is an arg which can arity 1, but throws when consuming that arg, we return Error(<the message>)."
+                " If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>)."
                 " This can nevertheless be a successful parse, e.g. when the key may have arity 0."
             ]
             |> PreXmlDoc.create'
         )
 
     /// `let setFlagValue (key : string) : bool = ...`
-    let private setFlagValue (parseState : Ident) (argParseErrors : Ident) (flags : ParseFunction list) : SynBinding =
+    let private setFlagValue (argParseErrors : Ident) (flags : ParseFunction list) : SynBinding =
         (SynExpr.CreateConst false, flags)
         ||> List.fold (fun finalExpr flag ->
             let multipleErrorMessage =
@@ -1171,7 +1171,7 @@ module internal ArgParserGenerator =
             bindings
             @ [
                 processKeyValue argParseErrors (Option.toList pos @ nonPos)
-                setFlagValue parseState argParseErrors flags
+                setFlagValue argParseErrors flags
                 mainLoop parseState argParseErrors leftoverArgsName leftoverArgsParser
             ]
         )
