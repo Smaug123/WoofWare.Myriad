@@ -263,11 +263,11 @@ module internal JsonSerializeGenerator =
 
     let unionModule (spec : JsonSerializeOutputSpec) (typeName : LongIdent) (cases : SynUnionCase list) =
         let inputArg = Ident.create "input"
-        let fields = cases |> List.map SynUnionCase.extract
+        let fields = cases |> List.map UnionCase.ofSynUnionCase
 
         fields
         |> List.map (fun unionCase ->
-            let propertyName = getPropertyName unionCase.Ident unionCase.Attrs
+            let propertyName = getPropertyName unionCase.Name unionCase.Attributes
 
             let caseNames = unionCase.Fields |> List.mapi (fun i _ -> $"arg%i{i}")
 
@@ -275,7 +275,7 @@ module internal JsonSerializeGenerator =
 
             let pattern =
                 SynPat.LongIdent (
-                    SynLongIdent.create (typeName @ [ unionCase.Ident ]),
+                    SynLongIdent.create (typeName @ [ unionCase.Name ]),
                     None,
                     None,
                     argPats,

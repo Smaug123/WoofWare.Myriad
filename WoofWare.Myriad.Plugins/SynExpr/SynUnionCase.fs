@@ -5,44 +5,24 @@ open Fantomas.FCS.Text.Range
 open Fantomas.FCS.Xml
 open Fantomas.FCS.SyntaxTrivia
 
-type internal UnionCase<'Ident> =
+/// Represents everything you need to know about a union case.
+/// This is generic on whether each field of this case must be named.
+type UnionCase<'ident> =
     {
-        Fields : SynFieldData<'Ident> list
-        Attrs : SynAttribute list
-        Ident : Ident
+        /// The name of the case: e.g. `| Foo of blah` has this being `Foo`.
+        Name : Ident
+        /// Any docstring associated with this case.
+        XmlDoc : PreXmlDoc option
+        /// Any accessibility modifier: e.g. `type Foo = private | Blah`.
+        Access : SynAccess option
+        /// Attributes on the case: for example, `| [<Attr>] Foo of blah`.
+        Attributes : SynAttribute list
+        /// The data contained within the case: for example, `[blah]` in `| Foo of blah`.
+        Fields : SynFieldData<'ident> list
     }
 
 [<RequireQualifiedAccess>]
-module internal UnionCase =
-    let mapIdentFields<'a, 'b> (f : 'a -> 'b) (unionCase : UnionCase<'a>) : UnionCase<'b> =
-        {
-            Fields = unionCase.Fields |> List.map (SynField.mapIdent f)
-            Attrs = unionCase.Attrs
-            Ident = unionCase.Ident
-        }
-
-[<RequireQualifiedAccess>]
 module internal SynUnionCase =
-    let extract (SynUnionCase (attrs, id, caseType, _, _, _, _)) : UnionCase<Ident option> =
-        match caseType with
-        | SynUnionCaseKind.FullType _ -> failwith "WoofWare.Myriad does not support FullType union cases."
-        | SynUnionCaseKind.Fields fields ->
-
-        let fields = fields |> List.map SynField.extract
-
-        let id =
-            match id with
-            | SynIdent.SynIdent (ident, _) -> ident
-
-        // As far as I can tell, there's no way to get any attributes here? :shrug:
-        let attrs = attrs |> List.collect (fun l -> l.Attributes)
-
-        {
-            Fields = fields
-            Attrs = attrs
-            Ident = id
-        }
-
     let create (case : UnionCase<Ident>) : SynUnionCase =
         let fields =
             case.Fields
@@ -63,11 +43,11 @@ module internal SynUnionCase =
             )
 
         SynUnionCase.SynUnionCase (
-            SynAttributes.ofAttrs case.Attrs,
-            SynIdent.SynIdent (case.Ident, None),
+            SynAttributes.ofAttrs case.Attributes,
+            SynIdent.SynIdent (case.Name, None),
             SynUnionCaseKind.Fields fields,
-            PreXmlDoc.Empty,
-            None,
+            case.XmlDoc |> Option.defaultValue PreXmlDoc.Empty,
+            case.Access,
             range0,
             {
                 BarRange = Some range0

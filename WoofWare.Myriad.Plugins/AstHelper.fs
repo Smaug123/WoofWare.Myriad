@@ -72,25 +72,17 @@ type internal RecordType =
     }
 
     /// Parse from the AST.
-    static member OfRecord (record : SynTypeDefn) : RecordType =
-        let sci, sdr, smd, smdo =
-            match record with
-            | SynTypeDefn.SynTypeDefn (sci, sdr, smd, smdo, _, _) -> sci, sdr, smd, smdo
-
-        let synAccessOption, recordFields =
-            match sdr with
-            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (sa, fields, _), _) -> sa, fields
-            | _ -> failwith $"expected a record; got: %+A{record}"
-
+    static member OfRecord
+        (sci : SynComponentInfo)
+        (smd : SynMemberDefns)
+        (access : SynAccess option)
+        (recordFields : SynField list)
+        : RecordType
+        =
         match sci with
-        | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, access, _) ->
-            if access <> synAccessOption then
-                failwith
-                    $"TODO what's happened, two different accessibility modifiers: %O{access} and %O{synAccessOption}"
-
-            match smdo with
-            | Some v -> failwith $"TODO what's happened, got a synMemberDefn of %O{v}"
-            | None -> ()
+        | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, access2, _) ->
+            if access <> access2 then
+                failwith $"TODO what's happened, two different accessibility modifiers: %O{access} and %O{access2}"
 
             {
                 Name = List.last longId
@@ -98,8 +90,85 @@ type internal RecordType =
                 Members = if smd.IsEmpty then None else Some smd
                 XmlDoc = if doc.IsEmpty then None else Some doc
                 Generics = typars
-                Accessibility = synAccessOption
+                Accessibility = access
                 Attributes = attrs |> List.collect (fun l -> l.Attributes)
+            }
+
+/// Methods for manipulating UnionCase.
+[<RequireQualifiedAccess>]
+module UnionCase =
+    /// Construct our structured `UnionCase` from an FCS `SynUnionCase`: extract everything
+    /// we care about from the AST representation.
+    let ofSynUnionCase (case : SynUnionCase) : UnionCase<Ident option> =
+        match case with
+        | SynUnionCase.SynUnionCase (attributes, ident, caseType, xmlDoc, access, _, _) ->
+
+        let ident =
+            match ident with
+            | SynIdent.SynIdent (ident, _) -> ident
+
+        let fields =
+            match caseType with
+            | SynUnionCaseKind.Fields cases -> cases
+            | SynUnionCaseKind.FullType _ -> failwith "unexpected FullType union"
+
+        {
+            Name = ident
+            XmlDoc = if xmlDoc.IsEmpty then None else Some xmlDoc
+            Access = access
+            Attributes = attributes |> List.collect (fun t -> t.Attributes)
+            Fields = fields |> List.map SynField.extract
+        }
+
+    /// Functorial `map`.
+    let mapIdentFields<'a, 'b> (f : 'a -> 'b) (unionCase : UnionCase<'a>) : UnionCase<'b> =
+        {
+            Attributes = unionCase.Attributes
+            Name = unionCase.Name
+            Access = unionCase.Access
+            XmlDoc = unionCase.XmlDoc
+            Fields = unionCase.Fields |> List.map (SynField.mapIdent f)
+        }
+
+/// Everything you need to know about a discriminated union definition.
+type internal UnionType =
+    {
+        /// The name of the DU: for example, `type Foo = | Blah` has this being `Foo`.
+        Name : Ident
+        /// Any additional members which are not union cases.
+        Members : SynMemberDefns option
+        /// Any docstring associated with the DU itself (not its cases).
+        XmlDoc : PreXmlDoc option
+        /// Generic type parameters this DU takes: `type Foo<'a> = | ...`.
+        Generics : SynTyparDecls option
+        /// Attributes of the DU (not its cases): `[<Attr>] type Foo = | ...`
+        Attributes : SynAttribute list
+        /// Accessibility modifier of the DU: `type private Foo = ...`
+        Accessibility : SynAccess option
+        /// The actual DU cases themselves.
+        Cases : UnionCase<Ident option> list
+    }
+
+    static member OfUnion
+        (sci : SynComponentInfo)
+        (smd : SynMemberDefns)
+        (access : SynAccess option)
+        (cases : SynUnionCase list)
+        : UnionType
+        =
+        match sci with
+        | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, access2, _) ->
+            if access <> access2 then
+                failwith $"TODO what's happened, two different accessibility modifiers: %O{access} and %O{access2}"
+
+            {
+                Name = List.last longId
+                Members = if smd.IsEmpty then None else Some smd
+                XmlDoc = if doc.IsEmpty then None else Some doc
+                Generics = typars
+                Attributes = attrs |> List.collect (fun l -> l.Attributes)
+                Accessibility = access
+                Cases = cases |> List.map UnionCase.ofSynUnionCase
             }
 
 /// Anything that is part of an ADT.

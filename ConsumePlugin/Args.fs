@@ -142,3 +142,39 @@ type ContainsBoolEnvVar =
         [<ArgumentDefaultEnvironmentVariable "CONSUMEPLUGIN_THINGS">]
         BoolVar : Choice<bool, bool>
     }
+
+[<RequireQualifiedAccess>]
+module Consts =
+    [<Literal>]
+    let FALSE = false
+
+    [<Literal>]
+    let TRUE = true
+
+type DryRunMode =
+    | [<ArgumentFlag(Consts.FALSE)>] Wet
+    | [<ArgumentFlag true>] Dry
+
+[<ArgParser true>]
+type WithFlagDu =
+    {
+        DryRun : DryRunMode
+    }
+
+[<ArgParser true>]
+type ContainsFlagEnvVar =
+    {
+        // This phrasing is odd, but it's for a test. Nobody's really going to have `--dry-run`
+        // controlled by an env var!
+        [<ArgumentDefaultEnvironmentVariable "CONSUMEPLUGIN_THINGS">]
+        DryRun : Choice<DryRunMode, DryRunMode>
+    }
+
+[<ArgParser true>]
+type ContainsFlagDefaultValue =
+    {
+        [<ArgumentDefaultFunction>]
+        DryRun : Choice<DryRunMode, DryRunMode>
+    }
+
+    static member DefaultDryRun () = DryRunMode.Wet

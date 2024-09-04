@@ -18,7 +18,9 @@ open WoofWare.Myriad.Plugins
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module BasicNoPositionals =
     type private ParseState_BasicNoPositionals =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : BasicNoPositionals =
@@ -96,7 +98,7 @@ module BasicNoPositionals =
                     sprintf "Flag '%s' was supplied multiple times" "--baz" |> ArgParser_errors.Add
                     true
                 | None ->
-                    arg_2 <- Some true
+                    arg_2 <- true |> Some
                     true
             else
                 false
@@ -216,7 +218,9 @@ open WoofWare.Myriad.Plugins
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Basic =
     type private ParseState_Basic =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : Basic =
@@ -296,7 +300,7 @@ module Basic =
                     sprintf "Flag '%s' was supplied multiple times" "--baz" |> ArgParser_errors.Add
                     true
                 | None ->
-                    arg_2 <- Some true
+                    arg_2 <- true |> Some
                     true
             else
                 false
@@ -404,7 +408,9 @@ open WoofWare.Myriad.Plugins
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module BasicWithIntPositionals =
     type private ParseState_BasicWithIntPositionals =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : BasicWithIntPositionals =
@@ -481,7 +487,7 @@ module BasicWithIntPositionals =
                     sprintf "Flag '%s' was supplied multiple times" "--baz" |> ArgParser_errors.Add
                     true
                 | None ->
-                    arg_2 <- Some true
+                    arg_2 <- true |> Some
                     true
             else
                 false
@@ -589,7 +595,9 @@ open WoofWare.Myriad.Plugins
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LoadsOfTypes =
     type private ParseState_LoadsOfTypes =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypes =
@@ -793,7 +801,7 @@ module LoadsOfTypes =
 
                     true
                 | None ->
-                    arg_8 <- Some true
+                    arg_8 <- true |> Some
                     true
             else if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
@@ -801,7 +809,7 @@ module LoadsOfTypes =
                     sprintf "Flag '%s' was supplied multiple times" "--baz" |> ArgParser_errors.Add
                     true
                 | None ->
-                    arg_2 <- Some true
+                    arg_2 <- true |> Some
                     true
             else
                 false
@@ -963,7 +971,9 @@ open WoofWare.Myriad.Plugins
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LoadsOfTypesNoPositionals =
     type private ParseState_LoadsOfTypesNoPositionals =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypesNoPositionals =
@@ -1164,7 +1174,7 @@ module LoadsOfTypesNoPositionals =
 
                     true
                 | None ->
-                    arg_7 <- Some true
+                    arg_7 <- true |> Some
                     true
             else if System.String.Equals (key, "--baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
@@ -1172,7 +1182,7 @@ module LoadsOfTypesNoPositionals =
                     sprintf "Flag '%s' was supplied multiple times" "--baz" |> ArgParser_errors.Add
                     true
                 | None ->
-                    arg_2 <- Some true
+                    arg_2 <- true |> Some
                     true
             else
                 false
@@ -1343,7 +1353,9 @@ open WoofWare.Myriad.Plugins
 [<AutoOpen>]
 module DatesAndTimesArgParse =
     type private ParseState_DatesAndTimes =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
@@ -1587,7 +1599,9 @@ open WoofWare.Myriad.Plugins
 [<AutoOpen>]
 module ParentRecordArgParse =
     type private ParseState_ParentRecord =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
@@ -1665,7 +1679,7 @@ module ParentRecordArgParse =
 
                         true
                     | None ->
-                        arg_2 <- Some true
+                        arg_2 <- true |> Some
                         true
                 else
                     false
@@ -1788,7 +1802,9 @@ open WoofWare.Myriad.Plugins
 [<AutoOpen>]
 module ParentRecordChildPosArgParse =
     type private ParseState_ParentRecordChildPos =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
@@ -1855,7 +1871,7 @@ module ParentRecordChildPosArgParse =
 
                         true
                     | None ->
-                        arg_2 <- Some true
+                        arg_2 <- true |> Some
                         true
                 else
                     false
@@ -1959,7 +1975,9 @@ open WoofWare.Myriad.Plugins
 [<AutoOpen>]
 module ParentRecordSelfPosArgParse =
     type private ParseState_ParentRecordSelfPos =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
@@ -2118,7 +2136,9 @@ open WoofWare.Myriad.Plugins
 [<AutoOpen>]
 module ChoicePositionalsArgParse =
     type private ParseState_ChoicePositionals =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
@@ -2222,7 +2242,9 @@ open WoofWare.Myriad.Plugins
 [<AutoOpen>]
 module ContainsBoolEnvVarArgParse =
     type private ParseState_ContainsBoolEnvVar =
+        /// Ready to consume a key or positional arg
         | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
@@ -2273,7 +2295,7 @@ module ContainsBoolEnvVarArgParse =
 
                         true
                     | None ->
-                        arg_0 <- Some true
+                        arg_0 <- true |> Some
                         true
                 else
                     false
@@ -2376,3 +2398,529 @@ module ContainsBoolEnvVarArgParse =
 
         static member parse (args : string list) : ContainsBoolEnvVar =
             ContainsBoolEnvVar.parse' System.Environment.GetEnvironmentVariable args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type WithFlagDu
+[<AutoOpen>]
+module WithFlagDuArgParse =
+    type private ParseState_WithFlagDu =
+        /// Ready to consume a key or positional arg
+        | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
+        | AwaitingValue of key : string
+
+    /// Extension methods for argument parsing
+    type WithFlagDu with
+
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : WithFlagDu =
+            let ArgParser_errors = ResizeArray ()
+
+            let helpText () =
+                [ (sprintf "--dry-run  bool%s%s" "" "") ] |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : DryRunMode option = None
+
+            /// Processes the key-value pair, returning Error if no key was matched.
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, "--dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf "Argument '%s' was supplied multiple times: %O and %O" "--dry-run" x value
+                        |> ArgParser_errors.Add
+
+                        Ok ()
+                    | None ->
+                        try
+                            arg_0 <-
+                                value
+                                |> (fun x ->
+                                    if System.Boolean.Parse x = Consts.FALSE then
+                                        DryRunMode.Wet
+                                    else
+                                        DryRunMode.Dry
+                                )
+                                |> Some
+
+                            Ok ()
+                        with _ as exc ->
+                            exc.Message |> Some |> Error
+                else
+                    Error None
+
+            /// Returns false if we didn't set a value.
+            let setFlagValue (key : string) : bool =
+                if System.String.Equals (key, "--dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf "Flag '%s' was supplied multiple times" "--dry-run"
+                        |> ArgParser_errors.Add
+
+                        true
+                    | None ->
+                        arg_0 <-
+                            if true = Consts.FALSE then
+                                DryRunMode.Wet
+                            else
+                                DryRunMode.Dry
+                            |> Some
+
+                        true
+                else
+                    false
+
+            let rec go (state : ParseState_WithFlagDu) (args : string list) =
+                match args with
+                | [] ->
+                    match state with
+                    | ParseState_WithFlagDu.AwaitingKey -> ()
+                    | ParseState_WithFlagDu.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | arg :: args ->
+                    match state with
+                    | ParseState_WithFlagDu.AwaitingKey ->
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                            if arg = "--help" then
+                                helpText () |> failwithf "Help text requested.\n%s"
+                            else
+                                let equals = arg.IndexOf (char 61)
+
+                                if equals < 0 then
+                                    args |> go (ParseState_WithFlagDu.AwaitingValue arg)
+                                else
+                                    let key = arg.[0 .. equals - 1]
+                                    let value = arg.[equals + 1 ..]
+
+                                    match processKeyValue key value with
+                                    | Ok () -> go ParseState_WithFlagDu.AwaitingKey args
+                                    | Error None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Error (Some msg) ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_WithFlagDu.AwaitingKey args
+                        else
+                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
+                            go ParseState_WithFlagDu.AwaitingKey args
+                    | ParseState_WithFlagDu.AwaitingValue key ->
+                        match processKeyValue key arg with
+                        | Ok () -> go ParseState_WithFlagDu.AwaitingKey args
+                        | Error exc ->
+                            if setFlagValue key then
+                                go ParseState_WithFlagDu.AwaitingKey (arg :: args)
+                            else
+                                match exc with
+                                | None ->
+                                    failwithf
+                                        "Unable to process supplied arg %s. Help text follows.\n%s"
+                                        key
+                                        (helpText ())
+                                | Some msg -> msg |> ArgParser_errors.Add
+
+            go ParseState_WithFlagDu.AwaitingKey args
+
+            let parser_LeftoverArgs =
+                if 0 = parser_LeftoverArgs.Count then
+                    ()
+                else
+                    parser_LeftoverArgs
+                    |> String.concat " "
+                    |> sprintf "There were leftover args: %s"
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+
+            let arg_0 =
+                match arg_0 with
+                | None ->
+                    sprintf "Required argument '%s' received no value" "--dry-run"
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+                | Some x -> x
+
+            if 0 = ArgParser_errors.Count then
+                {
+                    DryRun = arg_0
+                }
+            else
+                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : WithFlagDu =
+            WithFlagDu.parse' System.Environment.GetEnvironmentVariable args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type ContainsFlagEnvVar
+[<AutoOpen>]
+module ContainsFlagEnvVarArgParse =
+    type private ParseState_ContainsFlagEnvVar =
+        /// Ready to consume a key or positional arg
+        | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
+        | AwaitingValue of key : string
+
+    /// Extension methods for argument parsing
+    type ContainsFlagEnvVar with
+
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ContainsFlagEnvVar =
+            let ArgParser_errors = ResizeArray ()
+
+            let helpText () =
+                [
+                    (sprintf
+                        "--dry-run  bool%s%s"
+                        ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
+                        "")
+                ]
+                |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : DryRunMode option = None
+
+            /// Processes the key-value pair, returning Error if no key was matched.
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, "--dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf "Argument '%s' was supplied multiple times: %O and %O" "--dry-run" x value
+                        |> ArgParser_errors.Add
+
+                        Ok ()
+                    | None ->
+                        try
+                            arg_0 <-
+                                value
+                                |> (fun x ->
+                                    if System.Boolean.Parse x = Consts.FALSE then
+                                        DryRunMode.Wet
+                                    else
+                                        DryRunMode.Dry
+                                )
+                                |> Some
+
+                            Ok ()
+                        with _ as exc ->
+                            exc.Message |> Some |> Error
+                else
+                    Error None
+
+            /// Returns false if we didn't set a value.
+            let setFlagValue (key : string) : bool =
+                if System.String.Equals (key, "--dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf "Flag '%s' was supplied multiple times" "--dry-run"
+                        |> ArgParser_errors.Add
+
+                        true
+                    | None ->
+                        arg_0 <-
+                            if true = Consts.FALSE then
+                                DryRunMode.Wet
+                            else
+                                DryRunMode.Dry
+                            |> Some
+
+                        true
+                else
+                    false
+
+            let rec go (state : ParseState_ContainsFlagEnvVar) (args : string list) =
+                match args with
+                | [] ->
+                    match state with
+                    | ParseState_ContainsFlagEnvVar.AwaitingKey -> ()
+                    | ParseState_ContainsFlagEnvVar.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | arg :: args ->
+                    match state with
+                    | ParseState_ContainsFlagEnvVar.AwaitingKey ->
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                            if arg = "--help" then
+                                helpText () |> failwithf "Help text requested.\n%s"
+                            else
+                                let equals = arg.IndexOf (char 61)
+
+                                if equals < 0 then
+                                    args |> go (ParseState_ContainsFlagEnvVar.AwaitingValue arg)
+                                else
+                                    let key = arg.[0 .. equals - 1]
+                                    let value = arg.[equals + 1 ..]
+
+                                    match processKeyValue key value with
+                                    | Ok () -> go ParseState_ContainsFlagEnvVar.AwaitingKey args
+                                    | Error None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Error (Some msg) ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_ContainsFlagEnvVar.AwaitingKey args
+                        else
+                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
+                            go ParseState_ContainsFlagEnvVar.AwaitingKey args
+                    | ParseState_ContainsFlagEnvVar.AwaitingValue key ->
+                        match processKeyValue key arg with
+                        | Ok () -> go ParseState_ContainsFlagEnvVar.AwaitingKey args
+                        | Error exc ->
+                            if setFlagValue key then
+                                go ParseState_ContainsFlagEnvVar.AwaitingKey (arg :: args)
+                            else
+                                match exc with
+                                | None ->
+                                    failwithf
+                                        "Unable to process supplied arg %s. Help text follows.\n%s"
+                                        key
+                                        (helpText ())
+                                | Some msg -> msg |> ArgParser_errors.Add
+
+            go ParseState_ContainsFlagEnvVar.AwaitingKey args
+
+            let parser_LeftoverArgs =
+                if 0 = parser_LeftoverArgs.Count then
+                    ()
+                else
+                    parser_LeftoverArgs
+                    |> String.concat " "
+                    |> sprintf "There were leftover args: %s"
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+
+            let arg_0 =
+                match arg_0 with
+                | None ->
+                    match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
+                    | null ->
+                        sprintf
+                            "No value was supplied for %s, nor was environment variable %s set"
+                            "--dry-run"
+                            "CONSUMEPLUGIN_THINGS"
+                        |> ArgParser_errors.Add
+
+                        Unchecked.defaultof<_>
+                    | x ->
+                        if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
+                            if true = Consts.FALSE then
+                                DryRunMode.Wet
+                            else
+                                DryRunMode.Dry
+                        else if System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase) then
+                            if false = Consts.FALSE then
+                                DryRunMode.Wet
+                            else
+                                DryRunMode.Dry
+                        else
+                            x
+                            |> (fun x ->
+                                if System.Boolean.Parse x = Consts.FALSE then
+                                    DryRunMode.Wet
+                                else
+                                    DryRunMode.Dry
+                            )
+                    |> Choice2Of2
+                | Some x -> Choice1Of2 x
+
+            if 0 = ArgParser_errors.Count then
+                {
+                    DryRun = arg_0
+                }
+            else
+                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : ContainsFlagEnvVar =
+            ContainsFlagEnvVar.parse' System.Environment.GetEnvironmentVariable args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type ContainsFlagDefaultValue
+[<AutoOpen>]
+module ContainsFlagDefaultValueArgParse =
+    type private ParseState_ContainsFlagDefaultValue =
+        /// Ready to consume a key or positional arg
+        | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
+        | AwaitingValue of key : string
+
+    /// Extension methods for argument parsing
+    type ContainsFlagDefaultValue with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : ContainsFlagDefaultValue
+            =
+            let ArgParser_errors = ResizeArray ()
+
+            let helpText () =
+                [
+                    (sprintf
+                        "--dry-run  bool%s%s"
+                        (match ContainsFlagDefaultValue.DefaultDryRun () with
+                         | DryRunMode.Wet -> if Consts.FALSE = true then "true" else "false"
+                         | DryRunMode.Dry -> if true = true then "true" else "false"
+                         |> sprintf " (default value: %O)")
+                        "")
+                ]
+                |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : DryRunMode option = None
+
+            /// Processes the key-value pair, returning Error if no key was matched.
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, "--dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf "Argument '%s' was supplied multiple times: %O and %O" "--dry-run" x value
+                        |> ArgParser_errors.Add
+
+                        Ok ()
+                    | None ->
+                        try
+                            arg_0 <-
+                                value
+                                |> (fun x ->
+                                    if System.Boolean.Parse x = Consts.FALSE then
+                                        DryRunMode.Wet
+                                    else
+                                        DryRunMode.Dry
+                                )
+                                |> Some
+
+                            Ok ()
+                        with _ as exc ->
+                            exc.Message |> Some |> Error
+                else
+                    Error None
+
+            /// Returns false if we didn't set a value.
+            let setFlagValue (key : string) : bool =
+                if System.String.Equals (key, "--dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf "Flag '%s' was supplied multiple times" "--dry-run"
+                        |> ArgParser_errors.Add
+
+                        true
+                    | None ->
+                        arg_0 <-
+                            if true = Consts.FALSE then
+                                DryRunMode.Wet
+                            else
+                                DryRunMode.Dry
+                            |> Some
+
+                        true
+                else
+                    false
+
+            let rec go (state : ParseState_ContainsFlagDefaultValue) (args : string list) =
+                match args with
+                | [] ->
+                    match state with
+                    | ParseState_ContainsFlagDefaultValue.AwaitingKey -> ()
+                    | ParseState_ContainsFlagDefaultValue.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | arg :: args ->
+                    match state with
+                    | ParseState_ContainsFlagDefaultValue.AwaitingKey ->
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                            if arg = "--help" then
+                                helpText () |> failwithf "Help text requested.\n%s"
+                            else
+                                let equals = arg.IndexOf (char 61)
+
+                                if equals < 0 then
+                                    args |> go (ParseState_ContainsFlagDefaultValue.AwaitingValue arg)
+                                else
+                                    let key = arg.[0 .. equals - 1]
+                                    let value = arg.[equals + 1 ..]
+
+                                    match processKeyValue key value with
+                                    | Ok () -> go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+                                    | Error None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Error (Some msg) ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+                        else
+                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
+                            go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+                    | ParseState_ContainsFlagDefaultValue.AwaitingValue key ->
+                        match processKeyValue key arg with
+                        | Ok () -> go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+                        | Error exc ->
+                            if setFlagValue key then
+                                go ParseState_ContainsFlagDefaultValue.AwaitingKey (arg :: args)
+                            else
+                                match exc with
+                                | None ->
+                                    failwithf
+                                        "Unable to process supplied arg %s. Help text follows.\n%s"
+                                        key
+                                        (helpText ())
+                                | Some msg -> msg |> ArgParser_errors.Add
+
+            go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+
+            let parser_LeftoverArgs =
+                if 0 = parser_LeftoverArgs.Count then
+                    ()
+                else
+                    parser_LeftoverArgs
+                    |> String.concat " "
+                    |> sprintf "There were leftover args: %s"
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+
+            let arg_0 =
+                match arg_0 with
+                | None -> ContainsFlagDefaultValue.DefaultDryRun () |> Choice2Of2
+                | Some x -> Choice1Of2 x
+
+            if 0 = ArgParser_errors.Count then
+                {
+                    DryRun = arg_0
+                }
+            else
+                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : ContainsFlagDefaultValue =
+            ContainsFlagDefaultValue.parse' System.Environment.GetEnvironmentVariable args
