@@ -363,6 +363,7 @@ module internal SynType =
         | DateTimeOffset -> "DateTimeOffset"
         | DateOnly -> "DateOnly"
         | TimeSpan -> "TimeSpan"
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) -> ident |> List.map _.idText |> String.concat "."
         | ty -> failwithf "could not compute human-readable string for type: %O" ty
 
     /// Guess whether the types are equal. We err on the side of saying "no, they're different".
@@ -454,4 +455,11 @@ module internal SynType =
             match ty2 with
             | DateOnly -> true
             | _ -> false
-        | _ -> false
+        | _ ->
+
+        match ty1, ty2 with
+        | SynType.LongIdent (SynLongIdent (ident1, _, _)), SynType.LongIdent (SynLongIdent (ident2, _, _)) ->
+            let ident1 = ident1 |> List.map _.idText
+            let ident2 = ident2 |> List.map _.idText
+            ident1 = ident2
+        | _, _ -> false

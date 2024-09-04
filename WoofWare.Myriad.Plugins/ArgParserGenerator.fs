@@ -28,6 +28,17 @@ type private Accumulation<'choice> =
     | Choice of 'choice
     | List of Accumulation<'choice>
 
+type internal FlagDu =
+    {
+        Name : Ident
+        Case1Name : Ident
+        Case2Name : Ident
+        /// Hopefully this is simply the const bool True or False, but it might e.g. be a literal
+        Case1Arg : SynExpr
+        /// Hopefully this is simply the const bool True or False, but it might e.g. be a literal
+        Case2Arg : SynExpr
+    }
+
 type private ParseFunction<'acc> =
     {
         FieldName : Ident
@@ -242,6 +253,7 @@ module internal ArgParserGenerator =
     /// is the list element.
     let rec private createParseFunction<'choice>
         (choice : ArgumentDefaultSpec option -> 'choice)
+        (flagDus : FlagDu list)
         (fieldName : Ident)
         (attrs : SynAttribute list)
         (ty : SynType)
@@ -334,7 +346,8 @@ module internal ArgParserGenerator =
             Accumulation.Required,
             ty
         | OptionType eltTy ->
-            let parseElt, acc, childTy = createParseFunction choice fieldName attrs eltTy
+            let parseElt, acc, childTy =
+                createParseFunction choice flagDus fieldName attrs eltTy
 
             match acc with
             | Accumulation.Optional ->
@@ -353,7 +366,7 @@ module internal ArgParserGenerator =
                     failwith
                         $"ArgParser was unable to prove types %O{elt1} and %O{elt2} to be equal in a Choice. We require them to be equal."
 
-                let parseElt, acc, childTy = createParseFunction choice fieldName attrs elt1
+                let parseElt, acc, childTy = createParseFunction choice flagDus fieldName attrs elt1
 
                 match acc with
                 | Accumulation.Optional ->
@@ -410,13 +423,42 @@ module internal ArgParserGenerator =
                 failwith
                     $"ArgParser requires Choice to be of the form Choice<'a, 'a>; that is, two arguments, both the same. For field %s{fieldName.idText}, got: %s{elts}"
         | ListType eltTy ->
-            let parseElt, acc, childTy = createParseFunction choice fieldName attrs eltTy
+            let parseElt, acc, childTy =
+                createParseFunction choice flagDus fieldName attrs eltTy
 
             parseElt, Accumulation.List acc, childTy
-        | _ -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
+        | ty ->
+            let flagDu =
+                match ty with
+                | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+                    flagDus
+                    |> List.tryPick (fun du ->
+                        let duName = du.Name.idText
+                        let ident = List.last(ident).idText
+                        if duName = ident then Some du else None
+                    )
+                | _ -> None
+
+            match flagDu with
+            | None -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
+            | Some flagDu ->
+                // Parse as a bool, and then do the `if-then` dance.
+                let parser =
+                    let parsed =
+                        SynExpr.createIdent "x"
+                        |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Boolean" ; "Parse" ])
+
+                    SynExpr.ifThenElse
+                        (SynExpr.equals parsed flagDu.Case1Arg)
+                        (SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case2Name ])
+                        (SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case1Name ])
+                    |> SynExpr.createLambda "x"
+
+                parser, Accumulation.Required, ty
 
     let rec private toParseSpec
         (counter : int)
+        (flagDus : FlagDu list)
         (ambientRecords : RecordType list)
         (finalRecord : RecordType)
         : ParseTreeCrate * int
@@ -489,7 +531,7 @@ module internal ArgParserGenerator =
                 match ambientRecordMatch with
                 | Some ambient ->
                     // This field has a type we need to obtain from parsing another record.
-                    let spec, counter = toParseSpec counter ambientRecords ambient
+                    let spec, counter = toParseSpec counter flagDus ambientRecords ambient
                     counter, (ident, spec) :: acc
                 | None ->
 
@@ -503,7 +545,7 @@ module internal ArgParserGenerator =
                         | None -> ()
 
                     let parser, accumulation, parseTy =
-                        createParseFunction<unit> getChoice ident attrs fieldType
+                        createParseFunction<unit> getChoice flagDus ident attrs fieldType
 
                     match accumulation with
                     | Accumulation.List (Accumulation.List _) ->
@@ -546,7 +588,7 @@ module internal ArgParserGenerator =
                         | Some spec -> spec
 
                     let parser, accumulation, parseTy =
-                        createParseFunction getChoice ident attrs fieldType
+                        createParseFunction getChoice flagDus ident attrs fieldType
 
                     {
                         FieldName = ident
@@ -1059,8 +1101,14 @@ module internal ArgParserGenerator =
         |> SynBinding.withRecursion true
 
     /// Takes a single argument, `args : string list`, and returns something of the type indicated by `recordType`.
-    let createRecordParse (parseState : Ident) (ambientRecords : RecordType list) (recordType : RecordType) : SynExpr =
-        let spec, _ = toParseSpec 0 ambientRecords recordType
+    let createRecordParse
+        (parseState : Ident)
+        (flagDus : FlagDu list)
+        (ambientRecords : RecordType list)
+        (recordType : RecordType)
+        : SynExpr
+        =
+        let spec, _ = toParseSpec 0 flagDus ambientRecords recordType
         // For each argument (positional and non-positional), create an accumulator for it.
         let nonPos, pos =
             { new ParseTreeEval<_> with
@@ -1336,18 +1384,81 @@ module internal ArgParserGenerator =
             ]
         )
 
+    // The type for which we're generating args may refer to any of the supplied records/unions.
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
         ((taggedType : SynTypeDefn, spec : ArgParserOutputSpec))
-        (allUnionTypes : SynTypeDefn list)
-        (allRecordTypes : SynTypeDefn list)
+        (allUnionTypes : UnionType list)
+        (allRecordTypes : RecordType list)
         : SynModuleOrNamespace
         =
-        // The type for which we're generating args may refer to any of these records/unions.
-        let allRecordTypes = allRecordTypes |> List.map RecordType.OfRecord
+        let flagDus =
+            allUnionTypes
+            |> List.choose (fun ty ->
+                match ty.Cases with
+                | [ c1 ; c2 ] ->
+                    match c1.Fields, c2.Fields with
+                    | [], [] ->
+                        let c1Attr =
+                            c1.Attributes
+                            |> List.tryPick (fun attr ->
+                                match attr.TypeName with
+                                | SynLongIdent.SynLongIdent (id, _, _) ->
+                                    match id |> List.last |> _.idText with
+                                    | "ArgumentFlagAttribute"
+                                    | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
+                                    | _ -> None
+                            )
 
-        let taggedType = RecordType.OfRecord taggedType
+                        let c2Attr =
+                            c2.Attributes
+                            |> List.tryPick (fun attr ->
+                                match attr.TypeName with
+                                | SynLongIdent.SynLongIdent (id, _, _) ->
+                                    match id |> List.last |> _.idText with
+                                    | "ArgumentFlagAttribute"
+                                    | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
+                                    | _ -> None
+                            )
+
+                        match c1Attr, c2Attr with
+                        | Some c1Attr, Some c2Attr ->
+                            // Sanity check where possible
+                            match c1Attr, c2Attr with
+                            | SynExpr.Const (SynConst.Bool b1, _), SynExpr.Const (SynConst.Bool b2, _) ->
+                                if b1 = b2 then
+                                    failwith
+                                        "[<ArgumentFlag>] must have opposite argument values on each case in a two-case discriminated union."
+                            | _, _ -> ()
+
+                            {
+                                Name = ty.Name
+                                Case1Name = c1.Name
+                                Case1Arg = c1Attr
+                                Case2Name = c2.Name
+                                Case2Arg = c2Attr
+                            }
+                            |> Some
+                        | Some _, None
+                        | None, Some _ ->
+                            failwith
+                                "[<ArgumentFlag>] must be placed on both cases of a two-case discriminated union, with opposite argument values on each case."
+                        | _, _ -> None
+                    | _, _ ->
+                        failwith "[<ArgumentFlag>] may only be placed on discriminated union members with no data."
+                | _ -> None
+            )
+
+        let taggedType =
+            match taggedType with
+            | SynTypeDefn.SynTypeDefn (sci,
+                                       SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access, fields, _), _),
+                                       smd,
+                                       _,
+                                       _,
+                                       _) -> RecordType.OfRecord sci smd access fields
+            | _ -> failwith "[<ArgParser>] currently only supports being placed on records."
 
         let modAttrs, modName =
             if spec.ExtensionMethods then
@@ -1368,13 +1479,15 @@ module internal ArgParserGenerator =
             [
                 SynUnionCase.create
                     {
-                        Attrs = []
+                        Attributes = []
                         Fields = []
-                        Ident = Ident.create "AwaitingKey"
+                        Name = Ident.create "AwaitingKey"
+                        XmlDoc = Some (PreXmlDoc.create "Ready to consume a key or positional arg")
+                        Access = None
                     }
                 SynUnionCase.create
                     {
-                        Attrs = []
+                        Attributes = []
                         Fields =
                             [
                                 {
@@ -1383,7 +1496,9 @@ module internal ArgParserGenerator =
                                     Type = SynType.string
                                 }
                             ]
-                        Ident = Ident.create "AwaitingValue"
+                        Name = Ident.create "AwaitingValue"
+                        XmlDoc = Some (PreXmlDoc.create "Waiting to receive a value for the key we've already consumed")
+                        Access = None
                     }
             ]
             |> SynTypeDefnRepr.union
@@ -1400,7 +1515,7 @@ module internal ArgParserGenerator =
                 |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
 
             let parsePrime =
-                createRecordParse parseStateIdent allRecordTypes taggedType
+                createRecordParse parseStateIdent flagDus allRecordTypes taggedType
                 |> SynBinding.basic
                     [ Ident.create "parse'" ]
                     [
@@ -1498,12 +1613,12 @@ module internal ArgParserGenerator =
                         (([], [], []), types)
                         ||> List.fold (fun
                                            (unions, records, others)
-                                           (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _) as ty) ->
+                                           (SynTypeDefn.SynTypeDefn (sci, repr, smd, _, _, _) as ty) ->
                             match repr with
-                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union _, _) ->
-                                ty :: unions, records, others
-                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record _, _) ->
-                                unions, ty :: records, others
+                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (access, cases, _), _) ->
+                                UnionType.OfUnion sci smd access cases :: unions, records, others
+                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access, fields, _), _) ->
+                                unions, RecordType.OfRecord sci smd access fields :: records, others
                             | _ -> unions, records, ty :: others
                         )
 

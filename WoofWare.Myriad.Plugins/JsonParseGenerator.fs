@@ -416,11 +416,11 @@ module internal JsonParseGenerator =
     let createUnionMaker (spec : JsonParseOutputSpec) (typeName : LongIdent) (fields : UnionCase<Ident> list) =
         fields
         |> List.map (fun case ->
-            let propertyName = JsonSerializeGenerator.getPropertyName case.Ident case.Attrs
+            let propertyName = JsonSerializeGenerator.getPropertyName case.Name case.Attributes
 
             let body =
                 if case.Fields.IsEmpty then
-                    SynExpr.createLongIdent' (typeName @ [ case.Ident ])
+                    SynExpr.createLongIdent' (typeName @ [ case.Name ])
                 else
                     case.Fields
                     |> List.map (fun field ->
@@ -429,7 +429,7 @@ module internal JsonParseGenerator =
                         createParseRhs options propertyName field.Type
                     )
                     |> SynExpr.tuple
-                    |> SynExpr.applyFunction (SynExpr.createLongIdent' (typeName @ [ case.Ident ]))
+                    |> SynExpr.applyFunction (SynExpr.createLongIdent' (typeName @ [ case.Name ]))
                     |> SynExpr.createLet
                         [
                             SynExpr.index (SynExpr.CreateConst "data") (SynExpr.createIdent "node")
@@ -600,7 +600,7 @@ module internal JsonParseGenerator =
                     | Some i -> i
 
                 cases
-                |> List.map SynUnionCase.extract
+                |> List.map UnionCase.ofSynUnionCase
                 |> List.map (UnionCase.mapIdentFields optionGet)
                 |> createUnionMaker spec ident
             | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Enum (cases, _range), _) ->

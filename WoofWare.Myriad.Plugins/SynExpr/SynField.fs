@@ -5,7 +5,8 @@ open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 
-type internal SynFieldData<'Ident> =
+/// The data needed to reconstitute a single piece of data within a union field, or a single record field.
+type SynFieldData<'Ident> =
     {
         Attrs : SynAttribute list
         Ident : 'Ident

@@ -142,3 +142,25 @@ type ContainsBoolEnvVar =
         [<ArgumentDefaultEnvironmentVariable "CONSUMEPLUGIN_THINGS">]
         BoolVar : Choice<bool, bool>
     }
+
+[<RequireQualifiedAccess>]
+module Consts =
+    [<Literal>]
+    let FALSE = false
+
+type DryRunMode =
+    | [<ArgumentFlag true>] Dry
+    | [<ArgumentFlag(Consts.FALSE)>] Wet
+
+[<ArgParser true>]
+type WithFlagDu =
+    {
+        DryRun : DryRunMode
+    }
+
+[<ArgParser true>]
+type ContainsFlagEnvVar =
+    {
+        [<ArgumentDefaultEnvironmentVariable "CONSUMEPLUGIN_THINGS">]
+        DryRun : Choice<DryRunMode, DryRunMode>
+    }
