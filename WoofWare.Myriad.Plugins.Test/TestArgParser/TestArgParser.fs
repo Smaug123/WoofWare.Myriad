@@ -432,3 +432,30 @@ Required argument '--exact' received no value"""
             {
                 Args = [ Choice1Of2 "a" ; Choice1Of2 "b" ; Choice2Of2 "--c" ; Choice2Of2 "--help" ]
             }
+
+    [<TestCase("1", true)>]
+    [<TestCase("0", false)>]
+    [<TestCase("true", true)>]
+    [<TestCase("false", false)>]
+    [<TestCase("TRUE", true)>]
+    [<TestCase("FALSE", false)>]
+    let ``Bool env vars can be populated`` (envValue : string, boolValue : bool) =
+        let getEnvVar (s : string) =
+            s |> shouldEqual "CONSUMEPLUGIN_THINGS"
+            envValue
+
+        ContainsBoolEnvVar.parse' getEnvVar []
+        |> shouldEqual
+            {
+                BoolVar = Choice2Of2 boolValue
+            }
+
+    [<Test>]
+    let ``Bools can be treated with arity 0`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        ContainsBoolEnvVar.parse' getEnvVar [ "--bool-var" ]
+        |> shouldEqual
+            {
+                BoolVar = Choice1Of2 true
+            }
