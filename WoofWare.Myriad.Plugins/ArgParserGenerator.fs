@@ -1141,6 +1141,36 @@ module internal ArgParserGenerator =
                                 name
                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "getEnvironmentVariable")
 
+                            /// Assumes access to a non-null variable `x` containing the string value.
+                            let parser =
+                                match pf.TargetType with
+                                | PrimitiveType ident when ident |> List.map _.idText = [ "System" ; "Boolean" ] ->
+                                    // We permit environment variables to be populated with 0 and 1 as well.
+                                    SynExpr.ifThenElse
+                                        (SynExpr.applyFunction
+                                            (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                                            (SynExpr.tuple
+                                                [
+                                                    SynExpr.createIdent "x"
+                                                    SynExpr.CreateConst "1"
+                                                    SynExpr.createLongIdent
+                                                        [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                                                ]))
+                                        (SynExpr.ifThenElse
+                                            (SynExpr.applyFunction
+                                                (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                                                (SynExpr.tuple
+                                                    [
+                                                        SynExpr.createIdent "x"
+                                                        SynExpr.CreateConst "0"
+                                                        SynExpr.createLongIdent
+                                                            [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                                                    ]))
+                                            (SynExpr.createIdent "x" |> SynExpr.pipeThroughFunction pf.Parser)
+                                            (SynExpr.CreateConst false))
+                                        (SynExpr.CreateConst true)
+                                | _ -> (SynExpr.createIdent "x" |> SynExpr.pipeThroughFunction pf.Parser)
+
                             let errorMessage =
                                 SynExpr.createIdent "sprintf"
                                 |> SynExpr.applyTo (
@@ -1162,9 +1192,7 @@ module internal ArgParserGenerator =
                                             unchecked
                                         ])
 
-                                SynMatchClause.create
-                                    (SynPat.named "x")
-                                    (SynExpr.createIdent "x" |> SynExpr.pipeThroughFunction pf.Parser)
+                                SynMatchClause.create (SynPat.named "x") parser
                             ]
                             |> SynExpr.createMatch result
                         | ArgumentDefaultSpec.FunctionCall name ->

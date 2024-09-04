@@ -2212,3 +2212,167 @@ module ChoicePositionalsArgParse =
 
         static member parse (args : string list) : ChoicePositionals =
             ChoicePositionals.parse' System.Environment.GetEnvironmentVariable args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type ContainsBoolEnvVar
+[<AutoOpen>]
+module ContainsBoolEnvVarArgParse =
+    type private ParseState_ContainsBoolEnvVar =
+        | AwaitingKey
+        | AwaitingValue of key : string
+
+    /// Extension methods for argument parsing
+    type ContainsBoolEnvVar with
+
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ContainsBoolEnvVar =
+            let ArgParser_errors = ResizeArray ()
+
+            let helpText () =
+                [
+                    (sprintf
+                        "--bool-var  bool%s%s"
+                        ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
+                        "")
+                ]
+                |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : bool option = None
+
+            /// Processes the key-value pair, returning Error if no key was matched.
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, "--bool-var", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf "Argument '%s' was supplied multiple times: %O and %O" "--bool-var" x value
+                        |> ArgParser_errors.Add
+
+                        Ok ()
+                    | None ->
+                        try
+                            arg_0 <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                            Ok ()
+                        with _ as exc ->
+                            exc.Message |> Some |> Error
+                else
+                    Error None
+
+            /// Returns false if we didn't set a value.
+            let setFlagValue (key : string) : bool =
+                if System.String.Equals (key, "--bool-var", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf "Flag '%s' was supplied multiple times" "--bool-var"
+                        |> ArgParser_errors.Add
+
+                        true
+                    | None ->
+                        arg_0 <- Some true
+                        true
+                else
+                    false
+
+            let rec go (state : ParseState_ContainsBoolEnvVar) (args : string list) =
+                match args with
+                | [] ->
+                    match state with
+                    | ParseState_ContainsBoolEnvVar.AwaitingKey -> ()
+                    | ParseState_ContainsBoolEnvVar.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | arg :: args ->
+                    match state with
+                    | ParseState_ContainsBoolEnvVar.AwaitingKey ->
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                            if arg = "--help" then
+                                helpText () |> failwithf "Help text requested.\n%s"
+                            else
+                                let equals = arg.IndexOf (char 61)
+
+                                if equals < 0 then
+                                    args |> go (ParseState_ContainsBoolEnvVar.AwaitingValue arg)
+                                else
+                                    let key = arg.[0 .. equals - 1]
+                                    let value = arg.[equals + 1 ..]
+
+                                    match processKeyValue key value with
+                                    | Ok () -> go ParseState_ContainsBoolEnvVar.AwaitingKey args
+                                    | Error None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Error (Some msg) ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_ContainsBoolEnvVar.AwaitingKey args
+                        else
+                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
+                            go ParseState_ContainsBoolEnvVar.AwaitingKey args
+                    | ParseState_ContainsBoolEnvVar.AwaitingValue key ->
+                        match processKeyValue key arg with
+                        | Ok () -> go ParseState_ContainsBoolEnvVar.AwaitingKey args
+                        | Error exc ->
+                            if setFlagValue key then
+                                go ParseState_ContainsBoolEnvVar.AwaitingKey (arg :: args)
+                            else
+                                match exc with
+                                | None ->
+                                    failwithf
+                                        "Unable to process supplied arg %s. Help text follows.\n%s"
+                                        key
+                                        (helpText ())
+                                | Some msg -> msg |> ArgParser_errors.Add
+
+            go ParseState_ContainsBoolEnvVar.AwaitingKey args
+
+            let parser_LeftoverArgs =
+                if 0 = parser_LeftoverArgs.Count then
+                    ()
+                else
+                    parser_LeftoverArgs
+                    |> String.concat " "
+                    |> sprintf "There were leftover args: %s"
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+
+            let arg_0 =
+                match arg_0 with
+                | None ->
+                    match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
+                    | null ->
+                        sprintf
+                            "No value was supplied for %s, nor was environment variable %s set"
+                            "--bool-var"
+                            "CONSUMEPLUGIN_THINGS"
+                        |> ArgParser_errors.Add
+
+                        Unchecked.defaultof<_>
+                    | x ->
+                        if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
+                            true
+                        else if System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase) then
+                            false
+                        else
+                            x |> (fun x -> System.Boolean.Parse x)
+                    |> Choice2Of2
+                | Some x -> Choice1Of2 x
+
+            if 0 = ArgParser_errors.Count then
+                {
+                    BoolVar = arg_0
+                }
+            else
+                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : ContainsBoolEnvVar =
+            ContainsBoolEnvVar.parse' System.Environment.GetEnvironmentVariable args

@@ -135,3 +135,10 @@ type ChoicePositionals =
         [<PositionalArgs>]
         Args : Choice<string, string> list
     }
+
+[<ArgParser true>]
+type ContainsBoolEnvVar =
+    {
+        [<ArgumentDefaultEnvironmentVariable "CONSUMEPLUGIN_THINGS">]
+        BoolVar : Choice<bool, bool>
+    }
