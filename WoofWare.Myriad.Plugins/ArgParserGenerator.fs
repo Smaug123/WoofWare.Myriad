@@ -176,6 +176,19 @@ module private ParseTree =
             let nonPos2, pos = accumulatorsPos tree
             nonPos @ nonPos2, Some pos
 
+        |> fun (nonPos, pos) ->
+            let duplicateArgs =
+                Option.toList pos @ nonPos
+                |> List.map (fun pf -> pf.ArgForm)
+                |> List.groupBy id
+                |> List.choose (fun (key, v) -> if v.Length > 1 then Some key else None)
+
+            match duplicateArgs with
+            | [] -> nonPos, pos
+            | dups ->
+                let dups = dups |> String.concat " "
+                failwith $"Duplicate args detected! %s{dups}"
+
     /// Build the return value.
     let rec instantiate<'a> (tree : ParseTree<'a>) : SynExpr =
         match tree with
