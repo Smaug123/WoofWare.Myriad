@@ -28,7 +28,7 @@ type private Accumulation =
     | Choice of ArgumentDefaultSpec
     | List
 
-type private ParseFunction =
+type private ParseFunction<'acc> =
     {
         FieldName : Ident
         TargetVariable : Ident
@@ -42,20 +42,19 @@ type private ParseFunction =
         /// If `Accumulation` is `List`, then this is the type of the list *element*; analogously for optionals
         /// and choices and so on.
         TargetType : SynType
-        Accumulation : Accumulation
+        Accumulation : 'acc
     }
+
+type private ParseFunctionPositional = ParseFunction<unit>
+type private ParseFunctionNonPositional = ParseFunction<Accumulation>
 
 type private ParserSpec =
     {
-        NonPositionals : ParseFunction list
+        NonPositionals : ParseFunctionNonPositional list
         /// The variable into which positional arguments will be accumulated.
         /// In this case, the TargetVariable is a `ResizeArray` rather than the usual `option`.
-        Positionals : ParseFunction option
+        Positionals : ParseFunctionPositional option
     }
-
-type private ArgToParse =
-    | Positional of ParseFunction
-    | NonPositional of ParseFunction
 
 type private HasPositional = HasPositional
 type private HasNoPositional = HasNoPositional
@@ -67,8 +66,8 @@ module private TeqUtils =
 
 [<RequireQualifiedAccess>]
 type private ParseTree<'hasPositional> =
-    | NonPositionalLeaf of ParseFunction * Teq<'hasPositional, HasNoPositional>
-    | PositionalLeaf of ParseFunction * Teq<'hasPositional, HasPositional>
+    | NonPositionalLeaf of ParseFunctionNonPositional * Teq<'hasPositional, HasNoPositional>
+    | PositionalLeaf of ParseFunctionPositional * Teq<'hasPositional, HasPositional>
     /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each `Ident` in
     /// the branch (e.g. each record field name),
     /// and composes them into a `SynExpr` (e.g. the record-typed object).
@@ -142,7 +141,7 @@ module private ParseTree =
 
         go None ([], None) subs
 
-    let rec accumulatorsNonPos (tree : ParseTree<HasNoPositional>) : ParseFunction list =
+    let rec accumulatorsNonPos (tree : ParseTree<HasNoPositional>) : ParseFunctionNonPositional list =
         match tree with
         | ParseTree.PositionalLeaf (_, teq) -> exFalso teq
         | ParseTree.BranchPos (_, _, _, _, teq) -> exFalso teq
@@ -150,7 +149,10 @@ module private ParseTree =
         | ParseTree.Branch (trees, _, _) -> trees |> List.collect (snd >> accumulatorsNonPos)
 
     /// Returns the positional arg separately.
-    let rec accumulatorsPos (tree : ParseTree<HasPositional>) : ParseFunction list * ParseFunction =
+    let rec accumulatorsPos
+        (tree : ParseTree<HasPositional>)
+        : ParseFunctionNonPositional list * ParseFunctionPositional
+        =
         match tree with
         | ParseTree.PositionalLeaf (pf, _) -> [], pf
         | ParseTree.NonPositionalLeaf (_, teq) -> exFalso' teq
@@ -164,7 +166,7 @@ module private ParseTree =
     /// Collect all the ParseFunctions which are necessary to define variables, throwing away
     /// all information relevant to composing the resulting variables into records.
     /// Returns the list of non-positional parsers, and any positional parser that exists.
-    let accumulators<'a> (tree : ParseTree<'a>) : ParseFunction list * ParseFunction option =
+    let accumulators<'a> (tree : ParseTree<'a>) : ParseFunctionNonPositional list * ParseFunctionPositional option =
         // Sad duplication of some code here, but it was the easiest way to make it type-safe :(
         match tree with
         | ParseTree.PositionalLeaf (pf, _) -> [], Some pf
@@ -178,8 +180,7 @@ module private ParseTree =
 
         |> fun (nonPos, pos) ->
             let duplicateArgs =
-                Option.toList pos @ nonPos
-                |> List.map (fun pf -> pf.ArgForm)
+                Option.toList (pos |> Option.map _.ArgForm) @ (nonPos |> List.map _.ArgForm)
                 |> List.groupBy id
                 |> List.choose (fun (key, v) -> if v.Length > 1 then Some key else None)
 
@@ -499,7 +500,7 @@ module internal ArgParserGenerator =
                             FieldName = ident
                             Parser = parser
                             TargetVariable = Ident.create $"arg_%i{counter}"
-                            Accumulation = accumulation
+                            Accumulation = ()
                             TargetType = parseTy
                             ArgForm = argify ident
                             Help = helpText
@@ -537,11 +538,36 @@ module internal ArgParserGenerator =
     /// let helpText : string = ...
     let private helpText
         (typeName : Ident)
-        (positional : ParseFunction option)
-        (args : ParseFunction list)
+        (positional : ParseFunctionPositional option)
+        (args : ParseFunctionNonPositional list)
         : SynBinding
         =
-        let toPrintable (prefix : string) (arg : ParseFunction) : SynExpr =
+        let describeNonPositional (acc : Accumulation) : SynExpr =
+            match acc with
+            | Accumulation.Required -> SynExpr.CreateConst ""
+            | Accumulation.Optional -> SynExpr.CreateConst " (optional)"
+            | Accumulation.Choice (ArgumentDefaultSpec.EnvironmentVariable var) ->
+                // We don't print out the default value in case it's a secret. People often pass secrets
+                // through env vars!
+                var
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createIdent "sprintf")
+                        (SynExpr.CreateConst " (default value populated from env var %s)")
+                )
+                |> SynExpr.paren
+            | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall var) ->
+                SynExpr.callMethod var.idText (SynExpr.createIdent' typeName)
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %O)")
+                )
+                |> SynExpr.paren
+            | Accumulation.List -> SynExpr.CreateConst " (can be repeated)"
+
+        let describePositional () =
+            SynExpr.CreateConst " (positional args) (can be repeated)"
+
+        let toPrintable (describe : 'a -> SynExpr) (arg : ParseFunction<'a>) : SynExpr =
             let ty = arg.TargetType |> SynType.toHumanReadableString
 
             let helpText =
@@ -552,31 +578,9 @@ module internal ArgParserGenerator =
                     |> SynExpr.applyTo (SynExpr.paren helpText)
                     |> SynExpr.paren
 
-            let descriptor =
-                match arg.Accumulation with
-                | Accumulation.Required -> SynExpr.CreateConst ""
-                | Accumulation.Optional -> SynExpr.CreateConst " (optional)"
-                | Accumulation.Choice (ArgumentDefaultSpec.EnvironmentVariable var) ->
-                    // We don't print out the default value in case it's a secret. People often pass secrets
-                    // through env vars!
-                    var
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.applyFunction
-                            (SynExpr.createIdent "sprintf")
-                            (SynExpr.CreateConst " (default value populated from env var %s)")
-                    )
-                    |> SynExpr.paren
-                | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall var) ->
-                    SynExpr.callMethod var.idText (SynExpr.createIdent' typeName)
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.applyFunction
-                            (SynExpr.createIdent "sprintf")
-                            (SynExpr.CreateConst " (default value: %O)")
-                    )
-                    |> SynExpr.paren
-                | Accumulation.List -> SynExpr.CreateConst " (can be repeated)"
+            let descriptor = describe arg.Accumulation
 
-            let prefix = $"%s{arg.ArgForm}  %s{ty}%s{prefix}"
+            let prefix = $"%s{arg.ArgForm}  %s{ty}"
 
             SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst (prefix + "%s%s"))
             |> SynExpr.applyTo descriptor
@@ -584,11 +588,11 @@ module internal ArgParserGenerator =
             |> SynExpr.paren
 
         args
-        |> List.map (toPrintable "")
+        |> List.map (toPrintable describeNonPositional)
         |> fun l ->
             match positional with
             | None -> l
-            | Some pos -> l @ [ toPrintable " (positional args)" pos ]
+            | Some pos -> l @ [ toPrintable describePositional pos ]
         |> SynExpr.listLiteral
         |> SynExpr.pipeThroughFunction (
             SynExpr.applyFunction (SynExpr.createLongIdent [ "String" ; "concat" ]) (SynExpr.CreateConst @"\n")
@@ -599,69 +603,97 @@ module internal ArgParserGenerator =
     /// Returns a possible error.
     /// A parse failure might not be fatal (e.g. maybe the input was optionally of arity 0, and we failed to do
     /// the parse because in fact the key decided not to take this argument); in that case we return Error None.
-    let private processKeyValue (argParseErrors : Ident) (args : ParseFunction list) : SynBinding =
-        (SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None"), args)
-        ||> List.fold (fun finalBranch arg ->
-            match arg.Accumulation with
-            | Accumulation.Required
-            | Accumulation.Choice _
-            | Accumulation.Optional ->
-                let multipleErrorMessage =
-                    SynExpr.createIdent "sprintf"
-                    |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %O and %O")
-                    |> SynExpr.applyTo (SynExpr.CreateConst arg.ArgForm)
-                    |> SynExpr.applyTo (SynExpr.createIdent "x")
-                    |> SynExpr.applyTo (SynExpr.createIdent "value")
+    let private processKeyValue
+        (argParseErrors : Ident)
+        (pos : ParseFunctionPositional option)
+        (args : ParseFunctionNonPositional list)
+        : SynBinding
+        =
+        let args =
+            args
+            |> List.map (fun arg ->
+                match arg.Accumulation with
+                | Accumulation.Required
+                | Accumulation.Choice _
+                | Accumulation.Optional ->
+                    let multipleErrorMessage =
+                        SynExpr.createIdent "sprintf"
+                        |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %O and %O")
+                        |> SynExpr.applyTo (SynExpr.CreateConst arg.ArgForm)
+                        |> SynExpr.applyTo (SynExpr.createIdent "x")
+                        |> SynExpr.applyTo (SynExpr.createIdent "value")
 
-                let performAssignment =
+                    let performAssignment =
+                        [
+                            SynExpr.createIdent "value"
+                            |> SynExpr.pipeThroughFunction arg.Parser
+                            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                            |> SynExpr.assign (SynLongIdent.createI arg.TargetVariable)
+
+                            SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                        ]
+                        |> SynExpr.sequential
+
+                    [
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
+                            (SynExpr.sequential
+                                [
+                                    multipleErrorMessage
+                                    |> SynExpr.pipeThroughFunction (
+                                        SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
+                                    )
+                                    SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                                ])
+                        SynMatchClause.create
+                            (SynPat.named "None")
+                            (SynExpr.pipeThroughTryWith
+                                SynPat.anon
+                                (SynExpr.createLongIdent [ "exc" ; "Message" ]
+                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+                                performAssignment)
+                    ]
+                    |> SynExpr.createMatch (SynExpr.createIdent' arg.TargetVariable)
+                | Accumulation.List ->
                     [
                         SynExpr.createIdent "value"
                         |> SynExpr.pipeThroughFunction arg.Parser
-                        |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
-                        |> SynExpr.assign (SynLongIdent.createI arg.TargetVariable)
-
-                        SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                        |> SynExpr.pipeThroughFunction (
+                            SynExpr.createLongIdent' [ arg.TargetVariable ; Ident.create "Add" ]
+                        )
+                        SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
                     ]
                     |> SynExpr.sequential
+                |> fun expr -> arg.ArgForm, expr
+            )
 
-                [
-                    SynMatchClause.create
-                        (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
-                        (SynExpr.sequential
-                            [
-                                multipleErrorMessage
-                                |> SynExpr.pipeThroughFunction (
-                                    SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
-                                )
-                                SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
-                            ])
-                    SynMatchClause.create
-                        (SynPat.named "None")
-                        (SynExpr.pipeThroughTryWith
-                            SynPat.anon
-                            (SynExpr.createLongIdent [ "exc" ; "Message" ]
-                             |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
-                             |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
-                            performAssignment)
-                ]
-                |> SynExpr.createMatch (SynExpr.createIdent' arg.TargetVariable)
-            | Accumulation.List ->
+        let posArg =
+            match pos with
+            | None -> []
+            | Some pos ->
                 [
                     SynExpr.createIdent "value"
-                    |> SynExpr.pipeThroughFunction arg.Parser
+                    |> SynExpr.pipeThroughFunction pos.Parser
                     |> SynExpr.pipeThroughFunction (
-                        SynExpr.createLongIdent' [ arg.TargetVariable ; Ident.create "Add" ]
+                        SynExpr.createLongIdent' [ pos.TargetVariable ; Ident.create "Add" ]
                     )
                     SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
                 ]
                 |> SynExpr.sequential
+                |> fun expr -> pos.ArgForm, expr
+                |> List.singleton
+
+        (SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None"), posArg @ args)
+        ||> List.fold (fun finalBranch (argForm, arg) ->
+            arg
             |> SynExpr.ifThenElse
                 (SynExpr.applyFunction
                     (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
                     (SynExpr.tuple
                         [
                             SynExpr.createIdent "key"
-                            SynExpr.CreateConst arg.ArgForm
+                            SynExpr.CreateConst argForm
                             SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
                         ]))
                 finalBranch
@@ -685,7 +717,7 @@ module internal ArgParserGenerator =
         )
 
     /// `let setFlagValue (key : string) : bool = ...`
-    let private setFlagValue (argParseErrors : Ident) (flags : ParseFunction list) : SynBinding =
+    let private setFlagValue (argParseErrors : Ident) (flags : ParseFunction<'a> list) : SynBinding =
         (SynExpr.CreateConst false, flags)
         ||> List.fold (fun finalExpr flag ->
             let multipleErrorMessage =
@@ -1187,7 +1219,7 @@ module internal ArgParserGenerator =
         |> SynExpr.createLet (
             bindings
             @ [
-                processKeyValue argParseErrors (Option.toList pos @ nonPos)
+                processKeyValue argParseErrors pos nonPos
                 setFlagValue argParseErrors flags
                 mainLoop parseState argParseErrors leftoverArgsName leftoverArgsParser
             ]

@@ -228,8 +228,8 @@ module Basic =
                 (sprintf "--bar  string%s%s" "" "")
                 (sprintf "--baz  bool%s%s" "" "")
                 (sprintf
-                    "--rest  string (positional args)%s%s"
-                    " (can be repeated)"
+                    "--rest  string%s%s"
+                    " (positional args) (can be repeated)"
                     (sprintf " : %s" ("Here's where the rest of the args go")))
             ]
             |> String.concat "\n"
@@ -415,7 +415,7 @@ module BasicWithIntPositionals =
                 (sprintf "--foo  int32%s%s" "" "")
                 (sprintf "--bar  string%s%s" "" "")
                 (sprintf "--baz  bool%s%s" "" "")
-                (sprintf "--rest  int32 (positional args)%s%s" " (can be repeated)" "")
+                (sprintf "--rest  int32%s%s" " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -619,7 +619,7 @@ module LoadsOfTypes =
                     "--yet-another-optional-thing  string%s%s"
                     ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
                     "")
-                (sprintf "--positionals  int32 (positional args)%s%s" " (can be repeated)" "")
+                (sprintf "--positionals  int32%s%s" " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -1801,7 +1801,7 @@ module ParentRecordChildPosArgParse =
                 [
                     (sprintf "--and-another  bool%s%s" "" "")
                     (sprintf "--thing1  int32%s%s" "" "")
-                    (sprintf "--thing2  string (positional args)%s%s" " (can be repeated)" "")
+                    (sprintf "--thing2  string%s%s" " (positional args) (can be repeated)" "")
                 ]
                 |> String.concat "\n"
 
@@ -1972,7 +1972,7 @@ module ParentRecordSelfPosArgParse =
                 [
                     (sprintf "--thing1  int32%s%s" "" "")
                     (sprintf "--thing2  string%s%s" "" "")
-                    (sprintf "--and-another  bool (positional args)%s%s" " (can be repeated)" "")
+                    (sprintf "--and-another  bool%s%s" " (positional args) (can be repeated)" "")
                 ]
                 |> String.concat "\n"
 
