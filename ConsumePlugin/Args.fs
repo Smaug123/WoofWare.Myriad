@@ -111,7 +111,7 @@ type ChildRecordWithPositional =
     {
         Thing1 : int
         [<PositionalArgs>]
-        Thing2 : string list
+        Thing2 : Uri list
     }
 
 [<ArgParser true>]
