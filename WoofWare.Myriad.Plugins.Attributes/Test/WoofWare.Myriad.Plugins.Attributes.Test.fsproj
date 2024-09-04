@@ -1,10 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+      <TargetFramework>net8.0</TargetFramework>
 
-        <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
+      <IsPackable>false</IsPackable>
+      <IsTestProject>true</IsTestProject>
+      <!--
+        Known high severity vulnerability
+        I have not yet seen a single instance where I care about this warning
+      -->
+      <NoWarn>$(NoWarn),NU1903</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
