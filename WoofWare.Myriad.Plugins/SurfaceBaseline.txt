@@ -12,3 +12,26 @@ WoofWare.Myriad.Plugins.JsonSerializeGenerator inherit obj, implements Myriad.Co
 WoofWare.Myriad.Plugins.JsonSerializeGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RemoveOptionsGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.RemoveOptionsGenerator..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.SynFieldData`1 inherit obj
+WoofWare.Myriad.Plugins.SynFieldData`1..ctor [constructor]: (Fantomas.FCS.Syntax.SynAttribute list, 'Ident, Fantomas.FCS.Syntax.SynType)
+WoofWare.Myriad.Plugins.SynFieldData`1.Attrs [property]: [read-only] Fantomas.FCS.Syntax.SynAttribute list
+WoofWare.Myriad.Plugins.SynFieldData`1.get_Attrs [method]: unit -> Fantomas.FCS.Syntax.SynAttribute list
+WoofWare.Myriad.Plugins.SynFieldData`1.get_Ident [method]: unit -> 'Ident
+WoofWare.Myriad.Plugins.SynFieldData`1.get_Type [method]: unit -> Fantomas.FCS.Syntax.SynType
+WoofWare.Myriad.Plugins.SynFieldData`1.Ident [property]: [read-only] 'Ident
+WoofWare.Myriad.Plugins.SynFieldData`1.Type [property]: [read-only] Fantomas.FCS.Syntax.SynType
+WoofWare.Myriad.Plugins.UnionCase inherit obj
+WoofWare.Myriad.Plugins.UnionCase.mapIdentFields [static method]: ('a -> 'b) -> 'a WoofWare.Myriad.Plugins.UnionCase -> 'b WoofWare.Myriad.Plugins.UnionCase
+WoofWare.Myriad.Plugins.UnionCase.ofSynUnionCase [static method]: Fantomas.FCS.Syntax.SynUnionCase -> Fantomas.FCS.Syntax.Ident option WoofWare.Myriad.Plugins.UnionCase
+WoofWare.Myriad.Plugins.UnionCase`1 inherit obj
+WoofWare.Myriad.Plugins.UnionCase`1..ctor [constructor]: (Fantomas.FCS.Syntax.Ident, Fantomas.FCS.Xml.PreXmlDoc option, Fantomas.FCS.Syntax.SynAccess option, Fantomas.FCS.Syntax.SynAttribute list, 'ident WoofWare.Myriad.Plugins.SynFieldData list)
+WoofWare.Myriad.Plugins.UnionCase`1.Access [property]: [read-only] Fantomas.FCS.Syntax.SynAccess option
+WoofWare.Myriad.Plugins.UnionCase`1.Attributes [property]: [read-only] Fantomas.FCS.Syntax.SynAttribute list
+WoofWare.Myriad.Plugins.UnionCase`1.Fields [property]: [read-only] 'ident WoofWare.Myriad.Plugins.SynFieldData list
+WoofWare.Myriad.Plugins.UnionCase`1.get_Access [method]: unit -> Fantomas.FCS.Syntax.SynAccess option
+WoofWare.Myriad.Plugins.UnionCase`1.get_Attributes [method]: unit -> Fantomas.FCS.Syntax.SynAttribute list
+WoofWare.Myriad.Plugins.UnionCase`1.get_Fields [method]: unit -> 'ident WoofWare.Myriad.Plugins.SynFieldData list
+WoofWare.Myriad.Plugins.UnionCase`1.get_Name [method]: unit -> Fantomas.FCS.Syntax.Ident
+WoofWare.Myriad.Plugins.UnionCase`1.get_XmlDoc [method]: unit -> Fantomas.FCS.Xml.PreXmlDoc option
+WoofWare.Myriad.Plugins.UnionCase`1.Name [property]: [read-only] Fantomas.FCS.Syntax.Ident
+WoofWare.Myriad.Plugins.UnionCase`1.XmlDoc [property]: [read-only] Fantomas.FCS.Xml.PreXmlDoc option

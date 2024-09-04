@@ -6,10 +6,16 @@ open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 
 /// The data needed to reconstitute a single piece of data within a union field, or a single record field.
+/// This is generic on whether the field is identified. For example, in `type Foo = Blah of int`, the `int`
+/// field is not identified; whereas in `type Foo = Blah of baz : int`, it is identified.
 type SynFieldData<'Ident> =
     {
+        /// Attributes on this field. I think you can only get these if this is a *record* field.
         Attrs : SynAttribute list
+        /// The identifier of this field (see docstring for SynFieldData).
         Ident : 'Ident
+        /// The type of the data contained in this field. For example, `type Foo = { Blah : int }`
+        /// has this being `int`.
         Type : SynType
     }
 

@@ -5,13 +5,19 @@ open Fantomas.FCS.Text.Range
 open Fantomas.FCS.Xml
 open Fantomas.FCS.SyntaxTrivia
 
+/// Represents everything you need to know about a union case.
 /// This is generic on whether each field of this case must be named.
 type UnionCase<'ident> =
     {
+        /// The name of the case: e.g. `| Foo of blah` has this being `Foo`.
         Name : Ident
+        /// Any docstring associated with this case.
         XmlDoc : PreXmlDoc option
+        /// Any accessibility modifier: e.g. `type Foo = private | Blah`.
         Access : SynAccess option
+        /// Attributes on the case: for example, `| [<Attr>] Foo of blah`.
         Attributes : SynAttribute list
+        /// The data contained within the case: for example, `[blah]` in `| Foo of blah`.
         Fields : SynFieldData<'ident> list
     }
 
