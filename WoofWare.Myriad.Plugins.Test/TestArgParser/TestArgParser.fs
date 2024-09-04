@@ -421,3 +421,13 @@ Required argument '--exact' received no value"""
 --thing1  int32
 --thing2  string
 --and-another  bool (positional args) (can be repeated)"""
+
+    [<Test>]
+    let ``Positionals are tagged with Choice`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        ChoicePositionals.parse' getEnvVar [ "a" ; "b" ; "--" ; "--c" ; "--help" ]
+        |> shouldEqual
+            {
+                Args = [ Choice1Of2 "a" ; Choice1Of2 "b" ; Choice2Of2 "--c" ; Choice2Of2 "--help" ]
+            }

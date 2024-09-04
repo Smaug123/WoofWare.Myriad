@@ -22,11 +22,11 @@ type private ArgumentDefaultSpec =
     /// we would use `MyArgs.DefaultThing () : int`.
     | FunctionCall of name : Ident
 
-type private Accumulation =
+type private Accumulation<'choice> =
     | Required
     | Optional
-    | Choice of ArgumentDefaultSpec
-    | List
+    | Choice of 'choice
+    | List of Accumulation<'choice>
 
 type private ParseFunction<'acc> =
     {
@@ -45,8 +45,13 @@ type private ParseFunction<'acc> =
         Accumulation : 'acc
     }
 
-type private ParseFunctionPositional = ParseFunction<unit>
-type private ParseFunctionNonPositional = ParseFunction<Accumulation>
+[<RequireQualifiedAccess>]
+type private ChoicePositional =
+    | Normal
+    | Choice
+
+type private ParseFunctionPositional = ParseFunction<ChoicePositional>
+type private ParseFunctionNonPositional = ParseFunction<Accumulation<ArgumentDefaultSpec>>
 
 type private ParserSpec =
     {
@@ -235,11 +240,12 @@ module internal ArgParserGenerator =
     /// for example, maybe it returns a `ty option` or a `ty list`).
     /// The resulting SynType is the type of the *element* being parsed; so if the Accumulation is List, the SynType
     /// is the list element.
-    let rec private createParseFunction
+    let rec private createParseFunction<'choice>
+        (choice : ArgumentDefaultSpec option -> 'choice)
         (fieldName : Ident)
         (attrs : SynAttribute list)
         (ty : SynType)
-        : SynExpr * Accumulation * SynType
+        : SynExpr * Accumulation<'choice> * SynType
         =
         match ty with
         | String -> SynExpr.createLambda "x" (SynExpr.createIdent "x"), Accumulation.Required, SynType.string
@@ -322,7 +328,7 @@ module internal ArgParserGenerator =
             Accumulation.Required,
             ty
         | OptionType eltTy ->
-            let parseElt, acc, childTy = createParseFunction fieldName attrs eltTy
+            let parseElt, acc, childTy = createParseFunction choice fieldName attrs eltTy
 
             match acc with
             | Accumulation.Optional ->
@@ -331,7 +337,7 @@ module internal ArgParserGenerator =
             | Accumulation.Choice _ ->
                 failwith
                     $"ArgParser does not support optionals containing choices at field %s{fieldName.idText}: %O{ty}"
-            | Accumulation.List ->
+            | Accumulation.List _ ->
                 failwith $"ArgParser does not support optional lists at field %s{fieldName.idText}: %O{ty}"
             | Accumulation.Required -> parseElt, Accumulation.Optional, childTy
         | ChoiceType elts ->
@@ -341,13 +347,13 @@ module internal ArgParserGenerator =
                     failwith
                         $"ArgParser was unable to prove types %O{elt1} and %O{elt2} to be equal in a Choice. We require them to be equal."
 
-                let parseElt, acc, childTy = createParseFunction fieldName attrs elt1
+                let parseElt, acc, childTy = createParseFunction choice fieldName attrs elt1
 
                 match acc with
                 | Accumulation.Optional ->
                     failwith
                         $"ArgParser does not support choices containing options at field %s{fieldName.idText}: %O{ty}"
-                | Accumulation.List ->
+                | Accumulation.List _ ->
                     failwith
                         $"ArgParser does not support choices containing lists at field %s{fieldName.idText}: %O{ty}"
                 | Accumulation.Choice _ ->
@@ -385,31 +391,22 @@ module internal ArgParserGenerator =
 
                 let relevantAttr =
                     match relevantAttrs with
-                    | [] ->
-                        failwith
-                            $"Expected Choice to be annotated with ArgumentDefaultFunction or similar, but it was not. Field: %s{fieldName.idText}"
-                    | [ x ] -> x
+                    | [] -> None
+                    | [ x ] -> Some x
                     | _ ->
                         failwith
-                            $"Expected Choice to be annotated with exactly one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: %s{fieldName.idText}"
+                            $"Expected Choice to be annotated with at most one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: %s{fieldName.idText}"
 
-                parseElt, Accumulation.Choice relevantAttr, childTy
+                parseElt, Accumulation.Choice (choice relevantAttr), childTy
             | elts ->
                 let elts = elts |> List.map string<SynType> |> String.concat ", "
 
                 failwith
                     $"ArgParser requires Choice to be of the form Choice<'a, 'a>; that is, two arguments, both the same. For field %s{fieldName.idText}, got: %s{elts}"
         | ListType eltTy ->
-            let parseElt, acc, childTy = createParseFunction fieldName attrs eltTy
+            let parseElt, acc, childTy = createParseFunction choice fieldName attrs eltTy
 
-            match acc with
-            | Accumulation.List ->
-                failwith $"ArgParser does not support nested lists at field %s{fieldName.idText}: %O{ty}"
-            | Accumulation.Choice _ ->
-                failwith $"ArgParser does not support lists containing choices at field %s{fieldName.idText}: %O{ty}"
-            | Accumulation.Optional ->
-                failwith $"ArgParser does not support lists of options at field %s{fieldName.idText}: %O{ty}"
-            | Accumulation.Required -> parseElt, Accumulation.List, childTy
+            parseElt, Accumulation.List acc, childTy
         | _ -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
     let rec private toParseSpec
@@ -490,25 +487,61 @@ module internal ArgParserGenerator =
                     counter, (ident, spec) :: acc
                 | None ->
 
-                let parser, accumulation, parseTy = createParseFunction ident attrs fieldType
-
                 match positionalArgAttr with
                 | Some _ ->
+                    let getChoice (spec : ArgumentDefaultSpec option) : unit =
+                        match spec with
+                        | Some _ ->
+                            failwith
+                                "Positional Choice args cannot have default values. Remove [<ArgumentDefault*>] from the positional arg."
+                        | None -> ()
+
+                    let parser, accumulation, parseTy =
+                        createParseFunction<unit> getChoice ident attrs fieldType
+
                     match accumulation with
-                    | Accumulation.List ->
+                    | Accumulation.List (Accumulation.List _) ->
+                        failwith "A list of positional args cannot contain lists."
+                    | Accumulation.List Accumulation.Optional ->
+                        failwith "A list of positional args cannot contain optionals. What would that even mean?"
+                    | Accumulation.List (Accumulation.Choice ()) ->
                         {
                             FieldName = ident
                             Parser = parser
                             TargetVariable = Ident.create $"arg_%i{counter}"
-                            Accumulation = ()
+                            Accumulation = ChoicePositional.Choice
                             TargetType = parseTy
                             ArgForm = argify ident
                             Help = helpText
                         }
                         |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
-                        |> ParseTreeCrate.make
-                    | _ -> failwith $"Expected positional arg accumulation type to be List, but it was %O{fieldType}"
+                    | Accumulation.List Accumulation.Required ->
+                        {
+                            FieldName = ident
+                            Parser = parser
+                            TargetVariable = Ident.create $"arg_%i{counter}"
+                            Accumulation = ChoicePositional.Normal
+                            TargetType = parseTy
+                            ArgForm = argify ident
+                            Help = helpText
+                        }
+                        |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
+                    | Accumulation.Choice _
+                    | Accumulation.Optional
+                    | Accumulation.Required ->
+                        failwith $"Expected positional arg accumulation type to be List, but it was %O{fieldType}"
+                    |> ParseTreeCrate.make
                 | None ->
+                    let getChoice (spec : ArgumentDefaultSpec option) : ArgumentDefaultSpec =
+                        match spec with
+                        | None ->
+                            failwith
+                                "Non-positional Choice args must have an `[<ArgumentDefault*>]` attribute on them."
+                        | Some spec -> spec
+
+                    let parser, accumulation, parseTy =
+                        createParseFunction getChoice ident attrs fieldType
+
                     {
                         FieldName = ident
                         Parser = parser
@@ -542,7 +575,7 @@ module internal ArgParserGenerator =
         (args : ParseFunctionNonPositional list)
         : SynBinding
         =
-        let describeNonPositional (acc : Accumulation) : SynExpr =
+        let describeNonPositional (acc : Accumulation<ArgumentDefaultSpec>) : SynExpr =
             match acc with
             | Accumulation.Required -> SynExpr.CreateConst ""
             | Accumulation.Optional -> SynExpr.CreateConst " (optional)"
@@ -562,9 +595,9 @@ module internal ArgParserGenerator =
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %O)")
                 )
                 |> SynExpr.paren
-            | Accumulation.List -> SynExpr.CreateConst " (can be repeated)"
+            | Accumulation.List _ -> SynExpr.CreateConst " (can be repeated)"
 
-        let describePositional () =
+        let describePositional _ =
             SynExpr.CreateConst " (positional args) (can be repeated)"
 
         let toPrintable (describe : 'a -> SynExpr) (arg : ParseFunction<'a>) : SynExpr =
@@ -655,7 +688,12 @@ module internal ArgParserGenerator =
                                 performAssignment)
                     ]
                     |> SynExpr.createMatch (SynExpr.createIdent' arg.TargetVariable)
-                | Accumulation.List ->
+                | Accumulation.List (Accumulation.List _)
+                | Accumulation.List Accumulation.Optional
+                | Accumulation.List (Accumulation.Choice _) ->
+                    failwith
+                        "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists."
+                | Accumulation.List Accumulation.Required ->
                     [
                         SynExpr.createIdent "value"
                         |> SynExpr.pipeThroughFunction arg.Parser
@@ -675,6 +713,10 @@ module internal ArgParserGenerator =
                 [
                     SynExpr.createIdent "value"
                     |> SynExpr.pipeThroughFunction pos.Parser
+                    |> fun p ->
+                        match pos.Accumulation with
+                        | ChoicePositional.Choice -> p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                        | ChoicePositional.Normal -> p
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.createLongIdent' [ pos.TargetVariable ; Ident.create "Add" ]
                     )
@@ -766,6 +808,7 @@ module internal ArgParserGenerator =
     let private mainLoop
         (parseState : Ident)
         (errorAcc : Ident)
+        (leftoverArgAcc : ChoicePositional)
         (leftoverArgs : Ident)
         (leftoverArgParser : SynExpr)
         : SynBinding
@@ -812,6 +855,11 @@ module internal ArgParserGenerator =
                     [
                         SynExpr.createIdent "arg"
                         |> SynExpr.pipeThroughFunction leftoverArgParser
+                        |> fun p ->
+                            match leftoverArgAcc with
+                            | ChoicePositional.Normal -> p
+                            | ChoicePositional.Choice ->
+                                p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
                         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
 
                         recurseKey
@@ -977,6 +1025,16 @@ module internal ArgParserGenerator =
                             |> SynExpr.pipeThroughFunction (
                                 SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ]) leftoverArgParser
                             )
+                            |> fun p ->
+                                match leftoverArgAcc with
+                                | ChoicePositional.Normal -> p
+                                | ChoicePositional.Choice ->
+                                    p
+                                    |> SynExpr.pipeThroughFunction (
+                                        SynExpr.applyFunction
+                                            (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                                            (SynExpr.createIdent "Choice2Of2")
+                                    )
                         ))
                         (SynExpr.createIdent' leftoverArgs))
                 SynMatchClause.create (SynPat.listCons (SynPat.named "arg") (SynPat.named "args")) argBody
@@ -1015,7 +1073,12 @@ module internal ArgParserGenerator =
                     |> SynBinding.basic [ pf.TargetVariable ] []
                     |> SynBinding.withMutability true
                     |> SynBinding.withReturnAnnotation (SynType.appPostfix "option" pf.TargetType)
-                | Accumulation.List ->
+                | Accumulation.List (Accumulation.List _)
+                | Accumulation.List Accumulation.Optional
+                | Accumulation.List (Accumulation.Choice _) ->
+                    failwith
+                        "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists."
+                | Accumulation.List Accumulation.Required ->
                     SynExpr.createIdent "ResizeArray"
                     |> SynExpr.applyTo (SynExpr.CreateConst ())
                     |> SynBinding.basic [ pf.TargetVariable ] []
@@ -1029,7 +1092,11 @@ module internal ArgParserGenerator =
                     Ident.create "parser_LeftoverArgs",
                     (SynExpr.createLambda "x" (SynExpr.createIdent "x")),
                     SynType.string
-                | Some pf -> pf.TargetVariable, pf.Parser, pf.TargetType
+                | Some pf ->
+                    match pf.Accumulation with
+                    | ChoicePositional.Choice ->
+                        pf.TargetVariable, pf.Parser, SynType.app "Choice" [ pf.TargetType ; pf.TargetType ]
+                    | ChoicePositional.Normal -> pf.TargetVariable, pf.Parser, pf.TargetType
 
             let bindings =
                 SynExpr.createIdent "ResizeArray"
@@ -1110,7 +1177,12 @@ module internal ArgParserGenerator =
                     |> SynBinding.basic [ pf.TargetVariable ] []
                 | Accumulation.Optional ->
                     SynBinding.basic [ pf.TargetVariable ] [] (SynExpr.createIdent' pf.TargetVariable)
-                | Accumulation.List ->
+                | Accumulation.List (Accumulation.List _)
+                | Accumulation.List Accumulation.Optional
+                | Accumulation.List (Accumulation.Choice _) ->
+                    failwith
+                        "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists."
+                | Accumulation.List Accumulation.Required ->
                     SynBinding.basic
                         [ pf.TargetVariable ]
                         []
@@ -1208,6 +1280,11 @@ module internal ArgParserGenerator =
                 | _ -> false
             )
 
+        let leftoverArgAcc =
+            match pos with
+            | None -> ChoicePositional.Normal
+            | Some pos -> pos.Accumulation
+
         [
             SynExpr.createIdent "go"
             |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
@@ -1221,7 +1298,7 @@ module internal ArgParserGenerator =
             @ [
                 processKeyValue argParseErrors pos nonPos
                 setFlagValue argParseErrors flags
-                mainLoop parseState argParseErrors leftoverArgsName leftoverArgsParser
+                mainLoop parseState argParseErrors leftoverArgAcc leftoverArgsName leftoverArgsParser
             ]
         )
 
