@@ -2420,7 +2420,7 @@ module WithFlagDuArgParse =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "--dry-run  DryRunMode%s%s" "" "") ] |> String.concat "\n"
+                [ (sprintf "--dry-run  bool%s%s" "" "") ] |> String.concat "\n"
 
             let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
             let mutable arg_0 : DryRunMode option = None

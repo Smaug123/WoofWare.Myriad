@@ -33,19 +33,12 @@ type internal FlagDu =
 /// This defines which source a particular default value comes from.
 type private ArgumentDefaultSpec =
     /// From parsing the environment variable with the given name (e.g. "WOOFWARE_DISABLE_FOO" or whatever).
-    /// We might be reading a boolean variable from a string like "0", which has more lax parsing rules;
-    /// if so, `boolCases` is Some, and contains the construction of the flag (or boolean, in which case
-    /// you get no data).
-    | EnvironmentVariable of name : SynExpr * boolCases : Choice<FlagDu, unit> option
+    | EnvironmentVariable of name : SynExpr
     /// From calling the static member `{typeWeParseInto}.Default{name}()`
     /// For example, if `type MyArgs = { Thing : Choice<int, int> }`, then
     /// we would use `MyArgs.DefaultThing () : int`.
     ///
-    /// If this is a boolean-like field (e.g. a bool or a flag DU), the help text should look a bit different:
-    /// we should lie to the user about the value of the cases there.
-    /// In that case, `boolCases` is Some, and contains the construction of the flag (or boolean, in which case
-    /// you get no data).
-    | FunctionCall of name : Ident * boolCases : Choice<FlagDu, unit> option
+    | FunctionCall of name : Ident
 
 type private Accumulation<'choice> =
     | Required
@@ -58,6 +51,13 @@ type private ParseFunction<'acc> =
         FieldName : Ident
         TargetVariable : Ident
         ArgForm : string
+        /// If this is a boolean-like field (e.g. a bool or a flag DU), the help text should look a bit different:
+        /// we should lie to the user about the value of the cases there.
+        /// Similarly, if we're reading from an environment variable with the laxer parsing rules of accepting e.g.
+        /// "0" instead of "false", we need to know if we're reading a bool.
+        /// In that case, `boolCases` is Some, and contains the construction of the flag (or boolean, in which case
+        /// you get no data).
+        BoolCases : Choice<FlagDu, unit> option
         Help : SynExpr option
         /// A function string -> %TargetType%, where TargetVariable is probably a `%TargetType% option`.
         /// (Depending on `Accumulation`, we'll remove the `option` at the end of the parse, asserting that the
@@ -410,12 +410,6 @@ module internal ArgParserGenerator =
                     |> List.choose (fun attr ->
                         let (SynLongIdent.SynLongIdent (name, _, _)) = attr.TypeName
 
-                        let isBoolLike =
-                            match childTy with
-                            | PrimitiveType ident when ident |> List.map _.idText = [ "System" ; "Boolean" ] ->
-                                Some (Choice2Of2 ())
-                            | childTy -> identifyAsFlag flagDus childTy |> Option.map Choice1Of2
-
                         match name |> List.map _.idText with
                         | [ "ArgumentDefaultFunction" ]
                         | [ "ArgumentDefaultFunctionAttribute" ]
@@ -425,7 +419,7 @@ module internal ArgParserGenerator =
                         | [ "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunction" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ] ->
-                            ArgumentDefaultSpec.FunctionCall (Ident.create ("Default" + fieldName.idText), isBoolLike)
+                            ArgumentDefaultSpec.FunctionCall (Ident.create ("Default" + fieldName.idText))
                             |> Some
                         | [ "ArgumentDefaultEnvironmentVariable" ]
                         | [ "ArgumentDefaultEnvironmentVariableAttribute" ]
@@ -436,7 +430,7 @@ module internal ArgParserGenerator =
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariable" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ] ->
 
-                            ArgumentDefaultSpec.EnvironmentVariable (attr.ArgExpr, isBoolLike) |> Some
+                            ArgumentDefaultSpec.EnvironmentVariable attr.ArgExpr |> Some
                         | _ -> None
                     )
 
@@ -563,6 +557,12 @@ module internal ArgParserGenerator =
                     let parser, accumulation, parseTy =
                         createParseFunction<unit> getChoice flagDus ident attrs fieldType
 
+                    let isBoolLike =
+                        match parseTy with
+                        | PrimitiveType ident when ident |> List.map _.idText = [ "System" ; "Boolean" ] ->
+                            Some (Choice2Of2 ())
+                        | parseTy -> identifyAsFlag flagDus parseTy |> Option.map Choice1Of2
+
                     match accumulation with
                     | Accumulation.List (Accumulation.List _) ->
                         failwith "A list of positional args cannot contain lists."
@@ -577,6 +577,7 @@ module internal ArgParserGenerator =
                             TargetType = parseTy
                             ArgForm = argify ident
                             Help = helpText
+                            BoolCases = isBoolLike
                         }
                         |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
                     | Accumulation.List Accumulation.Required ->
@@ -588,6 +589,7 @@ module internal ArgParserGenerator =
                             TargetType = parseTy
                             ArgForm = argify ident
                             Help = helpText
+                            BoolCases = isBoolLike
                         }
                         |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
                     | Accumulation.Choice _
@@ -606,6 +608,12 @@ module internal ArgParserGenerator =
                     let parser, accumulation, parseTy =
                         createParseFunction getChoice flagDus ident attrs fieldType
 
+                    let isBoolLike =
+                        match parseTy with
+                        | PrimitiveType ident when ident |> List.map _.idText = [ "System" ; "Boolean" ] ->
+                            Some (Choice2Of2 ())
+                        | parseTy -> identifyAsFlag flagDus parseTy |> Option.map Choice1Of2
+
                     {
                         FieldName = ident
                         Parser = parser
@@ -614,6 +622,7 @@ module internal ArgParserGenerator =
                         TargetType = parseTy
                         ArgForm = argify ident
                         Help = helpText
+                        BoolCases = isBoolLike
                     }
                     |> fun t -> ParseTree.NonPositionalLeaf (t, Teq.refl)
                     |> ParseTreeCrate.make
@@ -639,11 +648,15 @@ module internal ArgParserGenerator =
         (args : ParseFunctionNonPositional list)
         : SynBinding
         =
-        let describeNonPositional (acc : Accumulation<ArgumentDefaultSpec>) : SynExpr =
+        let describeNonPositional
+            (acc : Accumulation<ArgumentDefaultSpec>)
+            (flagCases : Choice<FlagDu, unit> option)
+            : SynExpr
+            =
             match acc with
             | Accumulation.Required -> SynExpr.CreateConst ""
             | Accumulation.Optional -> SynExpr.CreateConst " (optional)"
-            | Accumulation.Choice (ArgumentDefaultSpec.EnvironmentVariable (var, _isBoolLike)) ->
+            | Accumulation.Choice (ArgumentDefaultSpec.EnvironmentVariable var) ->
                 // We don't print out the default value in case it's a secret. People often pass secrets
                 // through env vars!
                 var
@@ -653,8 +666,8 @@ module internal ArgParserGenerator =
                         (SynExpr.CreateConst " (default value populated from env var %s)")
                 )
                 |> SynExpr.paren
-            | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (var, isBoolLike)) ->
-                match isBoolLike with
+            | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall var) ->
+                match flagCases with
                 | None -> SynExpr.callMethod var.idText (SynExpr.createIdent' typeName)
                 | Some (Choice2Of2 ()) -> SynExpr.callMethod var.idText (SynExpr.createIdent' typeName)
                 | Some (Choice1Of2 flagDu) ->
@@ -681,30 +694,16 @@ module internal ArgParserGenerator =
                 |> SynExpr.paren
             | Accumulation.List _ -> SynExpr.CreateConst " (can be repeated)"
 
-        let describePositional _ =
+        let describePositional _ _ =
             SynExpr.CreateConst " (positional args) (can be repeated)"
-
-        let renderTypeNameNonPositional (ty : SynType) (acc : Accumulation<ArgumentDefaultSpec>) : string =
-            match acc with
-            | Accumulation.Choice (ArgumentDefaultSpec.EnvironmentVariable (_, Some _))
-            | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (_, Some _)) -> "bool"
-            | _ -> ty |> SynType.toHumanReadableString
-
-        let renderTypeNamePositional (ty : SynType) (_ : ChoicePositional) : string =
-            // TODO: pass in the information we would need to identify if this is a flag type.
-            // It's an unusual use case (positional args which contain a list of boolean flags),
-            // and I can't be bothered to refactor everything right now.
-            ty |> SynType.toHumanReadableString
 
         /// We may sometimes lie about the type name, if e.g. this is a flag DU which we're pretending is a boolean.
         /// So the `renderTypeName` takes the Accumulation which tells us whether we're lying.
-        let toPrintable
-            (renderTypeName : SynType -> 'a -> string)
-            (describe : 'a -> SynExpr)
-            (arg : ParseFunction<'a>)
-            : SynExpr
-            =
-            let ty = renderTypeName arg.TargetType arg.Accumulation
+        let toPrintable (describe : 'a -> Choice<FlagDu, unit> option -> SynExpr) (arg : ParseFunction<'a>) : SynExpr =
+            let ty =
+                match arg.BoolCases with
+                | None -> SynType.toHumanReadableString arg.TargetType
+                | Some _ -> "bool"
 
             let helpText =
                 match arg.Help with
@@ -714,7 +713,7 @@ module internal ArgParserGenerator =
                     |> SynExpr.applyTo (SynExpr.paren helpText)
                     |> SynExpr.paren
 
-            let descriptor = describe arg.Accumulation
+            let descriptor = describe arg.Accumulation arg.BoolCases
 
             let prefix = $"%s{arg.ArgForm}  %s{ty}"
 
@@ -724,11 +723,11 @@ module internal ArgParserGenerator =
             |> SynExpr.paren
 
         args
-        |> List.map (toPrintable renderTypeNameNonPositional describeNonPositional)
+        |> List.map (toPrintable describeNonPositional)
         |> fun l ->
             match positional with
             | None -> l
-            | Some pos -> l @ [ toPrintable renderTypeNamePositional describePositional pos ]
+            | Some pos -> l @ [ toPrintable describePositional pos ]
         |> SynExpr.listLiteral
         |> SynExpr.pipeThroughFunction (
             SynExpr.applyFunction (SynExpr.createLongIdent [ "String" ; "concat" ]) (SynExpr.CreateConst @"\n")
@@ -1242,14 +1241,14 @@ module internal ArgParserGenerator =
                 | Accumulation.Choice spec ->
                     let getDefaultValue =
                         match spec with
-                        | ArgumentDefaultSpec.EnvironmentVariable (name, isBoolLike) ->
+                        | ArgumentDefaultSpec.EnvironmentVariable name ->
                             let result =
                                 name
                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "getEnvironmentVariable")
 
                             /// Assumes access to a non-null variable `x` containing the string value.
                             let parser =
-                                match isBoolLike with
+                                match pf.BoolCases with
                                 | Some boolLike ->
                                     let trueCase, falseCase =
                                         match boolLike with
@@ -1308,7 +1307,7 @@ module internal ArgParserGenerator =
                                 SynMatchClause.create (SynPat.named "x") parser
                             ]
                             |> SynExpr.createMatch result
-                        | ArgumentDefaultSpec.FunctionCall (name, _) ->
+                        | ArgumentDefaultSpec.FunctionCall name ->
                             SynExpr.callMethod name.idText (SynExpr.createIdent' recordType.Name)
 
                     [

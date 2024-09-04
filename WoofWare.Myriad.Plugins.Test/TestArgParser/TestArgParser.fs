@@ -538,3 +538,15 @@ Required argument '--exact' received no value"""
         |> shouldEqual
             """Help text requested.
 --dry-run  bool (default value: false)"""
+
+    [<Test>]
+    let ``Help text for flag DU, non default`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () -> WithFlagDu.parse' getEnvVar [ "--help" ] |> ignore<WithFlagDu>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--dry-run  bool"""
