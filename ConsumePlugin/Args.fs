@@ -128,3 +128,10 @@ type ParentRecordSelfPos =
         [<PositionalArgs>]
         AndAnother : bool list
     }
+
+[<ArgParser true>]
+type ChoicePositionals =
+    {
+        [<PositionalArgs>]
+        Args : Choice<string, string> list
+    }

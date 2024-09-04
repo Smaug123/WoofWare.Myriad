@@ -22,13 +22,13 @@ type private ArgumentDefaultSpec =
     /// we would use `MyArgs.DefaultThing () : int`.
     | FunctionCall of name : Ident
 
-type private Accumulation =
+type private Accumulation<'choice> =
     | Required
     | Optional
-    | Choice of ArgumentDefaultSpec
-    | List
+    | Choice of 'choice
+    | List of Accumulation<'choice>
 
-type private ParseFunction =
+type private ParseFunction<'acc> =
     {
         FieldName : Ident
         TargetVariable : Ident
@@ -42,20 +42,24 @@ type private ParseFunction =
         /// If `Accumulation` is `List`, then this is the type of the list *element*; analogously for optionals
         /// and choices and so on.
         TargetType : SynType
-        Accumulation : Accumulation
+        Accumulation : 'acc
     }
+
+[<RequireQualifiedAccess>]
+type private ChoicePositional =
+    | Normal
+    | Choice
+
+type private ParseFunctionPositional = ParseFunction<ChoicePositional>
+type private ParseFunctionNonPositional = ParseFunction<Accumulation<ArgumentDefaultSpec>>
 
 type private ParserSpec =
     {
-        NonPositionals : ParseFunction list
+        NonPositionals : ParseFunctionNonPositional list
         /// The variable into which positional arguments will be accumulated.
         /// In this case, the TargetVariable is a `ResizeArray` rather than the usual `option`.
-        Positionals : ParseFunction option
+        Positionals : ParseFunctionPositional option
     }
-
-type private ArgToParse =
-    | Positional of ParseFunction
-    | NonPositional of ParseFunction
 
 type private HasPositional = HasPositional
 type private HasNoPositional = HasNoPositional
@@ -67,8 +71,8 @@ module private TeqUtils =
 
 [<RequireQualifiedAccess>]
 type private ParseTree<'hasPositional> =
-    | NonPositionalLeaf of ParseFunction * Teq<'hasPositional, HasNoPositional>
-    | PositionalLeaf of ParseFunction * Teq<'hasPositional, HasPositional>
+    | NonPositionalLeaf of ParseFunctionNonPositional * Teq<'hasPositional, HasNoPositional>
+    | PositionalLeaf of ParseFunctionPositional * Teq<'hasPositional, HasPositional>
     /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each `Ident` in
     /// the branch (e.g. each record field name),
     /// and composes them into a `SynExpr` (e.g. the record-typed object).
@@ -142,7 +146,7 @@ module private ParseTree =
 
         go None ([], None) subs
 
-    let rec accumulatorsNonPos (tree : ParseTree<HasNoPositional>) : ParseFunction list =
+    let rec accumulatorsNonPos (tree : ParseTree<HasNoPositional>) : ParseFunctionNonPositional list =
         match tree with
         | ParseTree.PositionalLeaf (_, teq) -> exFalso teq
         | ParseTree.BranchPos (_, _, _, _, teq) -> exFalso teq
@@ -150,7 +154,10 @@ module private ParseTree =
         | ParseTree.Branch (trees, _, _) -> trees |> List.collect (snd >> accumulatorsNonPos)
 
     /// Returns the positional arg separately.
-    let rec accumulatorsPos (tree : ParseTree<HasPositional>) : ParseFunction list * ParseFunction =
+    let rec accumulatorsPos
+        (tree : ParseTree<HasPositional>)
+        : ParseFunctionNonPositional list * ParseFunctionPositional
+        =
         match tree with
         | ParseTree.PositionalLeaf (pf, _) -> [], pf
         | ParseTree.NonPositionalLeaf (_, teq) -> exFalso' teq
@@ -164,7 +171,7 @@ module private ParseTree =
     /// Collect all the ParseFunctions which are necessary to define variables, throwing away
     /// all information relevant to composing the resulting variables into records.
     /// Returns the list of non-positional parsers, and any positional parser that exists.
-    let accumulators<'a> (tree : ParseTree<'a>) : ParseFunction list * ParseFunction option =
+    let accumulators<'a> (tree : ParseTree<'a>) : ParseFunctionNonPositional list * ParseFunctionPositional option =
         // Sad duplication of some code here, but it was the easiest way to make it type-safe :(
         match tree with
         | ParseTree.PositionalLeaf (pf, _) -> [], Some pf
@@ -178,8 +185,7 @@ module private ParseTree =
 
         |> fun (nonPos, pos) ->
             let duplicateArgs =
-                Option.toList pos @ nonPos
-                |> List.map (fun pf -> pf.ArgForm)
+                Option.toList (pos |> Option.map _.ArgForm) @ (nonPos |> List.map _.ArgForm)
                 |> List.groupBy id
                 |> List.choose (fun (key, v) -> if v.Length > 1 then Some key else None)
 
@@ -234,11 +240,12 @@ module internal ArgParserGenerator =
     /// for example, maybe it returns a `ty option` or a `ty list`).
     /// The resulting SynType is the type of the *element* being parsed; so if the Accumulation is List, the SynType
     /// is the list element.
-    let rec private createParseFunction
+    let rec private createParseFunction<'choice>
+        (choice : ArgumentDefaultSpec option -> 'choice)
         (fieldName : Ident)
         (attrs : SynAttribute list)
         (ty : SynType)
-        : SynExpr * Accumulation * SynType
+        : SynExpr * Accumulation<'choice> * SynType
         =
         match ty with
         | String -> SynExpr.createLambda "x" (SynExpr.createIdent "x"), Accumulation.Required, SynType.string
@@ -321,7 +328,7 @@ module internal ArgParserGenerator =
             Accumulation.Required,
             ty
         | OptionType eltTy ->
-            let parseElt, acc, childTy = createParseFunction fieldName attrs eltTy
+            let parseElt, acc, childTy = createParseFunction choice fieldName attrs eltTy
 
             match acc with
             | Accumulation.Optional ->
@@ -330,7 +337,7 @@ module internal ArgParserGenerator =
             | Accumulation.Choice _ ->
                 failwith
                     $"ArgParser does not support optionals containing choices at field %s{fieldName.idText}: %O{ty}"
-            | Accumulation.List ->
+            | Accumulation.List _ ->
                 failwith $"ArgParser does not support optional lists at field %s{fieldName.idText}: %O{ty}"
             | Accumulation.Required -> parseElt, Accumulation.Optional, childTy
         | ChoiceType elts ->
@@ -340,13 +347,13 @@ module internal ArgParserGenerator =
                     failwith
                         $"ArgParser was unable to prove types %O{elt1} and %O{elt2} to be equal in a Choice. We require them to be equal."
 
-                let parseElt, acc, childTy = createParseFunction fieldName attrs elt1
+                let parseElt, acc, childTy = createParseFunction choice fieldName attrs elt1
 
                 match acc with
                 | Accumulation.Optional ->
                     failwith
                         $"ArgParser does not support choices containing options at field %s{fieldName.idText}: %O{ty}"
-                | Accumulation.List ->
+                | Accumulation.List _ ->
                     failwith
                         $"ArgParser does not support choices containing lists at field %s{fieldName.idText}: %O{ty}"
                 | Accumulation.Choice _ ->
@@ -384,31 +391,22 @@ module internal ArgParserGenerator =
 
                 let relevantAttr =
                     match relevantAttrs with
-                    | [] ->
-                        failwith
-                            $"Expected Choice to be annotated with ArgumentDefaultFunction or similar, but it was not. Field: %s{fieldName.idText}"
-                    | [ x ] -> x
+                    | [] -> None
+                    | [ x ] -> Some x
                     | _ ->
                         failwith
-                            $"Expected Choice to be annotated with exactly one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: %s{fieldName.idText}"
+                            $"Expected Choice to be annotated with at most one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: %s{fieldName.idText}"
 
-                parseElt, Accumulation.Choice relevantAttr, childTy
+                parseElt, Accumulation.Choice (choice relevantAttr), childTy
             | elts ->
                 let elts = elts |> List.map string<SynType> |> String.concat ", "
 
                 failwith
                     $"ArgParser requires Choice to be of the form Choice<'a, 'a>; that is, two arguments, both the same. For field %s{fieldName.idText}, got: %s{elts}"
         | ListType eltTy ->
-            let parseElt, acc, childTy = createParseFunction fieldName attrs eltTy
+            let parseElt, acc, childTy = createParseFunction choice fieldName attrs eltTy
 
-            match acc with
-            | Accumulation.List ->
-                failwith $"ArgParser does not support nested lists at field %s{fieldName.idText}: %O{ty}"
-            | Accumulation.Choice _ ->
-                failwith $"ArgParser does not support lists containing choices at field %s{fieldName.idText}: %O{ty}"
-            | Accumulation.Optional ->
-                failwith $"ArgParser does not support lists of options at field %s{fieldName.idText}: %O{ty}"
-            | Accumulation.Required -> parseElt, Accumulation.List, childTy
+            parseElt, Accumulation.List acc, childTy
         | _ -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
     let rec private toParseSpec
@@ -489,25 +487,61 @@ module internal ArgParserGenerator =
                     counter, (ident, spec) :: acc
                 | None ->
 
-                let parser, accumulation, parseTy = createParseFunction ident attrs fieldType
-
                 match positionalArgAttr with
                 | Some _ ->
+                    let getChoice (spec : ArgumentDefaultSpec option) : unit =
+                        match spec with
+                        | Some _ ->
+                            failwith
+                                "Positional Choice args cannot have default values. Remove [<ArgumentDefault*>] from the positional arg."
+                        | None -> ()
+
+                    let parser, accumulation, parseTy =
+                        createParseFunction<unit> getChoice ident attrs fieldType
+
                     match accumulation with
-                    | Accumulation.List ->
+                    | Accumulation.List (Accumulation.List _) ->
+                        failwith "A list of positional args cannot contain lists."
+                    | Accumulation.List Accumulation.Optional ->
+                        failwith "A list of positional args cannot contain optionals. What would that even mean?"
+                    | Accumulation.List (Accumulation.Choice ()) ->
                         {
                             FieldName = ident
                             Parser = parser
                             TargetVariable = Ident.create $"arg_%i{counter}"
-                            Accumulation = accumulation
+                            Accumulation = ChoicePositional.Choice
                             TargetType = parseTy
                             ArgForm = argify ident
                             Help = helpText
                         }
                         |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
-                        |> ParseTreeCrate.make
-                    | _ -> failwith $"Expected positional arg accumulation type to be List, but it was %O{fieldType}"
+                    | Accumulation.List Accumulation.Required ->
+                        {
+                            FieldName = ident
+                            Parser = parser
+                            TargetVariable = Ident.create $"arg_%i{counter}"
+                            Accumulation = ChoicePositional.Normal
+                            TargetType = parseTy
+                            ArgForm = argify ident
+                            Help = helpText
+                        }
+                        |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
+                    | Accumulation.Choice _
+                    | Accumulation.Optional
+                    | Accumulation.Required ->
+                        failwith $"Expected positional arg accumulation type to be List, but it was %O{fieldType}"
+                    |> ParseTreeCrate.make
                 | None ->
+                    let getChoice (spec : ArgumentDefaultSpec option) : ArgumentDefaultSpec =
+                        match spec with
+                        | None ->
+                            failwith
+                                "Non-positional Choice args must have an `[<ArgumentDefault*>]` attribute on them."
+                        | Some spec -> spec
+
+                    let parser, accumulation, parseTy =
+                        createParseFunction getChoice ident attrs fieldType
+
                     {
                         FieldName = ident
                         Parser = parser
@@ -537,11 +571,36 @@ module internal ArgParserGenerator =
     /// let helpText : string = ...
     let private helpText
         (typeName : Ident)
-        (positional : ParseFunction option)
-        (args : ParseFunction list)
+        (positional : ParseFunctionPositional option)
+        (args : ParseFunctionNonPositional list)
         : SynBinding
         =
-        let toPrintable (prefix : string) (arg : ParseFunction) : SynExpr =
+        let describeNonPositional (acc : Accumulation<ArgumentDefaultSpec>) : SynExpr =
+            match acc with
+            | Accumulation.Required -> SynExpr.CreateConst ""
+            | Accumulation.Optional -> SynExpr.CreateConst " (optional)"
+            | Accumulation.Choice (ArgumentDefaultSpec.EnvironmentVariable var) ->
+                // We don't print out the default value in case it's a secret. People often pass secrets
+                // through env vars!
+                var
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createIdent "sprintf")
+                        (SynExpr.CreateConst " (default value populated from env var %s)")
+                )
+                |> SynExpr.paren
+            | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall var) ->
+                SynExpr.callMethod var.idText (SynExpr.createIdent' typeName)
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %O)")
+                )
+                |> SynExpr.paren
+            | Accumulation.List _ -> SynExpr.CreateConst " (can be repeated)"
+
+        let describePositional _ =
+            SynExpr.CreateConst " (positional args) (can be repeated)"
+
+        let toPrintable (describe : 'a -> SynExpr) (arg : ParseFunction<'a>) : SynExpr =
             let ty = arg.TargetType |> SynType.toHumanReadableString
 
             let helpText =
@@ -552,31 +611,9 @@ module internal ArgParserGenerator =
                     |> SynExpr.applyTo (SynExpr.paren helpText)
                     |> SynExpr.paren
 
-            let descriptor =
-                match arg.Accumulation with
-                | Accumulation.Required -> SynExpr.CreateConst ""
-                | Accumulation.Optional -> SynExpr.CreateConst " (optional)"
-                | Accumulation.Choice (ArgumentDefaultSpec.EnvironmentVariable var) ->
-                    // We don't print out the default value in case it's a secret. People often pass secrets
-                    // through env vars!
-                    var
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.applyFunction
-                            (SynExpr.createIdent "sprintf")
-                            (SynExpr.CreateConst " (default value populated from env var %s)")
-                    )
-                    |> SynExpr.paren
-                | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall var) ->
-                    SynExpr.callMethod var.idText (SynExpr.createIdent' typeName)
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.applyFunction
-                            (SynExpr.createIdent "sprintf")
-                            (SynExpr.CreateConst " (default value: %O)")
-                    )
-                    |> SynExpr.paren
-                | Accumulation.List -> SynExpr.CreateConst " (can be repeated)"
+            let descriptor = describe arg.Accumulation
 
-            let prefix = $"%s{arg.ArgForm}  %s{ty}%s{prefix}"
+            let prefix = $"%s{arg.ArgForm}  %s{ty}"
 
             SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst (prefix + "%s%s"))
             |> SynExpr.applyTo descriptor
@@ -584,11 +621,11 @@ module internal ArgParserGenerator =
             |> SynExpr.paren
 
         args
-        |> List.map (toPrintable "")
+        |> List.map (toPrintable describeNonPositional)
         |> fun l ->
             match positional with
             | None -> l
-            | Some pos -> l @ [ toPrintable " (positional args)" pos ]
+            | Some pos -> l @ [ toPrintable describePositional pos ]
         |> SynExpr.listLiteral
         |> SynExpr.pipeThroughFunction (
             SynExpr.applyFunction (SynExpr.createLongIdent [ "String" ; "concat" ]) (SynExpr.CreateConst @"\n")
@@ -599,69 +636,106 @@ module internal ArgParserGenerator =
     /// Returns a possible error.
     /// A parse failure might not be fatal (e.g. maybe the input was optionally of arity 0, and we failed to do
     /// the parse because in fact the key decided not to take this argument); in that case we return Error None.
-    let private processKeyValue (argParseErrors : Ident) (args : ParseFunction list) : SynBinding =
-        (SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None"), args)
-        ||> List.fold (fun finalBranch arg ->
-            match arg.Accumulation with
-            | Accumulation.Required
-            | Accumulation.Choice _
-            | Accumulation.Optional ->
-                let multipleErrorMessage =
-                    SynExpr.createIdent "sprintf"
-                    |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %O and %O")
-                    |> SynExpr.applyTo (SynExpr.CreateConst arg.ArgForm)
-                    |> SynExpr.applyTo (SynExpr.createIdent "x")
-                    |> SynExpr.applyTo (SynExpr.createIdent "value")
+    let private processKeyValue
+        (argParseErrors : Ident)
+        (pos : ParseFunctionPositional option)
+        (args : ParseFunctionNonPositional list)
+        : SynBinding
+        =
+        let args =
+            args
+            |> List.map (fun arg ->
+                match arg.Accumulation with
+                | Accumulation.Required
+                | Accumulation.Choice _
+                | Accumulation.Optional ->
+                    let multipleErrorMessage =
+                        SynExpr.createIdent "sprintf"
+                        |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %O and %O")
+                        |> SynExpr.applyTo (SynExpr.CreateConst arg.ArgForm)
+                        |> SynExpr.applyTo (SynExpr.createIdent "x")
+                        |> SynExpr.applyTo (SynExpr.createIdent "value")
 
-                let performAssignment =
+                    let performAssignment =
+                        [
+                            SynExpr.createIdent "value"
+                            |> SynExpr.pipeThroughFunction arg.Parser
+                            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                            |> SynExpr.assign (SynLongIdent.createI arg.TargetVariable)
+
+                            SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                        ]
+                        |> SynExpr.sequential
+
+                    [
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
+                            (SynExpr.sequential
+                                [
+                                    multipleErrorMessage
+                                    |> SynExpr.pipeThroughFunction (
+                                        SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
+                                    )
+                                    SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                                ])
+                        SynMatchClause.create
+                            (SynPat.named "None")
+                            (SynExpr.pipeThroughTryWith
+                                SynPat.anon
+                                (SynExpr.createLongIdent [ "exc" ; "Message" ]
+                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+                                performAssignment)
+                    ]
+                    |> SynExpr.createMatch (SynExpr.createIdent' arg.TargetVariable)
+                | Accumulation.List (Accumulation.List _)
+                | Accumulation.List Accumulation.Optional
+                | Accumulation.List (Accumulation.Choice _) ->
+                    failwith
+                        "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists."
+                | Accumulation.List Accumulation.Required ->
                     [
                         SynExpr.createIdent "value"
                         |> SynExpr.pipeThroughFunction arg.Parser
-                        |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
-                        |> SynExpr.assign (SynLongIdent.createI arg.TargetVariable)
-
-                        SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                        |> SynExpr.pipeThroughFunction (
+                            SynExpr.createLongIdent' [ arg.TargetVariable ; Ident.create "Add" ]
+                        )
+                        SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
                     ]
                     |> SynExpr.sequential
+                |> fun expr -> arg.ArgForm, expr
+            )
 
-                [
-                    SynMatchClause.create
-                        (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
-                        (SynExpr.sequential
-                            [
-                                multipleErrorMessage
-                                |> SynExpr.pipeThroughFunction (
-                                    SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
-                                )
-                                SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
-                            ])
-                    SynMatchClause.create
-                        (SynPat.named "None")
-                        (SynExpr.pipeThroughTryWith
-                            SynPat.anon
-                            (SynExpr.createLongIdent [ "exc" ; "Message" ]
-                             |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
-                             |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
-                            performAssignment)
-                ]
-                |> SynExpr.createMatch (SynExpr.createIdent' arg.TargetVariable)
-            | Accumulation.List ->
+        let posArg =
+            match pos with
+            | None -> []
+            | Some pos ->
                 [
                     SynExpr.createIdent "value"
-                    |> SynExpr.pipeThroughFunction arg.Parser
+                    |> SynExpr.pipeThroughFunction pos.Parser
+                    |> fun p ->
+                        match pos.Accumulation with
+                        | ChoicePositional.Choice -> p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                        | ChoicePositional.Normal -> p
                     |> SynExpr.pipeThroughFunction (
-                        SynExpr.createLongIdent' [ arg.TargetVariable ; Ident.create "Add" ]
+                        SynExpr.createLongIdent' [ pos.TargetVariable ; Ident.create "Add" ]
                     )
                     SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
                 ]
                 |> SynExpr.sequential
+                |> fun expr -> pos.ArgForm, expr
+                |> List.singleton
+
+        (SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None"), posArg @ args)
+        ||> List.fold (fun finalBranch (argForm, arg) ->
+            arg
             |> SynExpr.ifThenElse
                 (SynExpr.applyFunction
                     (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
                     (SynExpr.tuple
                         [
                             SynExpr.createIdent "key"
-                            SynExpr.CreateConst arg.ArgForm
+                            SynExpr.CreateConst argForm
                             SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
                         ]))
                 finalBranch
@@ -685,7 +759,7 @@ module internal ArgParserGenerator =
         )
 
     /// `let setFlagValue (key : string) : bool = ...`
-    let private setFlagValue (argParseErrors : Ident) (flags : ParseFunction list) : SynBinding =
+    let private setFlagValue (argParseErrors : Ident) (flags : ParseFunction<'a> list) : SynBinding =
         (SynExpr.CreateConst false, flags)
         ||> List.fold (fun finalExpr flag ->
             let multipleErrorMessage =
@@ -734,6 +808,7 @@ module internal ArgParserGenerator =
     let private mainLoop
         (parseState : Ident)
         (errorAcc : Ident)
+        (leftoverArgAcc : ChoicePositional)
         (leftoverArgs : Ident)
         (leftoverArgParser : SynExpr)
         : SynBinding
@@ -780,6 +855,11 @@ module internal ArgParserGenerator =
                     [
                         SynExpr.createIdent "arg"
                         |> SynExpr.pipeThroughFunction leftoverArgParser
+                        |> fun p ->
+                            match leftoverArgAcc with
+                            | ChoicePositional.Normal -> p
+                            | ChoicePositional.Choice ->
+                                p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
                         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
 
                         recurseKey
@@ -945,6 +1025,16 @@ module internal ArgParserGenerator =
                             |> SynExpr.pipeThroughFunction (
                                 SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ]) leftoverArgParser
                             )
+                            |> fun p ->
+                                match leftoverArgAcc with
+                                | ChoicePositional.Normal -> p
+                                | ChoicePositional.Choice ->
+                                    p
+                                    |> SynExpr.pipeThroughFunction (
+                                        SynExpr.applyFunction
+                                            (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                                            (SynExpr.createIdent "Choice2Of2")
+                                    )
                         ))
                         (SynExpr.createIdent' leftoverArgs))
                 SynMatchClause.create (SynPat.listCons (SynPat.named "arg") (SynPat.named "args")) argBody
@@ -983,7 +1073,12 @@ module internal ArgParserGenerator =
                     |> SynBinding.basic [ pf.TargetVariable ] []
                     |> SynBinding.withMutability true
                     |> SynBinding.withReturnAnnotation (SynType.appPostfix "option" pf.TargetType)
-                | Accumulation.List ->
+                | Accumulation.List (Accumulation.List _)
+                | Accumulation.List Accumulation.Optional
+                | Accumulation.List (Accumulation.Choice _) ->
+                    failwith
+                        "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists."
+                | Accumulation.List Accumulation.Required ->
                     SynExpr.createIdent "ResizeArray"
                     |> SynExpr.applyTo (SynExpr.CreateConst ())
                     |> SynBinding.basic [ pf.TargetVariable ] []
@@ -997,7 +1092,11 @@ module internal ArgParserGenerator =
                     Ident.create "parser_LeftoverArgs",
                     (SynExpr.createLambda "x" (SynExpr.createIdent "x")),
                     SynType.string
-                | Some pf -> pf.TargetVariable, pf.Parser, pf.TargetType
+                | Some pf ->
+                    match pf.Accumulation with
+                    | ChoicePositional.Choice ->
+                        pf.TargetVariable, pf.Parser, SynType.app "Choice" [ pf.TargetType ; pf.TargetType ]
+                    | ChoicePositional.Normal -> pf.TargetVariable, pf.Parser, pf.TargetType
 
             let bindings =
                 SynExpr.createIdent "ResizeArray"
@@ -1078,7 +1177,12 @@ module internal ArgParserGenerator =
                     |> SynBinding.basic [ pf.TargetVariable ] []
                 | Accumulation.Optional ->
                     SynBinding.basic [ pf.TargetVariable ] [] (SynExpr.createIdent' pf.TargetVariable)
-                | Accumulation.List ->
+                | Accumulation.List (Accumulation.List _)
+                | Accumulation.List Accumulation.Optional
+                | Accumulation.List (Accumulation.Choice _) ->
+                    failwith
+                        "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists."
+                | Accumulation.List Accumulation.Required ->
                     SynBinding.basic
                         [ pf.TargetVariable ]
                         []
@@ -1176,6 +1280,11 @@ module internal ArgParserGenerator =
                 | _ -> false
             )
 
+        let leftoverArgAcc =
+            match pos with
+            | None -> ChoicePositional.Normal
+            | Some pos -> pos.Accumulation
+
         [
             SynExpr.createIdent "go"
             |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
@@ -1187,9 +1296,9 @@ module internal ArgParserGenerator =
         |> SynExpr.createLet (
             bindings
             @ [
-                processKeyValue argParseErrors (Option.toList pos @ nonPos)
+                processKeyValue argParseErrors pos nonPos
                 setFlagValue argParseErrors flags
-                mainLoop parseState argParseErrors leftoverArgsName leftoverArgsParser
+                mainLoop parseState argParseErrors leftoverArgAcc leftoverArgsName leftoverArgsParser
             ]
         )
 

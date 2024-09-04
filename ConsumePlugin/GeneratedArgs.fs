@@ -228,8 +228,8 @@ module Basic =
                 (sprintf "--bar  string%s%s" "" "")
                 (sprintf "--baz  bool%s%s" "" "")
                 (sprintf
-                    "--rest  string (positional args)%s%s"
-                    " (can be repeated)"
+                    "--rest  string%s%s"
+                    " (positional args) (can be repeated)"
                     (sprintf " : %s" ("Here's where the rest of the args go")))
             ]
             |> String.concat "\n"
@@ -415,7 +415,7 @@ module BasicWithIntPositionals =
                 (sprintf "--foo  int32%s%s" "" "")
                 (sprintf "--bar  string%s%s" "" "")
                 (sprintf "--baz  bool%s%s" "" "")
-                (sprintf "--rest  int32 (positional args)%s%s" " (can be repeated)" "")
+                (sprintf "--rest  int32%s%s" " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -619,7 +619,7 @@ module LoadsOfTypes =
                     "--yet-another-optional-thing  string%s%s"
                     ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
                     "")
-                (sprintf "--positionals  int32 (positional args)%s%s" " (can be repeated)" "")
+                (sprintf "--positionals  int32%s%s" " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -1801,7 +1801,7 @@ module ParentRecordChildPosArgParse =
                 [
                     (sprintf "--and-another  bool%s%s" "" "")
                     (sprintf "--thing1  int32%s%s" "" "")
-                    (sprintf "--thing2  string (positional args)%s%s" " (can be repeated)" "")
+                    (sprintf "--thing2  string%s%s" " (positional args) (can be repeated)" "")
                 ]
                 |> String.concat "\n"
 
@@ -1972,7 +1972,7 @@ module ParentRecordSelfPosArgParse =
                 [
                     (sprintf "--thing1  int32%s%s" "" "")
                     (sprintf "--thing2  string%s%s" "" "")
-                    (sprintf "--and-another  bool (positional args)%s%s" " (can be repeated)" "")
+                    (sprintf "--and-another  bool%s%s" " (positional args) (can be repeated)" "")
                 ]
                 |> String.concat "\n"
 
@@ -2108,3 +2108,107 @@ module ParentRecordSelfPosArgParse =
 
         static member parse (args : string list) : ParentRecordSelfPos =
             ParentRecordSelfPos.parse' System.Environment.GetEnvironmentVariable args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type ChoicePositionals
+[<AutoOpen>]
+module ChoicePositionalsArgParse =
+    type private ParseState_ChoicePositionals =
+        | AwaitingKey
+        | AwaitingValue of key : string
+
+    /// Extension methods for argument parsing
+    type ChoicePositionals with
+
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ChoicePositionals =
+            let ArgParser_errors = ResizeArray ()
+
+            let helpText () =
+                [ (sprintf "--args  string%s%s" " (positional args) (can be repeated)" "") ]
+                |> String.concat "\n"
+
+            let arg_0 : Choice<string, string> ResizeArray = ResizeArray ()
+
+            /// Processes the key-value pair, returning Error if no key was matched.
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, "--args", System.StringComparison.OrdinalIgnoreCase) then
+                    value |> (fun x -> x) |> Choice1Of2 |> arg_0.Add
+                    () |> Ok
+                else
+                    Error None
+
+            /// Returns false if we didn't set a value.
+            let setFlagValue (key : string) : bool = false
+
+            let rec go (state : ParseState_ChoicePositionals) (args : string list) =
+                match args with
+                | [] ->
+                    match state with
+                    | ParseState_ChoicePositionals.AwaitingKey -> ()
+                    | ParseState_ChoicePositionals.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+                | "--" :: rest -> arg_0.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
+                | arg :: args ->
+                    match state with
+                    | ParseState_ChoicePositionals.AwaitingKey ->
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                            if arg = "--help" then
+                                helpText () |> failwithf "Help text requested.\n%s"
+                            else
+                                let equals = arg.IndexOf (char 61)
+
+                                if equals < 0 then
+                                    args |> go (ParseState_ChoicePositionals.AwaitingValue arg)
+                                else
+                                    let key = arg.[0 .. equals - 1]
+                                    let value = arg.[equals + 1 ..]
+
+                                    match processKeyValue key value with
+                                    | Ok () -> go ParseState_ChoicePositionals.AwaitingKey args
+                                    | Error None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Error (Some msg) ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_ChoicePositionals.AwaitingKey args
+                        else
+                            arg |> (fun x -> x) |> Choice1Of2 |> arg_0.Add
+                            go ParseState_ChoicePositionals.AwaitingKey args
+                    | ParseState_ChoicePositionals.AwaitingValue key ->
+                        match processKeyValue key arg with
+                        | Ok () -> go ParseState_ChoicePositionals.AwaitingKey args
+                        | Error exc ->
+                            if setFlagValue key then
+                                go ParseState_ChoicePositionals.AwaitingKey (arg :: args)
+                            else
+                                match exc with
+                                | None ->
+                                    failwithf
+                                        "Unable to process supplied arg %s. Help text follows.\n%s"
+                                        key
+                                        (helpText ())
+                                | Some msg -> msg |> ArgParser_errors.Add
+
+            go ParseState_ChoicePositionals.AwaitingKey args
+            let arg_0 = arg_0 |> Seq.toList
+
+            if 0 = ArgParser_errors.Count then
+                {
+                    Args = arg_0
+                }
+            else
+                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : ChoicePositionals =
+            ChoicePositionals.parse' System.Environment.GetEnvironmentVariable args
