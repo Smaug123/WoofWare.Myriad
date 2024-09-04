@@ -61,3 +61,12 @@ type ParseExactAttribute (format : string) =
 /// `TimeSpan.ParseExact (s, @"hh\:mm\:ss", CultureInfo.InvariantCulture).
 type InvariantCultureAttribute () =
     inherit Attribute ()
+
+/// Attribute placed on a field of a two-case no-data discriminated union, indicating that this is "basically a bool".
+/// For example: `type DryRun = | [<ArgumentFlag true>] Dry | [<ArgumentFlag false>] Wet`
+/// A record with `{ DryRun : DryRun }` will then be parsed like `{ DryRun : bool }` (so the user supplies `--dry-run`),
+/// but that you get this strongly-typed value directly in the code (so you `match args.DryRun with | DryRun.Dry ...`).
+///
+/// You must put this attribute on both cases of the discriminated union, with opposite values in each case.
+type ArgumentFlagAttribute (flagValue : bool) =
+    inherit Attribute ()
