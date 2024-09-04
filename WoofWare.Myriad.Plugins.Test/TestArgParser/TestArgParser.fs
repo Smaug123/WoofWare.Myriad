@@ -466,7 +466,7 @@ Required argument '--exact' received no value"""
                 BoolVar = Choice1Of2 true
             }
 
-    [<TestCaseSource(nameof (boolCases))>]
+    [<TestCaseSource(nameof boolCases)>]
     let ``Flag DUs can be parsed from env var`` (envValue : string, boolValue : bool) =
         let getEnvVar (s : string) =
             s |> shouldEqual "CONSUMEPLUGIN_THINGS"
@@ -479,3 +479,62 @@ Required argument '--exact' received no value"""
             {
                 DryRun = Choice2Of2 boolValue
             }
+
+    let dryRunData =
+        [
+            [ "--dry-run" ], DryRunMode.Dry
+            [ "--dry-run" ; "true" ], DryRunMode.Dry
+            [ "--dry-run=true" ], DryRunMode.Dry
+            [ "--dry-run" ; "True" ], DryRunMode.Dry
+            [ "--dry-run=True" ], DryRunMode.Dry
+            [ "--dry-run" ; "false" ], DryRunMode.Wet
+            [ "--dry-run=false" ], DryRunMode.Wet
+            [ "--dry-run" ; "False" ], DryRunMode.Wet
+            [ "--dry-run=False" ], DryRunMode.Wet
+        ]
+        |> List.map TestCaseData
+
+    [<TestCaseSource(nameof dryRunData)>]
+    let ``Flag DUs can be parsed`` (args : string list, expected : DryRunMode) =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        ContainsFlagEnvVar.parse' getEnvVar args
+        |> shouldEqual
+            {
+                DryRun = Choice1Of2 expected
+            }
+
+    [<TestCaseSource(nameof dryRunData)>]
+    let ``Flag DUs can be parsed, ArgumentDefaultFunction`` (args : string list, expected : DryRunMode) =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        ContainsFlagDefaultValue.parse' getEnvVar args
+        |> shouldEqual
+            {
+                DryRun = Choice1Of2 expected
+            }
+
+    [<Test>]
+    let ``Flag DUs can be given a default value`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        ContainsFlagDefaultValue.parse' getEnvVar []
+        |> shouldEqual
+            {
+                DryRun = Choice2Of2 DryRunMode.Wet
+            }
+
+    [<Test>]
+    let ``Help text for flag DU`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ContainsFlagDefaultValue.parse' getEnvVar [ "--help" ]
+                |> ignore<ContainsFlagDefaultValue>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--dry-run  bool (default value: false)"""

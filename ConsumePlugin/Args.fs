@@ -148,9 +148,12 @@ module Consts =
     [<Literal>]
     let FALSE = false
 
+    [<Literal>]
+    let TRUE = true
+
 type DryRunMode =
-    | [<ArgumentFlag true>] Dry
     | [<ArgumentFlag(Consts.FALSE)>] Wet
+    | [<ArgumentFlag true>] Dry
 
 [<ArgParser true>]
 type WithFlagDu =
@@ -161,6 +164,17 @@ type WithFlagDu =
 [<ArgParser true>]
 type ContainsFlagEnvVar =
     {
+        // This phrasing is odd, but it's for a test. Nobody's really going to have `--dry-run`
+        // controlled by an env var!
         [<ArgumentDefaultEnvironmentVariable "CONSUMEPLUGIN_THINGS">]
         DryRun : Choice<DryRunMode, DryRunMode>
     }
+
+[<ArgParser true>]
+type ContainsFlagDefaultValue =
+    {
+        [<ArgumentDefaultFunction>]
+        DryRun : Choice<DryRunMode, DryRunMode>
+    }
+
+    static member DefaultDryRun () = DryRunMode.Wet
