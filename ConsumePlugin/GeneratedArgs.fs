@@ -1801,11 +1801,11 @@ module ParentRecordChildPosArgParse =
                 [
                     (sprintf "--and-another  bool%s%s" "" "")
                     (sprintf "--thing1  int32%s%s" "" "")
-                    (sprintf "--thing2  string%s%s" " (positional args) (can be repeated)" "")
+                    (sprintf "--thing2  URI%s%s" " (positional args) (can be repeated)" "")
                 ]
                 |> String.concat "\n"
 
-            let arg_1 : string ResizeArray = ResizeArray ()
+            let arg_1 : Uri ResizeArray = ResizeArray ()
             let mutable arg_2 : bool option = None
             let mutable arg_0 : int option = None
 
@@ -1840,7 +1840,7 @@ module ParentRecordChildPosArgParse =
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if System.String.Equals (key, "--thing2", System.StringComparison.OrdinalIgnoreCase) then
-                    value |> (fun x -> x) |> arg_1.Add
+                    value |> (fun x -> System.Uri x) |> arg_1.Add
                     () |> Ok
                 else
                     Error None
@@ -1873,7 +1873,7 @@ module ParentRecordChildPosArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Uri x))
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecordChildPos.AwaitingKey ->
@@ -1897,7 +1897,7 @@ module ParentRecordChildPosArgParse =
                                         sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
                                         go ParseState_ParentRecordChildPos.AwaitingKey args
                         else
-                            arg |> (fun x -> x) |> arg_1.Add
+                            arg |> (fun x -> System.Uri x) |> arg_1.Add
                             go ParseState_ParentRecordChildPos.AwaitingKey args
                     | ParseState_ParentRecordChildPos.AwaitingValue key ->
                         match processKeyValue key arg with

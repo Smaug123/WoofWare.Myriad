@@ -257,6 +257,12 @@ module internal ArgParserGenerator =
                     (SynExpr.createIdent "x")),
             Accumulation.Required,
             ty
+        | Uri ->
+            SynExpr.createLambda
+                "x"
+                (SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Uri" ]) (SynExpr.createIdent "x")),
+            Accumulation.Required,
+            ty
         | TimeSpan ->
             let parseExact =
                 attrs

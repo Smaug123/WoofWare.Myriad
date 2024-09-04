@@ -367,18 +367,19 @@ Required argument '--exact' received no value"""
         let parsed =
             ParentRecordChildPos.parse'
                 getEnvVar
-                [ "--and-another=true" ; "--thing1=9" ; "--thing2=some" ; "--thing2=thing" ]
+                [
+                    "--and-another=true"
+                    "--thing1=9"
+                    "--thing2=https://example.com"
+                    "--thing2=http://example.com"
+                ]
 
-        parsed
-        |> shouldEqual
-            {
-                Child =
-                    {
-                        Thing1 = 9
-                        Thing2 = [ "some" ; "thing" ]
-                    }
-                AndAnother = true
-            }
+        parsed.AndAnother |> shouldEqual true
+        parsed.Child.Thing1 |> shouldEqual 9
+
+        parsed.Child.Thing2
+        |> List.map (fun (x : Uri) -> x.ToString ())
+        |> shouldEqual [ "https://example.com/" ; "http://example.com/" ]
 
     [<Test>]
     let ``Can consume stacked record, child has no positionals, parent has positionals`` () =
