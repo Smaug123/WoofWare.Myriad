@@ -50,7 +50,11 @@ type private ParseFunction<'acc> =
     {
         FieldName : Ident
         TargetVariable : Ident
-        ArgForm : string
+        /// Any of the forms in this set are acceptable, but make sure they all start with a dash, or we might
+        /// get confused with positional args or something! I haven't thought that hard about this.
+        /// In the default case, this is `Const("arg-name")` for the `ArgName : blah` field; note that we have
+        /// omitted the initial `--` that will be required at runtime.
+        ArgForm : SynExpr list
         /// If this is a boolean-like field (e.g. a bool or a flag DU), the help text should look a bit different:
         /// we should lie to the user about the value of the cases there.
         /// Similarly, if we're reading from an environment variable with the laxer parsing rules of accepting e.g.
@@ -69,6 +73,15 @@ type private ParseFunction<'acc> =
         TargetType : SynType
         Accumulation : 'acc
     }
+
+    /// A SynExpr of type `string` which we can display to the user at generated-program runtime to display all
+    /// the ways they can refer to this arg.
+    member arg.HumanReadableArgForm : SynExpr =
+        let formatString = List.replicate arg.ArgForm.Length "--%s" |> String.concat " / "
+
+        (SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst formatString), arg.ArgForm)
+        ||> List.fold SynExpr.applyFunction
+        |> SynExpr.paren
 
 [<RequireQualifiedAccess>]
 type private ChoicePositional =
@@ -210,7 +223,15 @@ module private ParseTree =
 
         |> fun (nonPos, pos) ->
             let duplicateArgs =
+                // This is best-effort. We can't necessarily detect all SynExprs here, but usually it'll be strings.
                 Option.toList (pos |> Option.map _.ArgForm) @ (nonPos |> List.map _.ArgForm)
+                |> Seq.concat
+                |> Seq.choose (fun expr ->
+                    match expr |> SynExpr.stripOptionalParen with
+                    | SynExpr.Const (SynConst.String (s, _, _), _) -> Some s
+                    | _ -> None
+                )
+                |> List.ofSeq
                 |> List.groupBy id
                 |> List.choose (fun (key, v) -> if v.Length > 1 then Some key else None)
 
@@ -251,7 +272,6 @@ module internal ArgParserGenerator =
     /// Convert e.g. "Foo" into "--foo".
     let argify (ident : Ident) : string =
         let result = StringBuilder ()
-        result.Append "-" |> ignore<StringBuilder>
 
         for c in ident.idText do
             if Char.IsUpper c then
@@ -259,7 +279,7 @@ module internal ArgParserGenerator =
             else
                 result.Append c |> ignore<StringBuilder>
 
-        result.ToString ()
+        result.ToString().TrimStart '-'
 
     let private identifyAsFlag (flagDus : FlagDu list) (ty : SynType) : FlagDu option =
         match ty with
@@ -531,6 +551,20 @@ module internal ArgParserGenerator =
                     | None -> failwith "expected args field to have a name, but it did not"
                     | Some i -> i
 
+                let longForms =
+                    attrs
+                    |> List.choose (fun attr ->
+                        match attr.TypeName with
+                        | SynLongIdent.SynLongIdent (ident, _, _) ->
+                            if (List.last ident).idText = "ArgumentLongForm" then
+                                Some attr.ArgExpr
+                            else
+                                None
+                    )
+                    |> function
+                        | [] -> List.singleton (SynExpr.CreateConst (argify ident))
+                        | l -> List.ofSeq l
+
                 let ambientRecordMatch =
                     match fieldType with
                     | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
@@ -575,7 +609,7 @@ module internal ArgParserGenerator =
                             TargetVariable = Ident.create $"arg_%i{counter}"
                             Accumulation = ChoicePositional.Choice
                             TargetType = parseTy
-                            ArgForm = argify ident
+                            ArgForm = longForms
                             Help = helpText
                             BoolCases = isBoolLike
                         }
@@ -587,7 +621,7 @@ module internal ArgParserGenerator =
                             TargetVariable = Ident.create $"arg_%i{counter}"
                             Accumulation = ChoicePositional.Normal
                             TargetType = parseTy
-                            ArgForm = argify ident
+                            ArgForm = longForms
                             Help = helpText
                             BoolCases = isBoolLike
                         }
@@ -620,7 +654,7 @@ module internal ArgParserGenerator =
                         TargetVariable = Ident.create $"arg_%i{counter}"
                         Accumulation = accumulation
                         TargetType = parseTy
-                        ArgForm = argify ident
+                        ArgForm = longForms
                         Help = helpText
                         BoolCases = isBoolLike
                     }
@@ -715,9 +749,8 @@ module internal ArgParserGenerator =
 
             let descriptor = describe arg.Accumulation arg.BoolCases
 
-            let prefix = $"%s{arg.ArgForm}  %s{ty}"
-
-            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst (prefix + "%s%s"))
+            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst $"%%s  %s{ty} %%s%%s")
+            |> SynExpr.applyTo arg.HumanReadableArgForm
             |> SynExpr.applyTo descriptor
             |> SynExpr.applyTo helpText
             |> SynExpr.paren
@@ -754,7 +787,7 @@ module internal ArgParserGenerator =
                     let multipleErrorMessage =
                         SynExpr.createIdent "sprintf"
                         |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %O and %O")
-                        |> SynExpr.applyTo (SynExpr.CreateConst arg.ArgForm)
+                        |> SynExpr.applyTo arg.HumanReadableArgForm
                         |> SynExpr.applyTo (SynExpr.createIdent "x")
                         |> SynExpr.applyTo (SynExpr.createIdent "value")
 
@@ -830,17 +863,24 @@ module internal ArgParserGenerator =
 
         (SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None"), posArg @ args)
         ||> List.fold (fun finalBranch (argForm, arg) ->
-            arg
-            |> SynExpr.ifThenElse
-                (SynExpr.applyFunction
-                    (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
-                    (SynExpr.tuple
-                        [
-                            SynExpr.createIdent "key"
-                            SynExpr.CreateConst argForm
-                            SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
-                        ]))
-                finalBranch
+            (finalBranch, argForm)
+            ||> List.fold (fun finalBranch argForm ->
+                arg
+                |> SynExpr.ifThenElse
+                    (SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                        (SynExpr.tuple
+                            [
+                                SynExpr.createIdent "key"
+                                SynExpr.applyFunction
+                                    (SynExpr.applyFunction
+                                        (SynExpr.createIdent "sprintf")
+                                        (SynExpr.CreateConst "--%s"))
+                                    argForm
+                                SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                            ]))
+                    finalBranch
+            )
         )
         |> SynBinding.basic
             [ Ident.create "processKeyValue" ]
@@ -870,40 +910,52 @@ module internal ArgParserGenerator =
             let multipleErrorMessage =
                 SynExpr.createIdent "sprintf"
                 |> SynExpr.applyTo (SynExpr.CreateConst "Flag '%s' was supplied multiple times")
-                |> SynExpr.applyTo (SynExpr.CreateConst flag.ArgForm)
+                |> SynExpr.applyTo flag.HumanReadableArgForm
 
-            [
-                SynMatchClause.create
-                    (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
-                    // This is an error, but it's one we can gracefully report at the end.
-                    (SynExpr.sequential
-                        [
-                            multipleErrorMessage
-                            |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors))
+            let matchFlag =
+                [
+                    SynMatchClause.create
+                        (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
+                        // This is an error, but it's one we can gracefully report at the end.
+                        (SynExpr.sequential
+                            [
+                                multipleErrorMessage
+                                |> SynExpr.pipeThroughFunction (
+                                    SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
+                                )
+                                SynExpr.CreateConst true
+                            ])
+
+                    SynMatchClause.create
+                        (SynPat.named "None")
+                        ([
+                            SynExpr.assign
+                                (SynLongIdent.createI flag.TargetVariable)
+                                (SynExpr.pipeThroughFunction (SynExpr.createIdent "Some") trueCase)
                             SynExpr.CreateConst true
-                        ])
+                         ]
+                         |> SynExpr.sequential)
+                ]
+                |> SynExpr.createMatch (SynExpr.createIdent' flag.TargetVariable)
 
-                SynMatchClause.create
-                    (SynPat.named "None")
-                    ([
-                        SynExpr.assign
-                            (SynLongIdent.createI flag.TargetVariable)
-                            (SynExpr.pipeThroughFunction (SynExpr.createIdent "Some") trueCase)
-                        SynExpr.CreateConst true
-                     ]
-                     |> SynExpr.sequential)
-            ]
-            |> SynExpr.createMatch (SynExpr.createIdent' flag.TargetVariable)
-            |> SynExpr.ifThenElse
-                (SynExpr.applyFunction
-                    (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
-                    (SynExpr.tuple
-                        [
-                            SynExpr.createIdent "key"
-                            SynExpr.CreateConst flag.ArgForm
-                            SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
-                        ]))
-                finalExpr
+            (finalExpr, flag.ArgForm)
+            ||> List.fold (fun finalExpr argForm ->
+                SynExpr.ifThenElse
+                    (SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                        (SynExpr.tuple
+                            [
+                                SynExpr.createIdent "key"
+                                SynExpr.applyFunction
+                                    (SynExpr.applyFunction
+                                        (SynExpr.createIdent "sprintf")
+                                        (SynExpr.CreateConst "--%s"))
+                                    argForm
+                                SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                            ]))
+                    finalExpr
+                    matchFlag
+            )
         )
         |> SynBinding.basic [ Ident.create "setFlagValue" ] [ SynPat.annotateType SynType.string (SynPat.named "key") ]
         |> SynBinding.withReturnAnnotation (SynType.named "bool")
@@ -1289,7 +1341,7 @@ module internal ArgParserGenerator =
                                     SynExpr.CreateConst
                                         "No value was supplied for %s, nor was environment variable %s set"
                                 )
-                                |> SynExpr.applyTo (SynExpr.CreateConst pf.ArgForm)
+                                |> SynExpr.applyTo pf.HumanReadableArgForm
                                 |> SynExpr.applyTo name
 
                             [
@@ -1338,7 +1390,7 @@ module internal ArgParserGenerator =
                     let errorMessage =
                         SynExpr.createIdent "sprintf"
                         |> SynExpr.applyTo (SynExpr.CreateConst "Required argument '%s' received no value")
-                        |> SynExpr.applyTo (SynExpr.CreateConst pf.ArgForm)
+                        |> SynExpr.applyTo pf.HumanReadableArgForm
 
                     [
                         SynMatchClause.create

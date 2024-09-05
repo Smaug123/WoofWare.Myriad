@@ -550,3 +550,58 @@ Required argument '--exact' received no value"""
         |> shouldEqual
             """Help text requested.
 --dry-run  bool"""
+
+    let longFormCases =
+        let doTheThing =
+            [
+                [ "--do-something-else=foo" ]
+                [ "--anotherarg=foo" ]
+                [ "--do-something-else" ; "foo" ]
+                [ "--anotherarg" ; "foo" ]
+            ]
+
+        let someFlag =
+            [
+                [ "--turn-it-on" ], true
+                [ "--dont-turn-it-off" ], true
+                [ "--turn-it-on=true" ], true
+                [ "--dont-turn-it-off=true" ], true
+                [ "--turn-it-on=false" ], false
+                [ "--dont-turn-it-off=false" ], false
+                [ "--turn-it-on" ; "true" ], true
+                [ "--dont-turn-it-off" ; "true" ], true
+                [ "--turn-it-on" ; "false" ], false
+                [ "--dont-turn-it-off" ; "false" ], false
+            ]
+
+        List.allPairs doTheThing someFlag
+        |> List.map (fun (doTheThing, (someFlag, someFlagResult)) ->
+            let args = doTheThing @ someFlag
+
+            let expected =
+                {
+                    DoTheThing = "foo"
+                    SomeFlag = someFlagResult
+                }
+
+            args, expected
+        )
+        |> List.map TestCaseData
+
+    [<TestCaseSource(nameof longFormCases)>]
+    let ``Long-form args`` (args : string list, expected : ManyLongForms) =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        ManyLongForms.parse' getEnvVar args |> shouldEqual expected
+
+    [<Test>]
+    let ``Long-form args can't be referred to by their original name`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ManyLongForms.parse' getEnvVar [ "--do-the-thing=foo" ] |> ignore<ManyLongForms>
+            )
+
+        exc.Message
+        |> shouldEqual """Unable to process argument --do-the-thing=foo as key --do-the-thing and value foo"""

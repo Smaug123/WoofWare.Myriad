@@ -70,3 +70,15 @@ type InvariantCultureAttribute () =
 /// You must put this attribute on both cases of the discriminated union, with opposite values in each case.
 type ArgumentFlagAttribute (flagValue : bool) =
     inherit Attribute ()
+
+/// Attribute placed on a field of a record to specify a different long form from the default. If you place this
+/// attribute, you won't get the default: ArgFoo would normally be expressed as `--arg-foo`, but if you instead
+/// say `[<ArgumentLongForm "thingy-blah">]` or `[<ArgumentLongForm "thingy">]`, you instead use `--thingy-blah`
+/// or `--thingy` respectively.
+///
+/// You can place this argument multiple times.
+///
+/// Omit the initial `--` that you expect the user to type.
+[<AttributeUsage(AttributeTargets.Field, AllowMultiple = true)>]
+type ArgumentLongForm (s : string) =
+    inherit Attribute ()

@@ -178,3 +178,15 @@ type ContainsFlagDefaultValue =
     }
 
     static member DefaultDryRun () = DryRunMode.Wet
+
+[<ArgParser true>]
+type ManyLongForms =
+    {
+        [<ArgumentLongForm "do-something-else">]
+        [<ArgumentLongForm "anotherarg">]
+        DoTheThing : string
+
+        [<ArgumentLongForm "turn-it-on">]
+        [<ArgumentLongForm "dont-turn-it-off">]
+        SomeFlag : bool
+    }
