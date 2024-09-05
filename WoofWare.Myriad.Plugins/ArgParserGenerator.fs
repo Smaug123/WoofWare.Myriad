@@ -749,7 +749,7 @@ module internal ArgParserGenerator =
 
             let descriptor = describe arg.Accumulation arg.BoolCases
 
-            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst $"%%s  %s{ty} %%s%%s")
+            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst $"%%s  %s{ty}%%s%%s")
             |> SynExpr.applyTo arg.HumanReadableArgForm
             |> SynExpr.applyTo descriptor
             |> SynExpr.applyTo helpText

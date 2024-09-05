@@ -28,10 +28,10 @@ module BasicNoPositionals =
 
         let helpText () =
             [
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "foo") "" "")
-                (sprintf "%s  string %s%s" (sprintf "--%s" "bar") "" "")
-                (sprintf "%s  bool %s%s" (sprintf "--%s" "baz") "" "")
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "rest") " (can be repeated)" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "rest") " (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -230,11 +230,11 @@ module Basic =
 
         let helpText () =
             [
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "foo") "" (sprintf " : %s" ("This is a foo!")))
-                (sprintf "%s  string %s%s" (sprintf "--%s" "bar") "" "")
-                (sprintf "%s  bool %s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" (sprintf " : %s" ("This is a foo!")))
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
                 (sprintf
-                    "%s  string %s%s"
+                    "%s  string%s%s"
                     (sprintf "--%s" "rest")
                     " (positional args) (can be repeated)"
                     (sprintf " : %s" ("Here's where the rest of the args go")))
@@ -423,10 +423,10 @@ module BasicWithIntPositionals =
 
         let helpText () =
             [
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "foo") "" "")
-                (sprintf "%s  string %s%s" (sprintf "--%s" "bar") "" "")
-                (sprintf "%s  bool %s%s" (sprintf "--%s" "baz") "" "")
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "rest") " (positional args) (can be repeated)" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "rest") " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -612,32 +612,32 @@ module LoadsOfTypes =
 
         let helpText () =
             [
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "foo") "" "")
-                (sprintf "%s  string %s%s" (sprintf "--%s" "bar") "" "")
-                (sprintf "%s  bool %s%s" (sprintf "--%s" "baz") "" "")
-                (sprintf "%s  FileInfo %s%s" (sprintf "--%s" "some-file") "" "")
-                (sprintf "%s  DirectoryInfo %s%s" (sprintf "--%s" "some-directory") "" "")
-                (sprintf "%s  DirectoryInfo %s%s" (sprintf "--%s" "some-list") " (can be repeated)" "")
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "optional-thing-with-no-default") " (optional)" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "%s  FileInfo%s%s" (sprintf "--%s" "some-file") "" "")
+                (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-directory") "" "")
+                (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-list") " (can be repeated)" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "optional-thing-with-no-default") " (optional)" "")
 
                 (sprintf
-                    "%s  bool %s%s"
+                    "%s  bool%s%s"
                     (sprintf "--%s" "optional-thing")
                     (LoadsOfTypes.DefaultOptionalThing () |> sprintf " (default value: %O)")
                     "")
 
                 (sprintf
-                    "%s  int32 %s%s"
+                    "%s  int32%s%s"
                     (sprintf "--%s" "another-optional-thing")
                     (LoadsOfTypes.DefaultAnotherOptionalThing () |> sprintf " (default value: %O)")
                     "")
 
                 (sprintf
-                    "%s  string %s%s"
+                    "%s  string%s%s"
                     (sprintf "--%s" "yet-another-optional-thing")
                     ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
                     "")
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "positionals") " (positional args) (can be repeated)" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "positionals") " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -1025,29 +1025,29 @@ module LoadsOfTypesNoPositionals =
 
         let helpText () =
             [
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "foo") "" "")
-                (sprintf "%s  string %s%s" (sprintf "--%s" "bar") "" "")
-                (sprintf "%s  bool %s%s" (sprintf "--%s" "baz") "" "")
-                (sprintf "%s  FileInfo %s%s" (sprintf "--%s" "some-file") "" "")
-                (sprintf "%s  DirectoryInfo %s%s" (sprintf "--%s" "some-directory") "" "")
-                (sprintf "%s  DirectoryInfo %s%s" (sprintf "--%s" "some-list") " (can be repeated)" "")
-                (sprintf "%s  int32 %s%s" (sprintf "--%s" "optional-thing-with-no-default") " (optional)" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "%s  FileInfo%s%s" (sprintf "--%s" "some-file") "" "")
+                (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-directory") "" "")
+                (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-list") " (can be repeated)" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "optional-thing-with-no-default") " (optional)" "")
 
                 (sprintf
-                    "%s  bool %s%s"
+                    "%s  bool%s%s"
                     (sprintf "--%s" "optional-thing")
                     (LoadsOfTypesNoPositionals.DefaultOptionalThing ()
                      |> sprintf " (default value: %O)")
                     "")
 
                 (sprintf
-                    "%s  int32 %s%s"
+                    "%s  int32%s%s"
                     (sprintf "--%s" "another-optional-thing")
                     (LoadsOfTypesNoPositionals.DefaultAnotherOptionalThing ()
                      |> sprintf " (default value: %O)")
                     "")
                 (sprintf
-                    "%s  string %s%s"
+                    "%s  string%s%s"
                     (sprintf "--%s" "yet-another-optional-thing")
                     ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
                     "")
@@ -1445,16 +1445,16 @@ module DatesAndTimesArgParse =
 
             let helpText () =
                 [
-                    (sprintf "%s  TimeSpan %s%s" (sprintf "--%s" "plain") "" "")
-                    (sprintf "%s  TimeSpan %s%s" (sprintf "--%s" "invariant") "" "")
+                    (sprintf "%s  TimeSpan%s%s" (sprintf "--%s" "plain") "" "")
+                    (sprintf "%s  TimeSpan%s%s" (sprintf "--%s" "invariant") "" "")
 
                     (sprintf
-                        "%s  TimeSpan %s%s"
+                        "%s  TimeSpan%s%s"
                         (sprintf "--%s" "exact")
                         ""
                         (sprintf " : %s" (sprintf "%s [Parse format (.NET): %s]" "An exact time please" @"hh\:mm\:ss")))
                     (sprintf
-                        "%s  TimeSpan %s%s"
+                        "%s  TimeSpan%s%s"
                         (sprintf "--%s" "invariant-exact")
                         ""
                         (sprintf " : %s" (sprintf "[Parse format (.NET): %s]" @"hh\:mm\:ss")))
@@ -1713,9 +1713,9 @@ module ParentRecordArgParse =
 
             let helpText () =
                 [
-                    (sprintf "%s  int32 %s%s" (sprintf "--%s" "thing1") "" "")
-                    (sprintf "%s  string %s%s" (sprintf "--%s" "thing2") "" "")
-                    (sprintf "%s  bool %s%s" (sprintf "--%s" "and-another") "" "")
+                    (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "thing2") "" "")
+                    (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") "" "")
                 ]
                 |> String.concat "\n"
 
@@ -1928,9 +1928,9 @@ module ParentRecordChildPosArgParse =
 
             let helpText () =
                 [
-                    (sprintf "%s  bool %s%s" (sprintf "--%s" "and-another") "" "")
-                    (sprintf "%s  int32 %s%s" (sprintf "--%s" "thing1") "" "")
-                    (sprintf "%s  URI %s%s" (sprintf "--%s" "thing2") " (positional args) (can be repeated)" "")
+                    (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") "" "")
+                    (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
+                    (sprintf "%s  URI%s%s" (sprintf "--%s" "thing2") " (positional args) (can be repeated)" "")
                 ]
                 |> String.concat "\n"
 
@@ -2111,9 +2111,9 @@ module ParentRecordSelfPosArgParse =
 
             let helpText () =
                 [
-                    (sprintf "%s  int32 %s%s" (sprintf "--%s" "thing1") "" "")
-                    (sprintf "%s  string %s%s" (sprintf "--%s" "thing2") "" "")
-                    (sprintf "%s  bool %s%s" (sprintf "--%s" "and-another") " (positional args) (can be repeated)" "")
+                    (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "thing2") "" "")
+                    (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") " (positional args) (can be repeated)" "")
                 ]
                 |> String.concat "\n"
 
@@ -2276,7 +2276,7 @@ module ChoicePositionalsArgParse =
 
             let helpText () =
                 [
-                    (sprintf "%s  string %s%s" (sprintf "--%s" "args") " (positional args) (can be repeated)" "")
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "args") " (positional args) (can be repeated)" "")
                 ]
                 |> String.concat "\n"
 
@@ -2385,7 +2385,7 @@ module ContainsBoolEnvVarArgParse =
             let helpText () =
                 [
                     (sprintf
-                        "%s  bool %s%s"
+                        "%s  bool%s%s"
                         (sprintf "--%s" "bool-var")
                         ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
                         "")
@@ -2554,7 +2554,7 @@ module WithFlagDuArgParse =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  bool %s%s" (sprintf "--%s" "dry-run") "" "") ]
+                [ (sprintf "%s  bool%s%s" (sprintf "--%s" "dry-run") "" "") ]
                 |> String.concat "\n"
 
             let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
@@ -2723,7 +2723,7 @@ module ContainsFlagEnvVarArgParse =
             let helpText () =
                 [
                     (sprintf
-                        "%s  bool %s%s"
+                        "%s  bool%s%s"
                         (sprintf "--%s" "dry-run")
                         ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
                         "")
@@ -2925,7 +2925,7 @@ module ContainsFlagDefaultValueArgParse =
             let helpText () =
                 [
                     (sprintf
-                        "%s  bool %s%s"
+                        "%s  bool%s%s"
                         (sprintf "--%s" "dry-run")
                         (match ContainsFlagDefaultValue.DefaultDryRun () with
                          | DryRunMode.Wet -> if Consts.FALSE = true then "true" else "false"
@@ -3096,8 +3096,8 @@ module ManyLongFormsArgParse =
 
             let helpText () =
                 [
-                    (sprintf "%s  string %s%s" (sprintf "--%s / --%s" "do-something-else" "anotherarg") "" "")
-                    (sprintf "%s  bool %s%s" (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off") "" "")
+                    (sprintf "%s  string%s%s" (sprintf "--%s / --%s" "do-something-else" "anotherarg") "" "")
+                    (sprintf "%s  bool%s%s" (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off") "" "")
                 ]
                 |> String.concat "\n"
 

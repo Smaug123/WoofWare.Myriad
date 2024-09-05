@@ -605,3 +605,16 @@ Required argument '--exact' received no value"""
 
         exc.Message
         |> shouldEqual """Unable to process argument --do-the-thing=foo as key --do-the-thing and value foo"""
+
+    [<Test>]
+    let ``Long-form args help text`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () -> ManyLongForms.parse' getEnvVar [ "--help" ] |> ignore<ManyLongForms>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--do-something-else / --anotherarg  string
+--turn-it-on / --dont-turn-it-off  bool"""
