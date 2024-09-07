@@ -13,8 +13,12 @@ module internal SynTypeDefnRepr =
     let inline augmentation () : SynTypeDefnRepr =
         SynTypeDefnRepr.ObjectModel (SynTypeDefnKind.Augmentation range0, [], range0)
 
-    let inline union (cases : SynUnionCase list) : SynTypeDefnRepr =
-        SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (None, cases, range0), range0)
+    let inline unionWithAccess (implAccess : SynAccess option) (cases : SynUnionCase list) : SynTypeDefnRepr =
+        SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (implAccess, cases, range0), range0)
 
-    let inline record (fields : SynField list) : SynTypeDefnRepr =
-        SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (None, fields, range0), range0)
+    let inline union (cases : SynUnionCase list) : SynTypeDefnRepr = unionWithAccess None cases
+
+    let inline recordWithAccess (implAccess : SynAccess option) (fields : SynField list) : SynTypeDefnRepr =
+        SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (implAccess, fields, range0), range0)
+
+    let inline record (fields : SynField list) : SynTypeDefnRepr = recordWithAccess None fields

@@ -212,7 +212,8 @@ module internal InterfaceMockGenerator =
                 Members = Some ([ constructor ; interfaceMembers ] @ extraInterfaces)
                 XmlDoc = Some xmlDoc
                 Generics = interfaceType.Generics
-                Accessibility = Some access
+                TypeAccessibility = Some access
+                ImplAccessibility = None
                 Attributes = []
             }
 
