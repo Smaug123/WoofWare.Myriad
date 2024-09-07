@@ -36,7 +36,6 @@ module internal RemoveOptionsGenerator =
             trivia
         )
 
-    // TODO: this option seems a bit odd
     let createType
         (xmlDoc : PreXmlDoc option)
         (accessibility : SynAccess option)
@@ -54,7 +53,8 @@ module internal RemoveOptionsGenerator =
                 Members = None
                 XmlDoc = xmlDoc
                 Generics = generics
-                Accessibility = accessibility
+                TypeAccessibility = accessibility
+                ImplAccessibility = None
                 Attributes = []
             }
 
@@ -62,7 +62,7 @@ module internal RemoveOptionsGenerator =
 
         SynModuleDecl.Types ([ typeDecl ], range0)
 
-    let createMaker (withOptionsType : LongIdent) (withoutOptionsType : LongIdent) (fields : SynFieldData<Ident> list) =
+    let createMaker (withOptionsType : LongIdent) (withoutOptionsType : Ident) (fields : SynFieldData<Ident> list) =
         let xmlDoc = PreXmlDoc.create "Remove the optional members of the input."
 
         let inputArg = Ident.create "input"
@@ -87,7 +87,7 @@ module internal RemoveOptionsGenerator =
                             SynExpr.applyFunction
                                 (SynExpr.createLongIdent [ "Option" ; "defaultWith" ])
                                 (SynExpr.createLongIdent' (
-                                    withoutOptionsType
+                                    [ withoutOptionsType ]
                                     @ [ Ident.create (sprintf "Default%s" fieldData.Ident.idText) ]
                                 ))
                         )
@@ -101,47 +101,35 @@ module internal RemoveOptionsGenerator =
             [ functionName ]
             [
                 SynPat.named inputArg.idText
-                |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.create withoutOptionsType))
+                |> SynPat.annotateType (SynType.LongIdent (SynLongIdent.createI withoutOptionsType))
             ]
             body
         |> SynBinding.withXmlDoc xmlDoc
         |> SynBinding.withReturnAnnotation (SynType.LongIdent (SynLongIdent.create withOptionsType))
         |> SynModuleDecl.createLet
 
-    let createRecordModule (namespaceId : LongIdent) (typeDefn : SynTypeDefn) =
-        let (SynTypeDefn (synComponentInfo, synTypeDefnRepr, _members, _implicitCtor, _, _)) =
-            typeDefn
+    let createRecordModule (namespaceId : LongIdent) (typeDefn : RecordType) =
+        let fieldData = typeDefn.Fields |> List.map SynField.extractWithIdent
 
-        let (SynComponentInfo (_attributes, typeParams, _constraints, recordId, doc, _preferPostfix, _access, _)) =
-            synComponentInfo
+        let decls =
+            [
+                createType typeDefn.XmlDoc typeDefn.TypeAccessibility typeDefn.Generics typeDefn.Fields
+                createMaker [ Ident.create "Short" ] typeDefn.Name fieldData
+            ]
 
-        match synTypeDefnRepr with
-        | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (accessibility, fields, _range), _) ->
-            let fieldData = fields |> List.map SynField.extractWithIdent
+        let xmlDoc =
+            sprintf "Module containing an option-truncated version of the %s type" typeDefn.Name.idText
+            |> PreXmlDoc.create
 
-            let decls =
-                [
-                    createType (Some doc) accessibility typeParams fields
-                    createMaker [ Ident.create "Short" ] recordId fieldData
-                ]
+        let info =
+            SynComponentInfo.create typeDefn.Name
+            |> SynComponentInfo.withDocString xmlDoc
+            |> SynComponentInfo.addAttributes [ SynAttribute.compilationRepresentation ]
+            |> SynComponentInfo.addAttributes [ SynAttribute.requireQualifiedAccess ]
 
-            let xmlDoc =
-                recordId
-                |> Seq.map (fun i -> i.idText)
-                |> String.concat "."
-                |> sprintf "Module containing an option-truncated version of the %s type"
-                |> PreXmlDoc.create
-
-            let info =
-                SynComponentInfo.createLong recordId
-                |> SynComponentInfo.withDocString xmlDoc
-                |> SynComponentInfo.addAttributes [ SynAttribute.compilationRepresentation ]
-                |> SynComponentInfo.addAttributes [ SynAttribute.requireQualifiedAccess ]
-
-            SynModuleDecl.nestedModule info decls
-            |> List.singleton
-            |> SynModuleOrNamespace.createNamespace namespaceId
-        | _ -> failwithf "Not a record type"
+        SynModuleDecl.nestedModule info decls
+        |> List.singleton
+        |> SynModuleOrNamespace.createNamespace namespaceId
 
 open Myriad.Core
 
@@ -164,7 +152,24 @@ type RemoveOptionsGenerator () =
                 |> List.choose (fun (ns, types) ->
                     match types |> List.filter Ast.hasAttribute<RemoveOptionsAttribute> with
                     | [] -> None
-                    | types -> Some (ns, types)
+                    | types ->
+                        let types =
+                            types
+                            |> List.map (fun ty ->
+                                match ty with
+                                | SynTypeDefn.SynTypeDefn (sci,
+                                                           SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access,
+                                                                                                                 fields,
+                                                                                                                 _),
+                                                                                   _),
+                                                           smd,
+                                                           smdo,
+                                                           _,
+                                                           _) -> RecordType.OfRecord sci smd access fields
+                                | _ -> failwith "unexpectedly not a record"
+                            )
+
+                        Some (ns, types)
                 )
 
             let modules =

@@ -1521,53 +1521,54 @@ module internal ArgParserGenerator =
             |> List.choose (fun ty ->
                 match ty.Cases with
                 | [ c1 ; c2 ] ->
+                    let c1Attr =
+                        c1.Attributes
+                        |> List.tryPick (fun attr ->
+                            match attr.TypeName with
+                            | SynLongIdent.SynLongIdent (id, _, _) ->
+                                match id |> List.last |> _.idText with
+                                | "ArgumentFlagAttribute"
+                                | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
+                                | _ -> None
+                        )
+
+                    let c2Attr =
+                        c2.Attributes
+                        |> List.tryPick (fun attr ->
+                            match attr.TypeName with
+                            | SynLongIdent.SynLongIdent (id, _, _) ->
+                                match id |> List.last |> _.idText with
+                                | "ArgumentFlagAttribute"
+                                | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
+                                | _ -> None
+                        )
+
+                    match c1Attr, c2Attr with
+                    | Some _, None
+                    | None, Some _ ->
+                        failwith
+                            "[<ArgumentFlag>] must be placed on both cases of a two-case discriminated union, with opposite argument values on each case."
+                    | None, None -> None
+                    | Some c1Attr, Some c2Attr ->
+
+                    // Sanity check where possible
+                    match c1Attr, c2Attr with
+                    | SynExpr.Const (SynConst.Bool b1, _), SynExpr.Const (SynConst.Bool b2, _) ->
+                        if b1 = b2 then
+                            failwith
+                                "[<ArgumentFlag>] must have opposite argument values on each case in a two-case discriminated union."
+                    | _, _ -> ()
+
                     match c1.Fields, c2.Fields with
                     | [], [] ->
-                        let c1Attr =
-                            c1.Attributes
-                            |> List.tryPick (fun attr ->
-                                match attr.TypeName with
-                                | SynLongIdent.SynLongIdent (id, _, _) ->
-                                    match id |> List.last |> _.idText with
-                                    | "ArgumentFlagAttribute"
-                                    | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
-                                    | _ -> None
-                            )
-
-                        let c2Attr =
-                            c2.Attributes
-                            |> List.tryPick (fun attr ->
-                                match attr.TypeName with
-                                | SynLongIdent.SynLongIdent (id, _, _) ->
-                                    match id |> List.last |> _.idText with
-                                    | "ArgumentFlagAttribute"
-                                    | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
-                                    | _ -> None
-                            )
-
-                        match c1Attr, c2Attr with
-                        | Some c1Attr, Some c2Attr ->
-                            // Sanity check where possible
-                            match c1Attr, c2Attr with
-                            | SynExpr.Const (SynConst.Bool b1, _), SynExpr.Const (SynConst.Bool b2, _) ->
-                                if b1 = b2 then
-                                    failwith
-                                        "[<ArgumentFlag>] must have opposite argument values on each case in a two-case discriminated union."
-                            | _, _ -> ()
-
-                            {
-                                Name = ty.Name
-                                Case1Name = c1.Name
-                                Case1Arg = c1Attr
-                                Case2Name = c2.Name
-                                Case2Arg = c2Attr
-                            }
-                            |> Some
-                        | Some _, None
-                        | None, Some _ ->
-                            failwith
-                                "[<ArgumentFlag>] must be placed on both cases of a two-case discriminated union, with opposite argument values on each case."
-                        | _, _ -> None
+                        {
+                            Name = ty.Name
+                            Case1Name = c1.Name
+                            Case1Arg = c1Attr
+                            Case2Name = c2.Name
+                            Case2Arg = c2Attr
+                        }
+                        |> Some
                     | _, _ ->
                         failwith "[<ArgumentFlag>] may only be placed on discriminated union members with no data."
                 | _ -> None

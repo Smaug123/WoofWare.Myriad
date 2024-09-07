@@ -190,3 +190,8 @@ type ManyLongForms =
         [<ArgumentLongForm "dont-turn-it-off">]
         SomeFlag : bool
     }
+
+[<RequireQualifiedAccess>]
+type private IrrelevantDu =
+    | Foo
+    | Bar

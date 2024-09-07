@@ -67,7 +67,8 @@ type internal RecordType =
         Members : SynMemberDefns option
         XmlDoc : PreXmlDoc option
         Generics : SynTyparDecls option
-        Accessibility : SynAccess option
+        TypeAccessibility : SynAccess option
+        ImplAccessibility : SynAccess option
         Attributes : SynAttribute list
     }
 
@@ -80,17 +81,15 @@ type internal RecordType =
         : RecordType
         =
         match sci with
-        | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, access2, _) ->
-            if access <> access2 then
-                failwith $"TODO what's happened, two different accessibility modifiers: %O{access} and %O{access2}"
-
+        | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, implAccess, _) ->
             {
                 Name = List.last longId
                 Fields = recordFields
                 Members = if smd.IsEmpty then None else Some smd
                 XmlDoc = if doc.IsEmpty then None else Some doc
                 Generics = typars
-                Accessibility = access
+                ImplAccessibility = implAccess
+                TypeAccessibility = access
                 Attributes = attrs |> List.collect (fun l -> l.Attributes)
             }
 
@@ -144,7 +143,9 @@ type internal UnionType =
         /// Attributes of the DU (not its cases): `[<Attr>] type Foo = | ...`
         Attributes : SynAttribute list
         /// Accessibility modifier of the DU: `type private Foo = ...`
-        Accessibility : SynAccess option
+        TypeAccessibility : SynAccess option
+        /// Accessibility modifier of the DU's implementation: `type Foo = private | ...`
+        ImplAccessibility : SynAccess option
         /// The actual DU cases themselves.
         Cases : UnionCase<Ident option> list
     }
@@ -157,17 +158,15 @@ type internal UnionType =
         : UnionType
         =
         match sci with
-        | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, access2, _) ->
-            if access <> access2 then
-                failwith $"TODO what's happened, two different accessibility modifiers: %O{access} and %O{access2}"
-
+        | SynComponentInfo.SynComponentInfo (attrs, typars, _, longId, doc, _, implAccess, _) ->
             {
                 Name = List.last longId
                 Members = if smd.IsEmpty then None else Some smd
                 XmlDoc = if doc.IsEmpty then None else Some doc
                 Generics = typars
                 Attributes = attrs |> List.collect (fun l -> l.Attributes)
-                Accessibility = access
+                TypeAccessibility = access
+                ImplAccessibility = implAccess
                 Cases = cases |> List.map UnionCase.ofSynUnionCase
             }
 
@@ -213,13 +212,13 @@ module internal AstHelper =
     let defineRecordType (record : RecordType) : SynTypeDefn =
         let name =
             SynComponentInfo.create record.Name
-            |> SynComponentInfo.setAccessibility record.Accessibility
+            |> SynComponentInfo.setAccessibility record.TypeAccessibility
             |> match record.XmlDoc with
                | None -> id
                | Some doc -> SynComponentInfo.withDocString doc
             |> SynComponentInfo.setGenerics record.Generics
 
-        SynTypeDefnRepr.record (Seq.toList record.Fields)
+        SynTypeDefnRepr.recordWithAccess record.ImplAccessibility (Seq.toList record.Fields)
         |> SynTypeDefn.create name
         |> SynTypeDefn.withMemberDefns (defaultArg record.Members SynMemberDefns.Empty)
 
