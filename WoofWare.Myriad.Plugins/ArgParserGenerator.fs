@@ -723,7 +723,10 @@ module internal ArgParserGenerator =
                     ]
                     |> SynExpr.createMatch (SynExpr.callMethod var.idText (SynExpr.createIdent' typeName))
                 |> SynExpr.pipeThroughFunction (
-                    SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %O)")
+                    SynExpr.createLambda "x" (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
+                )
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
                 )
                 |> SynExpr.paren
             | Accumulation.List _ -> SynExpr.CreateConst " (can be repeated)"
@@ -786,10 +789,12 @@ module internal ArgParserGenerator =
                 | Accumulation.Optional ->
                     let multipleErrorMessage =
                         SynExpr.createIdent "sprintf"
-                        |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %O and %O")
+                        |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %s and %s")
                         |> SynExpr.applyTo arg.HumanReadableArgForm
-                        |> SynExpr.applyTo (SynExpr.createIdent "x")
-                        |> SynExpr.applyTo (SynExpr.createIdent "value")
+                        |> SynExpr.applyTo (SynExpr.createIdent "x" |> SynExpr.callMethod "ToString" |> SynExpr.paren)
+                        |> SynExpr.applyTo (
+                            SynExpr.createIdent "value" |> SynExpr.callMethod "ToString" |> SynExpr.paren
+                        )
 
                     let performAssignment =
                         [
