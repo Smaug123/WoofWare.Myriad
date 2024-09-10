@@ -51,7 +51,11 @@ module BasicNoPositionals =
             else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "baz") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -64,7 +68,11 @@ module BasicNoPositionals =
             else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "bar") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -77,7 +85,11 @@ module BasicNoPositionals =
             else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "foo") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -253,7 +265,11 @@ module Basic =
             if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "baz") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -266,7 +282,11 @@ module Basic =
             else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "bar") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -279,7 +299,11 @@ module Basic =
             else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "foo") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -442,7 +466,11 @@ module BasicWithIntPositionals =
             if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "baz") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -455,7 +483,11 @@ module BasicWithIntPositionals =
             else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "bar") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -468,7 +500,11 @@ module BasicWithIntPositionals =
             else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "foo") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -623,13 +659,17 @@ module LoadsOfTypes =
                 (sprintf
                     "%s  bool%s%s"
                     (sprintf "--%s" "optional-thing")
-                    (LoadsOfTypes.DefaultOptionalThing () |> sprintf " (default value: %O)")
+                    (LoadsOfTypes.DefaultOptionalThing ()
+                     |> (fun x -> x.ToString ())
+                     |> sprintf " (default value: %s)")
                     "")
 
                 (sprintf
                     "%s  int32%s%s"
                     (sprintf "--%s" "another-optional-thing")
-                    (LoadsOfTypes.DefaultAnotherOptionalThing () |> sprintf " (default value: %O)")
+                    (LoadsOfTypes.DefaultAnotherOptionalThing ()
+                     |> (fun x -> x.ToString ())
+                     |> sprintf " (default value: %s)")
                     "")
 
                 (sprintf
@@ -667,10 +707,10 @@ module LoadsOfTypes =
                 match arg_10 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "yet-another-optional-thing")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -690,10 +730,10 @@ module LoadsOfTypes =
                 match arg_9 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "another-optional-thing")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -709,10 +749,10 @@ module LoadsOfTypes =
                 match arg_8 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "optional-thing")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -732,10 +772,10 @@ module LoadsOfTypes =
                 match arg_6 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "optional-thing-with-no-default")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -756,10 +796,10 @@ module LoadsOfTypes =
                 match arg_4 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "some-directory")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -774,7 +814,11 @@ module LoadsOfTypes =
             then
                 match arg_3 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "some-file") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "some-file")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -787,7 +831,11 @@ module LoadsOfTypes =
             else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "baz") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -800,7 +848,11 @@ module LoadsOfTypes =
             else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "bar") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -813,7 +865,11 @@ module LoadsOfTypes =
             else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "foo") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1037,14 +1093,16 @@ module LoadsOfTypesNoPositionals =
                     "%s  bool%s%s"
                     (sprintf "--%s" "optional-thing")
                     (LoadsOfTypesNoPositionals.DefaultOptionalThing ()
-                     |> sprintf " (default value: %O)")
+                     |> (fun x -> x.ToString ())
+                     |> sprintf " (default value: %s)")
                     "")
 
                 (sprintf
                     "%s  int32%s%s"
                     (sprintf "--%s" "another-optional-thing")
                     (LoadsOfTypesNoPositionals.DefaultAnotherOptionalThing ()
-                     |> sprintf " (default value: %O)")
+                     |> (fun x -> x.ToString ())
+                     |> sprintf " (default value: %s)")
                     "")
                 (sprintf
                     "%s  string%s%s"
@@ -1080,10 +1138,10 @@ module LoadsOfTypesNoPositionals =
                 match arg_9 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "yet-another-optional-thing")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1103,10 +1161,10 @@ module LoadsOfTypesNoPositionals =
                 match arg_8 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "another-optional-thing")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1122,10 +1180,10 @@ module LoadsOfTypesNoPositionals =
                 match arg_7 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "optional-thing")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1145,10 +1203,10 @@ module LoadsOfTypesNoPositionals =
                 match arg_6 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "optional-thing-with-no-default")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1169,10 +1227,10 @@ module LoadsOfTypesNoPositionals =
                 match arg_4 with
                 | Some x ->
                     sprintf
-                        "Argument '%s' was supplied multiple times: %O and %O"
+                        "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "some-directory")
-                        x
-                        value
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1187,7 +1245,11 @@ module LoadsOfTypesNoPositionals =
             then
                 match arg_3 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "some-file") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "some-file")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1200,7 +1262,11 @@ module LoadsOfTypesNoPositionals =
             else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "baz") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1213,7 +1279,11 @@ module LoadsOfTypesNoPositionals =
             else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "bar") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1226,7 +1296,11 @@ module LoadsOfTypesNoPositionals =
             else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
-                    sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "foo") x value
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
                     Ok ()
@@ -1481,10 +1555,10 @@ module DatesAndTimesArgParse =
                     match arg_3 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "invariant-exact")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -1509,7 +1583,11 @@ module DatesAndTimesArgParse =
                 then
                     match arg_2 with
                     | Some x ->
-                        sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "exact") x value
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "exact")
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -1535,10 +1613,10 @@ module DatesAndTimesArgParse =
                     match arg_1 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "invariant")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -1559,7 +1637,11 @@ module DatesAndTimesArgParse =
                 then
                     match arg_0 with
                     | Some x ->
-                        sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "plain") x value
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "plain")
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -1734,10 +1816,10 @@ module ParentRecordArgParse =
                     match arg_2 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "and-another")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -1752,7 +1834,11 @@ module ParentRecordArgParse =
                 then
                     match arg_1 with
                     | Some x ->
-                        sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "thing2") x value
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "thing2")
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -1767,7 +1853,11 @@ module ParentRecordArgParse =
                 then
                     match arg_0 with
                     | Some x ->
-                        sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "thing1") x value
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "thing1")
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -1945,7 +2035,11 @@ module ParentRecordChildPosArgParse =
                 if System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
-                        sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "thing1") x value
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "thing1")
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -1961,10 +2055,10 @@ module ParentRecordChildPosArgParse =
                     match arg_2 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "and-another")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -2128,7 +2222,11 @@ module ParentRecordSelfPosArgParse =
                 if System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_1 with
                     | Some x ->
-                        sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "thing2") x value
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "thing2")
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -2143,7 +2241,11 @@ module ParentRecordSelfPosArgParse =
                 then
                     match arg_0 with
                     | Some x ->
-                        sprintf "Argument '%s' was supplied multiple times: %O and %O" (sprintf "--%s" "thing1") x value
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "thing1")
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -2403,10 +2505,10 @@ module ContainsBoolEnvVarArgParse =
                     match arg_0 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "bool-var")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -2568,10 +2670,10 @@ module WithFlagDuArgParse =
                     match arg_0 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "dry-run")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -2741,10 +2843,10 @@ module ContainsFlagEnvVarArgParse =
                     match arg_0 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "dry-run")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -2930,7 +3032,8 @@ module ContainsFlagDefaultValueArgParse =
                         (match ContainsFlagDefaultValue.DefaultDryRun () with
                          | DryRunMode.Wet -> if Consts.FALSE = true then "true" else "false"
                          | DryRunMode.Dry -> if true = true then "true" else "false"
-                         |> sprintf " (default value: %O)")
+                         |> (fun x -> x.ToString ())
+                         |> sprintf " (default value: %s)")
                         "")
                 ]
                 |> String.concat "\n"
@@ -2946,10 +3049,10 @@ module ContainsFlagDefaultValueArgParse =
                     match arg_0 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "dry-run")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -3119,10 +3222,10 @@ module ManyLongFormsArgParse =
                     match arg_1 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -3138,10 +3241,10 @@ module ManyLongFormsArgParse =
                     match arg_1 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -3157,10 +3260,10 @@ module ManyLongFormsArgParse =
                     match arg_0 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s" "do-something-else" "anotherarg")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
@@ -3180,10 +3283,10 @@ module ManyLongFormsArgParse =
                     match arg_0 with
                     | Some x ->
                         sprintf
-                            "Argument '%s' was supplied multiple times: %O and %O"
+                            "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s" "do-something-else" "anotherarg")
-                            x
-                            value
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
                         Ok ()
