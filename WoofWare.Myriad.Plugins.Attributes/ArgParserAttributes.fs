@@ -19,8 +19,21 @@ type ArgParserAttribute (isExtensionMethod : bool) =
 
 /// Attribute indicating that this field shall accumulate all unmatched args,
 /// as well as any that appear after a bare `--`.
-type PositionalArgsAttribute () =
+///
+/// Set `includeFlagLike = true` to include args that begin `--` in the
+/// positional args.
+/// (By default, `includeFlagLike = false` and we throw when encountering
+/// an argument which looks like a flag but which we don't recognise.)
+/// We will still interpret `--help` as requesting help, unless it comes after
+/// a standalone `--` separator.
+type PositionalArgsAttribute (includeFlagLike : bool) =
     inherit Attribute ()
+
+    /// The default value of `isExtensionMethod`, the optional argument to the ArgParserAttribute constructor.
+    static member DefaultIncludeFlagLike = false
+
+    /// Shorthand for the "includeFlagLike = false" constructor; see documentation there for details.
+    new () = PositionalArgsAttribute PositionalArgsAttribute.DefaultIncludeFlagLike
 
 /// Attribute indicating that this field shall have a default value derived
 /// from calling an appropriately named static method on the type.

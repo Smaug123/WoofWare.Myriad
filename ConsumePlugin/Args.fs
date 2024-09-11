@@ -195,3 +195,10 @@ type ManyLongForms =
 type private IrrelevantDu =
     | Foo
     | Bar
+
+[<ArgParser true>]
+type FlagsIntoPositionalArgs =
+    {
+        [<PositionalArgs true>]
+        GrabEverything : string list
+    }

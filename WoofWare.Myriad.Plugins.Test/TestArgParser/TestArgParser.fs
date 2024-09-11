@@ -618,3 +618,11 @@ Required argument '--exact' received no value"""
             """Help text requested.
 --do-something-else / --anotherarg  string
 --turn-it-on / --dont-turn-it-off  bool"""
+
+    [<Test>]
+    let ``Can collect *all* non-help args into positional args with includeFlagLike`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        FlagsIntoPositionalArgs.parse' getEnvVar [ "--a" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
+        |> fun f -> f.GrabEverything
+        |> shouldEqual [ "--a" ; "--b=false" ; "--c=hi" ; "--help" ]
