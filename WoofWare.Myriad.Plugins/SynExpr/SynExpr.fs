@@ -80,6 +80,11 @@ module internal SynExpr =
     let equals (a : SynExpr) (b : SynExpr) =
         SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.eq, a) |> applyTo b
 
+    /// {a} && {b}
+    let booleanAnd (a : SynExpr) (b : SynExpr) =
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.booleanAnd, a)
+        |> applyTo b
+
     /// {a} + {b}
     let plus (a : SynExpr) (b : SynExpr) =
         SynExpr.CreateAppInfix (

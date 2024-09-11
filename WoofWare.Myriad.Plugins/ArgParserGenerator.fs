@@ -85,8 +85,8 @@ type private ParseFunction<'acc> =
 
 [<RequireQualifiedAccess>]
 type private ChoicePositional =
-    | Normal
-    | Choice
+    | Normal of includeFlagLike : SynExpr option
+    | Choice of includeFlagLike : SynExpr option
 
 type private ParseFunctionPositional = ParseFunction<ChoicePositional>
 type private ParseFunctionNonPositional = ParseFunction<Accumulation<ArgumentDefaultSpec>>
@@ -506,11 +506,14 @@ module internal ArgParserGenerator =
 
                 let positionalArgAttr =
                     attrs
-                    |> List.tryFind (fun a ->
+                    |> List.tryPick (fun a ->
                         match (List.last a.TypeName.LongIdent).idText with
                         | "PositionalArgsAttribute"
-                        | "PositionalArgs" -> true
-                        | _ -> false
+                        | "PositionalArgs" ->
+                            match a.ArgExpr with
+                            | SynExpr.Const (SynConst.Unit, _) -> Some None
+                            | a -> Some (Some a)
+                        | _ -> None
                     )
 
                 let parseExactModifier =
@@ -580,7 +583,7 @@ module internal ArgParserGenerator =
                 | None ->
 
                 match positionalArgAttr with
-                | Some _ ->
+                | Some includeFlagLike ->
                     let getChoice (spec : ArgumentDefaultSpec option) : unit =
                         match spec with
                         | Some _ ->
@@ -607,7 +610,7 @@ module internal ArgParserGenerator =
                             FieldName = ident
                             Parser = parser
                             TargetVariable = Ident.create $"arg_%i{counter}"
-                            Accumulation = ChoicePositional.Choice
+                            Accumulation = ChoicePositional.Choice includeFlagLike
                             TargetType = parseTy
                             ArgForm = longForms
                             Help = helpText
@@ -619,7 +622,7 @@ module internal ArgParserGenerator =
                             FieldName = ident
                             Parser = parser
                             TargetVariable = Ident.create $"arg_%i{counter}"
-                            Accumulation = ChoicePositional.Normal
+                            Accumulation = ChoicePositional.Normal includeFlagLike
                             TargetType = parseTy
                             ArgForm = longForms
                             Help = helpText
@@ -855,8 +858,9 @@ module internal ArgParserGenerator =
                     |> SynExpr.pipeThroughFunction pos.Parser
                     |> fun p ->
                         match pos.Accumulation with
-                        | ChoicePositional.Choice -> p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
-                        | ChoicePositional.Normal -> p
+                        | ChoicePositional.Choice _ ->
+                            p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                        | ChoicePositional.Normal _ -> p
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.createLongIdent' [ pos.TargetVariable ; Ident.create "Add" ]
                     )
@@ -1000,6 +1004,50 @@ module internal ArgParserGenerator =
             |> SynExpr.applyTo (SynExpr.createIdent "key")
             |> SynExpr.applyTo (SynExpr.createIdent "value")
 
+        let processAsPositional =
+            SynExpr.sequential
+                [
+                    SynExpr.createIdent "arg"
+                    |> SynExpr.pipeThroughFunction leftoverArgParser
+                    |> fun p ->
+                        match leftoverArgAcc with
+                        | ChoicePositional.Normal _ -> p
+                        | ChoicePositional.Choice _ ->
+                            p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
+
+                    recurseKey
+                ]
+
+        let notMatched =
+            let posAttr =
+                match leftoverArgAcc with
+                | ChoicePositional.Choice a
+                | ChoicePositional.Normal a -> a
+
+            let handleFailure =
+                [
+                    SynMatchClause.create (SynPat.named "None") fail
+
+                    SynMatchClause.create
+                        (SynPat.nameWithArgs "Some" [ SynPat.named "msg" ])
+                        (SynExpr.sequential
+                            [
+                                SynExpr.createIdent "sprintf"
+                                |> SynExpr.applyTo (SynExpr.CreateConst "%s (at arg %s)")
+                                |> SynExpr.applyTo (SynExpr.createIdent "msg")
+                                |> SynExpr.applyTo (SynExpr.createIdent "arg")
+                                |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc))
+
+                                recurseKey
+                            ])
+                ]
+                |> SynExpr.createMatch (SynExpr.createIdent "x")
+
+            match posAttr with
+            | None -> handleFailure
+            | Some posAttr -> SynExpr.ifThenElse posAttr handleFailure processAsPositional
+
         let argStartsWithDashes =
             SynExpr.createIdent "arg"
             |> SynExpr.callMethodArg
@@ -1013,19 +1061,7 @@ module internal ArgParserGenerator =
         let processKey =
             SynExpr.ifThenElse
                 argStartsWithDashes
-                (SynExpr.sequential
-                    [
-                        SynExpr.createIdent "arg"
-                        |> SynExpr.pipeThroughFunction leftoverArgParser
-                        |> fun p ->
-                            match leftoverArgAcc with
-                            | ChoicePositional.Normal -> p
-                            | ChoicePositional.Choice ->
-                                p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
-                        |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
-
-                        recurseKey
-                    ])
+                processAsPositional
                 (SynExpr.ifThenElse
                     (SynExpr.equals (SynExpr.createIdent "arg") (SynExpr.CreateConst "--help"))
                     (SynExpr.createLet
@@ -1061,23 +1097,9 @@ module internal ArgParserGenerator =
                                     [
                                         SynMatchClause.create (SynPat.nameWithArgs "Ok" [ SynPat.unit ]) recurseKey
 
-                                        SynMatchClause.create (SynPat.nameWithArgs "Error" [ SynPat.named "None" ]) fail
                                         SynMatchClause.create
-                                            (SynPat.nameWithArgs
-                                                "Error"
-                                                [ SynPat.nameWithArgs "Some" [ SynPat.named "msg" ] |> SynPat.paren ])
-                                            (SynExpr.sequential
-                                                [
-                                                    SynExpr.createIdent "sprintf"
-                                                    |> SynExpr.applyTo (SynExpr.CreateConst "%s (at arg %s)")
-                                                    |> SynExpr.applyTo (SynExpr.createIdent "msg")
-                                                    |> SynExpr.applyTo (SynExpr.createIdent "arg")
-                                                    |> SynExpr.pipeThroughFunction (
-                                                        SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc)
-                                                    )
-
-                                                    recurseKey
-                                                ])
+                                            (SynPat.nameWithArgs "Error" [ SynPat.named "x" ])
+                                            notMatched
                                     ]))
                             (SynExpr.createIdent "args" |> SynExpr.pipeThroughFunction recurseValue)))
                     (SynExpr.createIdent "helpText"
@@ -1189,8 +1211,8 @@ module internal ArgParserGenerator =
                             )
                             |> fun p ->
                                 match leftoverArgAcc with
-                                | ChoicePositional.Normal -> p
-                                | ChoicePositional.Choice ->
+                                | ChoicePositional.Normal _ -> p
+                                | ChoicePositional.Choice _ ->
                                     p
                                     |> SynExpr.pipeThroughFunction (
                                         SynExpr.applyFunction
@@ -1262,9 +1284,9 @@ module internal ArgParserGenerator =
                     SynType.string
                 | Some pf ->
                     match pf.Accumulation with
-                    | ChoicePositional.Choice ->
+                    | ChoicePositional.Choice _ ->
                         pf.TargetVariable, pf.Parser, SynType.app "Choice" [ pf.TargetType ; pf.TargetType ]
-                    | ChoicePositional.Normal -> pf.TargetVariable, pf.Parser, pf.TargetType
+                    | ChoicePositional.Normal _ -> pf.TargetVariable, pf.Parser, pf.TargetType
 
             let bindings =
                 SynExpr.createIdent "ResizeArray"
@@ -1492,7 +1514,7 @@ module internal ArgParserGenerator =
 
         let leftoverArgAcc =
             match pos with
-            | None -> ChoicePositional.Normal
+            | None -> ChoicePositional.Normal None
             | Some pos -> pos.Accumulation
 
         [

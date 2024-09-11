@@ -40,7 +40,10 @@ WoofWare.Myriad.Plugins.JsonSerializeAttribute.get_DefaultIsExtensionMethod [sta
 WoofWare.Myriad.Plugins.ParseExactAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.ParseExactAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.PositionalArgsAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.PositionalArgsAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.PositionalArgsAttribute..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.PositionalArgsAttribute.DefaultIncludeFlagLike [static property]: [read-only] bool
+WoofWare.Myriad.Plugins.PositionalArgsAttribute.get_DefaultIncludeFlagLike [static method]: unit -> bool
 WoofWare.Myriad.Plugins.RemoveOptionsAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RemoveOptionsAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RestEase inherit obj
