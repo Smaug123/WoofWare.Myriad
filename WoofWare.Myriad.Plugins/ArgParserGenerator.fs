@@ -85,8 +85,8 @@ type private ParseFunction<'acc> =
 
 [<RequireQualifiedAccess>]
 type private ChoicePositional =
-    | Normal
-    | Choice
+    | Normal of includeFlagLike : SynExpr option
+    | Choice of includeFlagLike : SynExpr option
 
 type private ParseFunctionPositional = ParseFunction<ChoicePositional>
 type private ParseFunctionNonPositional = ParseFunction<Accumulation<ArgumentDefaultSpec>>
@@ -506,11 +506,14 @@ module internal ArgParserGenerator =
 
                 let positionalArgAttr =
                     attrs
-                    |> List.tryFind (fun a ->
+                    |> List.tryPick (fun a ->
                         match (List.last a.TypeName.LongIdent).idText with
                         | "PositionalArgsAttribute"
-                        | "PositionalArgs" -> true
-                        | _ -> false
+                        | "PositionalArgs" ->
+                            match a.ArgExpr with
+                            | SynExpr.Const (SynConst.Unit, _) -> Some None
+                            | a -> Some (Some a)
+                        | _ -> None
                     )
 
                 let parseExactModifier =
@@ -580,7 +583,7 @@ module internal ArgParserGenerator =
                 | None ->
 
                 match positionalArgAttr with
-                | Some _ ->
+                | Some includeFlagLike ->
                     let getChoice (spec : ArgumentDefaultSpec option) : unit =
                         match spec with
                         | Some _ ->
@@ -607,7 +610,7 @@ module internal ArgParserGenerator =
                             FieldName = ident
                             Parser = parser
                             TargetVariable = Ident.create $"arg_%i{counter}"
-                            Accumulation = ChoicePositional.Choice
+                            Accumulation = ChoicePositional.Choice includeFlagLike
                             TargetType = parseTy
                             ArgForm = longForms
                             Help = helpText
@@ -619,7 +622,7 @@ module internal ArgParserGenerator =
                             FieldName = ident
                             Parser = parser
                             TargetVariable = Ident.create $"arg_%i{counter}"
-                            Accumulation = ChoicePositional.Normal
+                            Accumulation = ChoicePositional.Normal includeFlagLike
                             TargetType = parseTy
                             ArgForm = longForms
                             Help = helpText
@@ -855,8 +858,9 @@ module internal ArgParserGenerator =
                     |> SynExpr.pipeThroughFunction pos.Parser
                     |> fun p ->
                         match pos.Accumulation with
-                        | ChoicePositional.Choice -> p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
-                        | ChoicePositional.Normal -> p
+                        | ChoicePositional.Choice _ ->
+                            p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                        | ChoicePositional.Normal _ -> p
                     |> SynExpr.pipeThroughFunction (
                         SynExpr.createLongIdent' [ pos.TargetVariable ; Ident.create "Add" ]
                     )
@@ -1001,14 +1005,29 @@ module internal ArgParserGenerator =
             |> SynExpr.applyTo (SynExpr.createIdent "value")
 
         let argStartsWithDashes =
-            SynExpr.createIdent "arg"
-            |> SynExpr.callMethodArg
-                "StartsWith"
-                (SynExpr.tuple
-                    [
-                        SynExpr.CreateConst "--"
-                        SynExpr.createLongIdent [ "System" ; "StringComparison" ; "Ordinal" ]
-                    ])
+            let startsWithDashes =
+                SynExpr.createIdent "arg"
+                |> SynExpr.callMethodArg
+                    "StartsWith"
+                    (SynExpr.tuple
+                        [
+                            SynExpr.CreateConst "--"
+                            SynExpr.createLongIdent [ "System" ; "StringComparison" ; "Ordinal" ]
+                        ])
+
+            let consumeArgLike =
+                match leftoverArgAcc with
+                | ChoicePositional.Choice a
+                | ChoicePositional.Normal a -> a
+
+            match consumeArgLike with
+            | None ->
+                if PositionalArgsAttribute.DefaultIncludeFlagLike then
+                    SynExpr.CreateConst true
+                else
+                    startsWithDashes
+            | Some consumeArgLike ->
+                SynExpr.booleanAnd (SynExpr.applyFunction (SynExpr.createIdent "not") consumeArgLike) startsWithDashes
 
         let processKey =
             SynExpr.ifThenElse
@@ -1019,8 +1038,8 @@ module internal ArgParserGenerator =
                         |> SynExpr.pipeThroughFunction leftoverArgParser
                         |> fun p ->
                             match leftoverArgAcc with
-                            | ChoicePositional.Normal -> p
-                            | ChoicePositional.Choice ->
+                            | ChoicePositional.Normal _ -> p
+                            | ChoicePositional.Choice _ ->
                                 p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
                         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
 
@@ -1189,8 +1208,8 @@ module internal ArgParserGenerator =
                             )
                             |> fun p ->
                                 match leftoverArgAcc with
-                                | ChoicePositional.Normal -> p
-                                | ChoicePositional.Choice ->
+                                | ChoicePositional.Normal _ -> p
+                                | ChoicePositional.Choice _ ->
                                     p
                                     |> SynExpr.pipeThroughFunction (
                                         SynExpr.applyFunction
@@ -1262,9 +1281,9 @@ module internal ArgParserGenerator =
                     SynType.string
                 | Some pf ->
                     match pf.Accumulation with
-                    | ChoicePositional.Choice ->
+                    | ChoicePositional.Choice _ ->
                         pf.TargetVariable, pf.Parser, SynType.app "Choice" [ pf.TargetType ; pf.TargetType ]
-                    | ChoicePositional.Normal -> pf.TargetVariable, pf.Parser, pf.TargetType
+                    | ChoicePositional.Normal _ -> pf.TargetVariable, pf.Parser, pf.TargetType
 
             let bindings =
                 SynExpr.createIdent "ResizeArray"
@@ -1492,7 +1511,7 @@ module internal ArgParserGenerator =
 
         let leftoverArgAcc =
             match pos with
-            | None -> ChoicePositional.Normal
+            | None -> ChoicePositional.Normal None
             | Some pos -> pos.Accumulation
 
         [

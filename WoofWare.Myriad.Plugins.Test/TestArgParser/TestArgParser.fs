@@ -626,3 +626,18 @@ Required argument '--exact' received no value"""
         FlagsIntoPositionalArgs.parse' getEnvVar [ "--a" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
         |> fun f -> f.GrabEverything
         |> shouldEqual [ "--a" ; "--b=false" ; "--c=hi" ; "--help" ]
+
+    [<Test>]
+    let ``Can refuse to collect non-help args`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                FlagsIntoPositionalArgs'.parse' getEnvVar [ "--a" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
+                |> ignore<FlagsIntoPositionalArgs'>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Unable to process supplied arg --a. Help text follows.
+--dont-grab-everything  string (positional args) (can be repeated)"""

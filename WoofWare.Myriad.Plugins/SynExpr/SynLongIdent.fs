@@ -33,6 +33,9 @@ module internal SynLongIdent =
     let eq =
         SynLongIdent.SynLongIdent ([ Ident.create "op_Equality" ], [], [ Some (IdentTrivia.OriginalNotation "=") ])
 
+    let booleanAnd =
+        SynLongIdent.SynLongIdent ([ Ident.create "op_BooleanAnd" ], [], [ Some (IdentTrivia.OriginalNotation "&&") ])
+
     let pipe =
         SynLongIdent.SynLongIdent ([ Ident.create "op_PipeRight" ], [], [ Some (IdentTrivia.OriginalNotation "|>") ])
 

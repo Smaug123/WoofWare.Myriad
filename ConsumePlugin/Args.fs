@@ -202,3 +202,10 @@ type FlagsIntoPositionalArgs =
         [<PositionalArgs true>]
         GrabEverything : string list
     }
+
+[<ArgParser true>]
+type FlagsIntoPositionalArgs' =
+    {
+        [<PositionalArgs false>]
+        DontGrabEverything : string list
+    }
