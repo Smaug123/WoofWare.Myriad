@@ -199,6 +199,7 @@ type private IrrelevantDu =
 [<ArgParser true>]
 type FlagsIntoPositionalArgs =
     {
+        A : string
         [<PositionalArgs true>]
         GrabEverything : string list
     }
@@ -206,6 +207,7 @@ type FlagsIntoPositionalArgs =
 [<ArgParser true>]
 type FlagsIntoPositionalArgs' =
     {
+        A : string
         [<PositionalArgs false>]
         DontGrabEverything : string list
     }

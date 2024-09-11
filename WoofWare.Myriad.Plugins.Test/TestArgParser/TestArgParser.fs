@@ -623,9 +623,22 @@ Required argument '--exact' received no value"""
     let ``Can collect *all* non-help args into positional args with includeFlagLike`` () =
         let getEnvVar (_ : string) = failwith "do not call"
 
+        FlagsIntoPositionalArgs.parse' getEnvVar [ "--a" ; "foo" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
+        |> shouldEqual
+            {
+                A = "foo"
+                GrabEverything = [ "--b=false" ; "--c=hi" ; "--help" ]
+            }
+
+        // Users might consider this eccentric!
+        // But we're only a simple arg parser; we don't look around to see whether this is "almost"
+        // a valid parse.
         FlagsIntoPositionalArgs.parse' getEnvVar [ "--a" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
-        |> fun f -> f.GrabEverything
-        |> shouldEqual [ "--a" ; "--b=false" ; "--c=hi" ; "--help" ]
+        |> shouldEqual
+            {
+                A = "--b=false"
+                GrabEverything = [ "--c=hi" ; "--help" ]
+            }
 
     [<Test>]
     let ``Can refuse to collect non-help args`` () =
@@ -633,11 +646,20 @@ Required argument '--exact' received no value"""
 
         let exc =
             Assert.Throws<exn> (fun () ->
-                FlagsIntoPositionalArgs'.parse' getEnvVar [ "--a" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
+                FlagsIntoPositionalArgs'.parse' getEnvVar [ "--a" ; "foo" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
                 |> ignore<FlagsIntoPositionalArgs'>
             )
 
         exc.Message
-        |> shouldEqual
-            """Unable to process supplied arg --a. Help text follows.
---dont-grab-everything  string (positional args) (can be repeated)"""
+        |> shouldEqual """Unable to process argument --b=false as key --b and value false"""
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                FlagsIntoPositionalArgs'.parse' getEnvVar [ "--a" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
+                |> ignore<FlagsIntoPositionalArgs'>
+            )
+
+        // Again perhaps eccentric!
+        // Again, we don't try to detect that the user has missed out the desired argument to `--a`.
+        exc.Message
+        |> shouldEqual """Unable to process argument --c=hi as key --c and value hi"""

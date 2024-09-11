@@ -1004,47 +1004,64 @@ module internal ArgParserGenerator =
             |> SynExpr.applyTo (SynExpr.createIdent "key")
             |> SynExpr.applyTo (SynExpr.createIdent "value")
 
-        let argStartsWithDashes =
-            let startsWithDashes =
-                SynExpr.createIdent "arg"
-                |> SynExpr.callMethodArg
-                    "StartsWith"
-                    (SynExpr.tuple
-                        [
-                            SynExpr.CreateConst "--"
-                            SynExpr.createLongIdent [ "System" ; "StringComparison" ; "Ordinal" ]
-                        ])
+        let processAsPositional =
+            SynExpr.sequential
+                [
+                    SynExpr.createIdent "arg"
+                    |> SynExpr.pipeThroughFunction leftoverArgParser
+                    |> fun p ->
+                        match leftoverArgAcc with
+                        | ChoicePositional.Normal _ -> p
+                        | ChoicePositional.Choice _ ->
+                            p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
 
-            let consumeArgLike =
+                    recurseKey
+                ]
+
+        let notMatched =
+            let posAttr =
                 match leftoverArgAcc with
                 | ChoicePositional.Choice a
                 | ChoicePositional.Normal a -> a
 
-            match consumeArgLike with
-            | None ->
-                if PositionalArgsAttribute.DefaultIncludeFlagLike then
-                    SynExpr.CreateConst true
-                else
-                    startsWithDashes
-            | Some consumeArgLike ->
-                SynExpr.booleanAnd (SynExpr.applyFunction (SynExpr.createIdent "not") consumeArgLike) startsWithDashes
+            let handleFailure =
+                [
+                    SynMatchClause.create (SynPat.named "None") fail
+
+                    SynMatchClause.create
+                        (SynPat.nameWithArgs "Some" [ SynPat.named "msg" ])
+                        (SynExpr.sequential
+                            [
+                                SynExpr.createIdent "sprintf"
+                                |> SynExpr.applyTo (SynExpr.CreateConst "%s (at arg %s)")
+                                |> SynExpr.applyTo (SynExpr.createIdent "msg")
+                                |> SynExpr.applyTo (SynExpr.createIdent "arg")
+                                |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc))
+
+                                recurseKey
+                            ])
+                ]
+                |> SynExpr.createMatch (SynExpr.createIdent "x")
+
+            match posAttr with
+            | None -> handleFailure
+            | Some posAttr -> SynExpr.ifThenElse posAttr handleFailure processAsPositional
+
+        let argStartsWithDashes =
+            SynExpr.createIdent "arg"
+            |> SynExpr.callMethodArg
+                "StartsWith"
+                (SynExpr.tuple
+                    [
+                        SynExpr.CreateConst "--"
+                        SynExpr.createLongIdent [ "System" ; "StringComparison" ; "Ordinal" ]
+                    ])
 
         let processKey =
             SynExpr.ifThenElse
                 argStartsWithDashes
-                (SynExpr.sequential
-                    [
-                        SynExpr.createIdent "arg"
-                        |> SynExpr.pipeThroughFunction leftoverArgParser
-                        |> fun p ->
-                            match leftoverArgAcc with
-                            | ChoicePositional.Normal _ -> p
-                            | ChoicePositional.Choice _ ->
-                                p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
-                        |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
-
-                        recurseKey
-                    ])
+                processAsPositional
                 (SynExpr.ifThenElse
                     (SynExpr.equals (SynExpr.createIdent "arg") (SynExpr.CreateConst "--help"))
                     (SynExpr.createLet
@@ -1080,23 +1097,9 @@ module internal ArgParserGenerator =
                                     [
                                         SynMatchClause.create (SynPat.nameWithArgs "Ok" [ SynPat.unit ]) recurseKey
 
-                                        SynMatchClause.create (SynPat.nameWithArgs "Error" [ SynPat.named "None" ]) fail
                                         SynMatchClause.create
-                                            (SynPat.nameWithArgs
-                                                "Error"
-                                                [ SynPat.nameWithArgs "Some" [ SynPat.named "msg" ] |> SynPat.paren ])
-                                            (SynExpr.sequential
-                                                [
-                                                    SynExpr.createIdent "sprintf"
-                                                    |> SynExpr.applyTo (SynExpr.CreateConst "%s (at arg %s)")
-                                                    |> SynExpr.applyTo (SynExpr.createIdent "msg")
-                                                    |> SynExpr.applyTo (SynExpr.createIdent "arg")
-                                                    |> SynExpr.pipeThroughFunction (
-                                                        SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc)
-                                                    )
-
-                                                    recurseKey
-                                                ])
+                                            (SynPat.nameWithArgs "Error" [ SynPat.named "x" ])
+                                            notMatched
                                     ]))
                             (SynExpr.createIdent "args" |> SynExpr.pipeThroughFunction recurseValue)))
                     (SynExpr.createIdent "helpText"

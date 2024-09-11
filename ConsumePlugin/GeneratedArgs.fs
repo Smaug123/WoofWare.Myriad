@@ -148,11 +148,13 @@ module BasicNoPositionals =
 
                                 match processKeyValue key value with
                                 | Ok () -> go ParseState_BasicNoPositionals.AwaitingKey args
-                                | Error None ->
-                                    failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                | Error (Some msg) ->
-                                    sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                    go ParseState_BasicNoPositionals.AwaitingKey args
+                                | Error x ->
+                                    match x with
+                                    | None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Some msg ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_BasicNoPositionals.AwaitingKey args
                     else
                         arg |> (fun x -> x) |> parser_LeftoverArgs.Add
                         go ParseState_BasicNoPositionals.AwaitingKey args
@@ -365,11 +367,13 @@ module Basic =
 
                                 match processKeyValue key value with
                                 | Ok () -> go ParseState_Basic.AwaitingKey args
-                                | Error None ->
-                                    failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                | Error (Some msg) ->
-                                    sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                    go ParseState_Basic.AwaitingKey args
+                                | Error x ->
+                                    match x with
+                                    | None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Some msg ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_Basic.AwaitingKey args
                     else
                         arg |> (fun x -> x) |> arg_3.Add
                         go ParseState_Basic.AwaitingKey args
@@ -566,11 +570,13 @@ module BasicWithIntPositionals =
 
                                 match processKeyValue key value with
                                 | Ok () -> go ParseState_BasicWithIntPositionals.AwaitingKey args
-                                | Error None ->
-                                    failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                | Error (Some msg) ->
-                                    sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                    go ParseState_BasicWithIntPositionals.AwaitingKey args
+                                | Error x ->
+                                    match x with
+                                    | None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Some msg ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_BasicWithIntPositionals.AwaitingKey args
                     else
                         arg |> (fun x -> System.Int32.Parse x) |> arg_3.Add
                         go ParseState_BasicWithIntPositionals.AwaitingKey args
@@ -945,11 +951,13 @@ module LoadsOfTypes =
 
                                 match processKeyValue key value with
                                 | Ok () -> go ParseState_LoadsOfTypes.AwaitingKey args
-                                | Error None ->
-                                    failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                | Error (Some msg) ->
-                                    sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                    go ParseState_LoadsOfTypes.AwaitingKey args
+                                | Error x ->
+                                    match x with
+                                    | None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Some msg ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_LoadsOfTypes.AwaitingKey args
                     else
                         arg |> (fun x -> System.Int32.Parse x) |> arg_7.Add
                         go ParseState_LoadsOfTypes.AwaitingKey args
@@ -1371,11 +1379,13 @@ module LoadsOfTypesNoPositionals =
 
                                 match processKeyValue key value with
                                 | Ok () -> go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
-                                | Error None ->
-                                    failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                | Error (Some msg) ->
-                                    sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                    go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
+                                | Error x ->
+                                    match x with
+                                    | None ->
+                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                    | Some msg ->
+                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                        go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
                     else
                         arg |> (fun x -> x) |> parser_LeftoverArgs.Add
                         go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
@@ -1688,11 +1698,17 @@ module DatesAndTimesArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_DatesAndTimes.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_DatesAndTimes.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_DatesAndTimes.AwaitingKey args
                         else
                             arg |> (fun x -> x) |> parser_LeftoverArgs.Add
                             go ParseState_DatesAndTimes.AwaitingKey args
@@ -1918,11 +1934,17 @@ module ParentRecordArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_ParentRecord.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_ParentRecord.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_ParentRecord.AwaitingKey args
                         else
                             arg |> (fun x -> x) |> parser_LeftoverArgs.Add
                             go ParseState_ParentRecord.AwaitingKey args
@@ -2124,11 +2146,17 @@ module ParentRecordChildPosArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_ParentRecordChildPos.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_ParentRecordChildPos.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_ParentRecordChildPos.AwaitingKey args
                         else
                             arg |> (fun x -> System.Uri x) |> arg_1.Add
                             go ParseState_ParentRecordChildPos.AwaitingKey args
@@ -2297,11 +2325,17 @@ module ParentRecordSelfPosArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_ParentRecordSelfPos.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_ParentRecordSelfPos.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_ParentRecordSelfPos.AwaitingKey args
                         else
                             arg |> (fun x -> System.Boolean.Parse x) |> arg_2.Add
                             go ParseState_ParentRecordSelfPos.AwaitingKey args
@@ -2428,11 +2462,17 @@ module ChoicePositionalsArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_ChoicePositionals.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_ChoicePositionals.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_ChoicePositionals.AwaitingKey args
                         else
                             arg |> (fun x -> x) |> Choice1Of2 |> arg_0.Add
                             go ParseState_ChoicePositionals.AwaitingKey args
@@ -2567,11 +2607,17 @@ module ContainsBoolEnvVarArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_ContainsBoolEnvVar.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_ContainsBoolEnvVar.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_ContainsBoolEnvVar.AwaitingKey args
                         else
                             arg |> (fun x -> x) |> parser_LeftoverArgs.Add
                             go ParseState_ContainsBoolEnvVar.AwaitingKey args
@@ -2747,11 +2793,17 @@ module WithFlagDuArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_WithFlagDu.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_WithFlagDu.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_WithFlagDu.AwaitingKey args
                         else
                             arg |> (fun x -> x) |> parser_LeftoverArgs.Add
                             go ParseState_WithFlagDu.AwaitingKey args
@@ -2920,11 +2972,17 @@ module ContainsFlagEnvVarArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_ContainsFlagEnvVar.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_ContainsFlagEnvVar.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_ContainsFlagEnvVar.AwaitingKey args
                         else
                             arg |> (fun x -> x) |> parser_LeftoverArgs.Add
                             go ParseState_ContainsFlagEnvVar.AwaitingKey args
@@ -3126,11 +3184,17 @@ module ContainsFlagDefaultValueArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_ContainsFlagDefaultValue.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_ContainsFlagDefaultValue.AwaitingKey args
                         else
                             arg |> (fun x -> x) |> parser_LeftoverArgs.Add
                             go ParseState_ContainsFlagDefaultValue.AwaitingKey args
@@ -3367,11 +3431,17 @@ module ManyLongFormsArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_ManyLongForms.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_ManyLongForms.AwaitingKey args
+                                    | Error x ->
+                                        match x with
+                                        | None ->
+                                            failwithf
+                                                "Unable to process argument %s as key %s and value %s"
+                                                arg
+                                                key
+                                                value
+                                        | Some msg ->
+                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                            go ParseState_ManyLongForms.AwaitingKey args
                         else
                             arg |> (fun x -> x) |> parser_LeftoverArgs.Add
                             go ParseState_ManyLongForms.AwaitingKey args
@@ -3462,6 +3532,7 @@ module FlagsIntoPositionalArgsArgParse =
 
             let helpText () =
                 [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
                     (sprintf
                         "%s  string%s%s"
                         (sprintf "--%s" "grab-everything")
@@ -3470,20 +3541,38 @@ module FlagsIntoPositionalArgsArgParse =
                 ]
                 |> String.concat "\n"
 
-            let arg_0 : string ResizeArray = ResizeArray ()
+            let arg_1 : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
             let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "a")
+                            (x.ToString ())
+                            (value.ToString ())
+                        |> ArgParser_errors.Add
+
+                        Ok ()
+                    | None ->
+                        try
+                            arg_0 <- value |> (fun x -> x) |> Some
+                            Ok ()
+                        with _ as exc ->
+                            exc.Message |> Some |> Error
+                else if
                     System.String.Equals (
                         key,
                         sprintf "--%s" "grab-everything",
                         System.StringComparison.OrdinalIgnoreCase
                     )
                 then
-                    value |> (fun x -> x) |> arg_0.Add
+                    value |> (fun x -> x) |> arg_1.Add
                     () |> Ok
                 else
                     Error None
@@ -3504,11 +3593,11 @@ module FlagsIntoPositionalArgsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_0.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgs.AwaitingKey ->
-                        if not true && arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
@@ -3522,13 +3611,23 @@ module FlagsIntoPositionalArgsArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
+                                    | Error x ->
+                                        if true then
+                                            arg |> (fun x -> x) |> arg_1.Add
+                                            go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
+                                        else
+                                            match x with
+                                            | None ->
+                                                failwithf
+                                                    "Unable to process argument %s as key %s and value %s"
+                                                    arg
+                                                    key
+                                                    value
+                                            | Some msg ->
+                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                                go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
                         else
-                            arg |> (fun x -> x) |> arg_0.Add
+                            arg |> (fun x -> x) |> arg_1.Add
                             go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
                     | ParseState_FlagsIntoPositionalArgs.AwaitingValue key ->
                         match processKeyValue key arg with
@@ -3546,11 +3645,21 @@ module FlagsIntoPositionalArgsArgParse =
                                 | Some msg -> msg |> ArgParser_errors.Add
 
             go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
-            let arg_0 = arg_0 |> Seq.toList
+            let arg_1 = arg_1 |> Seq.toList
+
+            let arg_0 =
+                match arg_0 with
+                | None ->
+                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+                | Some x -> x
 
             if 0 = ArgParser_errors.Count then
                 {
-                    GrabEverything = arg_0
+                    A = arg_0
+                    GrabEverything = arg_1
                 }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
@@ -3584,6 +3693,7 @@ module FlagsIntoPositionalArgs'ArgParse =
 
             let helpText () =
                 [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
                     (sprintf
                         "%s  string%s%s"
                         (sprintf "--%s" "dont-grab-everything")
@@ -3592,20 +3702,38 @@ module FlagsIntoPositionalArgs'ArgParse =
                 ]
                 |> String.concat "\n"
 
-            let arg_0 : string ResizeArray = ResizeArray ()
+            let arg_1 : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
             let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "a")
+                            (x.ToString ())
+                            (value.ToString ())
+                        |> ArgParser_errors.Add
+
+                        Ok ()
+                    | None ->
+                        try
+                            arg_0 <- value |> (fun x -> x) |> Some
+                            Ok ()
+                        with _ as exc ->
+                            exc.Message |> Some |> Error
+                else if
                     System.String.Equals (
                         key,
                         sprintf "--%s" "dont-grab-everything",
                         System.StringComparison.OrdinalIgnoreCase
                     )
                 then
-                    value |> (fun x -> x) |> arg_0.Add
+                    value |> (fun x -> x) |> arg_1.Add
                     () |> Ok
                 else
                     Error None
@@ -3626,11 +3754,11 @@ module FlagsIntoPositionalArgs'ArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_0.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgs'.AwaitingKey ->
-                        if not false && arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
@@ -3644,13 +3772,23 @@ module FlagsIntoPositionalArgs'ArgParse =
 
                                     match processKeyValue key value with
                                     | Ok () -> go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
-                                    | Error None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Error (Some msg) ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
+                                    | Error x ->
+                                        if false then
+                                            arg |> (fun x -> x) |> arg_1.Add
+                                            go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
+                                        else
+                                            match x with
+                                            | None ->
+                                                failwithf
+                                                    "Unable to process argument %s as key %s and value %s"
+                                                    arg
+                                                    key
+                                                    value
+                                            | Some msg ->
+                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                                go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
                         else
-                            arg |> (fun x -> x) |> arg_0.Add
+                            arg |> (fun x -> x) |> arg_1.Add
                             go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
                     | ParseState_FlagsIntoPositionalArgs'.AwaitingValue key ->
                         match processKeyValue key arg with
@@ -3668,11 +3806,21 @@ module FlagsIntoPositionalArgs'ArgParse =
                                 | Some msg -> msg |> ArgParser_errors.Add
 
             go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
-            let arg_0 = arg_0 |> Seq.toList
+            let arg_1 = arg_1 |> Seq.toList
+
+            let arg_0 =
+                match arg_0 with
+                | None ->
+                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+                | Some x -> x
 
             if 0 = ArgParser_errors.Count then
                 {
-                    DontGrabEverything = arg_0
+                    A = arg_0
+                    DontGrabEverything = arg_1
                 }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
