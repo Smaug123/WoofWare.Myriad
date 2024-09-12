@@ -1019,12 +1019,12 @@ module internal ArgParserGenerator =
                     recurseKey
                 ]
 
-        let notMatched =
-            let posAttr =
-                match leftoverArgAcc with
-                | ChoicePositional.Choice a
-                | ChoicePositional.Normal a -> a
+        let posAttr =
+            match leftoverArgAcc with
+            | ChoicePositional.Choice a
+            | ChoicePositional.Normal a -> a
 
+        let notMatched =
             let handleFailure =
                 [
                     SynMatchClause.create (SynPat.named "None") fail
@@ -1113,6 +1113,8 @@ module internal ArgParserGenerator =
         let processValue =
             // During failure, we've received an optional exception message that happened when we tried to parse
             // the value; it's in the variable `exc`.
+            // `fail` is for the case where we're genuinely emitting an error.
+            // If we're in `PositionalArgs true` mode, though, we won't call `fail`.
             let fail =
                 [
                     SynExpr.createIdent "failwithf"
@@ -1132,6 +1134,21 @@ module internal ArgParserGenerator =
                 ]
                 |> SynExpr.createMatch (SynExpr.createIdent "exc")
 
+            let onFailure =
+                match posAttr with
+                | None -> fail
+                | Some includeFlagLike ->
+                    [
+                        SynExpr.createIdent "key"
+                        |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
+
+                        SynExpr.createIdent "go"
+                        |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
+                        |> SynExpr.applyTo (SynExpr.listCons (SynExpr.createIdent "arg") (SynExpr.createIdent "args"))
+                    ]
+                    |> SynExpr.sequential
+                    |> SynExpr.ifThenElse includeFlagLike fail
+
             [
                 SynMatchClause.create
                     (SynPat.nameWithArgs "Ok" [ SynPat.unit ])
@@ -1144,7 +1161,7 @@ module internal ArgParserGenerator =
                     (SynPat.nameWithArgs "Error" [ SynPat.named "exc" ])
                     (SynExpr.ifThenElse
                         (SynExpr.applyFunction (SynExpr.createIdent "setFlagValue") (SynExpr.createIdent "key"))
-                        fail
+                        onFailure
                         (SynExpr.createIdent "go"
                          |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
                          |> SynExpr.applyTo (SynExpr.listCons (SynExpr.createIdent "arg") (SynExpr.createIdent "args"))))

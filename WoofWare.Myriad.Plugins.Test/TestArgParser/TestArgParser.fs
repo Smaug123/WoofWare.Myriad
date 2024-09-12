@@ -627,7 +627,7 @@ Required argument '--exact' received no value"""
         |> shouldEqual
             {
                 A = "foo"
-                GrabEverything = [ "--b=false" ; "--c=hi" ; "--help" ]
+                GrabEverything = [ "--b=false" ; "--c" ; "hi" ; "--help" ]
             }
 
         // Users might consider this eccentric!
@@ -637,7 +637,7 @@ Required argument '--exact' received no value"""
         |> shouldEqual
             {
                 A = "--b=false"
-                GrabEverything = [ "--c=hi" ; "--help" ]
+                GrabEverything = [ "--c" ; "hi" ; "--help" ]
             }
 
     [<Test>]

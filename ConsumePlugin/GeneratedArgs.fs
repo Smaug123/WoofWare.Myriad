@@ -3635,6 +3635,9 @@ module FlagsIntoPositionalArgsArgParse =
                         | Error exc ->
                             if setFlagValue key then
                                 go ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
+                            else if true then
+                                key |> arg_1.Add
+                                go ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
                             else
                                 match exc with
                                 | None ->
@@ -3795,6 +3798,9 @@ module FlagsIntoPositionalArgs'ArgParse =
                         | Ok () -> go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
                         | Error exc ->
                             if setFlagValue key then
+                                go ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
+                            else if false then
+                                key |> arg_1.Add
                                 go ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
                             else
                                 match exc with
