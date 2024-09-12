@@ -623,7 +623,7 @@ Required argument '--exact' received no value"""
     let ``Can collect *all* non-help args into positional args with includeFlagLike`` () =
         let getEnvVar (_ : string) = failwith "do not call"
 
-        FlagsIntoPositionalArgs.parse' getEnvVar [ "--a" ; "foo" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
+        FlagsIntoPositionalArgs.parse' getEnvVar [ "--a" ; "foo" ; "--b=false" ; "--c" ; "hi" ; "--" ; "--help" ]
         |> shouldEqual
             {
                 A = "foo"
@@ -633,7 +633,7 @@ Required argument '--exact' received no value"""
         // Users might consider this eccentric!
         // But we're only a simple arg parser; we don't look around to see whether this is "almost"
         // a valid parse.
-        FlagsIntoPositionalArgs.parse' getEnvVar [ "--a" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
+        FlagsIntoPositionalArgs.parse' getEnvVar [ "--a" ; "--b=false" ; "--c" ; "hi" ; "--" ; "--help" ]
         |> shouldEqual
             {
                 A = "--b=false"
@@ -641,12 +641,14 @@ Required argument '--exact' received no value"""
             }
 
     [<Test>]
-    let ``Can refuse to collect non-help args`` () =
+    let ``Can refuse to collect non-help args with PositionalArgs false`` () =
         let getEnvVar (_ : string) = failwith "do not call"
 
         let exc =
             Assert.Throws<exn> (fun () ->
-                FlagsIntoPositionalArgs'.parse' getEnvVar [ "--a" ; "foo" ; "--b=false" ; "--c=hi" ; "--" ; "--help" ]
+                FlagsIntoPositionalArgs'.parse'
+                    getEnvVar
+                    [ "--a" ; "foo" ; "--b=false" ; "--c" ; "hi" ; "--" ; "--help" ]
                 |> ignore<FlagsIntoPositionalArgs'>
             )
 
