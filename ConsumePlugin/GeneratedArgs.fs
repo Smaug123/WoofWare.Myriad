@@ -3636,7 +3636,7 @@ module FlagsIntoPositionalArgsArgParse =
                             if setFlagValue key then
                                 go ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
                             else if true then
-                                key |> arg_1.Add
+                                key |> (fun x -> x) |> arg_1.Add
                                 go ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
                             else
                                 match exc with
@@ -3669,6 +3669,498 @@ module FlagsIntoPositionalArgsArgParse =
 
         static member parse (args : string list) : FlagsIntoPositionalArgs =
             FlagsIntoPositionalArgs.parse' System.Environment.GetEnvironmentVariable args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type FlagsIntoPositionalArgsChoice
+[<AutoOpen>]
+module FlagsIntoPositionalArgsChoiceArgParse =
+    type private ParseState_FlagsIntoPositionalArgsChoice =
+        /// Ready to consume a key or positional arg
+        | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
+        | AwaitingValue of key : string
+
+    /// Extension methods for argument parsing
+    type FlagsIntoPositionalArgsChoice with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : FlagsIntoPositionalArgsChoice
+            =
+            let ArgParser_errors = ResizeArray ()
+
+            let helpText () =
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
+                    (sprintf
+                        "%s  string%s%s"
+                        (sprintf "--%s" "grab-everything")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
+                |> String.concat "\n"
+
+            let arg_1 : Choice<string, string> ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
+
+            /// Processes the key-value pair, returning Error if no key was matched.
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "a")
+                            (x.ToString ())
+                            (value.ToString ())
+                        |> ArgParser_errors.Add
+
+                        Ok ()
+                    | None ->
+                        try
+                            arg_0 <- value |> (fun x -> x) |> Some
+                            Ok ()
+                        with _ as exc ->
+                            exc.Message |> Some |> Error
+                else if
+                    System.String.Equals (
+                        key,
+                        sprintf "--%s" "grab-everything",
+                        System.StringComparison.OrdinalIgnoreCase
+                    )
+                then
+                    value |> (fun x -> x) |> Choice1Of2 |> arg_1.Add
+                    () |> Ok
+                else
+                    Error None
+
+            /// Returns false if we didn't set a value.
+            let setFlagValue (key : string) : bool = false
+
+            let rec go (state : ParseState_FlagsIntoPositionalArgsChoice) (args : string list) =
+                match args with
+                | [] ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey -> ()
+                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
+                | arg :: args ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey ->
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                            if arg = "--help" then
+                                helpText () |> failwithf "Help text requested.\n%s"
+                            else
+                                let equals = arg.IndexOf (char 61)
+
+                                if equals < 0 then
+                                    args |> go (ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue arg)
+                                else
+                                    let key = arg.[0 .. equals - 1]
+                                    let value = arg.[equals + 1 ..]
+
+                                    match processKeyValue key value with
+                                    | Ok () -> go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+                                    | Error x ->
+                                        if true then
+                                            arg |> (fun x -> x) |> Choice1Of2 |> arg_1.Add
+                                            go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+                                        else
+                                            match x with
+                                            | None ->
+                                                failwithf
+                                                    "Unable to process argument %s as key %s and value %s"
+                                                    arg
+                                                    key
+                                                    value
+                                            | Some msg ->
+                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                                go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+                        else
+                            arg |> (fun x -> x) |> Choice1Of2 |> arg_1.Add
+                            go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue key ->
+                        match processKeyValue key arg with
+                        | Ok () -> go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+                        | Error exc ->
+                            if setFlagValue key then
+                                go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey (arg :: args)
+                            else if true then
+                                key |> (fun x -> x) |> Choice1Of2 |> arg_1.Add
+                                go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey (arg :: args)
+                            else
+                                match exc with
+                                | None ->
+                                    failwithf
+                                        "Unable to process supplied arg %s. Help text follows.\n%s"
+                                        key
+                                        (helpText ())
+                                | Some msg -> msg |> ArgParser_errors.Add
+
+            go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+            let arg_1 = arg_1 |> Seq.toList
+
+            let arg_0 =
+                match arg_0 with
+                | None ->
+                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+                | Some x -> x
+
+            if 0 = ArgParser_errors.Count then
+                {
+                    A = arg_0
+                    GrabEverything = arg_1
+                }
+            else
+                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : FlagsIntoPositionalArgsChoice =
+            FlagsIntoPositionalArgsChoice.parse' System.Environment.GetEnvironmentVariable args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type FlagsIntoPositionalArgsInt
+[<AutoOpen>]
+module FlagsIntoPositionalArgsIntArgParse =
+    type private ParseState_FlagsIntoPositionalArgsInt =
+        /// Ready to consume a key or positional arg
+        | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
+        | AwaitingValue of key : string
+
+    /// Extension methods for argument parsing
+    type FlagsIntoPositionalArgsInt with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : FlagsIntoPositionalArgsInt
+            =
+            let ArgParser_errors = ResizeArray ()
+
+            let helpText () =
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
+                    (sprintf
+                        "%s  int32%s%s"
+                        (sprintf "--%s" "grab-everything")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
+                |> String.concat "\n"
+
+            let arg_1 : int ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
+
+            /// Processes the key-value pair, returning Error if no key was matched.
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "a")
+                            (x.ToString ())
+                            (value.ToString ())
+                        |> ArgParser_errors.Add
+
+                        Ok ()
+                    | None ->
+                        try
+                            arg_0 <- value |> (fun x -> x) |> Some
+                            Ok ()
+                        with _ as exc ->
+                            exc.Message |> Some |> Error
+                else if
+                    System.String.Equals (
+                        key,
+                        sprintf "--%s" "grab-everything",
+                        System.StringComparison.OrdinalIgnoreCase
+                    )
+                then
+                    value |> (fun x -> System.Int32.Parse x) |> arg_1.Add
+                    () |> Ok
+                else
+                    Error None
+
+            /// Returns false if we didn't set a value.
+            let setFlagValue (key : string) : bool = false
+
+            let rec go (state : ParseState_FlagsIntoPositionalArgsInt) (args : string list) =
+                match args with
+                | [] ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingKey -> ()
+                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
+                | arg :: args ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingKey ->
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                            if arg = "--help" then
+                                helpText () |> failwithf "Help text requested.\n%s"
+                            else
+                                let equals = arg.IndexOf (char 61)
+
+                                if equals < 0 then
+                                    args |> go (ParseState_FlagsIntoPositionalArgsInt.AwaitingValue arg)
+                                else
+                                    let key = arg.[0 .. equals - 1]
+                                    let value = arg.[equals + 1 ..]
+
+                                    match processKeyValue key value with
+                                    | Ok () -> go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+                                    | Error x ->
+                                        if true then
+                                            arg |> (fun x -> System.Int32.Parse x) |> arg_1.Add
+                                            go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+                                        else
+                                            match x with
+                                            | None ->
+                                                failwithf
+                                                    "Unable to process argument %s as key %s and value %s"
+                                                    arg
+                                                    key
+                                                    value
+                                            | Some msg ->
+                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                                go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+                        else
+                            arg |> (fun x -> System.Int32.Parse x) |> arg_1.Add
+                            go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingValue key ->
+                        match processKeyValue key arg with
+                        | Ok () -> go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+                        | Error exc ->
+                            if setFlagValue key then
+                                go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey (arg :: args)
+                            else if true then
+                                key |> (fun x -> System.Int32.Parse x) |> arg_1.Add
+                                go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey (arg :: args)
+                            else
+                                match exc with
+                                | None ->
+                                    failwithf
+                                        "Unable to process supplied arg %s. Help text follows.\n%s"
+                                        key
+                                        (helpText ())
+                                | Some msg -> msg |> ArgParser_errors.Add
+
+            go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+            let arg_1 = arg_1 |> Seq.toList
+
+            let arg_0 =
+                match arg_0 with
+                | None ->
+                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+                | Some x -> x
+
+            if 0 = ArgParser_errors.Count then
+                {
+                    A = arg_0
+                    GrabEverything = arg_1
+                }
+            else
+                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : FlagsIntoPositionalArgsInt =
+            FlagsIntoPositionalArgsInt.parse' System.Environment.GetEnvironmentVariable args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type FlagsIntoPositionalArgsIntChoice
+[<AutoOpen>]
+module FlagsIntoPositionalArgsIntChoiceArgParse =
+    type private ParseState_FlagsIntoPositionalArgsIntChoice =
+        /// Ready to consume a key or positional arg
+        | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
+        | AwaitingValue of key : string
+
+    /// Extension methods for argument parsing
+    type FlagsIntoPositionalArgsIntChoice with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : FlagsIntoPositionalArgsIntChoice
+            =
+            let ArgParser_errors = ResizeArray ()
+
+            let helpText () =
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
+                    (sprintf
+                        "%s  int32%s%s"
+                        (sprintf "--%s" "grab-everything")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
+                |> String.concat "\n"
+
+            let arg_1 : Choice<int, int> ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
+
+            /// Processes the key-value pair, returning Error if no key was matched.
+            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                    match arg_0 with
+                    | Some x ->
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (sprintf "--%s" "a")
+                            (x.ToString ())
+                            (value.ToString ())
+                        |> ArgParser_errors.Add
+
+                        Ok ()
+                    | None ->
+                        try
+                            arg_0 <- value |> (fun x -> x) |> Some
+                            Ok ()
+                        with _ as exc ->
+                            exc.Message |> Some |> Error
+                else if
+                    System.String.Equals (
+                        key,
+                        sprintf "--%s" "grab-everything",
+                        System.StringComparison.OrdinalIgnoreCase
+                    )
+                then
+                    value |> (fun x -> System.Int32.Parse x) |> Choice1Of2 |> arg_1.Add
+                    () |> Ok
+                else
+                    Error None
+
+            /// Returns false if we didn't set a value.
+            let setFlagValue (key : string) : bool = false
+
+            let rec go (state : ParseState_FlagsIntoPositionalArgsIntChoice) (args : string list) =
+                match args with
+                | [] ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey -> ()
+                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x) |> Seq.map Choice2Of2)
+                | arg :: args ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey ->
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
+                            if arg = "--help" then
+                                helpText () |> failwithf "Help text requested.\n%s"
+                            else
+                                let equals = arg.IndexOf (char 61)
+
+                                if equals < 0 then
+                                    args |> go (ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue arg)
+                                else
+                                    let key = arg.[0 .. equals - 1]
+                                    let value = arg.[equals + 1 ..]
+
+                                    match processKeyValue key value with
+                                    | Ok () -> go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+                                    | Error x ->
+                                        if true then
+                                            arg |> (fun x -> System.Int32.Parse x) |> Choice1Of2 |> arg_1.Add
+                                            go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+                                        else
+                                            match x with
+                                            | None ->
+                                                failwithf
+                                                    "Unable to process argument %s as key %s and value %s"
+                                                    arg
+                                                    key
+                                                    value
+                                            | Some msg ->
+                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
+                                                go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+                        else
+                            arg |> (fun x -> System.Int32.Parse x) |> Choice1Of2 |> arg_1.Add
+                            go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue key ->
+                        match processKeyValue key arg with
+                        | Ok () -> go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+                        | Error exc ->
+                            if setFlagValue key then
+                                go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey (arg :: args)
+                            else if true then
+                                key |> (fun x -> System.Int32.Parse x) |> Choice1Of2 |> arg_1.Add
+                                go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey (arg :: args)
+                            else
+                                match exc with
+                                | None ->
+                                    failwithf
+                                        "Unable to process supplied arg %s. Help text follows.\n%s"
+                                        key
+                                        (helpText ())
+                                | Some msg -> msg |> ArgParser_errors.Add
+
+            go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+            let arg_1 = arg_1 |> Seq.toList
+
+            let arg_0 =
+                match arg_0 with
+                | None ->
+                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
+                    |> ArgParser_errors.Add
+
+                    Unchecked.defaultof<_>
+                | Some x -> x
+
+            if 0 = ArgParser_errors.Count then
+                {
+                    A = arg_0
+                    GrabEverything = arg_1
+                }
+            else
+                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : FlagsIntoPositionalArgsIntChoice =
+            FlagsIntoPositionalArgsIntChoice.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
 open System
@@ -3800,7 +4292,7 @@ module FlagsIntoPositionalArgs'ArgParse =
                             if setFlagValue key then
                                 go ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
                             else if false then
-                                key |> arg_1.Add
+                                key |> (fun x -> x) |> arg_1.Add
                                 go ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
                             else
                                 match exc with

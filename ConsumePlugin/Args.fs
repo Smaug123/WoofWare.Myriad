@@ -205,6 +205,30 @@ type FlagsIntoPositionalArgs =
     }
 
 [<ArgParser true>]
+type FlagsIntoPositionalArgsChoice =
+    {
+        A : string
+        [<PositionalArgs true>]
+        GrabEverything : Choice<string, string> list
+    }
+
+[<ArgParser true>]
+type FlagsIntoPositionalArgsInt =
+    {
+        A : string
+        [<PositionalArgs true>]
+        GrabEverything : int list
+    }
+
+[<ArgParser true>]
+type FlagsIntoPositionalArgsIntChoice =
+    {
+        A : string
+        [<PositionalArgs true>]
+        GrabEverything : Choice<int, int> list
+    }
+
+[<ArgParser true>]
 type FlagsIntoPositionalArgs' =
     {
         A : string
