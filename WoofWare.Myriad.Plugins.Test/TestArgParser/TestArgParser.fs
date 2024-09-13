@@ -641,6 +641,45 @@ Required argument '--exact' received no value"""
             }
 
     [<Test>]
+    let ``Can collect non-help args into positional args with Choice`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        FlagsIntoPositionalArgsChoice.parse' getEnvVar [ "--a" ; "foo" ; "--b=false" ; "--c" ; "hi" ; "--" ; "--help" ]
+        |> shouldEqual
+            {
+                A = "foo"
+                GrabEverything =
+                    [
+                        Choice1Of2 "--b=false"
+                        Choice1Of2 "--c"
+                        Choice1Of2 "hi"
+                        Choice2Of2 "--help"
+                    ]
+            }
+
+    [<Test>]
+    let ``Can collect non-help args into positional args, and we parse on the way`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        FlagsIntoPositionalArgsInt.parse' getEnvVar [ "3" ; "--a" ; "foo" ; "5" ; "--" ; "98" ]
+        |> shouldEqual
+            {
+                A = "foo"
+                GrabEverything = [ 3 ; 5 ; 98 ]
+            }
+
+    [<Test>]
+    let ``Can collect non-help args into positional args with Choice, and we parse on the way`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        FlagsIntoPositionalArgsIntChoice.parse' getEnvVar [ "3" ; "--a" ; "foo" ; "5" ; "--" ; "98" ]
+        |> shouldEqual
+            {
+                A = "foo"
+                GrabEverything = [ Choice1Of2 3 ; Choice1Of2 5 ; Choice2Of2 98 ]
+            }
+
+    [<Test>]
     let ``Can refuse to collect non-help args with PositionalArgs false`` () =
         let getEnvVar (_ : string) = failwith "do not call"
 

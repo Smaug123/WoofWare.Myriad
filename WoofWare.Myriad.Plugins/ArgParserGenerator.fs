@@ -1140,6 +1140,12 @@ module internal ArgParserGenerator =
                 | Some includeFlagLike ->
                     [
                         SynExpr.createIdent "key"
+                        |> SynExpr.pipeThroughFunction leftoverArgParser
+                        |> fun i ->
+                            match leftoverArgAcc with
+                            | ChoicePositional.Choice _ ->
+                                i |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                            | ChoicePositional.Normal _ -> i
                         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
 
                         SynExpr.createIdent "go"
