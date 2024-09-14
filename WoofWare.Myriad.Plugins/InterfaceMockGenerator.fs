@@ -228,14 +228,11 @@ module internal InterfaceMockGenerator =
             x.Type
 
     let private constructMemberSinglePlace (tuple : TupledArg) : SynType =
-        match tuple.Args |> List.rev |> List.map buildType with
-        | [] -> failwith "no-arg functions not supported yet"
-        | [ x ] -> x
-        | last :: rest ->
-            ([ SynTupleTypeSegment.Type last ], rest)
-            ||> List.fold (fun ty nextArg -> SynTupleTypeSegment.Type nextArg :: SynTupleTypeSegment.Star range0 :: ty)
-            |> fun segs -> SynType.Tuple (false, segs, range0)
-        |> fun ty -> if tuple.HasParen then SynType.Paren (ty, range0) else ty
+        tuple.Args
+        |> List.map buildType
+        |> SynType.tupleNoParen
+        |> Option.defaultWith (fun () -> failwith "no-arg functions not supported yet")
+        |> if tuple.HasParen then SynType.paren else id
 
     let constructMember (mem : MemberInfo) : SynField =
         let inputType = mem.Args |> List.map constructMemberSinglePlace

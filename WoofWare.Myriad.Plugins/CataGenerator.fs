@@ -564,11 +564,12 @@ module internal CataGenerator =
                     let domain =
                         field.FieldName
                         |> Option.map Ident.lowerFirstLetter
-                        |> SynType.signatureParamOfType place
+                        |> SynType.signatureParamOfType [] place false
 
                     acc |> SynType.funFromDomain domain
                 )
                 |> SynMemberDefn.abstractMember
+                    []
                     case.CataMethodIdent
                     None
                     arity

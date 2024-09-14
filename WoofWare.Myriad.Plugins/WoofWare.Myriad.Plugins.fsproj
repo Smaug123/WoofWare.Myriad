@@ -30,6 +30,7 @@
     <Compile Include="SynExpr\SynAttributes.fs" />
     <Compile Include="SynExpr\PreXmlDoc.fs" />
     <Compile Include="SynExpr\Ident.fs" />
+    <Compile Include="SynExpr\SynIdent.fs" />
     <Compile Include="SynExpr\SynLongIdent.fs" />
     <Compile Include="SynExpr\SynExprLetOrUseTrivia.fs" />
     <Compile Include="SynExpr\SynArgPats.fs" />

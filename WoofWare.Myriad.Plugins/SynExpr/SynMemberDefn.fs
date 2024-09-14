@@ -17,8 +17,8 @@ module internal SynMemberDefn =
             SynMemberFlags.MemberKind = SynMemberKind.Member
         }
 
-
     let abstractMember
+        (attrs : SynAttribute list)
         (ident : SynIdent)
         (typars : SynTyparDecls option)
         (arity : SynValInfo)
@@ -28,7 +28,13 @@ module internal SynMemberDefn =
         =
         let slot =
             SynValSig.SynValSig (
-                [],
+                attrs
+                |> List.map (fun attr ->
+                    {
+                        Attributes = [ attr ]
+                        Range = range0
+                    }
+                ),
                 ident,
                 SynValTyparDecls.SynValTyparDecls (typars, true),
                 returnType,
