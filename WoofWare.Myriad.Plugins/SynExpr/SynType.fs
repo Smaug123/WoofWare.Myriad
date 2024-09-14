@@ -267,6 +267,8 @@ module internal SynType =
         | SynType.Paren (ty, _) -> stripOptionalParen ty
         | ty -> ty
 
+    let inline paren (ty : SynType) : SynType = SynType.Paren (ty, range0)
+
     let inline createLongIdent (ident : LongIdent) : SynType =
         SynType.LongIdent (SynLongIdent.create ident)
 
@@ -282,6 +284,17 @@ module internal SynType =
         SynType.App (name, Some range0, args, List.replicate (args.Length - 1) range0, Some range0, false, range0)
 
     let inline app (name : string) (args : SynType list) : SynType = app' (named name) args
+
+    /// Returns None if the input list was empty.
+    let inline tupleNoParen (ty : SynType list) : SynType option =
+        match List.rev ty with
+        | [] -> None
+        | [ t ] -> Some t
+        | t :: rest ->
+            ([ SynTupleTypeSegment.Type t ], rest)
+            ||> List.fold (fun ty nextArg -> SynTupleTypeSegment.Type nextArg :: SynTupleTypeSegment.Star range0 :: ty)
+            |> fun segs -> SynType.Tuple (false, segs, range0)
+            |> Some
 
     let inline appPostfix (name : string) (arg : SynType) : SynType =
         SynType.App (named name, None, [ arg ], [], None, true, range0)
@@ -299,15 +312,53 @@ module internal SynType =
             }
         )
 
-    let inline signatureParamOfType (ty : SynType) (name : Ident option) : SynType =
-        SynType.SignatureParameter ([], false, name, ty, range0)
+    let inline signatureParamOfType
+        (attrs : SynAttribute list)
+        (ty : SynType)
+        (optional : bool)
+        (name : Ident option)
+        : SynType
+        =
+        SynType.SignatureParameter (
+            attrs
+            |> List.map (fun attr ->
+                {
+                    Attributes = [ attr ]
+                    Range = range0
+                }
+            ),
+            optional,
+            name,
+            ty,
+            range0
+        )
 
     let inline var (ty : SynTypar) : SynType = SynType.Var (ty, range0)
 
     let unit : SynType = named "unit"
+    let obj : SynType = named "obj"
+    let bool : SynType = named "bool"
     let int : SynType = named "int"
+    let array (elt : SynType) : SynType = SynType.Array (1, elt, range0)
+
+    let list (elt : SynType) : SynType =
+        SynType.App (named "list", None, [ elt ], [], None, true, range0)
+
+    let option (elt : SynType) : SynType =
+        SynType.App (named "option", None, [ elt ], [], None, true, range0)
 
     let anon : SynType = SynType.Anon range0
+
+    let task (elt : SynType) : SynType =
+        SynType.App (
+            createLongIdent' [ "System" ; "Threading" ; "Tasks" ; "Task" ],
+            None,
+            [ elt ],
+            [],
+            None,
+            true,
+            range0
+        )
 
     let string : SynType = named "string"
 

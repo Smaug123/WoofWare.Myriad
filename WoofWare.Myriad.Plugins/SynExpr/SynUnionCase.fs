@@ -44,7 +44,7 @@ module internal SynUnionCase =
 
         SynUnionCase.SynUnionCase (
             SynAttributes.ofAttrs case.Attributes,
-            SynIdent.SynIdent (case.Name, None),
+            SynIdent.createI case.Name,
             SynUnionCaseKind.Fields fields,
             case.XmlDoc |> Option.defaultValue PreXmlDoc.Empty,
             case.Access,

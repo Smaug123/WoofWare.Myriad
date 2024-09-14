@@ -9,12 +9,12 @@ module internal SynArgPats =
         match caseNames.Length with
         | 0 -> SynArgPats.Pats []
         | 1 ->
-            SynPat.Named (SynIdent.SynIdent (Ident.create caseNames.[0], None), false, None, range0)
+            SynPat.Named (SynIdent.createS caseNames.[0], false, None, range0)
             |> List.singleton
             |> SynArgPats.Pats
         | len ->
             caseNames
-            |> List.map (fun name -> SynPat.Named (SynIdent.SynIdent (Ident.create name, None), false, None, range0))
+            |> List.map (fun name -> SynPat.Named (SynIdent.createS name, false, None, range0))
             |> fun t -> SynPat.Tuple (false, t, List.replicate (len - 1) range0, range0)
             |> fun t -> SynPat.Paren (t, range0)
             |> List.singleton
