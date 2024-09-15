@@ -117,6 +117,7 @@ module TestJsonSerde =
                     IntMeasureNullable = intMeasureNullable
                     Enum = enum<SomeEnum> someEnum
                     Timestamp = timestamp
+                    Unit = ()
                 }
         }
 
@@ -168,6 +169,7 @@ module TestJsonSerde =
                 IntMeasureNullable = Nullable -883<measure>
                 Enum = enum<SomeEnum> 1
                 Timestamp = DateTimeOffset (2024, 07, 01, 17, 54, 00, TimeSpan.FromHours 1.0)
+                Unit = ()
             }
 
         let expected =
@@ -198,7 +200,8 @@ module TestJsonSerde =
     "intMeasureOption": 981,
     "intMeasureNullable": -883,
     "enum": 1,
-    "timestamp": "2024-07-01T17:54:00.0000000\u002B01:00"
+    "timestamp": "2024-07-01T17:54:00.0000000\u002B01:00",
+    "unit": {}
 }
 """
             |> fun s -> s.ToCharArray ()
