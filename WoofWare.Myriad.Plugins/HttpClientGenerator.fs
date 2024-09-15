@@ -321,15 +321,33 @@ module internal HttpClientGenerator =
                 |> SynExpr.createMatch baseAddress
                 |> SynExpr.paren
 
+            let baseAddress =
+                match info.BasePath with
+                | None -> baseAddress
+                | Some basePath ->
+                    [
+                        yield baseAddress
+
+                        yield
+                            SynExpr.applyFunction
+                                uriIdent
+                                (SynExpr.tuple
+                                    [ basePath ; SynExpr.createLongIdent [ "System" ; "UriKind" ; "Relative" ] ])
+                    ]
+                    |> SynExpr.tuple
+                    |> SynExpr.applyFunction uriIdent
+
             [
-                baseAddress
-                SynExpr.applyFunction
-                    uriIdent
-                    (SynExpr.tuple
-                        [
-                            requestUriTrailer
-                            SynExpr.createLongIdent [ "System" ; "UriKind" ; "Relative" ]
-                        ])
+                yield baseAddress
+
+                yield
+                    SynExpr.applyFunction
+                        uriIdent
+                        (SynExpr.tuple
+                            [
+                                requestUriTrailer
+                                SynExpr.createLongIdent [ "System" ; "UriKind" ; "Relative" ]
+                            ])
             ]
             |> SynExpr.tuple
             |> SynExpr.applyFunction uriIdent

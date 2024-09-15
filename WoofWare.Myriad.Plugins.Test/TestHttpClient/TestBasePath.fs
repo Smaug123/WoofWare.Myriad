@@ -82,7 +82,7 @@ module TestBasePath =
             |> shouldEqual
                 "No base address was supplied on the type, and no BaseAddress was on the HttpClient. (Parameter 'BaseAddress')"
 
-        use client = HttpClientMock.make (Uri "https://whatnot.com/thing") replyWithUrl
+        use client = HttpClientMock.make (Uri "https://whatnot.com/thing/") replyWithUrl
         let api = ApiWithBasePath.make client
         let result = api.GetPathParam("hi").Result
         result |> shouldEqual "https://whatnot.com/thing/foo/endpoint/hi"
@@ -107,7 +107,7 @@ module TestBasePath =
             |> shouldEqual
                 "No base address was supplied on the type, and no BaseAddress was on the HttpClient. (Parameter 'BaseAddress')"
 
-        use client = HttpClientMock.make (Uri "https://whatnot.com/thing") replyWithUrl
+        use client = HttpClientMock.make (Uri "https://whatnot.com/thing/") replyWithUrl
         let api = ApiWithAbsoluteBasePath.make client
         let result = api.GetPathParam("hi").Result
         result |> shouldEqual "https://whatnot.com/foo/endpoint/hi"
@@ -132,7 +132,7 @@ module TestBasePath =
             |> shouldEqual
                 "No base address was supplied on the type, and no BaseAddress was on the HttpClient. (Parameter 'BaseAddress')"
 
-        use client = HttpClientMock.make (Uri "https://whatnot.com/thing") replyWithUrl
+        use client = HttpClientMock.make (Uri "https://whatnot.com/thing/") replyWithUrl
         let api = ApiWithBasePathAndAbsoluteEndpoint.make client
         let result = api.GetPathParam("hi").Result
         result |> shouldEqual "https://whatnot.com/endpoint/hi"
@@ -157,7 +157,7 @@ module TestBasePath =
             |> shouldEqual
                 "No base address was supplied on the type, and no BaseAddress was on the HttpClient. (Parameter 'BaseAddress')"
 
-        use client = HttpClientMock.make (Uri "https://whatnot.com/thing") replyWithUrl
+        use client = HttpClientMock.make (Uri "https://whatnot.com/thing/") replyWithUrl
         let api = ApiWithAbsoluteBasePathAndAbsoluteEndpoint.make client
         let result = api.GetPathParam("hi").Result
         result |> shouldEqual "https://whatnot.com/endpoint/hi"

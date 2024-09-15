@@ -1116,15 +1116,18 @@ module ApiWithBasePath =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null ->
-                                 raise (
-                                     System.ArgumentNullException (
-                                         nameof (client.BaseAddress),
-                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException (
+                                             nameof (client.BaseAddress),
+                                             "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                         )
                                      )
-                                 )
-                             | v -> v),
+                                 | v -> v),
+                                System.Uri ("foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -1167,9 +1170,12 @@ module ApiWithBasePathAndAddress =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com/thing/"
-                             | v -> v),
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null -> System.Uri "https://whatnot.com/thing/"
+                                 | v -> v),
+                                System.Uri ("foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -1212,15 +1218,18 @@ module ApiWithAbsoluteBasePath =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null ->
-                                 raise (
-                                     System.ArgumentNullException (
-                                         nameof (client.BaseAddress),
-                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException (
+                                             nameof (client.BaseAddress),
+                                             "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                         )
                                      )
-                                 )
-                             | v -> v),
+                                 | v -> v),
+                                System.Uri ("/foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -1263,9 +1272,12 @@ module ApiWithAbsoluteBasePathAndAddress =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com/thing/"
-                             | v -> v),
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null -> System.Uri "https://whatnot.com/thing/"
+                                 | v -> v),
+                                System.Uri ("/foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -1308,15 +1320,18 @@ module ApiWithBasePathAndAbsoluteEndpoint =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null ->
-                                 raise (
-                                     System.ArgumentNullException (
-                                         nameof (client.BaseAddress),
-                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException (
+                                             nameof (client.BaseAddress),
+                                             "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                         )
                                      )
-                                 )
-                             | v -> v),
+                                 | v -> v),
+                                System.Uri ("foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "/endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -1359,9 +1374,12 @@ module ApiWithBasePathAndAddressAndAbsoluteEndpoint =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com/thing/"
-                             | v -> v),
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null -> System.Uri "https://whatnot.com/thing/"
+                                 | v -> v),
+                                System.Uri ("foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "/endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -1404,15 +1422,18 @@ module ApiWithAbsoluteBasePathAndAbsoluteEndpoint =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null ->
-                                 raise (
-                                     System.ArgumentNullException (
-                                         nameof (client.BaseAddress),
-                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException (
+                                             nameof (client.BaseAddress),
+                                             "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                         )
                                      )
-                                 )
-                             | v -> v),
+                                 | v -> v),
+                                System.Uri ("/foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "/endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -1455,9 +1476,12 @@ module ApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com/thing/"
-                             | v -> v),
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null -> System.Uri "https://whatnot.com/thing/"
+                                 | v -> v),
+                                System.Uri ("/foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "/endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
