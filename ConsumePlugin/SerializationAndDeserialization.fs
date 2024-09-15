@@ -87,6 +87,7 @@ type CollectRemaining =
 [<WoofWare.Myriad.Plugins.JsonParse true>]
 type OuterCollectRemaining =
     {
-        Thing : string
+        [<JsonExtensionData>]
+        Others : Dictionary<string, int>
         Remaining : CollectRemaining
     }

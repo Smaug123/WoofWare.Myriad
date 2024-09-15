@@ -59,7 +59,7 @@ module internal JsonParseGenerator =
         | None -> node
         | Some propertyName -> assertNotNull propertyName node
         |> SynExpr.callMethod "AsValue"
-        |> SynExpr.callGenericMethod "GetValue" typeName
+        |> SynExpr.callGenericMethod (SynLongIdent.createS "GetValue") [ SynType.createLongIdent typeName ]
 
     /// {node}.AsObject()
     /// If `propertyName` is Some, uses `assertNotNull {node}` instead of `{node}`.
@@ -279,7 +279,7 @@ module internal JsonParseGenerator =
         | Measure (_measure, primType) ->
             parseNumberType options propertyName node primType
             |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure primType)
-        | JsonNode -> SynExpr.createIdent "node"
+        | JsonNode -> node
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =
@@ -437,16 +437,25 @@ module internal JsonParseGenerator =
                 | Some _ ->
                     // Can't go through the usual parse logic here, because that will try and identify the node that's
                     // been labelled. The whole point of JsonExtensionData is that there is no such node!
+                    let valType =
+                        match fieldData.Type with
+                        | DictionaryType (String, v) -> v
+                        | _ -> failwith "Expected JsonExtensionData to be Dictionary<string, _>"
+
                     SynExpr.ifThenElse
                         isNamedPropertyField
                         (SynExpr.callMethodArg
                             "Add"
-                            (SynExpr.tuple [ SynExpr.createIdent "key" ; SynExpr.createIdent "value" ])
+                            (SynExpr.tuple
+                                [
+                                    SynExpr.createIdent "key"
+                                    createParseRhs options (SynExpr.createIdent "key") valType
+                                ])
                             (SynExpr.createIdent "result"))
                         (SynExpr.CreateConst ())
                     |> SynExpr.createForEach
                         (SynPat.nameWithArgs "KeyValue" [ SynPat.named "key" ; SynPat.named "value" ])
-                        (SynExpr.createIdent "node" |> SynExpr.callMethod "AsObject")
+                        (SynExpr.createIdent "node")
                     |> fun forEach -> [ forEach ; SynExpr.createIdent "result" ]
                     |> SynExpr.sequential
                     |> SynExpr.createLet
@@ -454,8 +463,15 @@ module internal JsonParseGenerator =
                             SynBinding.basic
                                 [ Ident.create "result" ]
                                 []
-                                (SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "Dictionary" ]
+                                (SynExpr.typeApp
+                                    [ SynType.string ; valType ]
+                                    (SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "Dictionary" ])
                                  |> SynExpr.applyTo (SynExpr.CreateConst ()))
+
+                            SynBinding.basic
+                                [ Ident.create "node" ]
+                                []
+                                (SynExpr.createIdent "node" |> SynExpr.callMethod "AsObject")
                         ]
                     |> SynBinding.basic [ accIdent ] []
                 | None ->
@@ -542,9 +558,7 @@ module internal JsonParseGenerator =
                 |> SynExpr.index property
                 |> assertNotNull property
                 |> SynExpr.pipeThroughFunction (
-                    SynExpr.createLambda
-                        "v"
-                        (SynExpr.callGenericMethod "GetValue" [ Ident.create "string" ] (SynExpr.createIdent "v"))
+                    SynExpr.createLambda "v" (SynExpr.callGenericMethod' "GetValue" "string" (SynExpr.createIdent "v"))
                 )
                 |> SynBinding.basic [ Ident.create "ty" ] []
             ]

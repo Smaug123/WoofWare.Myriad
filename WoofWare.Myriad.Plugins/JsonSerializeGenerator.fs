@@ -146,6 +146,7 @@ module internal JsonSerializeGenerator =
                 ]
             |> SynExpr.createLambda "field"
             |> fun e -> e, false
+        | JsonNode -> SynExpr.createIdent "id", true
         | _ ->
             // {type}.toJsonNode
             let typeName =
@@ -267,11 +268,21 @@ module internal JsonSerializeGenerator =
             let isJsonExtension = getIsJsonExtension fieldData.Attrs
 
             if isJsonExtension then
-                // We only recognise Dictionary<string, JsonNode>, and we assume this.
+                let valType =
+                    match fieldData.Type with
+                    | DictionaryType (String, v) -> v
+                    | _ -> failwith "Expected JsonExtensionData to be a Dictionary<string, something>"
+
+                let serialise = fst (serializeNode valType)
+
                 SynExpr.createIdent "node"
                 |> SynExpr.callMethodArg
                     "Add"
-                    (SynExpr.tuple [ SynExpr.createIdent "key" ; SynExpr.createIdent "value" ])
+                    (SynExpr.tuple
+                        [
+                            SynExpr.createIdent "key"
+                            SynExpr.applyFunction serialise (SynExpr.createIdent "value")
+                        ])
                 |> SynExpr.createForEach
                     (SynPat.identWithArgs
                         [ Ident.create "KeyValue" ]

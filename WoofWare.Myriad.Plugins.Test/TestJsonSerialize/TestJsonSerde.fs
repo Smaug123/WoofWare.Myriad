@@ -326,6 +326,9 @@ module TestJsonSerde =
 
         result :> JsonNode
 
+    let normalise (d : Dictionary<'a, 'b>) : ('a * 'b) list =
+        d |> Seq.map (fun (KeyValue (a, b)) -> a, b) |> Seq.toList |> List.sortBy fst
+
     [<Test>]
     let ``Can collect extension data`` () =
         let str =
@@ -358,16 +361,9 @@ module TestJsonSerde =
 
         actual.Message |> shouldEqual expected.Message
 
-        actual.Rest
-        |> Seq.map (fun (KeyValue (a, b)) -> a, b.ToJsonString ())
-        |> Seq.toList
-        |> List.sortBy fst
-        |> shouldEqual (
-            expected.Rest
-            |> Seq.map (fun (KeyValue (a, b)) -> a, b.ToJsonString ())
-            |> Seq.toList
-            |> List.sortBy fst
-        )
+        normalise actual.Rest
+        |> List.map (fun (k, v) -> k, v.ToJsonString ())
+        |> shouldEqual (normalise expected.Rest |> List.map (fun (k, v) -> k, v.ToJsonString ()))
 
     [<Test>]
     let ``Can write out extension data`` () =
@@ -399,7 +395,8 @@ module TestJsonSerde =
     let ``Can collect extension data, nested`` () =
         let str =
             """{
-  "thing": "ohhh yeahhhh",
+  "thing": 99,
+  "baz": -123,
   "remaining": {
     "message": { "header": "hi", "value": "bye" },
     "something": 3,
@@ -409,50 +406,48 @@ module TestJsonSerde =
 }"""
             |> JsonNode.Parse
 
-        let expected =
+        let expected : OuterCollectRemaining =
             {
-                Rest =
-                    [
-                        "something", JsonNode.op_Implicit 3
-                        "arr", makeJsonArr [| "egg" ; "toast" |]
-                        "str", JsonNode.op_Implicit "whatnot"
-                    ]
-                    |> dict
-                Message =
-                    Some
-                        {
-                            Header = "hi"
-                            Value = "bye"
-                        }
+                Remaining =
+                    {
+                        Message =
+                            Some
+                                {
+                                    Header = "hi"
+                                    Value = "bye"
+                                }
+                        Rest =
+                            [
+                                "something", JsonNode.op_Implicit 3
+                                "arr", makeJsonArr [| "egg" ; "toast" |]
+                                "str", JsonNode.op_Implicit "whatnot"
+                            ]
+                            |> dict
+                    }
+                Others = [ "thing", 99 ; "baz", -123 ] |> dict
             }
 
         let actual = OuterCollectRemaining.jsonParse str
 
-        actual.Thing |> shouldEqual "ohhh yeahhhh"
+        normalise actual.Others |> shouldEqual (normalise expected.Others)
 
         let actual = actual.Remaining
+        let expected = expected.Remaining
 
         actual.Message |> shouldEqual expected.Message
 
-        actual.Rest
-        |> Seq.map (fun (KeyValue (a, b)) -> a, b.ToJsonString ())
-        |> Seq.toList
-        |> List.sortBy fst
-        |> shouldEqual (
-            expected.Rest
-            |> Seq.map (fun (KeyValue (a, b)) -> a, b.ToJsonString ())
-            |> Seq.toList
-            |> List.sortBy fst
-        )
+        normalise actual.Rest
+        |> List.map (fun (k, v) -> k, v.ToJsonString ())
+        |> shouldEqual (normalise expected.Rest |> List.map (fun (k, v) -> k, v.ToJsonString ()))
 
     [<Test>]
     let ``Can write out extension data, nested`` () =
         let expected =
-            """{"thing":"ohhh yeahhhh","remaining":{"message":{"header":"hi","value":"bye"},"something":3,"arr":["egg","toast"],"str":"whatnot"}}"""
+            """{"thing":99,"baz":-123,"remaining":{"message":{"header":"hi","value":"bye"},"something":3,"arr":["egg","toast"],"str":"whatnot"}}"""
 
-        let toWrite =
+        let toWrite : OuterCollectRemaining =
             {
-                Thing = "ohhh yeahhhh"
+                Others = [ "thing", 99 ; "baz", -123 ] |> dict
                 Remaining =
                     {
                         Rest =

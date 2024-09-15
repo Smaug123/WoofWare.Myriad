@@ -319,7 +319,7 @@ module CollectRemainingJsonSerializeExtension =
                 )
 
                 for KeyValue (key, value) in input.Rest do
-                    node.Add (key, value)
+                    node.Add (key, id value)
 
             node :> _
 namespace ConsumePlugin
@@ -339,7 +339,9 @@ module OuterCollectRemainingJsonSerializeExtension =
             let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add ("thing", (input.Thing |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                for KeyValue (key, value) in input.Others do
+                    node.Add (key, System.Text.Json.Nodes.JsonValue.Create<int> value)
+
                 node.Add ("remaining", (input.Remaining |> CollectRemaining.toJsonNode))
 
             node :> _
@@ -905,10 +907,13 @@ module CollectRemainingJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CollectRemaining =
             let arg_1 =
-                let result = System.Collections.Generic.Dictionary ()
+                let result =
+                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode> ()
 
-                for KeyValue (key, value) in node.AsObject () do
-                    if key = "message" then () else result.Add (key, value)
+                let node = node.AsObject ()
+
+                for KeyValue (key, value) in node do
+                    if key = "message" then () else result.Add (key, node.[key])
 
                 result
 
@@ -944,18 +949,30 @@ module OuterCollectRemainingJsonParseExtension =
                 )
 
             let arg_0 =
-                (match node.["thing"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("thing")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.String> ()
+                let result = System.Collections.Generic.Dictionary<string, int> ()
+                let node = node.AsObject ()
+
+                for KeyValue (key, value) in node do
+                    if key = "remaining" then
+                        ()
+                    else
+                        result.Add (
+                            key,
+                            (match node.[key] with
+                             | null ->
+                                 raise (
+                                     System.Collections.Generic.KeyNotFoundException (
+                                         sprintf "Required key '%s' not found on JSON object" (key)
+                                     )
+                                 )
+                             | v -> v)
+                                .AsValue()
+                                .GetValue<System.Int32> ()
+                        )
+
+                result
 
             {
-                Thing = arg_0
+                Others = arg_0
                 Remaining = arg_1
             }
