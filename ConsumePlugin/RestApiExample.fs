@@ -122,8 +122,6 @@ type internal IApiWithoutBaseAddress =
     [<Get "endpoint/{param}">]
     abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
 
-// TODO: implement BasePath support
-
 [<WoofWare.Myriad.Plugins.HttpClient>]
 [<BasePath "foo">]
 type IApiWithBasePath =
@@ -132,10 +130,52 @@ type IApiWithBasePath =
     abstract GetPathParam : [<Path "param">] parameter : string * ?cancellationToken : CancellationToken -> Task<string>
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
-[<BaseAddress "https://whatnot.com">]
+[<BaseAddress "https://whatnot.com/thing">]
 [<BasePath "foo">]
 type IApiWithBasePathAndAddress =
     [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BasePath "/foo">]
+type IApiWithAbsoluteBasePath =
+    // Example where we use the bundled attributes rather than RestEase's
+    [<WoofWare.Myriad.Plugins.RestEase.Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?cancellationToken : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BaseAddress "https://whatnot.com/thing">]
+[<BasePath "/foo">]
+type IApiWithAbsoluteBasePathAndAddress =
+    [<Get "endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BasePath "foo">]
+type IApiWithBasePathAndAbsoluteEndpoint =
+    // Example where we use the bundled attributes rather than RestEase's
+    [<WoofWare.Myriad.Plugins.RestEase.Get "/endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?cancellationToken : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BaseAddress "https://whatnot.com/thing">]
+[<BasePath "foo">]
+type IApiWithBasePathAndAddressAndAbsoluteEndpoint =
+    [<Get "/endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BasePath "/foo">]
+type IApiWithAbsoluteBasePathAndAbsoluteEndpoint =
+    // Example where we use the bundled attributes rather than RestEase's
+    [<WoofWare.Myriad.Plugins.RestEase.Get "/endpoint/{param}">]
+    abstract GetPathParam : [<Path "param">] parameter : string * ?cancellationToken : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+[<BaseAddress "https://whatnot.com/thing">]
+[<BasePath "/foo">]
+type IApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
+    [<Get "/endpoint/{param}">]
     abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
 
 [<WoofWare.Myriad.Plugins.HttpClient>]

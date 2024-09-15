@@ -1,5 +1,14 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 3.0.1
+
+Semantics of `HttpClient`'s URI component composition changed:
+we now implicitly insert `/` characters after `[<BaseAddress>]` and `[<BasePath>]`, so that URI composition doesn't silently drop the last component if you didn't put a slash there.
+
+# WoofWare.Myriad.Plugins 2.3.9
+
+`JsonParse` and `JsonSerialize` now interpret `[<JsonExtensionData>]`, which must be on a `Dictionary<string, _>`; this collects any extra components that were present on the JSON object.
+
 # WoofWare.Myriad.Plugins 2.2.1, WoofWare.Myriad.Plugins.Attributes 3.2.1
 
 New generator: `ArgParser`, a basic reflection-free argument parser.

@@ -321,15 +321,33 @@ module internal HttpClientGenerator =
                 |> SynExpr.createMatch baseAddress
                 |> SynExpr.paren
 
+            let baseAddress =
+                match info.BasePath with
+                | None -> baseAddress
+                | Some basePath ->
+                    [
+                        yield baseAddress
+
+                        yield
+                            SynExpr.applyFunction
+                                uriIdent
+                                (SynExpr.tuple
+                                    [ basePath ; SynExpr.createLongIdent [ "System" ; "UriKind" ; "Relative" ] ])
+                    ]
+                    |> SynExpr.tuple
+                    |> SynExpr.applyFunction uriIdent
+
             [
-                baseAddress
-                SynExpr.applyFunction
-                    uriIdent
-                    (SynExpr.tuple
-                        [
-                            requestUriTrailer
-                            SynExpr.createLongIdent [ "System" ; "UriKind" ; "Relative" ]
-                        ])
+                yield baseAddress
+
+                yield
+                    SynExpr.applyFunction
+                        uriIdent
+                        (SynExpr.tuple
+                            [
+                                requestUriTrailer
+                                SynExpr.createLongIdent [ "System" ; "UriKind" ; "Relative" ]
+                            ])
             ]
             |> SynExpr.tuple
             |> SynExpr.applyFunction uriIdent
@@ -647,6 +665,15 @@ module internal HttpClientGenerator =
             | _ -> None
         )
 
+    let insertTrailingSlash (path : SynExpr) : SynExpr =
+        match path |> SynExpr.stripOptionalParen with
+        | SynExpr.Const (SynConst.String (s, _, _), _) ->
+            if s.EndsWith '/' then
+                path
+            else
+                SynExpr.CreateConst (s + "/")
+        | _ -> SynExpr.plus (SynExpr.paren path) (SynExpr.CreateConst "/")
+
     let createModule
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
@@ -676,8 +703,17 @@ module internal HttpClientGenerator =
                         "Expected constant header parameters to be of the form [<Header (key, value)>], but got more than two args"
             )
 
-        let baseAddress = extractBaseAddress interfaceType.Attributes
-        let basePath = extractBasePath interfaceType.Attributes
+        let baseAddress =
+            extractBaseAddress interfaceType.Attributes
+            // We artificially insert a trailing slash because this is almost certainly
+            // not meant to be an endpoint itself.
+            |> Option.map insertTrailingSlash
+
+        let basePath =
+            extractBasePath interfaceType.Attributes
+            // We artificially insert a trailing slash because this is almost certainly
+            // not meant to be an endpoint itself.
+            |> Option.map insertTrailingSlash
 
         let properties =
             interfaceType.Properties

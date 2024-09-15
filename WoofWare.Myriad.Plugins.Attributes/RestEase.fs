@@ -45,6 +45,9 @@ module RestEase =
 
     /// Indicates that this interface represents a REST client which accesses an API whose paths are
     /// all relative to the given address.
+    ///
+    /// We will essentially unconditionally append a slash to this for you, on the grounds that you probably don't
+    /// intend the base path *itself* to be an endpoint.
     type BaseAddressAttribute (addr : string) =
         inherit Attribute ()
 
@@ -61,3 +64,21 @@ module RestEase =
         inherit Attribute ()
         new (path : string) = PathAttribute (Some path)
         new () = PathAttribute None
+
+    /// Indicates that this argument to a method is passed to the remote API by being serialised into the request
+    /// body.
+    type BodyAttribute () =
+        inherit Attribute ()
+
+    /// This is interpolated into every URL, between the BaseAddress and the path specified by e.g. [<Get>].
+    /// Note that if the [<Get>]-specified path starts with a slash, the BasePath is ignored, because then [<Get>]
+    /// is considered to be relative to the URL root (i.e. the host part of the BaseAddress).
+    /// Similarly, if the [<BasePath>] starts with a slash, then any path component of the BaseAddress is ignored.
+    ///
+    /// We will essentially unconditionally append a slash to this for you, on the grounds that you probably don't
+    /// intend the base path *itself* to be an endpoint.
+    ///
+    /// Can contain {placeholders}; hopefully your methods define values for those placeholders with [<Path>]
+    /// attributes!
+    type BasePathAttribute (path : string) =
+        inherit Attribute ()

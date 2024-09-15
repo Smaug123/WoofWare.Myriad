@@ -29,7 +29,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri (("v1/gyms/"), System.UriKind.Relative)
                         )
@@ -59,7 +59,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri (
                                 "v1/gyms/{gym_id}/attendance"
@@ -93,7 +93,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri (
                                 "v1/gyms/{gym_id}/attendance"
@@ -127,7 +127,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("v1/member", System.UriKind.Relative)
                         )
@@ -157,7 +157,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri (
                                 "v1/gyms/{gym}"
@@ -191,7 +191,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("v1/member/activity", System.UriKind.Relative)
                         )
@@ -221,7 +221,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("some/url", System.UriKind.Relative)
                         )
@@ -251,7 +251,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("some/url", System.UriKind.Relative)
                         )
@@ -317,7 +317,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri (
                                 ("/v2/gymSessions/member"
@@ -358,7 +358,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri (
                                 ("/v2/gymSessions/member?foo=1"
@@ -399,7 +399,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
@@ -426,7 +426,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
@@ -453,7 +453,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
@@ -480,7 +480,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
@@ -507,7 +507,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
@@ -534,7 +534,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
@@ -567,7 +567,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
@@ -600,7 +600,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
@@ -633,7 +633,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
@@ -659,7 +659,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri (
                                 "endpoint/{param}"
@@ -688,7 +688,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -713,7 +713,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -738,7 +738,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -763,7 +763,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -787,7 +787,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -811,7 +811,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -835,7 +835,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -859,7 +859,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -895,7 +895,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -931,7 +931,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -967,7 +967,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -1003,7 +1003,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -1026,7 +1026,7 @@ module PureGymApi =
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
+                             | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
@@ -1116,15 +1116,18 @@ module ApiWithBasePath =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null ->
-                                 raise (
-                                     System.ArgumentNullException (
-                                         nameof (client.BaseAddress),
-                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException (
+                                             nameof (client.BaseAddress),
+                                             "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                         )
                                      )
-                                 )
-                             | v -> v),
+                                 | v -> v),
+                                System.Uri ("foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -1167,11 +1170,320 @@ module ApiWithBasePathAndAddress =
 
                     let uri =
                         System.Uri (
-                            (match client.BaseAddress with
-                             | null -> System.Uri "https://whatnot.com"
-                             | v -> v),
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null -> System.Uri "https://whatnot.com/thing/"
+                                 | v -> v),
+                                System.Uri ("foo/", System.UriKind.Relative)
+                            ),
                             System.Uri (
                                 "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithAbsoluteBasePath =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithAbsoluteBasePath =
+        { new IApiWithAbsoluteBasePath with
+            member _.GetPathParam (parameter : string, cancellationToken : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException (
+                                             nameof (client.BaseAddress),
+                                             "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                         )
+                                     )
+                                 | v -> v),
+                                System.Uri ("/foo/", System.UriKind.Relative)
+                            ),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = cancellationToken))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithAbsoluteBasePathAndAddress =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithAbsoluteBasePathAndAddress =
+        { new IApiWithAbsoluteBasePathAndAddress with
+            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null -> System.Uri "https://whatnot.com/thing/"
+                                 | v -> v),
+                                System.Uri ("/foo/", System.UriKind.Relative)
+                            ),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithBasePathAndAbsoluteEndpoint =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithBasePathAndAbsoluteEndpoint =
+        { new IApiWithBasePathAndAbsoluteEndpoint with
+            member _.GetPathParam (parameter : string, cancellationToken : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException (
+                                             nameof (client.BaseAddress),
+                                             "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                         )
+                                     )
+                                 | v -> v),
+                                System.Uri ("foo/", System.UriKind.Relative)
+                            ),
+                            System.Uri (
+                                "/endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = cancellationToken))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithBasePathAndAddressAndAbsoluteEndpoint =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithBasePathAndAddressAndAbsoluteEndpoint =
+        { new IApiWithBasePathAndAddressAndAbsoluteEndpoint with
+            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null -> System.Uri "https://whatnot.com/thing/"
+                                 | v -> v),
+                                System.Uri ("foo/", System.UriKind.Relative)
+                            ),
+                            System.Uri (
+                                "/endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithAbsoluteBasePathAndAbsoluteEndpoint =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithAbsoluteBasePathAndAbsoluteEndpoint =
+        { new IApiWithAbsoluteBasePathAndAbsoluteEndpoint with
+            member _.GetPathParam (parameter : string, cancellationToken : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException (
+                                             nameof (client.BaseAddress),
+                                             "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                         )
+                                     )
+                                 | v -> v),
+                                System.Uri ("/foo/", System.UriKind.Relative)
+                            ),
+                            System.Uri (
+                                "/endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = cancellationToken))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
+        { new IApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint with
+            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            System.Uri (
+                                (match client.BaseAddress with
+                                 | null -> System.Uri "https://whatnot.com/thing/"
+                                 | v -> v),
+                                System.Uri ("/foo/", System.UriKind.Relative)
+                            ),
+                            System.Uri (
+                                "/endpoint/{param}"
                                     .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
