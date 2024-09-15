@@ -394,3 +394,83 @@ module TestJsonSerde =
         let actual = CollectRemaining.toJsonNode toWrite |> fun s -> s.ToJsonString ()
 
         actual |> shouldEqual expected
+
+    [<Test>]
+    let ``Can collect extension data, nested`` () =
+        let str =
+            """{
+  "thing": "ohhh yeahhhh",
+  "remaining": {
+    "message": { "header": "hi", "value": "bye" },
+    "something": 3,
+    "arr": ["egg", "toast"],
+    "str": "whatnot"
+  }
+}"""
+            |> JsonNode.Parse
+
+        let expected =
+            {
+                Rest =
+                    [
+                        "something", JsonNode.op_Implicit 3
+                        "arr", makeJsonArr [| "egg" ; "toast" |]
+                        "str", JsonNode.op_Implicit "whatnot"
+                    ]
+                    |> dict
+                Message =
+                    Some
+                        {
+                            Header = "hi"
+                            Value = "bye"
+                        }
+            }
+
+        let actual = OuterCollectRemaining.jsonParse str
+
+        actual.Thing |> shouldEqual "ohhh yeahhhh"
+
+        let actual = actual.Remaining
+
+        actual.Message |> shouldEqual expected.Message
+
+        actual.Rest
+        |> Seq.map (fun (KeyValue (a, b)) -> a, b.ToJsonString ())
+        |> Seq.toList
+        |> List.sortBy fst
+        |> shouldEqual (
+            expected.Rest
+            |> Seq.map (fun (KeyValue (a, b)) -> a, b.ToJsonString ())
+            |> Seq.toList
+            |> List.sortBy fst
+        )
+
+    [<Test>]
+    let ``Can write out extension data, nested`` () =
+        let expected =
+            """{"thing":"ohhh yeahhhh","remaining":{"message":{"header":"hi","value":"bye"},"something":3,"arr":["egg","toast"],"str":"whatnot"}}"""
+
+        let toWrite =
+            {
+                Thing = "ohhh yeahhhh"
+                Remaining =
+                    {
+                        Rest =
+                            [
+                                "something", JsonNode.op_Implicit 3
+                                "arr", makeJsonArr [| "egg" ; "toast" |]
+                                "str", JsonNode.op_Implicit "whatnot"
+                            ]
+                            |> dict
+                        Message =
+                            Some
+                                {
+                                    Header = "hi"
+                                    Value = "bye"
+                                }
+                    }
+            }
+
+        let actual = OuterCollectRemaining.toJsonNode toWrite |> fun s -> s.ToJsonString ()
+
+        actual |> shouldEqual expected

@@ -322,6 +322,27 @@ module CollectRemainingJsonSerializeExtension =
                     node.Add (key, value)
 
             node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the OuterCollectRemaining type
+[<AutoOpen>]
+module OuterCollectRemainingJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type OuterCollectRemaining with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : OuterCollectRemaining) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                node.Add ("thing", (input.Thing |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("remaining", (input.Remaining |> CollectRemaining.toJsonNode))
+
+            node :> _
 
 namespace ConsumePlugin
 
@@ -899,4 +920,42 @@ module CollectRemainingJsonParseExtension =
             {
                 Message = arg_0
                 Rest = arg_1
+            }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the OuterCollectRemaining type
+[<AutoOpen>]
+module OuterCollectRemainingJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type OuterCollectRemaining with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : OuterCollectRemaining =
+            let arg_1 =
+                CollectRemaining.jsonParse (
+                    match node.["remaining"] with
+                    | null ->
+                        raise (
+                            System.Collections.Generic.KeyNotFoundException (
+                                sprintf "Required key '%s' not found on JSON object" ("remaining")
+                            )
+                        )
+                    | v -> v
+                )
+
+            let arg_0 =
+                (match node.["thing"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("thing")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.String> ()
+
+            {
+                Thing = arg_0
+                Remaining = arg_1
             }
