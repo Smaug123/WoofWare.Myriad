@@ -35,6 +35,14 @@ module TestBasePath =
         observedUri |> shouldEqual "https://baseaddress.com/endpoint/param"
 
     [<Test>]
+    let ``Base address on client takes precedence`` () =
+        use client = HttpClientMock.make (Uri "https://baseaddress.com") replyWithUrl
+        let api = PureGymApi.make client
+
+        let observedUri = api.GetPathParam("param").Result
+        observedUri |> shouldEqual "https://baseaddress.com/endpoint/param"
+
+    [<Test>]
     let ``Without a base address attr or BaseAddress on client, request throws`` () =
         use client = HttpClientMock.makeNoUri replyWithUrl
         let api = ApiWithoutBaseAddress.make client
