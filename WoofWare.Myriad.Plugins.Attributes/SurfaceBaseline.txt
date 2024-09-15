@@ -49,6 +49,10 @@ WoofWare.Myriad.Plugins.RemoveOptionsAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RestEase inherit obj
 WoofWare.Myriad.Plugins.RestEase+BaseAddressAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RestEase+BaseAddressAttribute..ctor [constructor]: string
+WoofWare.Myriad.Plugins.RestEase+BasePathAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.RestEase+BasePathAttribute..ctor [constructor]: string
+WoofWare.Myriad.Plugins.RestEase+BodyAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.RestEase+BodyAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RestEase+DeleteAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.RestEase+DeleteAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.RestEase+GetAttribute inherit System.Attribute
