@@ -147,6 +147,12 @@ module internal JsonSerializeGenerator =
             |> SynExpr.createLambda "field"
             |> fun e -> e, false
         | JsonNode -> SynExpr.createIdent "id", true
+        | Unit ->
+            SynExpr.createLambda
+                "value"
+                (SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
+                 |> SynExpr.applyTo (SynExpr.CreateConst ())),
+            false
         | _ ->
             // {type}.toJsonNode
             let typeName =

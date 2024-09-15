@@ -193,6 +193,17 @@ module internal SynTypePatterns =
             | _ -> None
         | _ -> None
 
+    let (|Unit|_|) (fieldType : SynType) : unit option =
+        match fieldType with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            match ident |> List.map (fun i -> i.idText.ToLowerInvariant ()) with
+            | [ "microsoft" ; "fsharp" ; "core" ; "unit" ]
+            | [ "fsharp" ; "core" ; "unit" ]
+            | [ "core" ; "unit" ]
+            | [ "unit" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
     let (|DateOnly|_|) (fieldType : SynType) =
         match fieldType with
         | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->

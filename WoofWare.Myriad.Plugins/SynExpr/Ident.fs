@@ -16,6 +16,7 @@ module internal Ident =
     let createSanitisedParamName (s : string) =
         match s with
         | "type" -> create "type'"
+        | "private" -> create "private'"
         | _ ->
 
         let result = StringBuilder ()
