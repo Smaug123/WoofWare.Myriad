@@ -385,6 +385,13 @@ module internal JsonParseGenerator =
                             .EndsWith ("JsonPropertyName", StringComparison.Ordinal)
                     )
 
+                let extensionDataAttr =
+                    fieldData.Attrs
+                    |> List.tryFind (fun attr ->
+                        (SynLongIdent.toString attr.TypeName)
+                            .EndsWith ("JsonExtensionData", StringComparison.Ordinal)
+                    )
+
                 let options = getParseOptions fieldData.Attrs
 
                 let propertyName =

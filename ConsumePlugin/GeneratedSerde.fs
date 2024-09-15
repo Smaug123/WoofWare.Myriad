@@ -291,6 +291,37 @@ module FooJsonSerializeExtension =
                 )
 
             node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the CollectRemaining type
+[<AutoOpen>]
+module CollectRemainingJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type CollectRemaining with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : CollectRemaining) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                node.Add (
+                    "message",
+                    (input.Message
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field -> HeaderAndValue.toJsonNode field
+                     ))
+                )
+
+                for KeyValue (key, value) in input.Rest do
+                    node.Add (key, value)
+
+            node :> _
 
 namespace ConsumePlugin
 
@@ -841,4 +872,41 @@ module FooJsonParseExtension =
 
             {
                 Message = arg_0
+            }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the CollectRemaining type
+[<AutoOpen>]
+module CollectRemainingJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type CollectRemaining with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CollectRemaining =
+            let arg_1 =
+                (match node.["rest"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("rest")
+                         )
+                     )
+                 | v -> v)
+                    .AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = System.Text.Json.Nodes.JsonNode.jsonParse (kvp.Value)
+                    key, value
+                )
+                |> Seq.map System.Collections.Generic.KeyValuePair
+                |> System.Collections.Generic.Dictionary
+
+            let arg_0 =
+                match node.["message"] with
+                | null -> None
+                | v -> HeaderAndValue.jsonParse v |> Some
+
+            {
+                Message = arg_0
+                Rest = arg_1
             }

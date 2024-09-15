@@ -187,6 +187,14 @@ module internal JsonSerializeGenerator =
             sb.ToString () |> SynExpr.CreateConst
         | Some name -> name.ArgExpr
 
+    let getIsJsonExtension (attrs : SynAttribute list) : bool =
+        attrs
+        |> List.tryFind (fun attr ->
+            (SynLongIdent.toString attr.TypeName)
+                .EndsWith ("JsonExtensionData", StringComparison.Ordinal)
+        )
+        |> Option.isSome
+
     /// `populateNode` will be inserted before we return the `node` variable.
     ///
     /// That is, we give you access to a `JsonObject` called `node`,
@@ -256,7 +264,21 @@ module internal JsonSerializeGenerator =
         fields
         |> List.map (fun fieldData ->
             let propertyName = getPropertyName fieldData.Ident fieldData.Attrs
-            createSerializeRhsRecord propertyName fieldData.Ident fieldData.Type
+            let isJsonExtension = getIsJsonExtension fieldData.Attrs
+
+            if isJsonExtension then
+                // We only recognise Dictionary<string, JsonNode>, and we assume this.
+                SynExpr.createIdent "node"
+                |> SynExpr.callMethodArg
+                    "Add"
+                    (SynExpr.tuple [ SynExpr.createIdent "key" ; SynExpr.createIdent "value" ])
+                |> SynExpr.createForEach
+                    (SynPat.identWithArgs
+                        [ Ident.create "KeyValue" ]
+                        (SynArgPats.create [ SynPat.named "key" ; SynPat.named "value" ]))
+                    (SynExpr.createLongIdent' [ Ident.create "input" ; fieldData.Ident ])
+            else
+                createSerializeRhsRecord propertyName fieldData.Ident fieldData.Type
         )
         |> SynExpr.sequential
         |> fun expr -> SynExpr.Do (expr, range0)

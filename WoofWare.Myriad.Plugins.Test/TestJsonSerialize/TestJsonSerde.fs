@@ -306,3 +306,27 @@ module TestJsonSerde =
 
         for i in counts do
             i |> shouldBeGreaterThan 0
+
+    [<Test>]
+    let ``Can collect extension data`` () =
+        let str =
+            """{
+    "message": { "header": "hi", "value": "bye" },
+    "something": 3,
+    "arr": ["egg", "toast"],
+    "str": "whatnot"
+}"""
+            |> JsonNode.Parse
+        let expected =
+            {
+                Rest =
+                    [
+                        "something", box 3
+                        "arr", box [| "egg" ; "toast" |]
+                        "str", box "whatnot"
+                    ]
+                    |> dict
+                Message = Some { Header = "hi" ; Value = "bye" }
+            }
+
+        let actual = CollectRemaining.jsonParse str
