@@ -50,6 +50,7 @@ type JsonRecordTypeWithBoth =
         IntMeasureNullable : int<measure> Nullable
         Enum : SomeEnum
         Timestamp : DateTimeOffset
+        Unit : unit
     }
 
 [<WoofWare.Myriad.Plugins.JsonSerialize true>]

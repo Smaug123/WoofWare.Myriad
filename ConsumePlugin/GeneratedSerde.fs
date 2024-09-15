@@ -210,6 +210,8 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                      |> (fun field -> field.ToString "o" |> System.Text.Json.Nodes.JsonValue.Create<string>))
                 )
 
+                node.Add ("unit", (input.Unit |> (fun value -> System.Text.Json.Nodes.JsonObject ())))
+
             node :> _
 namespace ConsumePlugin
 
@@ -478,6 +480,8 @@ module JsonRecordTypeWithBothJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
+            let arg_21 = ()
+
             let arg_20 =
                 (match node.["timestamp"] with
                  | null ->
@@ -759,6 +763,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 IntMeasureNullable = arg_18
                 Enum = arg_19
                 Timestamp = arg_20
+                Unit = arg_21
             }
 namespace ConsumePlugin
 
