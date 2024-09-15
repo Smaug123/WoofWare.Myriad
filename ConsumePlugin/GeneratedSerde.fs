@@ -291,6 +291,60 @@ module FooJsonSerializeExtension =
                 )
 
             node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the CollectRemaining type
+[<AutoOpen>]
+module CollectRemainingJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type CollectRemaining with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : CollectRemaining) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                node.Add (
+                    "message",
+                    (input.Message
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field -> HeaderAndValue.toJsonNode field
+                     ))
+                )
+
+                for KeyValue (key, value) in input.Rest do
+                    node.Add (key, id value)
+
+            node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the OuterCollectRemaining type
+[<AutoOpen>]
+module OuterCollectRemainingJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type OuterCollectRemaining with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : OuterCollectRemaining) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                for KeyValue (key, value) in input.Others do
+                    node.Add (key, System.Text.Json.Nodes.JsonValue.Create<int> value)
+
+                node.Add ("remaining", (input.Remaining |> CollectRemaining.toJsonNode))
+
+            node :> _
 
 namespace ConsumePlugin
 
@@ -841,4 +895,84 @@ module FooJsonParseExtension =
 
             {
                 Message = arg_0
+            }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the CollectRemaining type
+[<AutoOpen>]
+module CollectRemainingJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type CollectRemaining with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CollectRemaining =
+            let arg_1 =
+                let result =
+                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode> ()
+
+                let node = node.AsObject ()
+
+                for KeyValue (key, value) in node do
+                    if key = "message" then () else result.Add (key, node.[key])
+
+                result
+
+            let arg_0 =
+                match node.["message"] with
+                | null -> None
+                | v -> HeaderAndValue.jsonParse v |> Some
+
+            {
+                Message = arg_0
+                Rest = arg_1
+            }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing extension members for the OuterCollectRemaining type
+[<AutoOpen>]
+module OuterCollectRemainingJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type OuterCollectRemaining with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : OuterCollectRemaining =
+            let arg_1 =
+                CollectRemaining.jsonParse (
+                    match node.["remaining"] with
+                    | null ->
+                        raise (
+                            System.Collections.Generic.KeyNotFoundException (
+                                sprintf "Required key '%s' not found on JSON object" ("remaining")
+                            )
+                        )
+                    | v -> v
+                )
+
+            let arg_0 =
+                let result = System.Collections.Generic.Dictionary<string, int> ()
+                let node = node.AsObject ()
+
+                for KeyValue (key, value) in node do
+                    if key = "remaining" then
+                        ()
+                    else
+                        result.Add (
+                            key,
+                            (match node.[key] with
+                             | null ->
+                                 raise (
+                                     System.Collections.Generic.KeyNotFoundException (
+                                         sprintf "Required key '%s' not found on JSON object" (key)
+                                     )
+                                 )
+                             | v -> v)
+                                .AsValue()
+                                .GetValue<System.Int32> ()
+                        )
+
+                result
+
+            {
+                Others = arg_0
+                Remaining = arg_1
             }

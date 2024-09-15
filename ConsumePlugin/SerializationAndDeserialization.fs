@@ -73,3 +73,21 @@ type Foo =
     {
         Message : HeaderAndValue option
     }
+
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
+[<WoofWare.Myriad.Plugins.JsonParse true>]
+type CollectRemaining =
+    {
+        Message : HeaderAndValue option
+        [<JsonExtensionData>]
+        Rest : Dictionary<string, System.Text.Json.Nodes.JsonNode>
+    }
+
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
+[<WoofWare.Myriad.Plugins.JsonParse true>]
+type OuterCollectRemaining =
+    {
+        [<JsonExtensionData>]
+        Others : Dictionary<string, int>
+        Remaining : CollectRemaining
+    }

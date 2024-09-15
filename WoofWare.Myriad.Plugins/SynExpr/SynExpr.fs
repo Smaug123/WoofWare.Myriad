@@ -85,6 +85,11 @@ module internal SynExpr =
         SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.booleanAnd, a)
         |> applyTo b
 
+    /// {a} || {b}
+    let booleanOr (a : SynExpr) (b : SynExpr) =
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.booleanOr, a)
+        |> applyTo b
+
     /// {a} + {b}
     let plus (a : SynExpr) (b : SynExpr) =
         SynExpr.CreateAppInfix (
@@ -136,16 +141,15 @@ module internal SynExpr =
     let typeApp (types : SynType list) (operand : SynExpr) =
         SynExpr.TypeApp (operand, range0, types, List.replicate (types.Length - 1) range0, Some range0, range0, range0)
 
-    let callGenericMethod (meth : string) (ty : LongIdent) (obj : SynExpr) : SynExpr =
-        SynExpr.DotGet (obj, range0, SynLongIdent.createS meth, range0)
-        |> typeApp [ SynType.LongIdent (SynLongIdent.create ty) ]
+    /// {obj}.{meth}<types,...>()
+    let callGenericMethod (meth : SynLongIdent) (types : SynType list) (obj : SynExpr) : SynExpr =
+        SynExpr.DotGet (obj, range0, meth, range0)
+        |> typeApp types
         |> applyTo (SynExpr.CreateConst ())
 
     /// {obj}.{meth}<ty>()
     let callGenericMethod' (meth : string) (ty : string) (obj : SynExpr) : SynExpr =
-        SynExpr.DotGet (obj, range0, SynLongIdent.createS meth, range0)
-        |> typeApp [ SynType.createLongIdent' [ ty ] ]
-        |> applyTo (SynExpr.CreateConst ())
+        callGenericMethod (SynLongIdent.createS meth) [ SynType.createLongIdent' [ ty ] ] obj
 
     let inline index (property : SynExpr) (obj : SynExpr) : SynExpr =
         SynExpr.DotIndexedGet (obj, property, range0, range0)
@@ -236,6 +240,8 @@ module internal SynExpr =
 
     let inline createLet (bindings : SynBinding list) (body : SynExpr) : SynExpr =
         SynExpr.LetOrUse (false, false, bindings, body, range0, SynExprLetOrUseTrivia.empty)
+
+    let inline createDo (body : SynExpr) : SynExpr = SynExpr.Do (body, range0)
 
     let inline createMatch (matchOn : SynExpr) (cases : SynMatchClause list) : SynExpr =
         SynExpr.Match (
