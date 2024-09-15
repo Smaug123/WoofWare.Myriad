@@ -884,22 +884,12 @@ module CollectRemainingJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CollectRemaining =
             let arg_1 =
-                (match node.["rest"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("rest")
-                         )
-                     )
-                 | v -> v)
-                    .AsObject ()
-                |> Seq.map (fun kvp ->
-                    let key = (kvp.Key)
-                    let value = System.Text.Json.Nodes.JsonNode.jsonParse (kvp.Value)
-                    key, value
-                )
-                |> Seq.map System.Collections.Generic.KeyValuePair
-                |> System.Collections.Generic.Dictionary
+                let result = System.Collections.Generic.Dictionary ()
+
+                for KeyValue (key, value) in node.AsObject () do
+                    if key = "message" then () else result.Add (key, value)
+
+                result
 
             let arg_0 =
                 match node.["message"] with

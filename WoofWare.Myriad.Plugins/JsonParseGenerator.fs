@@ -279,6 +279,7 @@ module internal JsonParseGenerator =
         | Measure (_measure, primType) ->
             parseNumberType options propertyName node primType
             |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure primType)
+        | JsonNode -> SynExpr.createIdent "node"
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =
@@ -375,9 +376,9 @@ module internal JsonParseGenerator =
         )
 
     let createRecordMaker (spec : JsonParseOutputSpec) (fields : SynFieldData<Ident> list) =
-        let assignments =
+        let propertyFields =
             fields
-            |> List.mapi (fun i fieldData ->
+            |> List.map (fun fieldData ->
                 let propertyNameAttr =
                     fieldData.Attrs
                     |> List.tryFind (fun attr ->
@@ -391,8 +392,6 @@ module internal JsonParseGenerator =
                         (SynLongIdent.toString attr.TypeName)
                             .EndsWith ("JsonExtensionData", StringComparison.Ordinal)
                     )
-
-                let options = getParseOptions fieldData.Attrs
 
                 let propertyName =
                     match propertyNameAttr with
@@ -408,8 +407,61 @@ module internal JsonParseGenerator =
                         sb.ToString () |> SynExpr.CreateConst
                     | Some name -> name.ArgExpr
 
+                propertyName, extensionDataAttr
+            )
+
+        let namedPropertyFields =
+            propertyFields
+            |> List.choose (fun (name, extension) ->
+                match extension with
+                | Some _ -> None
+                | None -> Some name
+            )
+
+        let isNamedPropertyField =
+            match namedPropertyFields with
+            | [] -> SynExpr.CreateConst false
+            | _ ->
+                namedPropertyFields
+                |> List.map (fun fieldName -> SynExpr.equals (SynExpr.createIdent "key") fieldName)
+                |> List.reduce SynExpr.booleanOr
+
+        let assignments =
+            List.zip fields propertyFields
+            |> List.mapi (fun i (fieldData, (propertyName, extensionDataAttr)) ->
+                let options = getParseOptions fieldData.Attrs
+
+                let accIdent = Ident.create $"arg_%i{i}"
+
+                match extensionDataAttr with
+                | Some _ ->
+                    // Can't go through the usual parse logic here, because that will try and identify the node that's
+                    // been labelled. The whole point of JsonExtensionData is that there is no such node!
+                    SynExpr.ifThenElse
+                        isNamedPropertyField
+                        (SynExpr.callMethodArg
+                            "Add"
+                            (SynExpr.tuple [ SynExpr.createIdent "key" ; SynExpr.createIdent "value" ])
+                            (SynExpr.createIdent "result"))
+                        (SynExpr.CreateConst ())
+                    |> SynExpr.createForEach
+                        (SynPat.nameWithArgs "KeyValue" [ SynPat.named "key" ; SynPat.named "value" ])
+                        (SynExpr.createIdent "node" |> SynExpr.callMethod "AsObject")
+                    |> fun forEach -> [ forEach ; SynExpr.createIdent "result" ]
+                    |> SynExpr.sequential
+                    |> SynExpr.createLet
+                        [
+                            SynBinding.basic
+                                [ Ident.create "result" ]
+                                []
+                                (SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "Dictionary" ]
+                                 |> SynExpr.applyTo (SynExpr.CreateConst ()))
+                        ]
+                    |> SynBinding.basic [ accIdent ] []
+                | None ->
+
                 createParseRhs options propertyName fieldData.Type
-                |> SynBinding.basic [ Ident.create $"arg_%i{i}" ] []
+                |> SynBinding.basic [ accIdent ] []
             )
 
         let finalConstruction =

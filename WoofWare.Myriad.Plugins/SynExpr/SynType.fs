@@ -181,6 +181,18 @@ module internal SynTypePatterns =
                        _) -> Some (ident, outer)
         | _ -> None
 
+    let (|JsonNode|_|) (fieldType : SynType) : unit option =
+        match fieldType with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            match ident |> List.map (fun i -> i.idText) with
+            | [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
+            | [ "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
+            | [ "Json" ; "Nodes" ; "JsonNode" ]
+            | [ "Nodes" ; "JsonNode" ]
+            | [ "JsonNode" ] -> Some ()
+            | _ -> None
+        | _ -> None
+
     let (|DateOnly|_|) (fieldType : SynType) =
         match fieldType with
         | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->

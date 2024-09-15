@@ -307,6 +307,25 @@ module TestJsonSerde =
         for i in counts do
             i |> shouldBeGreaterThan 0
 
+    let dict<'a, 'b when 'a : equality> (xs : ('a * 'b) seq) : Dictionary<'a, 'b> =
+        let result = Dictionary ()
+
+        for k, v in xs do
+            result.Add (k, v)
+
+        result
+
+    let inline makeJsonArr< ^t, ^u when ^u : (static member op_Implicit : ^t -> JsonNode) and ^u :> JsonNode>
+        (arr : ^t seq)
+        : JsonNode
+        =
+        let result = JsonArray ()
+
+        for a in arr do
+            result.Add a
+
+        result :> JsonNode
+
     [<Test>]
     let ``Can collect extension data`` () =
         let str =
@@ -317,16 +336,61 @@ module TestJsonSerde =
     "str": "whatnot"
 }"""
             |> JsonNode.Parse
+
         let expected =
             {
                 Rest =
                     [
-                        "something", box 3
-                        "arr", box [| "egg" ; "toast" |]
-                        "str", box "whatnot"
+                        "something", JsonNode.op_Implicit 3
+                        "arr", makeJsonArr [| "egg" ; "toast" |]
+                        "str", JsonNode.op_Implicit "whatnot"
                     ]
                     |> dict
-                Message = Some { Header = "hi" ; Value = "bye" }
+                Message =
+                    Some
+                        {
+                            Header = "hi"
+                            Value = "bye"
+                        }
             }
 
         let actual = CollectRemaining.jsonParse str
+
+        actual.Message |> shouldEqual expected.Message
+
+        actual.Rest
+        |> Seq.map (fun (KeyValue (a, b)) -> a, b.ToJsonString ())
+        |> Seq.toList
+        |> List.sortBy fst
+        |> shouldEqual (
+            expected.Rest
+            |> Seq.map (fun (KeyValue (a, b)) -> a, b.ToJsonString ())
+            |> Seq.toList
+            |> List.sortBy fst
+        )
+
+    [<Test>]
+    let ``Can write out extension data`` () =
+        let expected =
+            """{"message":{"header":"hi","value":"bye"},"something":3,"arr":["egg","toast"],"str":"whatnot"}"""
+
+        let toWrite =
+            {
+                Rest =
+                    [
+                        "something", JsonNode.op_Implicit 3
+                        "arr", makeJsonArr [| "egg" ; "toast" |]
+                        "str", JsonNode.op_Implicit "whatnot"
+                    ]
+                    |> dict
+                Message =
+                    Some
+                        {
+                            Header = "hi"
+                            Value = "bye"
+                        }
+            }
+
+        let actual = CollectRemaining.toJsonNode toWrite |> fun s -> s.ToJsonString ()
+
+        actual |> shouldEqual expected

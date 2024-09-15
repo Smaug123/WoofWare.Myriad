@@ -85,6 +85,11 @@ module internal SynExpr =
         SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.booleanAnd, a)
         |> applyTo b
 
+    /// {a} || {b}
+    let booleanOr (a : SynExpr) (b : SynExpr) =
+        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.booleanOr, a)
+        |> applyTo b
+
     /// {a} + {b}
     let plus (a : SynExpr) (b : SynExpr) =
         SynExpr.CreateAppInfix (
@@ -236,6 +241,8 @@ module internal SynExpr =
 
     let inline createLet (bindings : SynBinding list) (body : SynExpr) : SynExpr =
         SynExpr.LetOrUse (false, false, bindings, body, range0, SynExprLetOrUseTrivia.empty)
+
+    let inline createDo (body : SynExpr) : SynExpr = SynExpr.Do (body, range0)
 
     let inline createMatch (matchOn : SynExpr) (cases : SynMatchClause list) : SynExpr =
         SynExpr.Match (
