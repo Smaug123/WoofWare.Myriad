@@ -56,6 +56,17 @@
     <Compile Include="GeneratedArgs.fs">
       <MyriadFile>Args.fs</MyriadFile>
     </Compile>
+    <None Include="swagger-gitea.json" />
+    <Compile Include="GeneratedSwaggerGitea.fs">
+      <MyriadFile>swagger-gitea.json</MyriadFile>
+      <MyriadParams>
+        <GenerateMock>true</GenerateMock>
+        <ClassName>Gitea</ClassName>
+      </MyriadParams>
+    </Compile>
+    <Compile Include="Generated2SwaggerGitea.fs">
+      <MyriadFile>GeneratedSwaggerGitea.fs</MyriadFile>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

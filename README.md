@@ -14,7 +14,8 @@ Currently implemented:
 * `JsonSerialize` (to stamp out `toJsonNode : 'T -> JsonNode` methods).
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
 * `GenerateMock` (to stamp out a record type corresponding to an interface, like a compile-time [Foq](https://github.com/fsprojects/Foq)).
-* `ArgParser` (to stamp out a basic argument parser)
+* `ArgParser` (to stamp out a basic argument parser).
+* `SwaggerClient` (to stamp out an HTTP client for a Swagger API).
 * `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
 * `RemoveOptions` (to strip `option` modifiers from a type) - this one is particularly half-baked!
 
@@ -156,6 +157,10 @@ For an example of using both `JsonParse` and `JsonSerialize` together with compl
 Takes a record like this:
 
 ```fsharp
+type DryRunMode =
+    | [<ArgumentFlag true> Dry
+    | [<ArgumentFlag false> Wet
+
 [<ArgParser>]
 type Foo =
     {
@@ -166,12 +171,16 @@ type Foo =
         B : Choice<int, int>
         [<ArgumentDefaultEnvironmentVariable "MY_ENV_VAR">]
         BWithEnv : Choice<int, int>
+        [<ArgumentDefaultFunction>]
+        DryRun : DryRunMode
+        [<ArgumentLongForm "longer-form-replaces-c">]
         C : float list
         // optionally:
         [<PositionalArgs>]
         Rest : string list // or e.g. `int list` if you want them parsed into a type too
     }
     static member DefaultB () = 4
+    static member DefaultDryRun () = DryRunMode.Wet
 ```
 
 and stamps out a basic `parse` method of this signature:
@@ -217,6 +226,84 @@ This is very bare-bones, but do raise GitHub issues if you like (or if you find 
 * There's no subcommand support (you'll have to do that yourself).
 
 It should work fine if you just want to compose a few primitive types, though.
+
+## `SwaggerClient`
+
+Takes a JSON-schema definition of a [Swagger API](https://swagger.io/), and stamps out a client like this:
+
+```fsharp
+/// A type which was defined in the Swagger spec
+[<JsonParse true ; JsonSerialize true>]
+type SwaggerType1 =
+    {
+        [<System.Text.Json.Serialization.JsonExtensionData>]
+        AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
+        Message : string
+    }
+
+/// Documentation from the Swagger spec
+[<HttpClient false ; RestEase.BasePath "/api/v1">]
+type IGitea =
+    /// Returns the Person actor for a user
+    [<RestEase.Get "/activitypub/user/{username}">]
+    abstract ActivitypubPerson :
+        [<RestEase.Path "username">] username : string * ?ct : System.Threading.CancellationToken ->
+            ActivityPub System.Threading.Tasks.Task
+```
+
+Notice that we automatically decorate the type with our `[<HttpClient>]` attribute, so if you choose to do so, you can chain another Myriad generated file off this one and you'll get a RestEase-style client stamped out.
+(See below, searching on the string `"Generated2SwaggerGitea.fs"`, for an example.)
+
+You don't need to `Content Include` or `EmbeddedResource Include` the JSON schema.
+`None Include` will do; we only need the source to be available at build time.
+
+You *do* need to include the following configuration:
+
+```xml
+<Compile Include="GeneratedClient.fs">
+  <!-- This bit is normal: -->
+  <MyriadFile>swagger.json</MyriadFile>
+  <!-- This bit is new and required! -->
+  <MyriadParams>
+    <ClassName>GiteaClient</ClassName>
+    <!-- Optionally: -->
+    <GenerateMock>true</GenerateMock>
+  </MyriadParams>
+</Compile>
+```
+
+The `<ClassName />` key tells us what to name the resulting interface (it gets an `I` prepended for you).
+You can optionally also set `<GenerateMock>true</GenerateMock>` to add the `[<GenerateMock true>]` attribute to the type, so that the following manoeuvre will result in a generated mock:
+
+```xml
+<None Include="swagger-gitea.json" />
+<Compile Include="GeneratedSwaggerGitea.fs">
+  <MyriadFile>swagger-gitea.json</MyriadFile>
+  <MyriadParams>
+    <GenerateMock>true</GenerateMock>
+    <ClassName>Gitea</ClassName>
+  </MyriadParams>
+</Compile>
+<Compile Include="Generated2SwaggerGitea.fs">
+  <MyriadFile>GeneratedSwaggerGitea.fs</MyriadFile>
+</Compile>
+```
+
+(Note that you do have to create the `GeneratedSwaggerGitea.fs` file manually before code generation happens. Myriad will throw if that file isn't there, because `Generated2SwaggerGitea.fs` depends on it so Myriad wants to compute its hash. Just make an empty file.)
+
+### What's the point?
+
+[`SwaggerProvider`](https://github.com/fsprojects/SwaggerProvider) is *absolutely magical*, but it's kind of witchcraft.
+I fear no man, but that thing… it scares me.
+
+Also, builds using `SwaggerProvider` appear to be inherently nondeterministic, even if the data source doesn't change.
+
+## Limitations
+
+Swagger API specs appear to be pretty cowboy in the wild.
+(For example, the Gitea JSON schema isn't a valid JSON schema.)
+I try to cope with invalid schemas I have seen, but I can't guarantee I do so correctly.
+Definitely do perform integration tests and let me know of weird specs you encounter!
 
 ## `RemoveOptions`
 

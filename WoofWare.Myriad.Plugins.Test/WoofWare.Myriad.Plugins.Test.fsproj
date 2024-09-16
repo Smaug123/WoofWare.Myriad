@@ -33,6 +33,7 @@
     <Compile Include="TestCataGenerator\TestMyList.fs" />
     <Compile Include="TestCataGenerator\TestMyList2.fs" />
     <Compile Include="TestArgParser\TestArgParser.fs" />
+    <Compile Include="TestSwagger\TestSwaggerParse.fs" />
     <Compile Include="TestRemoveOptions.fs"/>
     <Compile Include="TestSurface.fs"/>
     <None Include="../.github/workflows/dotnet.yaml" />
