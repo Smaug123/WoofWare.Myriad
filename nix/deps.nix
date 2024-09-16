@@ -8,8 +8,8 @@
   })
   (fetchNuGet {
     pname = "fantomas";
-    version = "6.3.12";
-    hash = "sha256-LFZn2cO72FlsmLI0vTLz52Bn4XBeGILTOr8rz/EuXeg=";
+    version = "6.3.15";
+    hash = "sha256-Gjw7MxjUNckMWSfnOye4UTe5fZWnor6RHCls3PNsuG8=";
   })
   (fetchNuGet {
     pname = "Fantomas.Core";
@@ -48,8 +48,8 @@
   })
   (fetchNuGet {
     pname = "FsUnit";
-    version = "6.0.0";
-    hash = "sha256-q87WQf6MqGhzvaQ7WkkUlCdoE94DY0CD5PaXEj64A6M=";
+    version = "6.0.1";
+    hash = "sha256-vka/aAgWhDCl5tu+kgO7GtSaHOOvlSaWxG+tExwGXpI=";
   })
   (fetchNuGet {
     pname = "Microsoft.AspNetCore.App.Ref";
