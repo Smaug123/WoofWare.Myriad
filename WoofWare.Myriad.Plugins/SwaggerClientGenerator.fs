@@ -9,8 +9,9 @@ open Fantomas.FCS.Text.Range
 
 type internal SwaggerClientConfig =
     {
-        /// Additionally create a mock with `InterfaceMockGenerator`.
-        CreateMock : bool
+        /// Additionally create a mock with `InterfaceMockGenerator`, with the given boolean arg.
+        /// (`None` means "no mock".)
+        CreateMock : bool option
         ClassName : string
     }
 
@@ -136,12 +137,25 @@ module internal SwaggerClientGenerator =
                                 | _ -> None
                             | _ -> None
 
+                        let jsonPropertyName =
+                            SynExpr.CreateConst (fieldName : string)
+                            |> SynAttribute.create (
+                                SynLongIdent.createS'
+                                    [ "System" ; "Text" ; "Json" ; "Serialization" ; "JsonPropertyName" ]
+                            )
+
                         match isOurself with
                         | Some alreadyDone ->
+                            let ty =
+                                if Set.contains fieldName requiredFields then
+                                    alreadyDone
+                                else
+                                    SynType.option alreadyDone
+
                             {
-                                Attrs = []
-                                Type = alreadyDone
-                                Ident = Ident.createSanitisedTypeName fieldName |> Some
+                                Attrs = [ jsonPropertyName ]
+                                Type = ty
+                                Ident = Some (Ident.createSanitisedTypeName fieldName)
                             }
                             |> SynField.make
                             |> Some
@@ -159,7 +173,7 @@ module internal SwaggerClientGenerator =
                                     defn'.Signature |> SynType.option
 
                             {
-                                Attrs = []
+                                Attrs = [ jsonPropertyName ]
                                 Ident = Ident.createSanitisedTypeName fieldName |> Some
                                 Type = ty
                             }
@@ -449,15 +463,25 @@ module internal SwaggerClientGenerator =
 
                 SynType.tupleNoParen (argParams @ [ ctParam ]) |> Option.get
 
-            let attr =
-                SynAttribute.create
-                    (SynLongIdent.createS' [ "RestEase" ; ep.Method.ToString () ])
-                    (SynExpr.CreateConst ep.Endpoint)
+            let attrs =
+                [
+                    SynAttribute.create
+                        (SynLongIdent.createS' [ "RestEase" ; ep.Method.ToString () ])
+                        // Gitea, at least, starts with a `/`, which `Uri` then takes to indicate an absolute path.
+                        (SynExpr.CreateConst (ep.Endpoint.TrimStart '/'))
+
+                    match ep.Produces with
+                    | Produces.Produces contentType ->
+                        SynAttribute.create
+                            (SynLongIdent.createS' [ "RestEase" ; "Header" ])
+                            // Gitea, at least, starts with a `/`, which `Uri` then takes to indicate an absolute path.
+                            (SynExpr.tuple [ SynExpr.CreateConst "Content-Type" ; SynExpr.CreateConst contentType ])
+                ]
 
             returnType
             |> SynType.task
             |> SynType.toFun [ domain ]
-            |> SynMemberDefn.abstractMember [ attr ] (SynIdent.createS name) None arity ep.DocString
+            |> SynMemberDefn.abstractMember attrs (SynIdent.createS name) None arity ep.DocString
             |> Some
         )
         |> SynTypeDefnRepr.interfaceType
@@ -469,8 +493,13 @@ module internal SwaggerClientGenerator =
                         SynAttribute.create
                             (SynLongIdent.createS' [ "RestEase" ; "BasePath" ])
                             (SynExpr.CreateConst basePath)
-                    if options.CreateMock then
-                        yield SynAttribute.create (SynLongIdent.createS' [ "GenerateMock" ]) (SynExpr.CreateConst true)
+                    match options.CreateMock with
+                    | None -> ()
+                    | Some createMockValue ->
+                        yield
+                            SynAttribute.create
+                                (SynLongIdent.createS' [ "GenerateMock" ])
+                                (SynExpr.CreateConst createMockValue)
                 ]
 
             SynComponentInfo.create (Ident.create ("I" + options.ClassName))
@@ -670,9 +699,9 @@ type SwaggerClientGenerator () =
                     |> Map.ofList
 
                 let createMock =
-                    match Map.tryFind "GENERATEMOCK" pars with
-                    | None -> true
-                    | Some v -> v |> System.Boolean.Parse
+                    match Map.tryFind "GENERATEMOCKINTERNAL" pars with
+                    | None -> None
+                    | Some v -> v |> System.Boolean.Parse |> Some
 
                 let className =
                     match Map.tryFind "CLASSNAME" pars with

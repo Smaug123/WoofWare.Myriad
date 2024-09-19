@@ -191,13 +191,9 @@ and ObjectTypeDefinition =
             | null -> None
             | p ->
                 p.AsObject ()
-                |> Seq.choose (fun (KeyValue (key, value)) ->
-                    match key with
-                    | "type"
-                    | "description" -> None
-                    | _ ->
-                        let value = value.AsObject ()
-                        Some (key, Definition.Parse value)
+                |> Seq.map (fun (KeyValue (key, value)) ->
+                    let value = value.AsObject ()
+                    key, Definition.Parse value
                 )
                 |> Map.ofSeq
                 |> Some

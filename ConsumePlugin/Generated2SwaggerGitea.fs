@@ -2925,7 +2925,7 @@ module AccessTokenJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "tokenLastEight",
+                    "token_last_eight",
                     (input.TokenLastEight
                      |> (fun field ->
                          match field with
@@ -2955,7 +2955,7 @@ module ActivityPubJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "context",
+                    "@context",
                     (input.Context
                      |> (fun field ->
                          match field with
@@ -3028,7 +3028,7 @@ module AddTimeOptionJsonSerializeExtension =
                 node.Add ("time", (input.Time |> System.Text.Json.Nodes.JsonValue.Create<int>))
 
                 node.Add (
-                    "userName",
+                    "user_name",
                     (input.UserName
                      |> (fun field ->
                          match field with
@@ -3069,6 +3069,17 @@ module AnnotatedTagObjectJsonSerializeExtension =
                 )
 
                 node.Add (
+                    "type",
+                    (input.Type
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
                     "url",
                     (input.Url
                      |> (fun field ->
@@ -3099,7 +3110,7 @@ module AttachmentJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "browserDownloadUrl",
+                    "browser_download_url",
                     (input.BrowserDownloadUrl
                      |> (fun field ->
                          match field with
@@ -3110,7 +3121,7 @@ module AttachmentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -3121,7 +3132,7 @@ module AttachmentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "downloadCount",
+                    "download_count",
                     (input.DownloadCount
                      |> (fun field ->
                          match field with
@@ -3195,7 +3206,7 @@ module BranchProtectionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "approvalsWhitelistTeams",
+                    "approvals_whitelist_teams",
                     (input.ApprovalsWhitelistTeams
                      |> (fun field ->
                          match field with
@@ -3215,7 +3226,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "approvalsWhitelistUsername",
+                    "approvals_whitelist_username",
                     (input.ApprovalsWhitelistUsername
                      |> (fun field ->
                          match field with
@@ -3235,7 +3246,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "blockOnOfficialReviewRequests",
+                    "block_on_official_review_requests",
                     (input.BlockOnOfficialReviewRequests
                      |> (fun field ->
                          match field with
@@ -3246,7 +3257,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "blockOnOutdatedBranch",
+                    "block_on_outdated_branch",
                     (input.BlockOnOutdatedBranch
                      |> (fun field ->
                          match field with
@@ -3257,7 +3268,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "blockOnRejectedReviews",
+                    "block_on_rejected_reviews",
                     (input.BlockOnRejectedReviews
                      |> (fun field ->
                          match field with
@@ -3268,7 +3279,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "branchName",
+                    "branch_name",
                     (input.BranchName
                      |> (fun field ->
                          match field with
@@ -3279,7 +3290,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -3290,7 +3301,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dismissStaleApprovals",
+                    "dismiss_stale_approvals",
                     (input.DismissStaleApprovals
                      |> (fun field ->
                          match field with
@@ -3301,7 +3312,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableApprovalsWhitelist",
+                    "enable_approvals_whitelist",
                     (input.EnableApprovalsWhitelist
                      |> (fun field ->
                          match field with
@@ -3312,7 +3323,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableMergeWhitelist",
+                    "enable_merge_whitelist",
                     (input.EnableMergeWhitelist
                      |> (fun field ->
                          match field with
@@ -3323,7 +3334,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enablePush",
+                    "enable_push",
                     (input.EnablePush
                      |> (fun field ->
                          match field with
@@ -3334,7 +3345,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enablePushWhitelist",
+                    "enable_push_whitelist",
                     (input.EnablePushWhitelist
                      |> (fun field ->
                          match field with
@@ -3345,7 +3356,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableStatusCheck",
+                    "enable_status_check",
                     (input.EnableStatusCheck
                      |> (fun field ->
                          match field with
@@ -3356,7 +3367,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeWhitelistTeams",
+                    "merge_whitelist_teams",
                     (input.MergeWhitelistTeams
                      |> (fun field ->
                          match field with
@@ -3376,7 +3387,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeWhitelistUsernames",
+                    "merge_whitelist_usernames",
                     (input.MergeWhitelistUsernames
                      |> (fun field ->
                          match field with
@@ -3396,7 +3407,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "protectedFilePatterns",
+                    "protected_file_patterns",
                     (input.ProtectedFilePatterns
                      |> (fun field ->
                          match field with
@@ -3407,7 +3418,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pushWhitelistDeployKeys",
+                    "push_whitelist_deploy_keys",
                     (input.PushWhitelistDeployKeys
                      |> (fun field ->
                          match field with
@@ -3418,7 +3429,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pushWhitelistTeams",
+                    "push_whitelist_teams",
                     (input.PushWhitelistTeams
                      |> (fun field ->
                          match field with
@@ -3438,7 +3449,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pushWhitelistUsernames",
+                    "push_whitelist_usernames",
                     (input.PushWhitelistUsernames
                      |> (fun field ->
                          match field with
@@ -3458,7 +3469,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "requireSignedCommits",
+                    "require_signed_commits",
                     (input.RequireSignedCommits
                      |> (fun field ->
                          match field with
@@ -3469,7 +3480,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "requiredApprovals",
+                    "required_approvals",
                     (input.RequiredApprovals
                      |> (fun field ->
                          match field with
@@ -3480,7 +3491,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "ruleName",
+                    "rule_name",
                     (input.RuleName
                      |> (fun field ->
                          match field with
@@ -3491,7 +3502,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "statusCheckContexts",
+                    "status_check_contexts",
                     (input.StatusCheckContexts
                      |> (fun field ->
                          match field with
@@ -3511,7 +3522,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "unprotectedFilePatterns",
+                    "unprotected_file_patterns",
                     (input.UnprotectedFilePatterns
                      |> (fun field ->
                          match field with
@@ -3522,7 +3533,7 @@ module BranchProtectionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -3574,7 +3585,7 @@ module ChangedFileJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "contentsUrl",
+                    "contents_url",
                     (input.ContentsUrl
                      |> (fun field ->
                          match field with
@@ -3607,7 +3618,7 @@ module ChangedFileJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -3618,7 +3629,7 @@ module ChangedFileJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "previousFilename",
+                    "previous_filename",
                     (input.PreviousFilename
                      |> (fun field ->
                          match field with
@@ -3629,7 +3640,7 @@ module ChangedFileJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "rawUrl",
+                    "raw_url",
                     (input.RawUrl
                      |> (fun field ->
                          match field with
@@ -3938,7 +3949,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "approvalsWhitelistTeams",
+                    "approvals_whitelist_teams",
                     (input.ApprovalsWhitelistTeams
                      |> (fun field ->
                          match field with
@@ -3958,7 +3969,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "approvalsWhitelistUsername",
+                    "approvals_whitelist_username",
                     (input.ApprovalsWhitelistUsername
                      |> (fun field ->
                          match field with
@@ -3978,7 +3989,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "blockOnOfficialReviewRequests",
+                    "block_on_official_review_requests",
                     (input.BlockOnOfficialReviewRequests
                      |> (fun field ->
                          match field with
@@ -3989,7 +4000,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "blockOnOutdatedBranch",
+                    "block_on_outdated_branch",
                     (input.BlockOnOutdatedBranch
                      |> (fun field ->
                          match field with
@@ -4000,7 +4011,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "blockOnRejectedReviews",
+                    "block_on_rejected_reviews",
                     (input.BlockOnRejectedReviews
                      |> (fun field ->
                          match field with
@@ -4011,7 +4022,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "branchName",
+                    "branch_name",
                     (input.BranchName
                      |> (fun field ->
                          match field with
@@ -4022,7 +4033,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dismissStaleApprovals",
+                    "dismiss_stale_approvals",
                     (input.DismissStaleApprovals
                      |> (fun field ->
                          match field with
@@ -4033,7 +4044,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableApprovalsWhitelist",
+                    "enable_approvals_whitelist",
                     (input.EnableApprovalsWhitelist
                      |> (fun field ->
                          match field with
@@ -4044,7 +4055,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableMergeWhitelist",
+                    "enable_merge_whitelist",
                     (input.EnableMergeWhitelist
                      |> (fun field ->
                          match field with
@@ -4055,7 +4066,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enablePush",
+                    "enable_push",
                     (input.EnablePush
                      |> (fun field ->
                          match field with
@@ -4066,7 +4077,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enablePushWhitelist",
+                    "enable_push_whitelist",
                     (input.EnablePushWhitelist
                      |> (fun field ->
                          match field with
@@ -4077,7 +4088,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableStatusCheck",
+                    "enable_status_check",
                     (input.EnableStatusCheck
                      |> (fun field ->
                          match field with
@@ -4088,7 +4099,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeWhitelistTeams",
+                    "merge_whitelist_teams",
                     (input.MergeWhitelistTeams
                      |> (fun field ->
                          match field with
@@ -4108,7 +4119,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeWhitelistUsernames",
+                    "merge_whitelist_usernames",
                     (input.MergeWhitelistUsernames
                      |> (fun field ->
                          match field with
@@ -4128,7 +4139,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "protectedFilePatterns",
+                    "protected_file_patterns",
                     (input.ProtectedFilePatterns
                      |> (fun field ->
                          match field with
@@ -4139,7 +4150,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pushWhitelistDeployKeys",
+                    "push_whitelist_deploy_keys",
                     (input.PushWhitelistDeployKeys
                      |> (fun field ->
                          match field with
@@ -4150,7 +4161,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pushWhitelistTeams",
+                    "push_whitelist_teams",
                     (input.PushWhitelistTeams
                      |> (fun field ->
                          match field with
@@ -4170,7 +4181,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pushWhitelistUsernames",
+                    "push_whitelist_usernames",
                     (input.PushWhitelistUsernames
                      |> (fun field ->
                          match field with
@@ -4190,7 +4201,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "requireSignedCommits",
+                    "require_signed_commits",
                     (input.RequireSignedCommits
                      |> (fun field ->
                          match field with
@@ -4201,7 +4212,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "requiredApprovals",
+                    "required_approvals",
                     (input.RequiredApprovals
                      |> (fun field ->
                          match field with
@@ -4212,7 +4223,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "ruleName",
+                    "rule_name",
                     (input.RuleName
                      |> (fun field ->
                          match field with
@@ -4223,7 +4234,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "statusCheckContexts",
+                    "status_check_contexts",
                     (input.StatusCheckContexts
                      |> (fun field ->
                          match field with
@@ -4243,7 +4254,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "unprotectedFilePatterns",
+                    "unprotected_file_patterns",
                     (input.UnprotectedFilePatterns
                      |> (fun field ->
                          match field with
@@ -4272,10 +4283,10 @@ module CreateBranchRepoOptionJsonSerializeExtension =
                 for KeyValue (key, value) in input.AdditionalProperties do
                     node.Add (key, id value)
 
-                node.Add ("newBranchName", (input.NewBranchName |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("new_branch_name", (input.NewBranchName |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
-                    "oldBranchName",
+                    "old_branch_name",
                     (input.OldBranchName
                      |> (fun field ->
                          match field with
@@ -4385,12 +4396,12 @@ module CreateGPGKeyOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "armoredPublicKey",
+                    "armored_public_key",
                     (input.ArmoredPublicKey |> System.Text.Json.Nodes.JsonValue.Create<string>)
                 )
 
                 node.Add (
-                    "armoredSignature",
+                    "armored_signature",
                     (input.ArmoredSignature
                      |> (fun field ->
                          match field with
@@ -4513,7 +4524,7 @@ module CreateIssueOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dueDate",
+                    "due_date",
                     (input.DueDate
                      |> (fun field ->
                          match field with
@@ -4589,7 +4600,7 @@ module CreateKeyOptionJsonSerializeExtension =
                 node.Add ("key", (input.Key |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
-                    "readOnly",
+                    "read_only",
                     (input.ReadOnly
                      |> (fun field ->
                          match field with
@@ -4621,6 +4632,17 @@ module CreateLabelOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add ("color", (input.Color |> System.Text.Json.Nodes.JsonValue.Create<string>))
+
+                node.Add (
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
 
                 node.Add (
                     "exclusive",
@@ -4655,7 +4677,18 @@ module CreateMilestoneOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "dueOn",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "due_on",
                     (input.DueOn
                      |> (fun field ->
                          match field with
@@ -4707,7 +4740,7 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "confidentialClient",
+                    "confidential_client",
                     (input.ConfidentialClient
                      |> (fun field ->
                          match field with
@@ -4729,7 +4762,7 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "redirectUris",
+                    "redirect_uris",
                     (input.RedirectUris
                      |> (fun field ->
                          match field with
@@ -4768,7 +4801,18 @@ module CreateOrgOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "fullName",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -4790,7 +4834,7 @@ module CreateOrgOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repoAdminChangeTeamAccess",
+                    "repo_admin_change_team_access",
                     (input.RepoAdminChangeTeamAccess
                      |> (fun field ->
                          match field with
@@ -4897,7 +4941,7 @@ module CreatePullRequestOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dueDate",
+                    "due_date",
                     (input.DueDate
                      |> (fun field ->
                          match field with
@@ -4991,7 +5035,7 @@ module CreatePullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "newPosition",
+                    "new_position",
                     (input.NewPosition
                      |> (fun field ->
                          match field with
@@ -5002,7 +5046,7 @@ module CreatePullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "oldPosition",
+                    "old_position",
                     (input.OldPosition
                      |> (fun field ->
                          match field with
@@ -5054,7 +5098,7 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "remoteAddress",
+                    "remote_address",
                     (input.RemoteAddress
                      |> (fun field ->
                          match field with
@@ -5065,7 +5109,7 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "remotePassword",
+                    "remote_password",
                     (input.RemotePassword
                      |> (fun field ->
                          match field with
@@ -5076,7 +5120,7 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "remoteUsername",
+                    "remote_username",
                     (input.RemoteUsername
                      |> (fun field ->
                          match field with
@@ -5087,7 +5131,7 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "syncOnCommit",
+                    "sync_on_commit",
                     (input.SyncOnCommit
                      |> (fun field ->
                          match field with
@@ -5160,10 +5204,10 @@ module CreateReleaseOptionJsonSerializeExtension =
                      ))
                 )
 
-                node.Add ("tagName", (input.TagName |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("tag_name", (input.TagName |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
-                    "targetCommitish",
+                    "target_commitish",
                     (input.TargetCommitish
                      |> (fun field ->
                          match field with
@@ -5193,7 +5237,7 @@ module CreateRepoOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "autoInit",
+                    "auto_init",
                     (input.AutoInit
                      |> (fun field ->
                          match field with
@@ -5204,8 +5248,19 @@ module CreateRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultBranch",
+                    "default_branch",
                     (input.DefaultBranch
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "description",
+                    (input.Description
                      |> (fun field ->
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
@@ -5226,7 +5281,7 @@ module CreateRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "issueLabels",
+                    "issue_labels",
                     (input.IssueLabels
                      |> (fun field ->
                          match field with
@@ -5283,7 +5338,7 @@ module CreateRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "trustModel",
+                    "trust_model",
                     (input.TrustModel
                      |> (fun field ->
                          match field with
@@ -5324,6 +5379,17 @@ module CreateStatusOptionJsonSerializeExtension =
                 )
 
                 node.Add (
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
                     "state",
                     (input.State
                      |> (fun field ->
@@ -5335,7 +5401,7 @@ module CreateStatusOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "targetUrl",
+                    "target_url",
                     (input.TargetUrl
                      |> (fun field ->
                          match field with
@@ -5375,7 +5441,7 @@ module CreateTagOptionJsonSerializeExtension =
                      ))
                 )
 
-                node.Add ("tagName", (input.TagName |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("tag_name", (input.TagName |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
                     "target",
@@ -5427,7 +5493,7 @@ module CreateTeamOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "canCreateOrgRepo",
+                    "can_create_org_repo",
                     (input.CanCreateOrgRepo
                      |> (fun field ->
                          match field with
@@ -5438,7 +5504,18 @@ module CreateTeamOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "includesAllRepositories",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "includes_all_repositories",
                     (input.IncludesAllRepositories
                      |> (fun field ->
                          match field with
@@ -5482,7 +5559,7 @@ module CreateTeamOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "unitsMap",
+                    "units_map",
                     (input.UnitsMap
                      |> (fun field ->
                          match field with
@@ -5511,7 +5588,7 @@ module CreateUserOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -5524,7 +5601,7 @@ module CreateUserOptionJsonSerializeExtension =
                 node.Add ("email", (input.Email |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
-                    "fullName",
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -5535,7 +5612,7 @@ module CreateUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "loginName",
+                    "login_name",
                     (input.LoginName
                      |> (fun field ->
                          match field with
@@ -5546,7 +5623,7 @@ module CreateUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mustChangePassword",
+                    "must_change_password",
                     (input.MustChangePassword
                      |> (fun field ->
                          match field with
@@ -5570,7 +5647,7 @@ module CreateUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "sendNotify",
+                    "send_notify",
                     (input.SendNotify
                      |> (fun field ->
                          match field with
@@ -5581,7 +5658,7 @@ module CreateUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "sourceId",
+                    "source_id",
                     (input.SourceId
                      |> (fun field ->
                          match field with
@@ -5624,7 +5701,7 @@ module CreateWikiPageOptionsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "contentBase64",
+                    "content_base64",
                     (input.ContentBase64
                      |> (fun field ->
                          match field with
@@ -5676,7 +5753,7 @@ module CronJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "execTimes",
+                    "exec_times",
                     (input.ExecTimes
                      |> (fun field ->
                          match field with
@@ -5860,7 +5937,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "approvalsWhitelistTeams",
+                    "approvals_whitelist_teams",
                     (input.ApprovalsWhitelistTeams
                      |> (fun field ->
                          match field with
@@ -5880,7 +5957,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "approvalsWhitelistUsername",
+                    "approvals_whitelist_username",
                     (input.ApprovalsWhitelistUsername
                      |> (fun field ->
                          match field with
@@ -5900,7 +5977,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "blockOnOfficialReviewRequests",
+                    "block_on_official_review_requests",
                     (input.BlockOnOfficialReviewRequests
                      |> (fun field ->
                          match field with
@@ -5911,7 +5988,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "blockOnOutdatedBranch",
+                    "block_on_outdated_branch",
                     (input.BlockOnOutdatedBranch
                      |> (fun field ->
                          match field with
@@ -5922,7 +5999,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "blockOnRejectedReviews",
+                    "block_on_rejected_reviews",
                     (input.BlockOnRejectedReviews
                      |> (fun field ->
                          match field with
@@ -5933,7 +6010,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dismissStaleApprovals",
+                    "dismiss_stale_approvals",
                     (input.DismissStaleApprovals
                      |> (fun field ->
                          match field with
@@ -5944,7 +6021,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableApprovalsWhitelist",
+                    "enable_approvals_whitelist",
                     (input.EnableApprovalsWhitelist
                      |> (fun field ->
                          match field with
@@ -5955,7 +6032,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableMergeWhitelist",
+                    "enable_merge_whitelist",
                     (input.EnableMergeWhitelist
                      |> (fun field ->
                          match field with
@@ -5966,7 +6043,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enablePush",
+                    "enable_push",
                     (input.EnablePush
                      |> (fun field ->
                          match field with
@@ -5977,7 +6054,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enablePushWhitelist",
+                    "enable_push_whitelist",
                     (input.EnablePushWhitelist
                      |> (fun field ->
                          match field with
@@ -5988,7 +6065,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableStatusCheck",
+                    "enable_status_check",
                     (input.EnableStatusCheck
                      |> (fun field ->
                          match field with
@@ -5999,7 +6076,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeWhitelistTeams",
+                    "merge_whitelist_teams",
                     (input.MergeWhitelistTeams
                      |> (fun field ->
                          match field with
@@ -6019,7 +6096,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeWhitelistUsernames",
+                    "merge_whitelist_usernames",
                     (input.MergeWhitelistUsernames
                      |> (fun field ->
                          match field with
@@ -6039,7 +6116,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "protectedFilePatterns",
+                    "protected_file_patterns",
                     (input.ProtectedFilePatterns
                      |> (fun field ->
                          match field with
@@ -6050,7 +6127,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pushWhitelistDeployKeys",
+                    "push_whitelist_deploy_keys",
                     (input.PushWhitelistDeployKeys
                      |> (fun field ->
                          match field with
@@ -6061,7 +6138,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pushWhitelistTeams",
+                    "push_whitelist_teams",
                     (input.PushWhitelistTeams
                      |> (fun field ->
                          match field with
@@ -6081,7 +6158,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pushWhitelistUsernames",
+                    "push_whitelist_usernames",
                     (input.PushWhitelistUsernames
                      |> (fun field ->
                          match field with
@@ -6101,7 +6178,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "requireSignedCommits",
+                    "require_signed_commits",
                     (input.RequireSignedCommits
                      |> (fun field ->
                          match field with
@@ -6112,7 +6189,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "requiredApprovals",
+                    "required_approvals",
                     (input.RequiredApprovals
                      |> (fun field ->
                          match field with
@@ -6123,7 +6200,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "statusCheckContexts",
+                    "status_check_contexts",
                     (input.StatusCheckContexts
                      |> (fun field ->
                          match field with
@@ -6143,7 +6220,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "unprotectedFilePatterns",
+                    "unprotected_file_patterns",
                     (input.UnprotectedFilePatterns
                      |> (fun field ->
                          match field with
@@ -6172,7 +6249,7 @@ module EditDeadlineOptionJsonSerializeExtension =
                 for KeyValue (key, value) in input.AdditionalProperties do
                     node.Add (key, id value)
 
-                node.Add ("dueDate", (input.DueDate |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("due_date", (input.DueDate |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
             node :> _
 namespace Gitea
@@ -6254,7 +6331,7 @@ module EditHookOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "authorizationHeader",
+                    "authorization_header",
                     (input.AuthorizationHeader
                      |> (fun field ->
                          match field with
@@ -6265,7 +6342,7 @@ module EditHookOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "branchFilter",
+                    "branch_filter",
                     (input.BranchFilter
                      |> (fun field ->
                          match field with
@@ -6388,7 +6465,7 @@ module EditIssueOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dueDate",
+                    "due_date",
                     (input.DueDate
                      |> (fun field ->
                          match field with
@@ -6443,7 +6520,7 @@ module EditIssueOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "unsetDueDate",
+                    "unset_due_date",
                     (input.UnsetDueDate
                      |> (fun field ->
                          match field with
@@ -6475,6 +6552,17 @@ module EditLabelOptionJsonSerializeExtension =
                 node.Add (
                     "color",
                     (input.Color
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "description",
+                    (input.Description
                      |> (fun field ->
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
@@ -6525,7 +6613,18 @@ module EditMilestoneOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "dueOn",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "due_on",
                     (input.DueOn
                      |> (fun field ->
                          match field with
@@ -6577,7 +6676,18 @@ module EditOrgOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "fullName",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -6599,7 +6709,7 @@ module EditOrgOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repoAdminChangeTeamAccess",
+                    "repo_admin_change_team_access",
                     (input.RepoAdminChangeTeamAccess
                      |> (fun field ->
                          match field with
@@ -6651,7 +6761,7 @@ module EditPullRequestOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "allowMaintainerEdit",
+                    "allow_maintainer_edit",
                     (input.AllowMaintainerEdit
                      |> (fun field ->
                          match field with
@@ -6715,7 +6825,7 @@ module EditPullRequestOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dueDate",
+                    "due_date",
                     (input.DueDate
                      |> (fun field ->
                          match field with
@@ -6779,7 +6889,7 @@ module EditPullRequestOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "unsetDueDate",
+                    "unset_due_date",
                     (input.UnsetDueDate
                      |> (fun field ->
                          match field with
@@ -6883,7 +6993,7 @@ module EditReleaseOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "tagName",
+                    "tag_name",
                     (input.TagName
                      |> (fun field ->
                          match field with
@@ -6894,7 +7004,7 @@ module EditReleaseOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "targetCommitish",
+                    "target_commitish",
                     (input.TargetCommitish
                      |> (fun field ->
                          match field with
@@ -6943,7 +7053,7 @@ module EditTeamOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "canCreateOrgRepo",
+                    "can_create_org_repo",
                     (input.CanCreateOrgRepo
                      |> (fun field ->
                          match field with
@@ -6954,7 +7064,18 @@ module EditTeamOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "includesAllRepositories",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "includes_all_repositories",
                     (input.IncludesAllRepositories
                      |> (fun field ->
                          match field with
@@ -6998,7 +7119,7 @@ module EditTeamOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "unitsMap",
+                    "units_map",
                     (input.UnitsMap
                      |> (fun field ->
                          match field with
@@ -7049,7 +7170,7 @@ module EditUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowCreateOrganization",
+                    "allow_create_organization",
                     (input.AllowCreateOrganization
                      |> (fun field ->
                          match field with
@@ -7060,7 +7181,7 @@ module EditUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowGitHook",
+                    "allow_git_hook",
                     (input.AllowGitHook
                      |> (fun field ->
                          match field with
@@ -7071,13 +7192,24 @@ module EditUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowImportLocal",
+                    "allow_import_local",
                     (input.AllowImportLocal
                      |> (fun field ->
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7093,7 +7225,7 @@ module EditUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "fullName",
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -7114,10 +7246,10 @@ module EditUserOptionJsonSerializeExtension =
                      ))
                 )
 
-                node.Add ("loginName", (input.LoginName |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("login_name", (input.LoginName |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
-                    "maxRepoCreation",
+                    "max_repo_creation",
                     (input.MaxRepoCreation
                      |> (fun field ->
                          match field with
@@ -7128,7 +7260,7 @@ module EditUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mustChangePassword",
+                    "must_change_password",
                     (input.MustChangePassword
                      |> (fun field ->
                          match field with
@@ -7150,7 +7282,7 @@ module EditUserOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "prohibitLogin",
+                    "prohibit_login",
                     (input.ProhibitLogin
                      |> (fun field ->
                          match field with
@@ -7171,7 +7303,7 @@ module EditUserOptionJsonSerializeExtension =
                      ))
                 )
 
-                node.Add ("sourceId", (input.SourceId |> System.Text.Json.Nodes.JsonValue.Create<int>))
+                node.Add ("source_id", (input.SourceId |> System.Text.Json.Nodes.JsonValue.Create<int>))
 
                 node.Add (
                     "visibility",
@@ -7267,7 +7399,7 @@ module ExternalTrackerJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "externalTrackerFormat",
+                    "external_tracker_format",
                     (input.ExternalTrackerFormat
                      |> (fun field ->
                          match field with
@@ -7278,7 +7410,7 @@ module ExternalTrackerJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "externalTrackerRegexpPattern",
+                    "external_tracker_regexp_pattern",
                     (input.ExternalTrackerRegexpPattern
                      |> (fun field ->
                          match field with
@@ -7289,7 +7421,7 @@ module ExternalTrackerJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "externalTrackerStyle",
+                    "external_tracker_style",
                     (input.ExternalTrackerStyle
                      |> (fun field ->
                          match field with
@@ -7300,7 +7432,7 @@ module ExternalTrackerJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "externalTrackerUrl",
+                    "external_tracker_url",
                     (input.ExternalTrackerUrl
                      |> (fun field ->
                          match field with
@@ -7330,7 +7462,7 @@ module ExternalWikiJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "externalWikiUrl",
+                    "external_wiki_url",
                     (input.ExternalWikiUrl
                      |> (fun field ->
                          match field with
@@ -7391,7 +7523,7 @@ module FileCommitResponseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -7577,7 +7709,7 @@ module GeneralAPISettingsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "defaultGitTreesPerPage",
+                    "default_git_trees_per_page",
                     (input.DefaultGitTreesPerPage
                      |> (fun field ->
                          match field with
@@ -7588,7 +7720,7 @@ module GeneralAPISettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultMaxBlobSize",
+                    "default_max_blob_size",
                     (input.DefaultMaxBlobSize
                      |> (fun field ->
                          match field with
@@ -7599,7 +7731,7 @@ module GeneralAPISettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultPagingNum",
+                    "default_paging_num",
                     (input.DefaultPagingNum
                      |> (fun field ->
                          match field with
@@ -7610,7 +7742,7 @@ module GeneralAPISettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "maxResponseItems",
+                    "max_response_items",
                     (input.MaxResponseItems
                      |> (fun field ->
                          match field with
@@ -7640,7 +7772,7 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "allowedTypes",
+                    "allowed_types",
                     (input.AllowedTypes
                      |> (fun field ->
                          match field with
@@ -7662,7 +7794,7 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "maxFiles",
+                    "max_files",
                     (input.MaxFiles
                      |> (fun field ->
                          match field with
@@ -7673,7 +7805,7 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "maxSize",
+                    "max_size",
                     (input.MaxSize
                      |> (fun field ->
                          match field with
@@ -7703,7 +7835,7 @@ module GeneralRepoSettingsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "httpGitDisabled",
+                    "http_git_disabled",
                     (input.HttpGitDisabled
                      |> (fun field ->
                          match field with
@@ -7714,7 +7846,7 @@ module GeneralRepoSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "lfsDisabled",
+                    "lfs_disabled",
                     (input.LfsDisabled
                      |> (fun field ->
                          match field with
@@ -7725,7 +7857,7 @@ module GeneralRepoSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "migrationsDisabled",
+                    "migrations_disabled",
                     (input.MigrationsDisabled
                      |> (fun field ->
                          match field with
@@ -7736,7 +7868,7 @@ module GeneralRepoSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mirrorsDisabled",
+                    "mirrors_disabled",
                     (input.MirrorsDisabled
                      |> (fun field ->
                          match field with
@@ -7747,7 +7879,7 @@ module GeneralRepoSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "starsDisabled",
+                    "stars_disabled",
                     (input.StarsDisabled
                      |> (fun field ->
                          match field with
@@ -7758,7 +7890,7 @@ module GeneralRepoSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "timeTrackingDisabled",
+                    "time_tracking_disabled",
                     (input.TimeTrackingDisabled
                      |> (fun field ->
                          match field with
@@ -7788,7 +7920,7 @@ module GeneralUISettingsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "allowedReactions",
+                    "allowed_reactions",
                     (input.AllowedReactions
                      |> (fun field ->
                          match field with
@@ -7808,7 +7940,7 @@ module GeneralUISettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "customEmojis",
+                    "custom_emojis",
                     (input.CustomEmojis
                      |> (fun field ->
                          match field with
@@ -7828,7 +7960,7 @@ module GeneralUISettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultTheme",
+                    "default_theme",
                     (input.DefaultTheme
                      |> (fun field ->
                          match field with
@@ -7869,7 +8001,7 @@ module GenerateRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultBranch",
+                    "default_branch",
                     (input.DefaultBranch
                      |> (fun field ->
                          match field with
@@ -7880,7 +8012,18 @@ module GenerateRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "gitContent",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "git_content",
                     (input.GitContent
                      |> (fun field ->
                          match field with
@@ -7891,7 +8034,7 @@ module GenerateRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "gitHooks",
+                    "git_hooks",
                     (input.GitHooks
                      |> (fun field ->
                          match field with
@@ -8086,6 +8229,17 @@ module GitEntryJsonSerializeExtension =
                 )
 
                 node.Add (
+                    "type",
+                    (input.Type
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
                     "url",
                     (input.Url
                      |> (fun field ->
@@ -8127,7 +8281,7 @@ module GitHookJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "isActive",
+                    "is_active",
                     (input.IsActive
                      |> (fun field ->
                          match field with
@@ -8170,6 +8324,17 @@ module GitObjectJsonSerializeExtension =
                 node.Add (
                     "sha",
                     (input.Sha
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "type",
+                    (input.Type
                      |> (fun field ->
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
@@ -8231,7 +8396,7 @@ module GitTreeResponseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "totalCount",
+                    "total_count",
                     (input.TotalCount
                      |> (fun field ->
                          match field with
@@ -8333,7 +8498,7 @@ module HookJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "authorizationHeader",
+                    "authorization_header",
                     (input.AuthorizationHeader
                      |> (fun field ->
                          match field with
@@ -8354,7 +8519,7 @@ module HookJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -8396,7 +8561,18 @@ module HookJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "type",
+                    (input.Type
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -8467,7 +8643,7 @@ module InternalTrackerJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "allowOnlyContributorsToTrackTime",
+                    "allow_only_contributors_to_track_time",
                     (input.AllowOnlyContributorsToTrackTime
                      |> (fun field ->
                          match field with
@@ -8478,7 +8654,7 @@ module InternalTrackerJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableIssueDependencies",
+                    "enable_issue_dependencies",
                     (input.EnableIssueDependencies
                      |> (fun field ->
                          match field with
@@ -8489,7 +8665,7 @@ module InternalTrackerJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableTimeTracker",
+                    "enable_time_tracker",
                     (input.EnableTimeTracker
                      |> (fun field ->
                          match field with
@@ -8519,7 +8695,7 @@ module IssueDeadlineJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "dueDate",
+                    "due_date",
                     (input.DueDate
                      |> (fun field ->
                          match field with
@@ -8566,56 +8742,6 @@ module Type6JsonSerializeExtension =
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
                     node.Add (key, (fun value -> System.Text.Json.Nodes.JsonObject ()) value)
-
-            node :> _
-namespace Gitea
-
-open WoofWare.Myriad.Plugins
-
-/// Module containing JSON serializing extension members for the IssueFormField type
-[<AutoOpen>]
-module IssueFormFieldJsonSerializeExtension =
-    /// Extension methods for JSON parsing
-    type IssueFormField with
-
-        /// Serialize to a JSON node
-        static member toJsonNode (input : IssueFormField) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject ()
-
-            do
-                for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
-
-                node.Add (
-                    "attributes",
-                    (input.Attributes
-                     |> (fun field ->
-                         match field with
-                         | None -> null :> System.Text.Json.Nodes.JsonNode
-                         | Some field -> Type5.toJsonNode field
-                     ))
-                )
-
-                node.Add (
-                    "id",
-                    (input.Id
-                     |> (fun field ->
-                         match field with
-                         | None -> null :> System.Text.Json.Nodes.JsonNode
-                         | Some field ->
-                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
-                     ))
-                )
-
-                node.Add (
-                    "validations",
-                    (input.Validations
-                     |> (fun field ->
-                         match field with
-                         | None -> null :> System.Text.Json.Nodes.JsonNode
-                         | Some field -> Type6.toJsonNode field
-                     ))
-                )
 
             node :> _
 namespace Gitea
@@ -8678,6 +8804,17 @@ module LabelJsonSerializeExtension =
                 node.Add (
                     "color",
                     (input.Color
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "description",
+                    (input.Description
                      |> (fun field ->
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
@@ -8750,7 +8887,7 @@ module MarkdownOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "context",
+                    "Context",
                     (input.Context
                      |> (fun field ->
                          match field with
@@ -8761,7 +8898,7 @@ module MarkdownOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mode",
+                    "Mode",
                     (input.Mode
                      |> (fun field ->
                          match field with
@@ -8772,7 +8909,7 @@ module MarkdownOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "text",
+                    "Text",
                     (input.Text
                      |> (fun field ->
                          match field with
@@ -8783,7 +8920,7 @@ module MarkdownOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "wiki",
+                    "Wiki",
                     (input.Wiki
                      |> (fun field ->
                          match field with
@@ -8812,10 +8949,10 @@ module MergePullRequestOptionJsonSerializeExtension =
                 for KeyValue (key, value) in input.AdditionalProperties do
                     node.Add (key, id value)
 
-                node.Add ("do", (input.Do |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("Do", (input.Do |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
-                    "mergeCommitID",
+                    "MergeCommitID",
                     (input.MergeCommitID
                      |> (fun field ->
                          match field with
@@ -8826,7 +8963,7 @@ module MergePullRequestOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeMessageField",
+                    "MergeMessageField",
                     (input.MergeMessageField
                      |> (fun field ->
                          match field with
@@ -8837,7 +8974,7 @@ module MergePullRequestOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeTitleField",
+                    "MergeTitleField",
                     (input.MergeTitleField
                      |> (fun field ->
                          match field with
@@ -8848,7 +8985,7 @@ module MergePullRequestOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "deleteBranchAfterMerge",
+                    "delete_branch_after_merge",
                     (input.DeleteBranchAfterMerge
                      |> (fun field ->
                          match field with
@@ -8859,7 +8996,7 @@ module MergePullRequestOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "forceMerge",
+                    "force_merge",
                     (input.ForceMerge
                      |> (fun field ->
                          match field with
@@ -8870,7 +9007,7 @@ module MergePullRequestOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "headCommitId",
+                    "head_commit_id",
                     (input.HeadCommitId
                      |> (fun field ->
                          match field with
@@ -8881,7 +9018,7 @@ module MergePullRequestOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeWhenChecksSucceed",
+                    "merge_when_checks_succeed",
                     (input.MergeWhenChecksSucceed
                      |> (fun field ->
                          match field with
@@ -8911,7 +9048,7 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "authPassword",
+                    "auth_password",
                     (input.AuthPassword
                      |> (fun field ->
                          match field with
@@ -8922,7 +9059,7 @@ module MigrateRepoOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "authToken",
+                    "auth_token",
                     (input.AuthToken
                      |> (fun field ->
                          match field with
@@ -8933,7 +9070,7 @@ module MigrateRepoOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "authUsername",
+                    "auth_username",
                     (input.AuthUsername
                      |> (fun field ->
                          match field with
@@ -8943,7 +9080,18 @@ module MigrateRepoOptionsJsonSerializeExtension =
                      ))
                 )
 
-                node.Add ("cloneAddr", (input.CloneAddr |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("clone_addr", (input.CloneAddr |> System.Text.Json.Nodes.JsonValue.Create<string>))
+
+                node.Add (
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
 
                 node.Add (
                     "issues",
@@ -8979,7 +9127,7 @@ module MigrateRepoOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "lfsEndpoint",
+                    "lfs_endpoint",
                     (input.LfsEndpoint
                      |> (fun field ->
                          match field with
@@ -9012,7 +9160,7 @@ module MigrateRepoOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mirrorInterval",
+                    "mirror_interval",
                     (input.MirrorInterval
                      |> (fun field ->
                          match field with
@@ -9034,7 +9182,7 @@ module MigrateRepoOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pullRequests",
+                    "pull_requests",
                     (input.PullRequests
                      |> (fun field ->
                          match field with
@@ -9055,10 +9203,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                      ))
                 )
 
-                node.Add ("repoName", (input.RepoName |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("repo_name", (input.RepoName |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
-                    "repoOwner",
+                    "repo_owner",
                     (input.RepoOwner
                      |> (fun field ->
                          match field with
@@ -9344,7 +9492,7 @@ module OAuth2ApplicationJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "clientId",
+                    "client_id",
                     (input.ClientId
                      |> (fun field ->
                          match field with
@@ -9355,7 +9503,7 @@ module OAuth2ApplicationJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "clientSecret",
+                    "client_secret",
                     (input.ClientSecret
                      |> (fun field ->
                          match field with
@@ -9366,7 +9514,7 @@ module OAuth2ApplicationJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "confidentialClient",
+                    "confidential_client",
                     (input.ConfidentialClient
                      |> (fun field ->
                          match field with
@@ -9410,7 +9558,7 @@ module OAuth2ApplicationJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "redirectUris",
+                    "redirect_uris",
                     (input.RedirectUris
                      |> (fun field ->
                          match field with
@@ -9449,7 +9597,7 @@ module OrganizationJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "avatarUrl",
+                    "avatar_url",
                     (input.AvatarUrl
                      |> (fun field ->
                          match field with
@@ -9460,7 +9608,18 @@ module OrganizationJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "fullName",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -9504,7 +9663,7 @@ module OrganizationJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repoAdminChangeTeamAccess",
+                    "repo_admin_change_team_access",
                     (input.RepoAdminChangeTeamAccess
                      |> (fun field ->
                          match field with
@@ -9567,7 +9726,7 @@ module OrganizationPermissionsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "canCreateRepository",
+                    "can_create_repository",
                     (input.CanCreateRepository
                      |> (fun field ->
                          match field with
@@ -9578,7 +9737,7 @@ module OrganizationPermissionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "canRead",
+                    "can_read",
                     (input.CanRead
                      |> (fun field ->
                          match field with
@@ -9589,7 +9748,7 @@ module OrganizationPermissionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "canWrite",
+                    "can_write",
                     (input.CanWrite
                      |> (fun field ->
                          match field with
@@ -9600,7 +9759,7 @@ module OrganizationPermissionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "isAdmin",
+                    "is_admin",
                     (input.IsAdmin
                      |> (fun field ->
                          match field with
@@ -9611,7 +9770,7 @@ module OrganizationPermissionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "isOwner",
+                    "is_owner",
                     (input.IsOwner
                      |> (fun field ->
                          match field with
@@ -9641,7 +9800,7 @@ module PackageFileJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "size",
+                    "Size",
                     (input.Size
                      |> (fun field ->
                          match field with
@@ -9852,7 +10011,7 @@ module PullRequestMetaJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergedAt",
+                    "merged_at",
                     (input.MergedAt
                      |> (fun field ->
                          match field with
@@ -9902,7 +10061,7 @@ module PullReviewRequestOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "teamReviewers",
+                    "team_reviewers",
                     (input.TeamReviewers
                      |> (fun field ->
                          match field with
@@ -9963,7 +10122,7 @@ module PushMirrorJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "lastError",
+                    "last_error",
                     (input.LastError
                      |> (fun field ->
                          match field with
@@ -9974,7 +10133,7 @@ module PushMirrorJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "lastUpdate",
+                    "last_update",
                     (input.LastUpdate
                      |> (fun field ->
                          match field with
@@ -9985,7 +10144,7 @@ module PushMirrorJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "remoteAddress",
+                    "remote_address",
                     (input.RemoteAddress
                      |> (fun field ->
                          match field with
@@ -9996,7 +10155,7 @@ module PushMirrorJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "remoteName",
+                    "remote_name",
                     (input.RemoteName
                      |> (fun field ->
                          match field with
@@ -10007,7 +10166,7 @@ module PushMirrorJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repoName",
+                    "repo_name",
                     (input.RepoName
                      |> (fun field ->
                          match field with
@@ -10018,7 +10177,7 @@ module PushMirrorJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "syncOnCommit",
+                    "sync_on_commit",
                     (input.SyncOnCommit
                      |> (fun field ->
                          match field with
@@ -10138,7 +10297,7 @@ module RepositoryMetaJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "fullName",
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -10253,7 +10412,7 @@ module StopWatchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "issueIndex",
+                    "issue_index",
                     (input.IssueIndex
                      |> (fun field ->
                          match field with
@@ -10264,7 +10423,7 @@ module StopWatchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "issueTitle",
+                    "issue_title",
                     (input.IssueTitle
                      |> (fun field ->
                          match field with
@@ -10275,7 +10434,7 @@ module StopWatchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repoName",
+                    "repo_name",
                     (input.RepoName
                      |> (fun field ->
                          match field with
@@ -10286,7 +10445,7 @@ module StopWatchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repoOwnerName",
+                    "repo_owner_name",
                     (input.RepoOwnerName
                      |> (fun field ->
                          match field with
@@ -10411,7 +10570,7 @@ module TagJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "tarballUrl",
+                    "tarball_url",
                     (input.TarballUrl
                      |> (fun field ->
                          match field with
@@ -10422,7 +10581,7 @@ module TagJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "zipballUrl",
+                    "zipball_url",
                     (input.ZipballUrl
                      |> (fun field ->
                          match field with
@@ -10471,13 +10630,24 @@ module TeamJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "canCreateOrgRepo",
+                    "can_create_org_repo",
                     (input.CanCreateOrgRepo
                      |> (fun field ->
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10493,7 +10663,7 @@ module TeamJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "includesAllRepositories",
+                    "includes_all_repositories",
                     (input.IncludesAllRepositories
                      |> (fun field ->
                          match field with
@@ -10556,7 +10726,7 @@ module TeamJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "unitsMap",
+                    "units_map",
                     (input.UnitsMap
                      |> (fun field ->
                          match field with
@@ -10646,7 +10816,7 @@ module TopicResponseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repoCount",
+                    "repo_count",
                     (input.RepoCount
                      |> (fun field ->
                          match field with
@@ -10657,7 +10827,7 @@ module TopicResponseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "topicName",
+                    "topic_name",
                     (input.TopicName
                      |> (fun field ->
                          match field with
@@ -10697,10 +10867,10 @@ module TransferRepoOptionJsonSerializeExtension =
                 for KeyValue (key, value) in input.AdditionalProperties do
                     node.Add (key, id value)
 
-                node.Add ("newOwner", (input.NewOwner |> System.Text.Json.Nodes.JsonValue.Create<string>))
+                node.Add ("new_owner", (input.NewOwner |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
                 node.Add (
-                    "teamIds",
+                    "team_ids",
                     (input.TeamIds
                      |> (fun field ->
                          match field with
@@ -10782,7 +10952,7 @@ module UpdateFileOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "fromPath",
+                    "from_path",
                     (input.FromPath
                      |> (fun field ->
                          match field with
@@ -10804,7 +10974,7 @@ module UpdateFileOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "newBranch",
+                    "new_branch",
                     (input.NewBranch
                      |> (fun field ->
                          match field with
@@ -10858,7 +11028,7 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "avatarUrl",
+                    "avatar_url",
                     (input.AvatarUrl
                      |> (fun field ->
                          match field with
@@ -10880,6 +11050,17 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
                     "email",
                     (input.Email
                      |> (fun field ->
@@ -10891,7 +11072,7 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "followersCount",
+                    "followers_count",
                     (input.FollowersCount
                      |> (fun field ->
                          match field with
@@ -10902,7 +11083,7 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "followingCount",
+                    "following_count",
                     (input.FollowingCount
                      |> (fun field ->
                          match field with
@@ -10913,7 +11094,7 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "fullName",
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -10935,7 +11116,7 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "isAdmin",
+                    "is_admin",
                     (input.IsAdmin
                      |> (fun field ->
                          match field with
@@ -10957,7 +11138,7 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "lastLogin",
+                    "last_login",
                     (input.LastLogin
                      |> (fun field ->
                          match field with
@@ -10990,7 +11171,7 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "loginName",
+                    "login_name",
                     (input.LoginName
                      |> (fun field ->
                          match field with
@@ -11001,7 +11182,7 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "prohibitLogin",
+                    "prohibit_login",
                     (input.ProhibitLogin
                      |> (fun field ->
                          match field with
@@ -11023,7 +11204,7 @@ module UserJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "starredReposCount",
+                    "starred_repos_count",
                     (input.StarredReposCount
                      |> (fun field ->
                          match field with
@@ -11116,7 +11297,18 @@ module UserSettingsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "diffViewStyle",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "diff_view_style",
                     (input.DiffViewStyle
                      |> (fun field ->
                          match field with
@@ -11127,7 +11319,7 @@ module UserSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "fullName",
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -11138,7 +11330,7 @@ module UserSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hideActivity",
+                    "hide_activity",
                     (input.HideActivity
                      |> (fun field ->
                          match field with
@@ -11149,7 +11341,7 @@ module UserSettingsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hideEmail",
+                    "hide_email",
                     (input.HideEmail
                      |> (fun field ->
                          match field with
@@ -11223,7 +11415,18 @@ module UserSettingsOptionsJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "diffViewStyle",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "diff_view_style",
                     (input.DiffViewStyle
                      |> (fun field ->
                          match field with
@@ -11234,7 +11437,7 @@ module UserSettingsOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "fullName",
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -11245,7 +11448,7 @@ module UserSettingsOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hideActivity",
+                    "hide_activity",
                     (input.HideActivity
                      |> (fun field ->
                          match field with
@@ -11256,7 +11459,7 @@ module UserSettingsOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hideEmail",
+                    "hide_email",
                     (input.HideEmail
                      |> (fun field ->
                          match field with
@@ -11330,7 +11533,7 @@ module WatchInfoJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -11364,7 +11567,7 @@ module WatchInfoJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repositoryUrl",
+                    "repository_url",
                     (input.RepositoryUrl
                      |> (fun field ->
                          match field with
@@ -11527,7 +11730,7 @@ module WikiPageJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "commitCount",
+                    "commit_count",
                     (input.CommitCount
                      |> (fun field ->
                          match field with
@@ -11538,7 +11741,7 @@ module WikiPageJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "contentBase64",
+                    "content_base64",
                     (input.ContentBase64
                      |> (fun field ->
                          match field with
@@ -11560,7 +11763,7 @@ module WikiPageJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -11571,7 +11774,7 @@ module WikiPageJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "lastCommit",
+                    "last_commit",
                     (input.LastCommit
                      |> (fun field ->
                          match field with
@@ -11592,7 +11795,7 @@ module WikiPageJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "subUrl",
+                    "sub_url",
                     (input.SubUrl
                      |> (fun field ->
                          match field with
@@ -11633,7 +11836,7 @@ module WikiPageMetaDataJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -11644,7 +11847,7 @@ module WikiPageMetaDataJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "lastCommit",
+                    "last_commit",
                     (input.LastCommit
                      |> (fun field ->
                          match field with
@@ -11654,7 +11857,7 @@ module WikiPageMetaDataJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "subUrl",
+                    "sub_url",
                     (input.SubUrl
                      |> (fun field ->
                          match field with
@@ -11726,7 +11929,7 @@ module CommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -11737,7 +11940,7 @@ module CommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -11759,7 +11962,7 @@ module CommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "issueUrl",
+                    "issue_url",
                     (input.IssueUrl
                      |> (fun field ->
                          match field with
@@ -11770,7 +11973,7 @@ module CommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "originalAuthor",
+                    "original_author",
                     (input.OriginalAuthor
                      |> (fun field ->
                          match field with
@@ -11781,7 +11984,7 @@ module CommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "originalAuthorId",
+                    "original_author_id",
                     (input.OriginalAuthorId
                      |> (fun field ->
                          match field with
@@ -11792,7 +11995,7 @@ module CommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pullRequestUrl",
+                    "pull_request_url",
                     (input.PullRequestUrl
                      |> (fun field ->
                          match field with
@@ -11803,7 +12006,7 @@ module CommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -11854,7 +12057,7 @@ module CommitStatusJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -11871,6 +12074,17 @@ module CommitStatusJsonSerializeExtension =
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
+                     ))
+                )
+
+                node.Add (
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11897,7 +12111,7 @@ module CommitStatusJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "targetUrl",
+                    "target_url",
                     (input.TargetUrl
                      |> (fun field ->
                          match field with
@@ -11908,7 +12122,7 @@ module CommitStatusJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -11949,7 +12163,7 @@ module ContentsResponseJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "links",
+                    "_links",
                     (input.Links
                      |> (fun field ->
                          match field with
@@ -11970,7 +12184,7 @@ module ContentsResponseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "downloadUrl",
+                    "download_url",
                     (input.DownloadUrl
                      |> (fun field ->
                          match field with
@@ -11992,7 +12206,7 @@ module ContentsResponseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "gitUrl",
+                    "git_url",
                     (input.GitUrl
                      |> (fun field ->
                          match field with
@@ -12003,7 +12217,7 @@ module ContentsResponseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -12014,7 +12228,7 @@ module ContentsResponseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "lastCommitSha",
+                    "last_commit_sha",
                     (input.LastCommitSha
                      |> (fun field ->
                          match field with
@@ -12069,7 +12283,7 @@ module ContentsResponseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "submoduleGitUrl",
+                    "submodule_git_url",
                     (input.SubmoduleGitUrl
                      |> (fun field ->
                          match field with
@@ -12082,6 +12296,17 @@ module ContentsResponseJsonSerializeExtension =
                 node.Add (
                     "target",
                     (input.Target
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "type",
+                    (input.Type
                      |> (fun field ->
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
@@ -12175,7 +12400,7 @@ module CreateFileOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "newBranch",
+                    "new_branch",
                     (input.NewBranch
                      |> (fun field ->
                          match field with
@@ -12227,7 +12452,7 @@ module CreateHookOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "authorizationHeader",
+                    "authorization_header",
                     (input.AuthorizationHeader
                      |> (fun field ->
                          match field with
@@ -12238,7 +12463,7 @@ module CreateHookOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "branchFilter",
+                    "branch_filter",
                     (input.BranchFilter
                      |> (fun field ->
                          match field with
@@ -12269,6 +12494,8 @@ module CreateHookOptionJsonSerializeExtension =
                              :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
+
+                node.Add ("type", (input.Type |> System.Text.Json.Nodes.JsonValue.Create<string>))
 
             node :> _
 namespace Gitea
@@ -12321,7 +12548,7 @@ module CreatePullReviewOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "commitId",
+                    "commit_id",
                     (input.CommitId
                      |> (fun field ->
                          match field with
@@ -12414,7 +12641,7 @@ module DeleteFileOptionsJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "newBranch",
+                    "new_branch",
                     (input.NewBranch
                      |> (fun field ->
                          match field with
@@ -12457,7 +12684,7 @@ module EditRepoOptionJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "allowManualMerge",
+                    "allow_manual_merge",
                     (input.AllowManualMerge
                      |> (fun field ->
                          match field with
@@ -12468,7 +12695,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowMergeCommits",
+                    "allow_merge_commits",
                     (input.AllowMergeCommits
                      |> (fun field ->
                          match field with
@@ -12479,7 +12706,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowRebase",
+                    "allow_rebase",
                     (input.AllowRebase
                      |> (fun field ->
                          match field with
@@ -12490,7 +12717,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowRebaseExplicit",
+                    "allow_rebase_explicit",
                     (input.AllowRebaseExplicit
                      |> (fun field ->
                          match field with
@@ -12501,7 +12728,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowRebaseUpdate",
+                    "allow_rebase_update",
                     (input.AllowRebaseUpdate
                      |> (fun field ->
                          match field with
@@ -12512,7 +12739,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowSquashMerge",
+                    "allow_squash_merge",
                     (input.AllowSquashMerge
                      |> (fun field ->
                          match field with
@@ -12534,7 +12761,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "autodetectManualMerge",
+                    "autodetect_manual_merge",
                     (input.AutodetectManualMerge
                      |> (fun field ->
                          match field with
@@ -12545,7 +12772,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultAllowMaintainerEdit",
+                    "default_allow_maintainer_edit",
                     (input.DefaultAllowMaintainerEdit
                      |> (fun field ->
                          match field with
@@ -12556,7 +12783,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultBranch",
+                    "default_branch",
                     (input.DefaultBranch
                      |> (fun field ->
                          match field with
@@ -12567,7 +12794,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultDeleteBranchAfterMerge",
+                    "default_delete_branch_after_merge",
                     (input.DefaultDeleteBranchAfterMerge
                      |> (fun field ->
                          match field with
@@ -12578,7 +12805,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultMergeStyle",
+                    "default_merge_style",
                     (input.DefaultMergeStyle
                      |> (fun field ->
                          match field with
@@ -12589,7 +12816,18 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enablePrune",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "enable_prune",
                     (input.EnablePrune
                      |> (fun field ->
                          match field with
@@ -12600,7 +12838,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "externalTracker",
+                    "external_tracker",
                     (input.ExternalTracker
                      |> (fun field ->
                          match field with
@@ -12610,7 +12848,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "externalWiki",
+                    "external_wiki",
                     (input.ExternalWiki
                      |> (fun field ->
                          match field with
@@ -12620,7 +12858,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hasIssues",
+                    "has_issues",
                     (input.HasIssues
                      |> (fun field ->
                          match field with
@@ -12631,7 +12869,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hasProjects",
+                    "has_projects",
                     (input.HasProjects
                      |> (fun field ->
                          match field with
@@ -12642,7 +12880,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hasPullRequests",
+                    "has_pull_requests",
                     (input.HasPullRequests
                      |> (fun field ->
                          match field with
@@ -12653,7 +12891,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hasWiki",
+                    "has_wiki",
                     (input.HasWiki
                      |> (fun field ->
                          match field with
@@ -12664,7 +12902,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "ignoreWhitespaceConflicts",
+                    "ignore_whitespace_conflicts",
                     (input.IgnoreWhitespaceConflicts
                      |> (fun field ->
                          match field with
@@ -12675,7 +12913,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "internalTracker",
+                    "internal_tracker",
                     (input.InternalTracker
                      |> (fun field ->
                          match field with
@@ -12685,7 +12923,7 @@ module EditRepoOptionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mirrorInterval",
+                    "mirror_interval",
                     (input.MirrorInterval
                      |> (fun field ->
                          match field with
@@ -12736,6 +12974,67 @@ module EditRepoOptionJsonSerializeExtension =
                          | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+            node :> _
+namespace Gitea
+
+open WoofWare.Myriad.Plugins
+
+/// Module containing JSON serializing extension members for the IssueFormField type
+[<AutoOpen>]
+module IssueFormFieldJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type IssueFormField with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : IssueFormField) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                for KeyValue (key, value) in input.AdditionalProperties do
+                    node.Add (key, id value)
+
+                node.Add (
+                    "attributes",
+                    (input.Attributes
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field -> Type5.toJsonNode field
+                     ))
+                )
+
+                node.Add (
+                    "id",
+                    (input.Id
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "type",
+                    (input.Type
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "validations",
+                    (input.Validations
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field -> Type6.toJsonNode field
                      ))
                 )
 
@@ -12801,7 +13100,7 @@ module IssueTemplateJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "fileName",
+                    "file_name",
                     (input.FileName
                      |> (fun field ->
                          match field with
@@ -12884,7 +13183,7 @@ module MilestoneJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "closedAt",
+                    "closed_at",
                     (input.ClosedAt
                      |> (fun field ->
                          match field with
@@ -12895,7 +13194,7 @@ module MilestoneJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "closedIssues",
+                    "closed_issues",
                     (input.ClosedIssues
                      |> (fun field ->
                          match field with
@@ -12906,7 +13205,7 @@ module MilestoneJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -12917,7 +13216,18 @@ module MilestoneJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dueOn",
+                    "description",
+                    (input.Description
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "due_on",
                     (input.DueOn
                      |> (fun field ->
                          match field with
@@ -12939,7 +13249,7 @@ module MilestoneJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "openIssues",
+                    "open_issues",
                     (input.OpenIssues
                      |> (fun field ->
                          match field with
@@ -12972,7 +13282,7 @@ module MilestoneJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -13053,7 +13363,7 @@ module NotificationSubjectJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -13064,7 +13374,7 @@ module NotificationSubjectJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "latestCommentHtmlUrl",
+                    "latest_comment_html_url",
                     (input.LatestCommentHtmlUrl
                      |> (fun field ->
                          match field with
@@ -13075,7 +13385,7 @@ module NotificationSubjectJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "latestCommentUrl",
+                    "latest_comment_url",
                     (input.LatestCommentUrl
                      |> (fun field ->
                          match field with
@@ -13099,6 +13409,17 @@ module NotificationSubjectJsonSerializeExtension =
                 node.Add (
                     "title",
                     (input.Title
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "type",
+                    (input.Type
                      |> (fun field ->
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
@@ -13211,7 +13532,7 @@ module PublicKeyJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -13255,7 +13576,7 @@ module PublicKeyJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "keyType",
+                    "key_type",
                     (input.KeyType
                      |> (fun field ->
                          match field with
@@ -13266,7 +13587,7 @@ module PublicKeyJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "readOnly",
+                    "read_only",
                     (input.ReadOnly
                      |> (fun field ->
                          match field with
@@ -13339,7 +13660,7 @@ module PullReviewJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "commentsCount",
+                    "comments_count",
                     (input.CommentsCount
                      |> (fun field ->
                          match field with
@@ -13350,7 +13671,7 @@ module PullReviewJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "commitId",
+                    "commit_id",
                     (input.CommitId
                      |> (fun field ->
                          match field with
@@ -13372,7 +13693,7 @@ module PullReviewJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -13405,7 +13726,7 @@ module PullReviewJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pullRequestUrl",
+                    "pull_request_url",
                     (input.PullRequestUrl
                      |> (fun field ->
                          match field with
@@ -13438,7 +13759,7 @@ module PullReviewJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "submittedAt",
+                    "submitted_at",
                     (input.SubmittedAt
                      |> (fun field ->
                          match field with
@@ -13459,7 +13780,7 @@ module PullReviewJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -13510,7 +13831,7 @@ module PullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "commitId",
+                    "commit_id",
                     (input.CommitId
                      |> (fun field ->
                          match field with
@@ -13521,7 +13842,7 @@ module PullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -13532,7 +13853,7 @@ module PullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "diffHunk",
+                    "diff_hunk",
                     (input.DiffHunk
                      |> (fun field ->
                          match field with
@@ -13543,7 +13864,7 @@ module PullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -13565,7 +13886,7 @@ module PullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "originalCommitId",
+                    "original_commit_id",
                     (input.OriginalCommitId
                      |> (fun field ->
                          match field with
@@ -13576,7 +13897,7 @@ module PullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "originalPosition",
+                    "original_position",
                     (input.OriginalPosition
                      |> (fun field ->
                          match field with
@@ -13609,7 +13930,7 @@ module PullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pullRequestReviewId",
+                    "pull_request_review_id",
                     (input.PullRequestReviewId
                      |> (fun field ->
                          match field with
@@ -13620,7 +13941,7 @@ module PullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pullRequestUrl",
+                    "pull_request_url",
                     (input.PullRequestUrl
                      |> (fun field ->
                          match field with
@@ -13641,7 +13962,7 @@ module PullReviewCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -13692,7 +14013,7 @@ module ReactionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -13773,7 +14094,7 @@ module ReleaseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -13795,7 +14116,7 @@ module ReleaseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -13839,7 +14160,7 @@ module ReleaseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "publishedAt",
+                    "published_at",
                     (input.PublishedAt
                      |> (fun field ->
                          match field with
@@ -13850,7 +14171,7 @@ module ReleaseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "tagName",
+                    "tag_name",
                     (input.TagName
                      |> (fun field ->
                          match field with
@@ -13861,7 +14182,7 @@ module ReleaseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "tarballUrl",
+                    "tarball_url",
                     (input.TarballUrl
                      |> (fun field ->
                          match field with
@@ -13872,7 +14193,7 @@ module ReleaseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "targetCommitish",
+                    "target_commitish",
                     (input.TargetCommitish
                      |> (fun field ->
                          match field with
@@ -13894,7 +14215,7 @@ module ReleaseJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "zipballUrl",
+                    "zipball_url",
                     (input.ZipballUrl
                      |> (fun field ->
                          match field with
@@ -13935,7 +14256,7 @@ module RepoCollaboratorPermissionJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "roleName",
+                    "role_name",
                     (input.RoleName
                      |> (fun field ->
                          match field with
@@ -14115,7 +14436,7 @@ module RepositoryJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "allowMergeCommits",
+                    "allow_merge_commits",
                     (input.AllowMergeCommits
                      |> (fun field ->
                          match field with
@@ -14126,7 +14447,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowRebase",
+                    "allow_rebase",
                     (input.AllowRebase
                      |> (fun field ->
                          match field with
@@ -14137,7 +14458,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowRebaseExplicit",
+                    "allow_rebase_explicit",
                     (input.AllowRebaseExplicit
                      |> (fun field ->
                          match field with
@@ -14148,7 +14469,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowRebaseUpdate",
+                    "allow_rebase_update",
                     (input.AllowRebaseUpdate
                      |> (fun field ->
                          match field with
@@ -14159,7 +14480,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "allowSquashMerge",
+                    "allow_squash_merge",
                     (input.AllowSquashMerge
                      |> (fun field ->
                          match field with
@@ -14181,7 +14502,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "avatarUrl",
+                    "avatar_url",
                     (input.AvatarUrl
                      |> (fun field ->
                          match field with
@@ -14192,7 +14513,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "cloneUrl",
+                    "clone_url",
                     (input.CloneUrl
                      |> (fun field ->
                          match field with
@@ -14203,7 +14524,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -14214,7 +14535,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultAllowMaintainerEdit",
+                    "default_allow_maintainer_edit",
                     (input.DefaultAllowMaintainerEdit
                      |> (fun field ->
                          match field with
@@ -14225,7 +14546,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultBranch",
+                    "default_branch",
                     (input.DefaultBranch
                      |> (fun field ->
                          match field with
@@ -14236,7 +14557,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultDeleteBranchAfterMerge",
+                    "default_delete_branch_after_merge",
                     (input.DefaultDeleteBranchAfterMerge
                      |> (fun field ->
                          match field with
@@ -14247,8 +14568,19 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "defaultMergeStyle",
+                    "default_merge_style",
                     (input.DefaultMergeStyle
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "description",
+                    (input.Description
                      |> (fun field ->
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
@@ -14269,7 +14601,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "externalTracker",
+                    "external_tracker",
                     (input.ExternalTracker
                      |> (fun field ->
                          match field with
@@ -14279,7 +14611,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "externalWiki",
+                    "external_wiki",
                     (input.ExternalWiki
                      |> (fun field ->
                          match field with
@@ -14300,7 +14632,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "forksCount",
+                    "forks_count",
                     (input.ForksCount
                      |> (fun field ->
                          match field with
@@ -14311,7 +14643,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "fullName",
+                    "full_name",
                     (input.FullName
                      |> (fun field ->
                          match field with
@@ -14322,7 +14654,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hasIssues",
+                    "has_issues",
                     (input.HasIssues
                      |> (fun field ->
                          match field with
@@ -14333,7 +14665,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hasProjects",
+                    "has_projects",
                     (input.HasProjects
                      |> (fun field ->
                          match field with
@@ -14344,7 +14676,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hasPullRequests",
+                    "has_pull_requests",
                     (input.HasPullRequests
                      |> (fun field ->
                          match field with
@@ -14355,7 +14687,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "hasWiki",
+                    "has_wiki",
                     (input.HasWiki
                      |> (fun field ->
                          match field with
@@ -14366,7 +14698,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -14388,7 +14720,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "ignoreWhitespaceConflicts",
+                    "ignore_whitespace_conflicts",
                     (input.IgnoreWhitespaceConflicts
                      |> (fun field ->
                          match field with
@@ -14410,7 +14742,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "internalTracker",
+                    "internal_tracker",
                     (input.InternalTracker
                      |> (fun field ->
                          match field with
@@ -14431,7 +14763,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "languagesUrl",
+                    "languages_url",
                     (input.LanguagesUrl
                      |> (fun field ->
                          match field with
@@ -14464,7 +14796,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mirrorInterval",
+                    "mirror_interval",
                     (input.MirrorInterval
                      |> (fun field ->
                          match field with
@@ -14475,7 +14807,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mirrorUpdated",
+                    "mirror_updated",
                     (input.MirrorUpdated
                      |> (fun field ->
                          match field with
@@ -14497,7 +14829,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "openIssuesCount",
+                    "open_issues_count",
                     (input.OpenIssuesCount
                      |> (fun field ->
                          match field with
@@ -14508,7 +14840,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "openPrCounter",
+                    "open_pr_counter",
                     (input.OpenPrCounter
                      |> (fun field ->
                          match field with
@@ -14519,7 +14851,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "originalUrl",
+                    "original_url",
                     (input.OriginalUrl
                      |> (fun field ->
                          match field with
@@ -14539,7 +14871,15 @@ module RepositoryJsonSerializeExtension =
                      ))
                 )
 
-                node.Add ("parent", (input.Parent |> Repository.toJsonNode))
+                node.Add (
+                    "parent",
+                    (input.Parent
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field -> Repository.toJsonNode field
+                     ))
+                )
 
                 node.Add (
                     "permissions",
@@ -14563,7 +14903,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "releaseCounter",
+                    "release_counter",
                     (input.ReleaseCounter
                      |> (fun field ->
                          match field with
@@ -14574,7 +14914,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repoTransfer",
+                    "repo_transfer",
                     (input.RepoTransfer
                      |> (fun field ->
                          match field with
@@ -14595,7 +14935,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "sshUrl",
+                    "ssh_url",
                     (input.SshUrl
                      |> (fun field ->
                          match field with
@@ -14606,7 +14946,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "starsCount",
+                    "stars_count",
                     (input.StarsCount
                      |> (fun field ->
                          match field with
@@ -14628,7 +14968,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -14639,7 +14979,7 @@ module RepositoryJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "watchersCount",
+                    "watchers_count",
                     (input.WatchersCount
                      |> (fun field ->
                          match field with
@@ -14823,7 +15163,7 @@ module CombinedStatusJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "commitUrl",
+                    "commit_url",
                     (input.CommitUrl
                      |> (fun field ->
                          match field with
@@ -14886,7 +15226,7 @@ module CombinedStatusJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "totalCount",
+                    "total_count",
                     (input.TotalCount
                      |> (fun field ->
                          match field with
@@ -14988,7 +15328,7 @@ module CommitJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -15070,7 +15410,7 @@ module DeployKeyJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -15114,7 +15454,7 @@ module DeployKeyJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "keyId",
+                    "key_id",
                     (input.KeyId
                      |> (fun field ->
                          match field with
@@ -15125,7 +15465,7 @@ module DeployKeyJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "readOnly",
+                    "read_only",
                     (input.ReadOnly
                      |> (fun field ->
                          match field with
@@ -15348,7 +15688,7 @@ module IssueJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "closedAt",
+                    "closed_at",
                     (input.ClosedAt
                      |> (fun field ->
                          match field with
@@ -15370,7 +15710,7 @@ module IssueJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -15381,7 +15721,7 @@ module IssueJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dueDate",
+                    "due_date",
                     (input.DueDate
                      |> (fun field ->
                          match field with
@@ -15392,7 +15732,7 @@ module IssueJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -15414,7 +15754,7 @@ module IssueJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "isLocked",
+                    "is_locked",
                     (input.IsLocked
                      |> (fun field ->
                          match field with
@@ -15466,7 +15806,7 @@ module IssueJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "originalAuthor",
+                    "original_author",
                     (input.OriginalAuthor
                      |> (fun field ->
                          match field with
@@ -15477,7 +15817,7 @@ module IssueJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "originalAuthorId",
+                    "original_author_id",
                     (input.OriginalAuthorId
                      |> (fun field ->
                          match field with
@@ -15488,7 +15828,7 @@ module IssueJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pullRequest",
+                    "pull_request",
                     (input.PullRequest
                      |> (fun field ->
                          match field with
@@ -15541,7 +15881,7 @@ module IssueJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -15786,7 +16126,7 @@ module NotificationThreadJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -15859,7 +16199,7 @@ module PRBranchInfoJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "repoId",
+                    "repo_id",
                     (input.RepoId
                      |> (fun field ->
                          match field with
@@ -15900,7 +16240,7 @@ module PackageJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -15959,6 +16299,17 @@ module PackageJsonSerializeExtension =
                          match field with
                          | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Repository.toJsonNode field
+                     ))
+                )
+
+                node.Add (
+                    "type",
+                    (input.Type
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -16146,7 +16497,7 @@ module PullRequestJsonSerializeExtension =
                     node.Add (key, id value)
 
                 node.Add (
-                    "allowMaintainerEdit",
+                    "allow_maintainer_edit",
                     (input.AllowMaintainerEdit
                      |> (fun field ->
                          match field with
@@ -16208,7 +16559,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "closedAt",
+                    "closed_at",
                     (input.ClosedAt
                      |> (fun field ->
                          match field with
@@ -16230,7 +16581,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -16241,7 +16592,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "diffUrl",
+                    "diff_url",
                     (input.DiffUrl
                      |> (fun field ->
                          match field with
@@ -16252,7 +16603,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dueDate",
+                    "due_date",
                     (input.DueDate
                      |> (fun field ->
                          match field with
@@ -16273,7 +16624,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -16295,7 +16646,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "isLocked",
+                    "is_locked",
                     (input.IsLocked
                      |> (fun field ->
                          match field with
@@ -16326,7 +16677,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeBase",
+                    "merge_base",
                     (input.MergeBase
                      |> (fun field ->
                          match field with
@@ -16337,7 +16688,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergeCommitSha",
+                    "merge_commit_sha",
                     (input.MergeCommitSha
                      |> (fun field ->
                          match field with
@@ -16370,7 +16721,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergedAt",
+                    "merged_at",
                     (input.MergedAt
                      |> (fun field ->
                          match field with
@@ -16381,7 +16732,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "mergedBy",
+                    "merged_by",
                     (input.MergedBy
                      |> (fun field ->
                          match field with
@@ -16412,7 +16763,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "patchUrl",
+                    "patch_url",
                     (input.PatchUrl
                      |> (fun field ->
                          match field with
@@ -16445,7 +16796,7 @@ module PullRequestJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -16528,7 +16879,7 @@ module TrackedTimeJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "issueId",
+                    "issue_id",
                     (input.IssueId
                      |> (fun field ->
                          match field with
@@ -16550,7 +16901,7 @@ module TrackedTimeJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "userId",
+                    "user_id",
                     (input.UserId
                      |> (fun field ->
                          match field with
@@ -16561,7 +16912,7 @@ module TrackedTimeJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "userName",
+                    "user_name",
                     (input.UserName
                      |> (fun field ->
                          match field with
@@ -16601,7 +16952,7 @@ module BranchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "effectiveBranchProtectionName",
+                    "effective_branch_protection_name",
                     (input.EffectiveBranchProtectionName
                      |> (fun field ->
                          match field with
@@ -16612,7 +16963,7 @@ module BranchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "enableStatusCheck",
+                    "enable_status_check",
                     (input.EnableStatusCheck
                      |> (fun field ->
                          match field with
@@ -16645,7 +16996,7 @@ module BranchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "requiredApprovals",
+                    "required_approvals",
                     (input.RequiredApprovals
                      |> (fun field ->
                          match field with
@@ -16656,7 +17007,7 @@ module BranchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "statusCheckContexts",
+                    "status_check_contexts",
                     (input.StatusCheckContexts
                      |> (fun field ->
                          match field with
@@ -16676,7 +17027,7 @@ module BranchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "userCanMerge",
+                    "user_can_merge",
                     (input.UserCanMerge
                      |> (fun field ->
                          match field with
@@ -16687,7 +17038,7 @@ module BranchJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "userCanPush",
+                    "user_can_push",
                     (input.UserCanPush
                      |> (fun field ->
                          match field with
@@ -16727,7 +17078,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "assigneeTeam",
+                    "assignee_team",
                     (input.AssigneeTeam
                      |> (fun field ->
                          match field with
@@ -16748,7 +17099,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "createdAt",
+                    "created_at",
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
@@ -16759,7 +17110,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "dependentIssue",
+                    "dependent_issue",
                     (input.DependentIssue
                      |> (fun field ->
                          match field with
@@ -16769,7 +17120,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "htmlUrl",
+                    "html_url",
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
@@ -16791,7 +17142,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "issueUrl",
+                    "issue_url",
                     (input.IssueUrl
                      |> (fun field ->
                          match field with
@@ -16822,7 +17173,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "newRef",
+                    "new_ref",
                     (input.NewRef
                      |> (fun field ->
                          match field with
@@ -16833,7 +17184,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "newTitle",
+                    "new_title",
                     (input.NewTitle
                      |> (fun field ->
                          match field with
@@ -16844,7 +17195,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "oldMilestone",
+                    "old_milestone",
                     (input.OldMilestone
                      |> (fun field ->
                          match field with
@@ -16854,7 +17205,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "oldProjectId",
+                    "old_project_id",
                     (input.OldProjectId
                      |> (fun field ->
                          match field with
@@ -16865,7 +17216,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "oldRef",
+                    "old_ref",
                     (input.OldRef
                      |> (fun field ->
                          match field with
@@ -16876,7 +17227,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "oldTitle",
+                    "old_title",
                     (input.OldTitle
                      |> (fun field ->
                          match field with
@@ -16887,7 +17238,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "projectId",
+                    "project_id",
                     (input.ProjectId
                      |> (fun field ->
                          match field with
@@ -16898,7 +17249,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "pullRequestUrl",
+                    "pull_request_url",
                     (input.PullRequestUrl
                      |> (fun field ->
                          match field with
@@ -16909,7 +17260,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "refAction",
+                    "ref_action",
                     (input.RefAction
                      |> (fun field ->
                          match field with
@@ -16920,7 +17271,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "refComment",
+                    "ref_comment",
                     (input.RefComment
                      |> (fun field ->
                          match field with
@@ -16930,7 +17281,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "refCommitSha",
+                    "ref_commit_sha",
                     (input.RefCommitSha
                      |> (fun field ->
                          match field with
@@ -16941,7 +17292,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "refIssue",
+                    "ref_issue",
                     (input.RefIssue
                      |> (fun field ->
                          match field with
@@ -16951,7 +17302,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "removedAssignee",
+                    "removed_assignee",
                     (input.RemovedAssignee
                      |> (fun field ->
                          match field with
@@ -16962,7 +17313,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "resolveDoer",
+                    "resolve_doer",
                     (input.ResolveDoer
                      |> (fun field ->
                          match field with
@@ -16972,7 +17323,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "reviewId",
+                    "review_id",
                     (input.ReviewId
                      |> (fun field ->
                          match field with
@@ -16983,7 +17334,7 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "trackedTime",
+                    "tracked_time",
                     (input.TrackedTime
                      |> (fun field ->
                          match field with
@@ -16993,7 +17344,18 @@ module TimelineCommentJsonSerializeExtension =
                 )
 
                 node.Add (
-                    "updatedAt",
+                    "type",
+                    (input.Type
+                     |> (fun field ->
+                         match field with
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
+                     ))
+                )
+
+                node.Add (
+                    "updated_at",
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
@@ -17084,7 +17446,7 @@ module AccessTokenJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : AccessToken =
             let arg_5 =
-                match node.["tokenLastEight"] with
+                match node.["token_last_eight"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -17124,7 +17486,7 @@ module AccessTokenJsonParseExtension =
                         || key = "name"
                         || key = "scopes"
                         || key = "sha1"
-                        || key = "tokenLastEight"
+                        || key = "token_last_eight"
                     then
                         ()
                     else
@@ -17151,7 +17513,7 @@ module ActivityPubJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ActivityPub =
             let arg_1 =
-                match node.["context"] with
+                match node.["@context"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -17162,7 +17524,10 @@ module ActivityPubJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "context" then () else result.Add (key, node.[key])
+                    if key = "@context" then
+                        ()
+                    else
+                        result.Add (key, node.[key])
 
                 result
 
@@ -17214,7 +17579,7 @@ module AddTimeOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : AddTimeOption =
             let arg_3 =
-                match node.["userName"] with
+                match node.["user_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -17242,7 +17607,7 @@ module AddTimeOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "created" || key = "time" || key = "userName" then
+                    if key = "created" || key = "time" || key = "user_name" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -17265,8 +17630,13 @@ module AnnotatedTagObjectJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : AnnotatedTagObject =
-            let arg_2 =
+            let arg_3 =
                 match node.["url"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
+            let arg_2 =
+                match node.["type"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -17282,7 +17652,7 @@ module AnnotatedTagObjectJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "sha" || key = "url" then
+                    if key = "sha" || key = "type" || key = "url" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -17292,7 +17662,8 @@ module AnnotatedTagObjectJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 Sha = arg_1
-                Url = arg_2
+                Type = arg_2
+                Url = arg_3
             }
 namespace Gitea
 
@@ -17325,17 +17696,17 @@ module AttachmentJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_3 =
-                match node.["downloadCount"] with
+                match node.["download_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_2 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["browserDownloadUrl"] with
+                match node.["browser_download_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -17347,9 +17718,9 @@ module AttachmentJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "browserDownloadUrl"
-                        || key = "createdAt"
-                        || key = "downloadCount"
+                        key = "browser_download_url"
+                        || key = "created_at"
+                        || key = "download_count"
                         || key = "id"
                         || key = "name"
                         || key = "size"
@@ -17382,17 +17753,17 @@ module BranchProtectionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : BranchProtection =
             let arg_25 =
-                match node.["updatedAt"] with
+                match node.["updated_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_24 =
-                match node.["unprotectedFilePatterns"] with
+                match node.["unprotected_file_patterns"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_23 =
-                match node.["statusCheckContexts"] with
+                match node.["status_check_contexts"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -17401,22 +17772,22 @@ module BranchProtectionJsonParseExtension =
                     |> Some
 
             let arg_22 =
-                match node.["ruleName"] with
+                match node.["rule_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_21 =
-                match node.["requiredApprovals"] with
+                match node.["required_approvals"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_20 =
-                match node.["requireSignedCommits"] with
+                match node.["require_signed_commits"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_19 =
-                match node.["pushWhitelistUsernames"] with
+                match node.["push_whitelist_usernames"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -17425,7 +17796,7 @@ module BranchProtectionJsonParseExtension =
                     |> Some
 
             let arg_18 =
-                match node.["pushWhitelistTeams"] with
+                match node.["push_whitelist_teams"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -17434,17 +17805,17 @@ module BranchProtectionJsonParseExtension =
                     |> Some
 
             let arg_17 =
-                match node.["pushWhitelistDeployKeys"] with
+                match node.["push_whitelist_deploy_keys"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_16 =
-                match node.["protectedFilePatterns"] with
+                match node.["protected_file_patterns"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_15 =
-                match node.["mergeWhitelistUsernames"] with
+                match node.["merge_whitelist_usernames"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -17453,7 +17824,7 @@ module BranchProtectionJsonParseExtension =
                     |> Some
 
             let arg_14 =
-                match node.["mergeWhitelistTeams"] with
+                match node.["merge_whitelist_teams"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -17462,62 +17833,62 @@ module BranchProtectionJsonParseExtension =
                     |> Some
 
             let arg_13 =
-                match node.["enableStatusCheck"] with
+                match node.["enable_status_check"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_12 =
-                match node.["enablePushWhitelist"] with
+                match node.["enable_push_whitelist"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_11 =
-                match node.["enablePush"] with
+                match node.["enable_push"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_10 =
-                match node.["enableMergeWhitelist"] with
+                match node.["enable_merge_whitelist"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_9 =
-                match node.["enableApprovalsWhitelist"] with
+                match node.["enable_approvals_whitelist"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_8 =
-                match node.["dismissStaleApprovals"] with
+                match node.["dismiss_stale_approvals"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_7 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["branchName"] with
+                match node.["branch_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["blockOnRejectedReviews"] with
+                match node.["block_on_rejected_reviews"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["blockOnOutdatedBranch"] with
+                match node.["block_on_outdated_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["blockOnOfficialReviewRequests"] with
+                match node.["block_on_official_review_requests"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["approvalsWhitelistUsername"] with
+                match node.["approvals_whitelist_username"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -17526,7 +17897,7 @@ module BranchProtectionJsonParseExtension =
                     |> Some
 
             let arg_1 =
-                match node.["approvalsWhitelistTeams"] with
+                match node.["approvals_whitelist_teams"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -17542,31 +17913,31 @@ module BranchProtectionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "approvalsWhitelistTeams"
-                        || key = "approvalsWhitelistUsername"
-                        || key = "blockOnOfficialReviewRequests"
-                        || key = "blockOnOutdatedBranch"
-                        || key = "blockOnRejectedReviews"
-                        || key = "branchName"
-                        || key = "createdAt"
-                        || key = "dismissStaleApprovals"
-                        || key = "enableApprovalsWhitelist"
-                        || key = "enableMergeWhitelist"
-                        || key = "enablePush"
-                        || key = "enablePushWhitelist"
-                        || key = "enableStatusCheck"
-                        || key = "mergeWhitelistTeams"
-                        || key = "mergeWhitelistUsernames"
-                        || key = "protectedFilePatterns"
-                        || key = "pushWhitelistDeployKeys"
-                        || key = "pushWhitelistTeams"
-                        || key = "pushWhitelistUsernames"
-                        || key = "requireSignedCommits"
-                        || key = "requiredApprovals"
-                        || key = "ruleName"
-                        || key = "statusCheckContexts"
-                        || key = "unprotectedFilePatterns"
-                        || key = "updatedAt"
+                        key = "approvals_whitelist_teams"
+                        || key = "approvals_whitelist_username"
+                        || key = "block_on_official_review_requests"
+                        || key = "block_on_outdated_branch"
+                        || key = "block_on_rejected_reviews"
+                        || key = "branch_name"
+                        || key = "created_at"
+                        || key = "dismiss_stale_approvals"
+                        || key = "enable_approvals_whitelist"
+                        || key = "enable_merge_whitelist"
+                        || key = "enable_push"
+                        || key = "enable_push_whitelist"
+                        || key = "enable_status_check"
+                        || key = "merge_whitelist_teams"
+                        || key = "merge_whitelist_usernames"
+                        || key = "protected_file_patterns"
+                        || key = "push_whitelist_deploy_keys"
+                        || key = "push_whitelist_teams"
+                        || key = "push_whitelist_usernames"
+                        || key = "require_signed_commits"
+                        || key = "required_approvals"
+                        || key = "rule_name"
+                        || key = "status_check_contexts"
+                        || key = "unprotected_file_patterns"
+                        || key = "updated_at"
                     then
                         ()
                     else
@@ -17618,17 +17989,17 @@ module ChangedFileJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_8 =
-                match node.["rawUrl"] with
+                match node.["raw_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_7 =
-                match node.["previousFilename"] with
+                match node.["previous_filename"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -17643,7 +18014,7 @@ module ChangedFileJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_3 =
-                match node.["contentsUrl"] with
+                match node.["contents_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -17667,12 +18038,12 @@ module ChangedFileJsonParseExtension =
                     if
                         key = "additions"
                         || key = "changes"
-                        || key = "contentsUrl"
+                        || key = "contents_url"
                         || key = "deletions"
                         || key = "filename"
-                        || key = "htmlUrl"
-                        || key = "previousFilename"
-                        || key = "rawUrl"
+                        || key = "html_url"
+                        || key = "previous_filename"
+                        || key = "raw_url"
                         || key = "status"
                     then
                         ()
@@ -17961,12 +18332,12 @@ module CreateBranchProtectionOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateBranchProtectionOption =
             let arg_23 =
-                match node.["unprotectedFilePatterns"] with
+                match node.["unprotected_file_patterns"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_22 =
-                match node.["statusCheckContexts"] with
+                match node.["status_check_contexts"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -17975,22 +18346,22 @@ module CreateBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_21 =
-                match node.["ruleName"] with
+                match node.["rule_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_20 =
-                match node.["requiredApprovals"] with
+                match node.["required_approvals"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_19 =
-                match node.["requireSignedCommits"] with
+                match node.["require_signed_commits"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_18 =
-                match node.["pushWhitelistUsernames"] with
+                match node.["push_whitelist_usernames"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -17999,7 +18370,7 @@ module CreateBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_17 =
-                match node.["pushWhitelistTeams"] with
+                match node.["push_whitelist_teams"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -18008,17 +18379,17 @@ module CreateBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_16 =
-                match node.["pushWhitelistDeployKeys"] with
+                match node.["push_whitelist_deploy_keys"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_15 =
-                match node.["protectedFilePatterns"] with
+                match node.["protected_file_patterns"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_14 =
-                match node.["mergeWhitelistUsernames"] with
+                match node.["merge_whitelist_usernames"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -18027,7 +18398,7 @@ module CreateBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_13 =
-                match node.["mergeWhitelistTeams"] with
+                match node.["merge_whitelist_teams"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -18036,57 +18407,57 @@ module CreateBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_12 =
-                match node.["enableStatusCheck"] with
+                match node.["enable_status_check"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_11 =
-                match node.["enablePushWhitelist"] with
+                match node.["enable_push_whitelist"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_10 =
-                match node.["enablePush"] with
+                match node.["enable_push"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_9 =
-                match node.["enableMergeWhitelist"] with
+                match node.["enable_merge_whitelist"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_8 =
-                match node.["enableApprovalsWhitelist"] with
+                match node.["enable_approvals_whitelist"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_7 =
-                match node.["dismissStaleApprovals"] with
+                match node.["dismiss_stale_approvals"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_6 =
-                match node.["branchName"] with
+                match node.["branch_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["blockOnRejectedReviews"] with
+                match node.["block_on_rejected_reviews"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["blockOnOutdatedBranch"] with
+                match node.["block_on_outdated_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["blockOnOfficialReviewRequests"] with
+                match node.["block_on_official_review_requests"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["approvalsWhitelistUsername"] with
+                match node.["approvals_whitelist_username"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -18095,7 +18466,7 @@ module CreateBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_1 =
-                match node.["approvalsWhitelistTeams"] with
+                match node.["approvals_whitelist_teams"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -18111,29 +18482,29 @@ module CreateBranchProtectionOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "approvalsWhitelistTeams"
-                        || key = "approvalsWhitelistUsername"
-                        || key = "blockOnOfficialReviewRequests"
-                        || key = "blockOnOutdatedBranch"
-                        || key = "blockOnRejectedReviews"
-                        || key = "branchName"
-                        || key = "dismissStaleApprovals"
-                        || key = "enableApprovalsWhitelist"
-                        || key = "enableMergeWhitelist"
-                        || key = "enablePush"
-                        || key = "enablePushWhitelist"
-                        || key = "enableStatusCheck"
-                        || key = "mergeWhitelistTeams"
-                        || key = "mergeWhitelistUsernames"
-                        || key = "protectedFilePatterns"
-                        || key = "pushWhitelistDeployKeys"
-                        || key = "pushWhitelistTeams"
-                        || key = "pushWhitelistUsernames"
-                        || key = "requireSignedCommits"
-                        || key = "requiredApprovals"
-                        || key = "ruleName"
-                        || key = "statusCheckContexts"
-                        || key = "unprotectedFilePatterns"
+                        key = "approvals_whitelist_teams"
+                        || key = "approvals_whitelist_username"
+                        || key = "block_on_official_review_requests"
+                        || key = "block_on_outdated_branch"
+                        || key = "block_on_rejected_reviews"
+                        || key = "branch_name"
+                        || key = "dismiss_stale_approvals"
+                        || key = "enable_approvals_whitelist"
+                        || key = "enable_merge_whitelist"
+                        || key = "enable_push"
+                        || key = "enable_push_whitelist"
+                        || key = "enable_status_check"
+                        || key = "merge_whitelist_teams"
+                        || key = "merge_whitelist_usernames"
+                        || key = "protected_file_patterns"
+                        || key = "push_whitelist_deploy_keys"
+                        || key = "push_whitelist_teams"
+                        || key = "push_whitelist_usernames"
+                        || key = "require_signed_commits"
+                        || key = "required_approvals"
+                        || key = "rule_name"
+                        || key = "status_check_contexts"
+                        || key = "unprotected_file_patterns"
                     then
                         ()
                     else
@@ -18178,16 +18549,16 @@ module CreateBranchRepoOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateBranchRepoOption =
             let arg_2 =
-                match node.["oldBranchName"] with
+                match node.["old_branch_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                (match node.["newBranchName"] with
+                (match node.["new_branch_name"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("newBranchName")
+                             sprintf "Required key '%s' not found on JSON object" ("new_branch_name")
                          )
                      )
                  | v -> v)
@@ -18201,7 +18572,7 @@ module CreateBranchRepoOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "newBranchName" || key = "oldBranchName" then
+                    if key = "new_branch_name" || key = "old_branch_name" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -18297,16 +18668,16 @@ module CreateGPGKeyOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateGPGKeyOption =
             let arg_2 =
-                match node.["armoredSignature"] with
+                match node.["armored_signature"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                (match node.["armoredPublicKey"] with
+                (match node.["armored_public_key"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("armoredPublicKey")
+                             sprintf "Required key '%s' not found on JSON object" ("armored_public_key")
                          )
                      )
                  | v -> v)
@@ -18320,7 +18691,7 @@ module CreateGPGKeyOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "armoredPublicKey" || key = "armoredSignature" then
+                    if key = "armored_public_key" || key = "armored_signature" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -18448,7 +18819,7 @@ module CreateIssueOptionJsonParseExtension =
                     |> Some
 
             let arg_5 =
-                match node.["dueDate"] with
+                match node.["due_date"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -18488,7 +18859,7 @@ module CreateIssueOptionJsonParseExtension =
                         || key = "assignees"
                         || key = "body"
                         || key = "closed"
-                        || key = "dueDate"
+                        || key = "due_date"
                         || key = "labels"
                         || key = "milestone"
                         || key = "ref"
@@ -18535,7 +18906,7 @@ module CreateKeyOptionJsonParseExtension =
                     .GetValue<System.String> ()
 
             let arg_2 =
-                match node.["readOnly"] with
+                match node.["read_only"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -18558,7 +18929,7 @@ module CreateKeyOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "key" || key = "readOnly" || key = "title" then
+                    if key = "key" || key = "read_only" || key = "title" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -18581,7 +18952,7 @@ module CreateLabelOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateLabelOption =
-            let arg_3 =
+            let arg_4 =
                 (match node.["name"] with
                  | null ->
                      raise (
@@ -18593,10 +18964,15 @@ module CreateLabelOptionJsonParseExtension =
                     .AsValue()
                     .GetValue<System.String> ()
 
-            let arg_2 =
+            let arg_3 =
                 match node.["exclusive"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
+            let arg_2 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
                 (match node.["color"] with
@@ -18617,7 +18993,7 @@ module CreateLabelOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "color" || key = "exclusive" || key = "name" then
+                    if key = "color" || key = "description" || key = "exclusive" || key = "name" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -18627,8 +19003,9 @@ module CreateLabelOptionJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 Color = arg_1
-                Exclusive = arg_2
-                Name = arg_3
+                Description = arg_2
+                Exclusive = arg_3
+                Name = arg_4
             }
 namespace Gitea
 
@@ -18640,18 +19017,23 @@ module CreateMilestoneOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateMilestoneOption =
-            let arg_3 =
+            let arg_4 =
                 match node.["title"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_2 =
+            let arg_3 =
                 match node.["state"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_2 =
+                match node.["due_on"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_1 =
-                match node.["dueOn"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -18662,7 +19044,7 @@ module CreateMilestoneOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "dueOn" || key = "state" || key = "title" then
+                    if key = "description" || key = "due_on" || key = "state" || key = "title" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -18671,9 +19053,10 @@ module CreateMilestoneOptionJsonParseExtension =
 
             {
                 AdditionalProperties = arg_0
-                DueOn = arg_1
-                State = arg_2
-                Title = arg_3
+                Description = arg_1
+                DueOn = arg_2
+                State = arg_3
+                Title = arg_4
             }
 namespace Gitea
 
@@ -18686,7 +19069,7 @@ module CreateOAuth2ApplicationOptionsJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateOAuth2ApplicationOptions =
             let arg_3 =
-                match node.["redirectUris"] with
+                match node.["redirect_uris"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -18700,7 +19083,7 @@ module CreateOAuth2ApplicationOptionsJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["confidentialClient"] with
+                match node.["confidential_client"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -18711,7 +19094,7 @@ module CreateOAuth2ApplicationOptionsJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "confidentialClient" || key = "name" || key = "redirectUris" then
+                    if key = "confidential_client" || key = "name" || key = "redirect_uris" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -18734,17 +19117,17 @@ module CreateOrgOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateOrgOption =
-            let arg_6 =
+            let arg_7 =
                 match node.["website"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_5 =
+            let arg_6 =
                 match node.["visibility"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_4 =
+            let arg_5 =
                 (match node.["username"] with
                  | null ->
                      raise (
@@ -18756,18 +19139,23 @@ module CreateOrgOptionJsonParseExtension =
                     .AsValue()
                     .GetValue<System.String> ()
 
-            let arg_3 =
-                match node.["repoAdminChangeTeamAccess"] with
+            let arg_4 =
+                match node.["repo_admin_change_team_access"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_2 =
+            let arg_3 =
                 match node.["location"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_2 =
+                match node.["full_name"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_1 =
-                match node.["fullName"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -18779,9 +19167,10 @@ module CreateOrgOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "fullName"
+                        key = "description"
+                        || key = "full_name"
                         || key = "location"
-                        || key = "repoAdminChangeTeamAccess"
+                        || key = "repo_admin_change_team_access"
                         || key = "username"
                         || key = "visibility"
                         || key = "website"
@@ -18794,12 +19183,13 @@ module CreateOrgOptionJsonParseExtension =
 
             {
                 AdditionalProperties = arg_0
-                FullName = arg_1
-                Location = arg_2
-                RepoAdminChangeTeamAccess = arg_3
-                Username = arg_4
-                Visibility = arg_5
-                Website = arg_6
+                Description = arg_1
+                FullName = arg_2
+                Location = arg_3
+                RepoAdminChangeTeamAccess = arg_4
+                Username = arg_5
+                Visibility = arg_6
+                Website = arg_7
             }
 namespace Gitea
 
@@ -18836,7 +19226,7 @@ module CreatePullRequestOptionJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["dueDate"] with
+                match node.["due_date"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -18876,7 +19266,7 @@ module CreatePullRequestOptionJsonParseExtension =
                         || key = "assignees"
                         || key = "base"
                         || key = "body"
-                        || key = "dueDate"
+                        || key = "due_date"
                         || key = "head"
                         || key = "labels"
                         || key = "milestone"
@@ -18916,12 +19306,12 @@ module CreatePullReviewCommentJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["oldPosition"] with
+                match node.["old_position"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_2 =
-                match node.["newPosition"] with
+                match node.["new_position"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -18937,7 +19327,7 @@ module CreatePullReviewCommentJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "body" || key = "newPosition" || key = "oldPosition" || key = "path" then
+                    if key = "body" || key = "new_position" || key = "old_position" || key = "path" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -18962,22 +19352,22 @@ module CreatePushMirrorOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreatePushMirrorOption =
             let arg_5 =
-                match node.["syncOnCommit"] with
+                match node.["sync_on_commit"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["remoteUsername"] with
+                match node.["remote_username"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["remotePassword"] with
+                match node.["remote_password"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["remoteAddress"] with
+                match node.["remote_address"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -18995,10 +19385,10 @@ module CreatePushMirrorOptionJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "interval"
-                        || key = "remoteAddress"
-                        || key = "remotePassword"
-                        || key = "remoteUsername"
-                        || key = "syncOnCommit"
+                        || key = "remote_address"
+                        || key = "remote_password"
+                        || key = "remote_username"
+                        || key = "sync_on_commit"
                     then
                         ()
                     else
@@ -19025,16 +19415,16 @@ module CreateReleaseOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateReleaseOption =
             let arg_6 =
-                match node.["targetCommitish"] with
+                match node.["target_commitish"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                (match node.["tagName"] with
+                (match node.["tag_name"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("tagName")
+                             sprintf "Required key '%s' not found on JSON object" ("tag_name")
                          )
                      )
                  | v -> v)
@@ -19073,8 +19463,8 @@ module CreateReleaseOptionJsonParseExtension =
                         || key = "draft"
                         || key = "name"
                         || key = "prerelease"
-                        || key = "tagName"
-                        || key = "targetCommitish"
+                        || key = "tag_name"
+                        || key = "target_commitish"
                     then
                         ()
                     else
@@ -19101,27 +19491,27 @@ module CreateRepoOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateRepoOption =
-            let arg_10 =
-                match node.["trustModel"] with
+            let arg_11 =
+                match node.["trust_model"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_9 =
+            let arg_10 =
                 match node.["template"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_8 =
+            let arg_9 =
                 match node.["readme"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_7 =
+            let arg_8 =
                 match node.["private"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_6 =
+            let arg_7 =
                 (match node.["name"] with
                  | null ->
                      raise (
@@ -19133,28 +19523,33 @@ module CreateRepoOptionJsonParseExtension =
                     .AsValue()
                     .GetValue<System.String> ()
 
-            let arg_5 =
+            let arg_6 =
                 match node.["license"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_4 =
-                match node.["issueLabels"] with
+            let arg_5 =
+                match node.["issue_labels"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_3 =
+            let arg_4 =
                 match node.["gitignores"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_3 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_2 =
-                match node.["defaultBranch"] with
+                match node.["default_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["autoInit"] with
+                match node.["auto_init"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -19166,16 +19561,17 @@ module CreateRepoOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "autoInit"
-                        || key = "defaultBranch"
+                        key = "auto_init"
+                        || key = "default_branch"
+                        || key = "description"
                         || key = "gitignores"
-                        || key = "issueLabels"
+                        || key = "issue_labels"
                         || key = "license"
                         || key = "name"
                         || key = "private"
                         || key = "readme"
                         || key = "template"
-                        || key = "trustModel"
+                        || key = "trust_model"
                     then
                         ()
                     else
@@ -19187,14 +19583,15 @@ module CreateRepoOptionJsonParseExtension =
                 AdditionalProperties = arg_0
                 AutoInit = arg_1
                 DefaultBranch = arg_2
-                Gitignores = arg_3
-                IssueLabels = arg_4
-                License = arg_5
-                Name = arg_6
-                Private = arg_7
-                Readme = arg_8
-                Template = arg_9
-                TrustModel = arg_10
+                Description = arg_3
+                Gitignores = arg_4
+                IssueLabels = arg_5
+                License = arg_6
+                Name = arg_7
+                Private = arg_8
+                Readme = arg_9
+                Template = arg_10
+                TrustModel = arg_11
             }
 namespace Gitea
 
@@ -19206,13 +19603,18 @@ module CreateStatusOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateStatusOption =
+            let arg_4 =
+                match node.["target_url"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_3 =
-                match node.["targetUrl"] with
+                match node.["state"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["state"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -19228,7 +19630,7 @@ module CreateStatusOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "context" || key = "state" || key = "targetUrl" then
+                    if key = "context" || key = "description" || key = "state" || key = "target_url" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -19238,8 +19640,9 @@ module CreateStatusOptionJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 Context = arg_1
-                State = arg_2
-                TargetUrl = arg_3
+                Description = arg_2
+                State = arg_3
+                TargetUrl = arg_4
             }
 namespace Gitea
 
@@ -19257,11 +19660,11 @@ module CreateTagOptionJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                (match node.["tagName"] with
+                (match node.["tag_name"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("tagName")
+                             sprintf "Required key '%s' not found on JSON object" ("tag_name")
                          )
                      )
                  | v -> v)
@@ -19280,7 +19683,7 @@ module CreateTagOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "message" || key = "tagName" || key = "target" then
+                    if key = "message" || key = "tag_name" || key = "target" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -19340,12 +19743,12 @@ module CreateTeamOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateTeamOption =
-            let arg_6 =
-                match node.["unitsMap"] with
+            let arg_7 =
+                match node.["units_map"] with
                 | null -> None
                 | v -> Type1.jsonParse v |> Some
 
-            let arg_5 =
+            let arg_6 =
                 match node.["units"] with
                 | null -> None
                 | v ->
@@ -19354,12 +19757,12 @@ module CreateTeamOptionJsonParseExtension =
                     |> List.ofSeq
                     |> Some
 
-            let arg_4 =
+            let arg_5 =
                 match node.["permission"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_3 =
+            let arg_4 =
                 (match node.["name"] with
                  | null ->
                      raise (
@@ -19371,13 +19774,18 @@ module CreateTeamOptionJsonParseExtension =
                     .AsValue()
                     .GetValue<System.String> ()
 
-            let arg_2 =
-                match node.["includesAllRepositories"] with
+            let arg_3 =
+                match node.["includes_all_repositories"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
+            let arg_2 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_1 =
-                match node.["canCreateOrgRepo"] with
+                match node.["can_create_org_repo"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -19389,12 +19797,13 @@ module CreateTeamOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "canCreateOrgRepo"
-                        || key = "includesAllRepositories"
+                        key = "can_create_org_repo"
+                        || key = "description"
+                        || key = "includes_all_repositories"
                         || key = "name"
                         || key = "permission"
                         || key = "units"
-                        || key = "unitsMap"
+                        || key = "units_map"
                     then
                         ()
                     else
@@ -19405,11 +19814,12 @@ module CreateTeamOptionJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 CanCreateOrgRepo = arg_1
-                IncludesAllRepositories = arg_2
-                Name = arg_3
-                Permission = arg_4
-                Units = arg_5
-                UnitsMap = arg_6
+                Description = arg_2
+                IncludesAllRepositories = arg_3
+                Name = arg_4
+                Permission = arg_5
+                Units = arg_6
+                UnitsMap = arg_7
             }
 namespace Gitea
 
@@ -19439,12 +19849,12 @@ module CreateUserOptionJsonParseExtension =
                     .GetValue<System.String> ()
 
             let arg_9 =
-                match node.["sourceId"] with
+                match node.["source_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_8 =
-                match node.["sendNotify"] with
+                match node.["send_notify"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -19466,17 +19876,17 @@ module CreateUserOptionJsonParseExtension =
                     .GetValue<System.String> ()
 
             let arg_5 =
-                match node.["mustChangePassword"] with
+                match node.["must_change_password"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["loginName"] with
+                match node.["login_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["fullName"] with
+                match node.["full_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -19493,7 +19903,7 @@ module CreateUserOptionJsonParseExtension =
                     .GetValue<System.String> ()
 
             let arg_1 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -19505,15 +19915,15 @@ module CreateUserOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "createdAt"
+                        key = "created_at"
                         || key = "email"
-                        || key = "fullName"
-                        || key = "loginName"
-                        || key = "mustChangePassword"
+                        || key = "full_name"
+                        || key = "login_name"
+                        || key = "must_change_password"
                         || key = "password"
                         || key = "restricted"
-                        || key = "sendNotify"
-                        || key = "sourceId"
+                        || key = "send_notify"
+                        || key = "source_id"
                         || key = "username"
                         || key = "visibility"
                     then
@@ -19558,7 +19968,7 @@ module CreateWikiPageOptionsJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["contentBase64"] with
+                match node.["content_base64"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -19569,7 +19979,7 @@ module CreateWikiPageOptionsJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "contentBase64" || key = "message" || key = "title" then
+                    if key = "content_base64" || key = "message" || key = "title" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -19613,7 +20023,7 @@ module CronJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["execTimes"] with
+                match node.["exec_times"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -19625,7 +20035,7 @@ module CronJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "execTimes"
+                        key = "exec_times"
                         || key = "name"
                         || key = "next"
                         || key = "prev"
@@ -19759,12 +20169,12 @@ module EditBranchProtectionOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditBranchProtectionOption =
             let arg_21 =
-                match node.["unprotectedFilePatterns"] with
+                match node.["unprotected_file_patterns"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_20 =
-                match node.["statusCheckContexts"] with
+                match node.["status_check_contexts"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -19773,17 +20183,17 @@ module EditBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_19 =
-                match node.["requiredApprovals"] with
+                match node.["required_approvals"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_18 =
-                match node.["requireSignedCommits"] with
+                match node.["require_signed_commits"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_17 =
-                match node.["pushWhitelistUsernames"] with
+                match node.["push_whitelist_usernames"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -19792,7 +20202,7 @@ module EditBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_16 =
-                match node.["pushWhitelistTeams"] with
+                match node.["push_whitelist_teams"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -19801,17 +20211,17 @@ module EditBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_15 =
-                match node.["pushWhitelistDeployKeys"] with
+                match node.["push_whitelist_deploy_keys"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_14 =
-                match node.["protectedFilePatterns"] with
+                match node.["protected_file_patterns"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_13 =
-                match node.["mergeWhitelistUsernames"] with
+                match node.["merge_whitelist_usernames"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -19820,7 +20230,7 @@ module EditBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_12 =
-                match node.["mergeWhitelistTeams"] with
+                match node.["merge_whitelist_teams"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -19829,52 +20239,52 @@ module EditBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_11 =
-                match node.["enableStatusCheck"] with
+                match node.["enable_status_check"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_10 =
-                match node.["enablePushWhitelist"] with
+                match node.["enable_push_whitelist"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_9 =
-                match node.["enablePush"] with
+                match node.["enable_push"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_8 =
-                match node.["enableMergeWhitelist"] with
+                match node.["enable_merge_whitelist"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_7 =
-                match node.["enableApprovalsWhitelist"] with
+                match node.["enable_approvals_whitelist"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_6 =
-                match node.["dismissStaleApprovals"] with
+                match node.["dismiss_stale_approvals"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_5 =
-                match node.["blockOnRejectedReviews"] with
+                match node.["block_on_rejected_reviews"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["blockOnOutdatedBranch"] with
+                match node.["block_on_outdated_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["blockOnOfficialReviewRequests"] with
+                match node.["block_on_official_review_requests"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["approvalsWhitelistUsername"] with
+                match node.["approvals_whitelist_username"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -19883,7 +20293,7 @@ module EditBranchProtectionOptionJsonParseExtension =
                     |> Some
 
             let arg_1 =
-                match node.["approvalsWhitelistTeams"] with
+                match node.["approvals_whitelist_teams"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -19899,27 +20309,27 @@ module EditBranchProtectionOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "approvalsWhitelistTeams"
-                        || key = "approvalsWhitelistUsername"
-                        || key = "blockOnOfficialReviewRequests"
-                        || key = "blockOnOutdatedBranch"
-                        || key = "blockOnRejectedReviews"
-                        || key = "dismissStaleApprovals"
-                        || key = "enableApprovalsWhitelist"
-                        || key = "enableMergeWhitelist"
-                        || key = "enablePush"
-                        || key = "enablePushWhitelist"
-                        || key = "enableStatusCheck"
-                        || key = "mergeWhitelistTeams"
-                        || key = "mergeWhitelistUsernames"
-                        || key = "protectedFilePatterns"
-                        || key = "pushWhitelistDeployKeys"
-                        || key = "pushWhitelistTeams"
-                        || key = "pushWhitelistUsernames"
-                        || key = "requireSignedCommits"
-                        || key = "requiredApprovals"
-                        || key = "statusCheckContexts"
-                        || key = "unprotectedFilePatterns"
+                        key = "approvals_whitelist_teams"
+                        || key = "approvals_whitelist_username"
+                        || key = "block_on_official_review_requests"
+                        || key = "block_on_outdated_branch"
+                        || key = "block_on_rejected_reviews"
+                        || key = "dismiss_stale_approvals"
+                        || key = "enable_approvals_whitelist"
+                        || key = "enable_merge_whitelist"
+                        || key = "enable_push"
+                        || key = "enable_push_whitelist"
+                        || key = "enable_status_check"
+                        || key = "merge_whitelist_teams"
+                        || key = "merge_whitelist_usernames"
+                        || key = "protected_file_patterns"
+                        || key = "push_whitelist_deploy_keys"
+                        || key = "push_whitelist_teams"
+                        || key = "push_whitelist_usernames"
+                        || key = "require_signed_commits"
+                        || key = "required_approvals"
+                        || key = "status_check_contexts"
+                        || key = "unprotected_file_patterns"
                     then
                         ()
                     else
@@ -19962,11 +20372,11 @@ module EditDeadlineOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditDeadlineOption =
             let arg_1 =
-                (match node.["dueDate"] with
+                (match node.["due_date"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("dueDate")
+                             sprintf "Required key '%s' not found on JSON object" ("due_date")
                          )
                      )
                  | v -> v)
@@ -19980,7 +20390,10 @@ module EditDeadlineOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "dueDate" then () else result.Add (key, node.[key])
+                    if key = "due_date" then
+                        ()
+                    else
+                        result.Add (key, node.[key])
 
                 result
 
@@ -20080,12 +20493,12 @@ module EditHookOptionJsonParseExtension =
                 | v -> Type2.jsonParse v |> Some
 
             let arg_3 =
-                match node.["branchFilter"] with
+                match node.["branch_filter"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["authorizationHeader"] with
+                match node.["authorization_header"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -20103,8 +20516,8 @@ module EditHookOptionJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "active"
-                        || key = "authorizationHeader"
-                        || key = "branchFilter"
+                        || key = "authorization_header"
+                        || key = "branch_filter"
                         || key = "config"
                         || key = "events"
                     then
@@ -20170,7 +20583,7 @@ module EditIssueOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditIssueOption =
             let arg_9 =
-                match node.["unsetDueDate"] with
+                match node.["unset_due_date"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -20195,7 +20608,7 @@ module EditIssueOptionJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_4 =
-                match node.["dueDate"] with
+                match node.["due_date"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -20229,12 +20642,12 @@ module EditIssueOptionJsonParseExtension =
                         key = "assignee"
                         || key = "assignees"
                         || key = "body"
-                        || key = "dueDate"
+                        || key = "due_date"
                         || key = "milestone"
                         || key = "ref"
                         || key = "state"
                         || key = "title"
-                        || key = "unsetDueDate"
+                        || key = "unset_due_date"
                     then
                         ()
                     else
@@ -20264,15 +20677,20 @@ module EditLabelOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditLabelOption =
-            let arg_3 =
+            let arg_4 =
                 match node.["name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_2 =
+            let arg_3 =
                 match node.["exclusive"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
+            let arg_2 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
                 match node.["color"] with
@@ -20286,7 +20704,7 @@ module EditLabelOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "color" || key = "exclusive" || key = "name" then
+                    if key = "color" || key = "description" || key = "exclusive" || key = "name" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -20296,8 +20714,9 @@ module EditLabelOptionJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 Color = arg_1
-                Exclusive = arg_2
-                Name = arg_3
+                Description = arg_2
+                Exclusive = arg_3
+                Name = arg_4
             }
 namespace Gitea
 
@@ -20309,18 +20728,23 @@ module EditMilestoneOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditMilestoneOption =
-            let arg_3 =
+            let arg_4 =
                 match node.["title"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_2 =
+            let arg_3 =
                 match node.["state"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_2 =
+                match node.["due_on"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_1 =
-                match node.["dueOn"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -20331,7 +20755,7 @@ module EditMilestoneOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "dueOn" || key = "state" || key = "title" then
+                    if key = "description" || key = "due_on" || key = "state" || key = "title" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -20340,9 +20764,10 @@ module EditMilestoneOptionJsonParseExtension =
 
             {
                 AdditionalProperties = arg_0
-                DueOn = arg_1
-                State = arg_2
-                Title = arg_3
+                Description = arg_1
+                DueOn = arg_2
+                State = arg_3
+                Title = arg_4
             }
 namespace Gitea
 
@@ -20354,28 +20779,33 @@ module EditOrgOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditOrgOption =
-            let arg_5 =
+            let arg_6 =
                 match node.["website"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_4 =
+            let arg_5 =
                 match node.["visibility"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_3 =
-                match node.["repoAdminChangeTeamAccess"] with
+            let arg_4 =
+                match node.["repo_admin_change_team_access"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_2 =
+            let arg_3 =
                 match node.["location"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_2 =
+                match node.["full_name"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_1 =
-                match node.["fullName"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -20387,9 +20817,10 @@ module EditOrgOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "fullName"
+                        key = "description"
+                        || key = "full_name"
                         || key = "location"
-                        || key = "repoAdminChangeTeamAccess"
+                        || key = "repo_admin_change_team_access"
                         || key = "visibility"
                         || key = "website"
                     then
@@ -20401,11 +20832,12 @@ module EditOrgOptionJsonParseExtension =
 
             {
                 AdditionalProperties = arg_0
-                FullName = arg_1
-                Location = arg_2
-                RepoAdminChangeTeamAccess = arg_3
-                Visibility = arg_4
-                Website = arg_5
+                Description = arg_1
+                FullName = arg_2
+                Location = arg_3
+                RepoAdminChangeTeamAccess = arg_4
+                Visibility = arg_5
+                Website = arg_6
             }
 namespace Gitea
 
@@ -20418,7 +20850,7 @@ module EditPullRequestOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditPullRequestOption =
             let arg_11 =
-                match node.["unsetDueDate"] with
+                match node.["unset_due_date"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -20447,7 +20879,7 @@ module EditPullRequestOptionJsonParseExtension =
                     |> Some
 
             let arg_6 =
-                match node.["dueDate"] with
+                match node.["due_date"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -20476,7 +20908,7 @@ module EditPullRequestOptionJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["allowMaintainerEdit"] with
+                match node.["allow_maintainer_edit"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -20488,17 +20920,17 @@ module EditPullRequestOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "allowMaintainerEdit"
+                        key = "allow_maintainer_edit"
                         || key = "assignee"
                         || key = "assignees"
                         || key = "base"
                         || key = "body"
-                        || key = "dueDate"
+                        || key = "due_date"
                         || key = "labels"
                         || key = "milestone"
                         || key = "state"
                         || key = "title"
-                        || key = "unsetDueDate"
+                        || key = "unset_due_date"
                     then
                         ()
                     else
@@ -20561,12 +20993,12 @@ module EditReleaseOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditReleaseOption =
             let arg_6 =
-                match node.["targetCommitish"] with
+                match node.["target_commitish"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["tagName"] with
+                match node.["tag_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -20602,8 +21034,8 @@ module EditReleaseOptionJsonParseExtension =
                         || key = "draft"
                         || key = "name"
                         || key = "prerelease"
-                        || key = "tagName"
-                        || key = "targetCommitish"
+                        || key = "tag_name"
+                        || key = "target_commitish"
                     then
                         ()
                     else
@@ -20667,12 +21099,12 @@ module EditTeamOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditTeamOption =
-            let arg_6 =
-                match node.["unitsMap"] with
+            let arg_7 =
+                match node.["units_map"] with
                 | null -> None
                 | v -> Type3.jsonParse v |> Some
 
-            let arg_5 =
+            let arg_6 =
                 match node.["units"] with
                 | null -> None
                 | v ->
@@ -20681,12 +21113,12 @@ module EditTeamOptionJsonParseExtension =
                     |> List.ofSeq
                     |> Some
 
-            let arg_4 =
+            let arg_5 =
                 match node.["permission"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_3 =
+            let arg_4 =
                 (match node.["name"] with
                  | null ->
                      raise (
@@ -20698,13 +21130,18 @@ module EditTeamOptionJsonParseExtension =
                     .AsValue()
                     .GetValue<System.String> ()
 
-            let arg_2 =
-                match node.["includesAllRepositories"] with
+            let arg_3 =
+                match node.["includes_all_repositories"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
+            let arg_2 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_1 =
-                match node.["canCreateOrgRepo"] with
+                match node.["can_create_org_repo"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -20716,12 +21153,13 @@ module EditTeamOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "canCreateOrgRepo"
-                        || key = "includesAllRepositories"
+                        key = "can_create_org_repo"
+                        || key = "description"
+                        || key = "includes_all_repositories"
                         || key = "name"
                         || key = "permission"
                         || key = "units"
-                        || key = "unitsMap"
+                        || key = "units_map"
                     then
                         ()
                     else
@@ -20732,11 +21170,12 @@ module EditTeamOptionJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 CanCreateOrgRepo = arg_1
-                IncludesAllRepositories = arg_2
-                Name = arg_3
-                Permission = arg_4
-                Units = arg_5
-                UnitsMap = arg_6
+                Description = arg_2
+                IncludesAllRepositories = arg_3
+                Name = arg_4
+                Permission = arg_5
+                Units = arg_6
+                UnitsMap = arg_7
             }
 namespace Gitea
 
@@ -20748,92 +21187,97 @@ module EditUserOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditUserOption =
-            let arg_17 =
+            let arg_18 =
                 match node.["website"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_16 =
+            let arg_17 =
                 match node.["visibility"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_15 =
-                (match node.["sourceId"] with
+            let arg_16 =
+                (match node.["source_id"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("sourceId")
+                             sprintf "Required key '%s' not found on JSON object" ("source_id")
                          )
                      )
                  | v -> v)
                     .AsValue()
                     .GetValue<System.Int32> ()
 
-            let arg_14 =
+            let arg_15 =
                 match node.["restricted"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_13 =
-                match node.["prohibitLogin"] with
+            let arg_14 =
+                match node.["prohibit_login"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_12 =
+            let arg_13 =
                 match node.["password"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_11 =
-                match node.["mustChangePassword"] with
+            let arg_12 =
+                match node.["must_change_password"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_10 =
-                match node.["maxRepoCreation"] with
+            let arg_11 =
+                match node.["max_repo_creation"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_9 =
-                (match node.["loginName"] with
+            let arg_10 =
+                (match node.["login_name"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("loginName")
+                             sprintf "Required key '%s' not found on JSON object" ("login_name")
                          )
                      )
                  | v -> v)
                     .AsValue()
                     .GetValue<System.String> ()
 
-            let arg_8 =
+            let arg_9 =
                 match node.["location"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_7 =
-                match node.["fullName"] with
+            let arg_8 =
+                match node.["full_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_6 =
+            let arg_7 =
                 match node.["email"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_6 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_5 =
-                match node.["allowImportLocal"] with
+                match node.["allow_import_local"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["allowGitHook"] with
+                match node.["allow_git_hook"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["allowCreateOrganization"] with
+                match node.["allow_create_organization"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -20857,19 +21301,20 @@ module EditUserOptionJsonParseExtension =
                     if
                         key = "active"
                         || key = "admin"
-                        || key = "allowCreateOrganization"
-                        || key = "allowGitHook"
-                        || key = "allowImportLocal"
+                        || key = "allow_create_organization"
+                        || key = "allow_git_hook"
+                        || key = "allow_import_local"
+                        || key = "description"
                         || key = "email"
-                        || key = "fullName"
+                        || key = "full_name"
                         || key = "location"
-                        || key = "loginName"
-                        || key = "maxRepoCreation"
-                        || key = "mustChangePassword"
+                        || key = "login_name"
+                        || key = "max_repo_creation"
+                        || key = "must_change_password"
                         || key = "password"
-                        || key = "prohibitLogin"
+                        || key = "prohibit_login"
                         || key = "restricted"
-                        || key = "sourceId"
+                        || key = "source_id"
                         || key = "visibility"
                         || key = "website"
                     then
@@ -20886,18 +21331,19 @@ module EditUserOptionJsonParseExtension =
                 AllowCreateOrganization = arg_3
                 AllowGitHook = arg_4
                 AllowImportLocal = arg_5
-                Email = arg_6
-                FullName = arg_7
-                Location = arg_8
-                LoginName = arg_9
-                MaxRepoCreation = arg_10
-                MustChangePassword = arg_11
-                Password = arg_12
-                ProhibitLogin = arg_13
-                Restricted = arg_14
-                SourceId = arg_15
-                Visibility = arg_16
-                Website = arg_17
+                Description = arg_6
+                Email = arg_7
+                FullName = arg_8
+                Location = arg_9
+                LoginName = arg_10
+                MaxRepoCreation = arg_11
+                MustChangePassword = arg_12
+                Password = arg_13
+                ProhibitLogin = arg_14
+                Restricted = arg_15
+                SourceId = arg_16
+                Visibility = arg_17
+                Website = arg_18
             }
 namespace Gitea
 
@@ -20955,22 +21401,22 @@ module ExternalTrackerJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ExternalTracker =
             let arg_4 =
-                match node.["externalTrackerUrl"] with
+                match node.["external_tracker_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["externalTrackerStyle"] with
+                match node.["external_tracker_style"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["externalTrackerRegexpPattern"] with
+                match node.["external_tracker_regexp_pattern"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["externalTrackerFormat"] with
+                match node.["external_tracker_format"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -20982,10 +21428,10 @@ module ExternalTrackerJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "externalTrackerFormat"
-                        || key = "externalTrackerRegexpPattern"
-                        || key = "externalTrackerStyle"
-                        || key = "externalTrackerUrl"
+                        key = "external_tracker_format"
+                        || key = "external_tracker_regexp_pattern"
+                        || key = "external_tracker_style"
+                        || key = "external_tracker_url"
                     then
                         ()
                     else
@@ -21011,7 +21457,7 @@ module ExternalWikiJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ExternalWiki =
             let arg_1 =
-                match node.["externalWikiUrl"] with
+                match node.["external_wiki_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -21022,7 +21468,7 @@ module ExternalWikiJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "externalWikiUrl" then
+                    if key = "external_wiki_url" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -21073,7 +21519,7 @@ module FileCommitResponseJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_4 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -21103,7 +21549,7 @@ module FileCommitResponseJsonParseExtension =
                         key = "author"
                         || key = "committer"
                         || key = "created"
-                        || key = "htmlUrl"
+                        || key = "html_url"
                         || key = "message"
                         || key = "parents"
                         || key = "sha"
@@ -21223,22 +21669,22 @@ module GeneralAPISettingsJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : GeneralAPISettings =
             let arg_4 =
-                match node.["maxResponseItems"] with
+                match node.["max_response_items"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_3 =
-                match node.["defaultPagingNum"] with
+                match node.["default_paging_num"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_2 =
-                match node.["defaultMaxBlobSize"] with
+                match node.["default_max_blob_size"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_1 =
-                match node.["defaultGitTreesPerPage"] with
+                match node.["default_git_trees_per_page"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -21250,10 +21696,10 @@ module GeneralAPISettingsJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "defaultGitTreesPerPage"
-                        || key = "defaultMaxBlobSize"
-                        || key = "defaultPagingNum"
-                        || key = "maxResponseItems"
+                        key = "default_git_trees_per_page"
+                        || key = "default_max_blob_size"
+                        || key = "default_paging_num"
+                        || key = "max_response_items"
                     then
                         ()
                     else
@@ -21279,12 +21725,12 @@ module GeneralAttachmentSettingsJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : GeneralAttachmentSettings =
             let arg_4 =
-                match node.["maxSize"] with
+                match node.["max_size"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_3 =
-                match node.["maxFiles"] with
+                match node.["max_files"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -21294,7 +21740,7 @@ module GeneralAttachmentSettingsJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_1 =
-                match node.["allowedTypes"] with
+                match node.["allowed_types"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -21305,7 +21751,12 @@ module GeneralAttachmentSettingsJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "allowedTypes" || key = "enabled" || key = "maxFiles" || key = "maxSize" then
+                    if
+                        key = "allowed_types"
+                        || key = "enabled"
+                        || key = "max_files"
+                        || key = "max_size"
+                    then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -21330,32 +21781,32 @@ module GeneralRepoSettingsJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : GeneralRepoSettings =
             let arg_6 =
-                match node.["timeTrackingDisabled"] with
+                match node.["time_tracking_disabled"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_5 =
-                match node.["starsDisabled"] with
+                match node.["stars_disabled"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["mirrorsDisabled"] with
+                match node.["mirrors_disabled"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["migrationsDisabled"] with
+                match node.["migrations_disabled"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["lfsDisabled"] with
+                match node.["lfs_disabled"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_1 =
-                match node.["httpGitDisabled"] with
+                match node.["http_git_disabled"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -21367,12 +21818,12 @@ module GeneralRepoSettingsJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "httpGitDisabled"
-                        || key = "lfsDisabled"
-                        || key = "migrationsDisabled"
-                        || key = "mirrorsDisabled"
-                        || key = "starsDisabled"
-                        || key = "timeTrackingDisabled"
+                        key = "http_git_disabled"
+                        || key = "lfs_disabled"
+                        || key = "migrations_disabled"
+                        || key = "mirrors_disabled"
+                        || key = "stars_disabled"
+                        || key = "time_tracking_disabled"
                     then
                         ()
                     else
@@ -21400,12 +21851,12 @@ module GeneralUISettingsJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : GeneralUISettings =
             let arg_3 =
-                match node.["defaultTheme"] with
+                match node.["default_theme"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["customEmojis"] with
+                match node.["custom_emojis"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -21414,7 +21865,7 @@ module GeneralUISettingsJsonParseExtension =
                     |> Some
 
             let arg_1 =
-                match node.["allowedReactions"] with
+                match node.["allowed_reactions"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -21429,7 +21880,7 @@ module GeneralUISettingsJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "allowedReactions" || key = "customEmojis" || key = "defaultTheme" then
+                    if key = "allowed_reactions" || key = "custom_emojis" || key = "default_theme" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -21452,22 +21903,22 @@ module GenerateRepoOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : GenerateRepoOption =
-            let arg_10 =
+            let arg_11 =
                 match node.["webhooks"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_9 =
+            let arg_10 =
                 match node.["topics"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_8 =
+            let arg_9 =
                 match node.["private"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_7 =
+            let arg_8 =
                 (match node.["owner"] with
                  | null ->
                      raise (
@@ -21479,7 +21930,7 @@ module GenerateRepoOptionJsonParseExtension =
                     .AsValue()
                     .GetValue<System.String> ()
 
-            let arg_6 =
+            let arg_7 =
                 (match node.["name"] with
                  | null ->
                      raise (
@@ -21491,23 +21942,28 @@ module GenerateRepoOptionJsonParseExtension =
                     .AsValue()
                     .GetValue<System.String> ()
 
-            let arg_5 =
+            let arg_6 =
                 match node.["labels"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
+            let arg_5 =
+                match node.["git_hooks"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
             let arg_4 =
-                match node.["gitHooks"] with
+                match node.["git_content"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["gitContent"] with
+                match node.["description"] with
                 | null -> None
-                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+                | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["defaultBranch"] with
+                match node.["default_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -21525,9 +21981,10 @@ module GenerateRepoOptionJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "avatar"
-                        || key = "defaultBranch"
-                        || key = "gitContent"
-                        || key = "gitHooks"
+                        || key = "default_branch"
+                        || key = "description"
+                        || key = "git_content"
+                        || key = "git_hooks"
                         || key = "labels"
                         || key = "name"
                         || key = "owner"
@@ -21545,14 +22002,15 @@ module GenerateRepoOptionJsonParseExtension =
                 AdditionalProperties = arg_0
                 Avatar = arg_1
                 DefaultBranch = arg_2
-                GitContent = arg_3
-                GitHooks = arg_4
-                Labels = arg_5
-                Name = arg_6
-                Owner = arg_7
-                Private = arg_8
-                Topics = arg_9
-                Webhooks = arg_10
+                Description = arg_3
+                GitContent = arg_4
+                GitHooks = arg_5
+                Labels = arg_6
+                Name = arg_7
+                Owner = arg_8
+                Private = arg_9
+                Topics = arg_10
+                Webhooks = arg_11
             }
 namespace Gitea
 
@@ -21627,8 +22085,13 @@ module GitEntryJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : GitEntry =
-            let arg_5 =
+            let arg_6 =
                 match node.["url"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
+            let arg_5 =
+                match node.["type"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -21659,7 +22122,14 @@ module GitEntryJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "mode" || key = "path" || key = "sha" || key = "size" || key = "url" then
+                    if
+                        key = "mode"
+                        || key = "path"
+                        || key = "sha"
+                        || key = "size"
+                        || key = "type"
+                        || key = "url"
+                    then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -21672,7 +22142,8 @@ module GitEntryJsonParseExtension =
                 Path = arg_2
                 Sha = arg_3
                 Size = arg_4
-                Url = arg_5
+                Type = arg_5
+                Url = arg_6
             }
 namespace Gitea
 
@@ -21690,7 +22161,7 @@ module GitHookJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["isActive"] with
+                match node.["is_active"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -21706,7 +22177,7 @@ module GitHookJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "content" || key = "isActive" || key = "name" then
+                    if key = "content" || key = "is_active" || key = "name" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -21729,8 +22200,13 @@ module GitObjectJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : GitObject =
-            let arg_2 =
+            let arg_3 =
                 match node.["url"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
+            let arg_2 =
+                match node.["type"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -21746,7 +22222,7 @@ module GitObjectJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "sha" || key = "url" then
+                    if key = "sha" || key = "type" || key = "url" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -21756,7 +22232,8 @@ module GitObjectJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 Sha = arg_1
-                Url = arg_2
+                Type = arg_2
+                Url = arg_3
             }
 namespace Gitea
 
@@ -21788,7 +22265,7 @@ module GitTreeResponseJsonParseExtension =
                     |> Some
 
             let arg_3 =
-                match node.["totalCount"] with
+                match node.["total_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -21812,7 +22289,7 @@ module GitTreeResponseJsonParseExtension =
                     if
                         key = "page"
                         || key = "sha"
-                        || key = "totalCount"
+                        || key = "total_count"
                         || key = "tree"
                         || key = "truncated"
                         || key = "url"
@@ -21879,8 +22356,13 @@ module HookJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Hook =
+            let arg_8 =
+                match node.["updated_at"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_7 =
-                match node.["updatedAt"] with
+                match node.["type"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -21899,7 +22381,7 @@ module HookJsonParseExtension =
                     |> Some
 
             let arg_4 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -21909,7 +22391,7 @@ module HookJsonParseExtension =
                 | v -> Type4.jsonParse v |> Some
 
             let arg_2 =
-                match node.["authorizationHeader"] with
+                match node.["authorization_header"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -21927,12 +22409,13 @@ module HookJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "active"
-                        || key = "authorizationHeader"
+                        || key = "authorization_header"
                         || key = "config"
-                        || key = "createdAt"
+                        || key = "created_at"
                         || key = "events"
                         || key = "id"
-                        || key = "updatedAt"
+                        || key = "type"
+                        || key = "updated_at"
                     then
                         ()
                     else
@@ -21948,7 +22431,8 @@ module HookJsonParseExtension =
                 CreatedAt = arg_4
                 Events = arg_5
                 Id = arg_6
-                UpdatedAt = arg_7
+                Type = arg_7
+                UpdatedAt = arg_8
             }
 namespace Gitea
 
@@ -22000,17 +22484,17 @@ module InternalTrackerJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : InternalTracker =
             let arg_3 =
-                match node.["enableTimeTracker"] with
+                match node.["enable_time_tracker"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["enableIssueDependencies"] with
+                match node.["enable_issue_dependencies"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_1 =
-                match node.["allowOnlyContributorsToTrackTime"] with
+                match node.["allow_only_contributors_to_track_time"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -22022,9 +22506,9 @@ module InternalTrackerJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "allowOnlyContributorsToTrackTime"
-                        || key = "enableIssueDependencies"
-                        || key = "enableTimeTracker"
+                        key = "allow_only_contributors_to_track_time"
+                        || key = "enable_issue_dependencies"
+                        || key = "enable_time_tracker"
                     then
                         ()
                     else
@@ -22049,7 +22533,7 @@ module IssueDeadlineJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : IssueDeadline =
             let arg_1 =
-                match node.["dueDate"] with
+                match node.["due_date"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -22060,7 +22544,10 @@ module IssueDeadlineJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "dueDate" then () else result.Add (key, node.[key])
+                    if key = "due_date" then
+                        ()
+                    else
+                        result.Add (key, node.[key])
 
                 result
 
@@ -22114,51 +22601,6 @@ module Type6JsonParseExtension =
             }
 namespace Gitea
 
-/// Module containing JSON parsing extension members for the IssueFormField type
-[<AutoOpen>]
-module IssueFormFieldJsonParseExtension =
-    /// Extension methods for JSON parsing
-    type IssueFormField with
-
-        /// Parse from a JSON node.
-        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : IssueFormField =
-            let arg_3 =
-                match node.["validations"] with
-                | null -> None
-                | v -> Type6.jsonParse v |> Some
-
-            let arg_2 =
-                match node.["id"] with
-                | null -> None
-                | v -> v.AsValue().GetValue<System.String> () |> Some
-
-            let arg_1 =
-                match node.["attributes"] with
-                | null -> None
-                | v -> Type5.jsonParse v |> Some
-
-            let arg_0 =
-                let result =
-                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode> ()
-
-                let node = node.AsObject ()
-
-                for KeyValue (key, value) in node do
-                    if key = "attributes" || key = "id" || key = "validations" then
-                        ()
-                    else
-                        result.Add (key, node.[key])
-
-                result
-
-            {
-                AdditionalProperties = arg_0
-                Attributes = arg_1
-                Id = arg_2
-                Validations = arg_3
-            }
-namespace Gitea
-
 /// Module containing JSON parsing extension members for the IssueLabelsOption type
 [<AutoOpen>]
 module IssueLabelsOptionJsonParseExtension =
@@ -22201,25 +22643,30 @@ module LabelJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Label =
-            let arg_5 =
+            let arg_6 =
                 match node.["url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_4 =
+            let arg_5 =
                 match node.["name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_3 =
+            let arg_4 =
                 match node.["id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_2 =
+            let arg_3 =
                 match node.["exclusive"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
+            let arg_2 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
                 match node.["color"] with
@@ -22233,7 +22680,14 @@ module LabelJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "color" || key = "exclusive" || key = "id" || key = "name" || key = "url" then
+                    if
+                        key = "color"
+                        || key = "description"
+                        || key = "exclusive"
+                        || key = "id"
+                        || key = "name"
+                        || key = "url"
+                    then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -22243,10 +22697,11 @@ module LabelJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 Color = arg_1
-                Exclusive = arg_2
-                Id = arg_3
-                Name = arg_4
-                Url = arg_5
+                Description = arg_2
+                Exclusive = arg_3
+                Id = arg_4
+                Name = arg_5
+                Url = arg_6
             }
 namespace Gitea
 
@@ -22259,22 +22714,22 @@ module MarkdownOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : MarkdownOption =
             let arg_4 =
-                match node.["wiki"] with
+                match node.["Wiki"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["text"] with
+                match node.["Text"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["mode"] with
+                match node.["Mode"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["context"] with
+                match node.["Context"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -22285,7 +22740,7 @@ module MarkdownOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "context" || key = "mode" || key = "text" || key = "wiki" then
+                    if key = "Context" || key = "Mode" || key = "Text" || key = "Wiki" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -22310,46 +22765,46 @@ module MergePullRequestOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : MergePullRequestOption =
             let arg_8 =
-                match node.["mergeWhenChecksSucceed"] with
+                match node.["merge_when_checks_succeed"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_7 =
-                match node.["headCommitId"] with
+                match node.["head_commit_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["forceMerge"] with
+                match node.["force_merge"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_5 =
-                match node.["deleteBranchAfterMerge"] with
+                match node.["delete_branch_after_merge"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["mergeTitleField"] with
+                match node.["MergeTitleField"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["mergeMessageField"] with
+                match node.["MergeMessageField"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["mergeCommitID"] with
+                match node.["MergeCommitID"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                (match node.["do"] with
+                (match node.["Do"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("do")
+                             sprintf "Required key '%s' not found on JSON object" ("Do")
                          )
                      )
                  | v -> v)
@@ -22364,14 +22819,14 @@ module MergePullRequestOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "do"
-                        || key = "mergeCommitID"
-                        || key = "mergeMessageField"
-                        || key = "mergeTitleField"
-                        || key = "deleteBranchAfterMerge"
-                        || key = "forceMerge"
-                        || key = "headCommitId"
-                        || key = "mergeWhenChecksSucceed"
+                        key = "Do"
+                        || key = "MergeCommitID"
+                        || key = "MergeMessageField"
+                        || key = "MergeTitleField"
+                        || key = "delete_branch_after_merge"
+                        || key = "force_merge"
+                        || key = "head_commit_id"
+                        || key = "merge_when_checks_succeed"
                     then
                         ()
                     else
@@ -22400,94 +22855,99 @@ module MigrateRepoOptionsJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : MigrateRepoOptions =
-            let arg_19 =
+            let arg_20 =
                 match node.["wiki"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_18 =
+            let arg_19 =
                 match node.["uid"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_17 =
+            let arg_18 =
                 match node.["service"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_16 =
-                match node.["repoOwner"] with
+            let arg_17 =
+                match node.["repo_owner"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_15 =
-                (match node.["repoName"] with
+            let arg_16 =
+                (match node.["repo_name"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("repoName")
+                             sprintf "Required key '%s' not found on JSON object" ("repo_name")
                          )
                      )
                  | v -> v)
                     .AsValue()
                     .GetValue<System.String> ()
 
-            let arg_14 =
+            let arg_15 =
                 match node.["releases"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_13 =
-                match node.["pullRequests"] with
+            let arg_14 =
+                match node.["pull_requests"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_12 =
+            let arg_13 =
                 match node.["private"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_11 =
-                match node.["mirrorInterval"] with
+            let arg_12 =
+                match node.["mirror_interval"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_10 =
+            let arg_11 =
                 match node.["mirror"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_9 =
+            let arg_10 =
                 match node.["milestones"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_8 =
-                match node.["lfsEndpoint"] with
+            let arg_9 =
+                match node.["lfs_endpoint"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_7 =
+            let arg_8 =
                 match node.["lfs"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_6 =
+            let arg_7 =
                 match node.["labels"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_5 =
+            let arg_6 =
                 match node.["issues"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
+            let arg_5 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_4 =
-                (match node.["cloneAddr"] with
+                (match node.["clone_addr"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("cloneAddr")
+                             sprintf "Required key '%s' not found on JSON object" ("clone_addr")
                          )
                      )
                  | v -> v)
@@ -22495,17 +22955,17 @@ module MigrateRepoOptionsJsonParseExtension =
                     .GetValue<System.String> ()
 
             let arg_3 =
-                match node.["authUsername"] with
+                match node.["auth_username"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["authToken"] with
+                match node.["auth_token"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["authPassword"] with
+                match node.["auth_password"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -22517,22 +22977,23 @@ module MigrateRepoOptionsJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "authPassword"
-                        || key = "authToken"
-                        || key = "authUsername"
-                        || key = "cloneAddr"
+                        key = "auth_password"
+                        || key = "auth_token"
+                        || key = "auth_username"
+                        || key = "clone_addr"
+                        || key = "description"
                         || key = "issues"
                         || key = "labels"
                         || key = "lfs"
-                        || key = "lfsEndpoint"
+                        || key = "lfs_endpoint"
                         || key = "milestones"
                         || key = "mirror"
-                        || key = "mirrorInterval"
+                        || key = "mirror_interval"
                         || key = "private"
-                        || key = "pullRequests"
+                        || key = "pull_requests"
                         || key = "releases"
-                        || key = "repoName"
-                        || key = "repoOwner"
+                        || key = "repo_name"
+                        || key = "repo_owner"
                         || key = "service"
                         || key = "uid"
                         || key = "wiki"
@@ -22549,21 +23010,22 @@ module MigrateRepoOptionsJsonParseExtension =
                 AuthToken = arg_2
                 AuthUsername = arg_3
                 CloneAddr = arg_4
-                Issues = arg_5
-                Labels = arg_6
-                Lfs = arg_7
-                LfsEndpoint = arg_8
-                Milestones = arg_9
-                Mirror = arg_10
-                MirrorInterval = arg_11
-                Private = arg_12
-                PullRequests = arg_13
-                Releases = arg_14
-                RepoName = arg_15
-                RepoOwner = arg_16
-                Service = arg_17
-                Uid = arg_18
-                Wiki = arg_19
+                Description = arg_5
+                Issues = arg_6
+                Labels = arg_7
+                Lfs = arg_8
+                LfsEndpoint = arg_9
+                Milestones = arg_10
+                Mirror = arg_11
+                MirrorInterval = arg_12
+                Private = arg_13
+                PullRequests = arg_14
+                Releases = arg_15
+                RepoName = arg_16
+                RepoOwner = arg_17
+                Service = arg_18
+                Uid = arg_19
+                Wiki = arg_20
             }
 namespace Gitea
 
@@ -22773,7 +23235,7 @@ module OAuth2ApplicationJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : OAuth2Application =
             let arg_7 =
-                match node.["redirectUris"] with
+                match node.["redirect_uris"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -22797,17 +23259,17 @@ module OAuth2ApplicationJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["confidentialClient"] with
+                match node.["confidential_client"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["clientSecret"] with
+                match node.["client_secret"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["clientId"] with
+                match node.["client_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -22819,13 +23281,13 @@ module OAuth2ApplicationJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "clientId"
-                        || key = "clientSecret"
-                        || key = "confidentialClient"
+                        key = "client_id"
+                        || key = "client_secret"
+                        || key = "confidential_client"
                         || key = "created"
                         || key = "id"
                         || key = "name"
-                        || key = "redirectUris"
+                        || key = "redirect_uris"
                     then
                         ()
                     else
@@ -22853,48 +23315,53 @@ module OrganizationJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Organization =
-            let arg_9 =
+            let arg_10 =
                 match node.["website"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_8 =
+            let arg_9 =
                 match node.["visibility"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_7 =
+            let arg_8 =
                 match node.["username"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_6 =
-                match node.["repoAdminChangeTeamAccess"] with
+            let arg_7 =
+                match node.["repo_admin_change_team_access"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_5 =
+            let arg_6 =
                 match node.["name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_4 =
+            let arg_5 =
                 match node.["location"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_3 =
+            let arg_4 =
                 match node.["id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
+            let arg_3 =
+                match node.["full_name"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_2 =
-                match node.["fullName"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["avatarUrl"] with
+                match node.["avatar_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -22906,12 +23373,13 @@ module OrganizationJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "avatarUrl"
-                        || key = "fullName"
+                        key = "avatar_url"
+                        || key = "description"
+                        || key = "full_name"
                         || key = "id"
                         || key = "location"
                         || key = "name"
-                        || key = "repoAdminChangeTeamAccess"
+                        || key = "repo_admin_change_team_access"
                         || key = "username"
                         || key = "visibility"
                         || key = "website"
@@ -22925,14 +23393,15 @@ module OrganizationJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 AvatarUrl = arg_1
-                FullName = arg_2
-                Id = arg_3
-                Location = arg_4
-                Name = arg_5
-                RepoAdminChangeTeamAccess = arg_6
-                Username = arg_7
-                Visibility = arg_8
-                Website = arg_9
+                Description = arg_2
+                FullName = arg_3
+                Id = arg_4
+                Location = arg_5
+                Name = arg_6
+                RepoAdminChangeTeamAccess = arg_7
+                Username = arg_8
+                Visibility = arg_9
+                Website = arg_10
             }
 namespace Gitea
 
@@ -22945,27 +23414,27 @@ module OrganizationPermissionsJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : OrganizationPermissions =
             let arg_5 =
-                match node.["isOwner"] with
+                match node.["is_owner"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["isAdmin"] with
+                match node.["is_admin"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["canWrite"] with
+                match node.["can_write"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["canRead"] with
+                match node.["can_read"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_1 =
-                match node.["canCreateRepository"] with
+                match node.["can_create_repository"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -22977,11 +23446,11 @@ module OrganizationPermissionsJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "canCreateRepository"
-                        || key = "canRead"
-                        || key = "canWrite"
-                        || key = "isAdmin"
-                        || key = "isOwner"
+                        key = "can_create_repository"
+                        || key = "can_read"
+                        || key = "can_write"
+                        || key = "is_admin"
+                        || key = "is_owner"
                     then
                         ()
                     else
@@ -23038,7 +23507,7 @@ module PackageFileJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_1 =
-                match node.["size"] with
+                match node.["Size"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -23050,7 +23519,7 @@ module PackageFileJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "size"
+                        key = "Size"
                         || key = "id"
                         || key = "md5"
                         || key = "name"
@@ -23175,7 +23644,7 @@ module PullRequestMetaJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : PullRequestMeta =
             let arg_2 =
-                match node.["mergedAt"] with
+                match node.["merged_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -23191,7 +23660,7 @@ module PullRequestMetaJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "merged" || key = "mergedAt" then
+                    if key = "merged" || key = "merged_at" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -23214,7 +23683,7 @@ module PullReviewRequestOptionsJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : PullReviewRequestOptions =
             let arg_2 =
-                match node.["teamReviewers"] with
+                match node.["team_reviewers"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -23238,7 +23707,7 @@ module PullReviewRequestOptionsJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "reviewers" || key = "teamReviewers" then
+                    if key = "reviewers" || key = "team_reviewers" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -23261,32 +23730,32 @@ module PushMirrorJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : PushMirror =
             let arg_8 =
-                match node.["syncOnCommit"] with
+                match node.["sync_on_commit"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_7 =
-                match node.["repoName"] with
+                match node.["repo_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["remoteName"] with
+                match node.["remote_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["remoteAddress"] with
+                match node.["remote_address"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_4 =
-                match node.["lastUpdate"] with
+                match node.["last_update"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["lastError"] with
+                match node.["last_error"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -23310,12 +23779,12 @@ module PushMirrorJsonParseExtension =
                     if
                         key = "created"
                         || key = "interval"
-                        || key = "lastError"
-                        || key = "lastUpdate"
-                        || key = "remoteAddress"
-                        || key = "remoteName"
-                        || key = "repoName"
-                        || key = "syncOnCommit"
+                        || key = "last_error"
+                        || key = "last_update"
+                        || key = "remote_address"
+                        || key = "remote_name"
+                        || key = "repo_name"
+                        || key = "sync_on_commit"
                     then
                         ()
                     else
@@ -23439,7 +23908,7 @@ module RepositoryMetaJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_1 =
-                match node.["fullName"] with
+                match node.["full_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -23450,7 +23919,7 @@ module RepositoryMetaJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "fullName" || key = "id" || key = "name" || key = "owner" then
+                    if key = "full_name" || key = "id" || key = "name" || key = "owner" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -23510,22 +23979,22 @@ module StopWatchJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_6 =
-                match node.["repoOwnerName"] with
+                match node.["repo_owner_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["repoName"] with
+                match node.["repo_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_4 =
-                match node.["issueTitle"] with
+                match node.["issue_title"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["issueIndex"] with
+                match node.["issue_index"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -23549,10 +24018,10 @@ module StopWatchJsonParseExtension =
                     if
                         key = "created"
                         || key = "duration"
-                        || key = "issueIndex"
-                        || key = "issueTitle"
-                        || key = "repoName"
-                        || key = "repoOwnerName"
+                        || key = "issue_index"
+                        || key = "issue_title"
+                        || key = "repo_name"
+                        || key = "repo_owner_name"
                         || key = "seconds"
                     then
                         ()
@@ -23621,12 +24090,12 @@ module TagJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Tag =
             let arg_6 =
-                match node.["zipballUrl"] with
+                match node.["zipball_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["tarballUrl"] with
+                match node.["tarball_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -23662,8 +24131,8 @@ module TagJsonParseExtension =
                         || key = "id"
                         || key = "message"
                         || key = "name"
-                        || key = "tarballUrl"
-                        || key = "zipballUrl"
+                        || key = "tarball_url"
+                        || key = "zipball_url"
                     then
                         ()
                     else
@@ -23727,12 +24196,12 @@ module TeamJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Team =
-            let arg_8 =
-                match node.["unitsMap"] with
+            let arg_9 =
+                match node.["units_map"] with
                 | null -> None
                 | v -> Type8.jsonParse v |> Some
 
-            let arg_7 =
+            let arg_8 =
                 match node.["units"] with
                 | null -> None
                 | v ->
@@ -23741,33 +24210,38 @@ module TeamJsonParseExtension =
                     |> List.ofSeq
                     |> Some
 
-            let arg_6 =
+            let arg_7 =
                 match node.["permission"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_5 =
+            let arg_6 =
                 match node.["organization"] with
                 | null -> None
                 | v -> Organization.jsonParse v |> Some
 
-            let arg_4 =
+            let arg_5 =
                 match node.["name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_3 =
-                match node.["includesAllRepositories"] with
+            let arg_4 =
+                match node.["includes_all_repositories"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_2 =
+            let arg_3 =
                 match node.["id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
+            let arg_2 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_1 =
-                match node.["canCreateOrgRepo"] with
+                match node.["can_create_org_repo"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -23779,14 +24253,15 @@ module TeamJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "canCreateOrgRepo"
+                        key = "can_create_org_repo"
+                        || key = "description"
                         || key = "id"
-                        || key = "includesAllRepositories"
+                        || key = "includes_all_repositories"
                         || key = "name"
                         || key = "organization"
                         || key = "permission"
                         || key = "units"
-                        || key = "unitsMap"
+                        || key = "units_map"
                     then
                         ()
                     else
@@ -23797,13 +24272,14 @@ module TeamJsonParseExtension =
             {
                 AdditionalProperties = arg_0
                 CanCreateOrgRepo = arg_1
-                Id = arg_2
-                IncludesAllRepositories = arg_3
-                Name = arg_4
-                Organization = arg_5
-                Permission = arg_6
-                Units = arg_7
-                UnitsMap = arg_8
+                Description = arg_2
+                Id = arg_3
+                IncludesAllRepositories = arg_4
+                Name = arg_5
+                Organization = arg_6
+                Permission = arg_7
+                Units = arg_8
+                UnitsMap = arg_9
             }
 namespace Gitea
 
@@ -23855,12 +24331,12 @@ module TopicResponseJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_4 =
-                match node.["topicName"] with
+                match node.["topic_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["repoCount"] with
+                match node.["repo_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -23884,8 +24360,8 @@ module TopicResponseJsonParseExtension =
                     if
                         key = "created"
                         || key = "id"
-                        || key = "repoCount"
-                        || key = "topicName"
+                        || key = "repo_count"
+                        || key = "topic_name"
                         || key = "updated"
                     then
                         ()
@@ -23913,7 +24389,7 @@ module TransferRepoOptionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : TransferRepoOption =
             let arg_2 =
-                match node.["teamIds"] with
+                match node.["team_ids"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -23922,11 +24398,11 @@ module TransferRepoOptionJsonParseExtension =
                     |> Some
 
             let arg_1 =
-                (match node.["newOwner"] with
+                (match node.["new_owner"] with
                  | null ->
                      raise (
                          System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("newOwner")
+                             sprintf "Required key '%s' not found on JSON object" ("new_owner")
                          )
                      )
                  | v -> v)
@@ -23940,7 +24416,7 @@ module TransferRepoOptionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "newOwner" || key = "teamIds" then
+                    if key = "new_owner" || key = "team_ids" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -23980,7 +24456,7 @@ module UpdateFileOptionsJsonParseExtension =
                     .GetValue<System.String> ()
 
             let arg_8 =
-                match node.["newBranch"] with
+                match node.["new_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -23990,7 +24466,7 @@ module UpdateFileOptionsJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["fromPath"] with
+                match node.["from_path"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24039,9 +24515,9 @@ module UpdateFileOptionsJsonParseExtension =
                         || key = "committer"
                         || key = "content"
                         || key = "dates"
-                        || key = "fromPath"
+                        || key = "from_path"
                         || key = "message"
-                        || key = "newBranch"
+                        || key = "new_branch"
                         || key = "sha"
                         || key = "signoff"
                     then
@@ -24074,83 +24550,88 @@ module UserJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : User =
-            let arg_19 =
+            let arg_20 =
                 match node.["website"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_18 =
+            let arg_19 =
                 match node.["visibility"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_17 =
-                match node.["starredReposCount"] with
+            let arg_18 =
+                match node.["starred_repos_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_16 =
+            let arg_17 =
                 match node.["restricted"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_15 =
-                match node.["prohibitLogin"] with
+            let arg_16 =
+                match node.["prohibit_login"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_14 =
-                match node.["loginName"] with
+            let arg_15 =
+                match node.["login_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_13 =
+            let arg_14 =
                 match node.["login"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_12 =
+            let arg_13 =
                 match node.["location"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_11 =
-                match node.["lastLogin"] with
+            let arg_12 =
+                match node.["last_login"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_10 =
+            let arg_11 =
                 match node.["language"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_9 =
-                match node.["isAdmin"] with
+            let arg_10 =
+                match node.["is_admin"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_8 =
+            let arg_9 =
                 match node.["id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_7 =
-                match node.["fullName"] with
+            let arg_8 =
+                match node.["full_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_7 =
+                match node.["following_count"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.Int32> () |> Some
+
             let arg_6 =
-                match node.["followingCount"] with
+                match node.["followers_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_5 =
-                match node.["followersCount"] with
+                match node.["email"] with
                 | null -> None
-                | v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_4 =
-                match node.["email"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24160,7 +24641,7 @@ module UserJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["avatarUrl"] with
+                match node.["avatar_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24178,22 +24659,23 @@ module UserJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "active"
-                        || key = "avatarUrl"
+                        || key = "avatar_url"
                         || key = "created"
+                        || key = "description"
                         || key = "email"
-                        || key = "followersCount"
-                        || key = "followingCount"
-                        || key = "fullName"
+                        || key = "followers_count"
+                        || key = "following_count"
+                        || key = "full_name"
                         || key = "id"
-                        || key = "isAdmin"
+                        || key = "is_admin"
                         || key = "language"
-                        || key = "lastLogin"
+                        || key = "last_login"
                         || key = "location"
                         || key = "login"
-                        || key = "loginName"
-                        || key = "prohibitLogin"
+                        || key = "login_name"
+                        || key = "prohibit_login"
                         || key = "restricted"
-                        || key = "starredReposCount"
+                        || key = "starred_repos_count"
                         || key = "visibility"
                         || key = "website"
                     then
@@ -24208,22 +24690,23 @@ module UserJsonParseExtension =
                 Active = arg_1
                 AvatarUrl = arg_2
                 Created = arg_3
-                Email = arg_4
-                FollowersCount = arg_5
-                FollowingCount = arg_6
-                FullName = arg_7
-                Id = arg_8
-                IsAdmin = arg_9
-                Language = arg_10
-                LastLogin = arg_11
-                Location = arg_12
-                Login = arg_13
-                LoginName = arg_14
-                ProhibitLogin = arg_15
-                Restricted = arg_16
-                StarredReposCount = arg_17
-                Visibility = arg_18
-                Website = arg_19
+                Description = arg_4
+                Email = arg_5
+                FollowersCount = arg_6
+                FollowingCount = arg_7
+                FullName = arg_8
+                Id = arg_9
+                IsAdmin = arg_10
+                Language = arg_11
+                LastLogin = arg_12
+                Location = arg_13
+                Login = arg_14
+                LoginName = arg_15
+                ProhibitLogin = arg_16
+                Restricted = arg_17
+                StarredReposCount = arg_18
+                Visibility = arg_19
+                Website = arg_20
             }
 namespace Gitea
 
@@ -24274,43 +24757,48 @@ module UserSettingsJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : UserSettings =
-            let arg_8 =
+            let arg_9 =
                 match node.["website"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_7 =
+            let arg_8 =
                 match node.["theme"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_6 =
+            let arg_7 =
                 match node.["location"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_5 =
+            let arg_6 =
                 match node.["language"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_5 =
+                match node.["hide_email"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
             let arg_4 =
-                match node.["hideEmail"] with
+                match node.["hide_activity"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["hideActivity"] with
+                match node.["full_name"] with
                 | null -> None
-                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+                | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["fullName"] with
+                match node.["diff_view_style"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["diffViewStyle"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24322,10 +24810,11 @@ module UserSettingsJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "diffViewStyle"
-                        || key = "fullName"
-                        || key = "hideActivity"
-                        || key = "hideEmail"
+                        key = "description"
+                        || key = "diff_view_style"
+                        || key = "full_name"
+                        || key = "hide_activity"
+                        || key = "hide_email"
                         || key = "language"
                         || key = "location"
                         || key = "theme"
@@ -24339,14 +24828,15 @@ module UserSettingsJsonParseExtension =
 
             {
                 AdditionalProperties = arg_0
-                DiffViewStyle = arg_1
-                FullName = arg_2
-                HideActivity = arg_3
-                HideEmail = arg_4
-                Language = arg_5
-                Location = arg_6
-                Theme = arg_7
-                Website = arg_8
+                Description = arg_1
+                DiffViewStyle = arg_2
+                FullName = arg_3
+                HideActivity = arg_4
+                HideEmail = arg_5
+                Language = arg_6
+                Location = arg_7
+                Theme = arg_8
+                Website = arg_9
             }
 namespace Gitea
 
@@ -24358,43 +24848,48 @@ module UserSettingsOptionsJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : UserSettingsOptions =
-            let arg_8 =
+            let arg_9 =
                 match node.["website"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_7 =
+            let arg_8 =
                 match node.["theme"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_6 =
+            let arg_7 =
                 match node.["location"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_5 =
+            let arg_6 =
                 match node.["language"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_5 =
+                match node.["hide_email"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
             let arg_4 =
-                match node.["hideEmail"] with
+                match node.["hide_activity"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["hideActivity"] with
+                match node.["full_name"] with
                 | null -> None
-                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+                | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["fullName"] with
+                match node.["diff_view_style"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["diffViewStyle"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24406,10 +24901,11 @@ module UserSettingsOptionsJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "diffViewStyle"
-                        || key = "fullName"
-                        || key = "hideActivity"
-                        || key = "hideEmail"
+                        key = "description"
+                        || key = "diff_view_style"
+                        || key = "full_name"
+                        || key = "hide_activity"
+                        || key = "hide_email"
                         || key = "language"
                         || key = "location"
                         || key = "theme"
@@ -24423,14 +24919,15 @@ module UserSettingsOptionsJsonParseExtension =
 
             {
                 AdditionalProperties = arg_0
-                DiffViewStyle = arg_1
-                FullName = arg_2
-                HideActivity = arg_3
-                HideEmail = arg_4
-                Language = arg_5
-                Location = arg_6
-                Theme = arg_7
-                Website = arg_8
+                Description = arg_1
+                DiffViewStyle = arg_2
+                FullName = arg_3
+                HideActivity = arg_4
+                HideEmail = arg_5
+                Language = arg_6
+                Location = arg_7
+                Theme = arg_8
+                Website = arg_9
             }
 namespace Gitea
 
@@ -24453,7 +24950,7 @@ module WatchInfoJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["repositoryUrl"] with
+                match node.["repository_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24468,7 +24965,7 @@ module WatchInfoJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_1 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24480,10 +24977,10 @@ module WatchInfoJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "createdAt"
+                        key = "created_at"
                         || key = "ignored"
                         || key = "reason"
-                        || key = "repositoryUrl"
+                        || key = "repository_url"
                         || key = "subscribed"
                         || key = "url"
                     then
@@ -24612,7 +25109,7 @@ module WikiPageJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_7 =
-                match node.["subUrl"] with
+                match node.["sub_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24622,12 +25119,12 @@ module WikiPageJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["lastCommit"] with
+                match node.["last_commit"] with
                 | null -> None
                 | v -> WikiCommit.jsonParse v |> Some
 
             let arg_4 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24637,12 +25134,12 @@ module WikiPageJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["contentBase64"] with
+                match node.["content_base64"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["commitCount"] with
+                match node.["commit_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -24654,13 +25151,13 @@ module WikiPageJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "commitCount"
-                        || key = "contentBase64"
+                        key = "commit_count"
+                        || key = "content_base64"
                         || key = "footer"
-                        || key = "htmlUrl"
-                        || key = "lastCommit"
+                        || key = "html_url"
+                        || key = "last_commit"
                         || key = "sidebar"
-                        || key = "subUrl"
+                        || key = "sub_url"
                         || key = "title"
                     then
                         ()
@@ -24696,17 +25193,17 @@ module WikiPageMetaDataJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["subUrl"] with
+                match node.["sub_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["lastCommit"] with
+                match node.["last_commit"] with
                 | null -> None
                 | v -> WikiCommit.jsonParse v |> Some
 
             let arg_1 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24717,7 +25214,7 @@ module WikiPageMetaDataJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "htmlUrl" || key = "lastCommit" || key = "subUrl" || key = "title" then
+                    if key = "html_url" || key = "last_commit" || key = "sub_url" || key = "title" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -24747,27 +25244,27 @@ module CommentJsonParseExtension =
                 | v -> User.jsonParse v |> Some
 
             let arg_10 =
-                match node.["updatedAt"] with
+                match node.["updated_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_9 =
-                match node.["pullRequestUrl"] with
+                match node.["pull_request_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_8 =
-                match node.["originalAuthorId"] with
+                match node.["original_author_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_7 =
-                match node.["originalAuthor"] with
+                match node.["original_author"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["issueUrl"] with
+                match node.["issue_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24777,12 +25274,12 @@ module CommentJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_4 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24810,14 +25307,14 @@ module CommentJsonParseExtension =
                     if
                         key = "assets"
                         || key = "body"
-                        || key = "createdAt"
-                        || key = "htmlUrl"
+                        || key = "created_at"
+                        || key = "html_url"
                         || key = "id"
-                        || key = "issueUrl"
-                        || key = "originalAuthor"
-                        || key = "originalAuthorId"
-                        || key = "pullRequestUrl"
-                        || key = "updatedAt"
+                        || key = "issue_url"
+                        || key = "original_author"
+                        || key = "original_author_id"
+                        || key = "pull_request_url"
+                        || key = "updated_at"
                         || key = "user"
                     then
                         ()
@@ -24850,30 +25347,35 @@ module CommitStatusJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CommitStatus =
-            let arg_8 =
+            let arg_9 =
                 match node.["url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_8 =
+                match node.["updated_at"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_7 =
-                match node.["updatedAt"] with
+                match node.["target_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["targetUrl"] with
-                | null -> None
-                | v -> v.AsValue().GetValue<System.String> () |> Some
-
-            let arg_5 =
                 match node.["status"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_4 =
+            let arg_5 =
                 match node.["id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
+
+            let arg_4 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
                 match node.["creator"] with
@@ -24881,7 +25383,7 @@ module CommitStatusJsonParseExtension =
                 | v -> User.jsonParse v |> Some
 
             let arg_2 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24899,12 +25401,13 @@ module CommitStatusJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "context"
-                        || key = "createdAt"
+                        || key = "created_at"
                         || key = "creator"
+                        || key = "description"
                         || key = "id"
                         || key = "status"
-                        || key = "targetUrl"
-                        || key = "updatedAt"
+                        || key = "target_url"
+                        || key = "updated_at"
                         || key = "url"
                     then
                         ()
@@ -24918,11 +25421,12 @@ module CommitStatusJsonParseExtension =
                 Context = arg_1
                 CreatedAt = arg_2
                 Creator = arg_3
-                Id = arg_4
-                Status = arg_5
-                TargetUrl = arg_6
-                UpdatedAt = arg_7
-                Url = arg_8
+                Description = arg_4
+                Id = arg_5
+                Status = arg_6
+                TargetUrl = arg_7
+                UpdatedAt = arg_8
+                Url = arg_9
             }
 namespace Gitea
 
@@ -24934,8 +25438,13 @@ module ContentsResponseJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ContentsResponse =
-            let arg_14 =
+            let arg_15 =
                 match node.["url"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
+            let arg_14 =
+                match node.["type"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24945,7 +25454,7 @@ module ContentsResponseJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_12 =
-                match node.["submoduleGitUrl"] with
+                match node.["submodule_git_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24970,17 +25479,17 @@ module ContentsResponseJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_7 =
-                match node.["lastCommitSha"] with
+                match node.["last_commit_sha"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["gitUrl"] with
+                match node.["git_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -24990,7 +25499,7 @@ module ContentsResponseJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["downloadUrl"] with
+                match node.["download_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25000,7 +25509,7 @@ module ContentsResponseJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["links"] with
+                match node.["_links"] with
                 | null -> None
                 | v -> FileLinksResponse.jsonParse v |> Some
 
@@ -25012,19 +25521,20 @@ module ContentsResponseJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "links"
+                        key = "_links"
                         || key = "content"
-                        || key = "downloadUrl"
+                        || key = "download_url"
                         || key = "encoding"
-                        || key = "gitUrl"
-                        || key = "htmlUrl"
-                        || key = "lastCommitSha"
+                        || key = "git_url"
+                        || key = "html_url"
+                        || key = "last_commit_sha"
                         || key = "name"
                         || key = "path"
                         || key = "sha"
                         || key = "size"
-                        || key = "submoduleGitUrl"
+                        || key = "submodule_git_url"
                         || key = "target"
+                        || key = "type"
                         || key = "url"
                     then
                         ()
@@ -25048,7 +25558,8 @@ module ContentsResponseJsonParseExtension =
                 Size = arg_11
                 SubmoduleGitUrl = arg_12
                 Target = arg_13
-                Url = arg_14
+                Type = arg_14
+                Url = arg_15
             }
 namespace Gitea
 
@@ -25066,7 +25577,7 @@ module CreateFileOptionsJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_7 =
-                match node.["newBranch"] with
+                match node.["new_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25121,7 +25632,7 @@ module CreateFileOptionsJsonParseExtension =
                         || key = "content"
                         || key = "dates"
                         || key = "message"
-                        || key = "newBranch"
+                        || key = "new_branch"
                         || key = "signoff"
                     then
                         ()
@@ -25151,6 +25662,18 @@ module CreateHookOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CreateHookOption =
+            let arg_6 =
+                (match node.["type"] with
+                 | null ->
+                     raise (
+                         System.Collections.Generic.KeyNotFoundException (
+                             sprintf "Required key '%s' not found on JSON object" ("type")
+                         )
+                     )
+                 | v -> v)
+                    .AsValue()
+                    .GetValue<System.String> ()
+
             let arg_5 =
                 match node.["events"] with
                 | null -> None
@@ -25173,12 +25696,12 @@ module CreateHookOptionJsonParseExtension =
                 )
 
             let arg_3 =
-                match node.["branchFilter"] with
+                match node.["branch_filter"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["authorizationHeader"] with
+                match node.["authorization_header"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25196,10 +25719,11 @@ module CreateHookOptionJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "active"
-                        || key = "authorizationHeader"
-                        || key = "branchFilter"
+                        || key = "authorization_header"
+                        || key = "branch_filter"
                         || key = "config"
                         || key = "events"
+                        || key = "type"
                     then
                         ()
                     else
@@ -25214,6 +25738,7 @@ module CreateHookOptionJsonParseExtension =
                 BranchFilter = arg_3
                 Config = arg_4
                 Events = arg_5
+                Type = arg_6
             }
 namespace Gitea
 
@@ -25231,7 +25756,7 @@ module CreatePullReviewOptionsJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["commitId"] with
+                match node.["commit_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25256,7 +25781,7 @@ module CreatePullReviewOptionsJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "body" || key = "comments" || key = "commitId" || key = "event" then
+                    if key = "body" || key = "comments" || key = "commit_id" || key = "event" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -25298,7 +25823,7 @@ module DeleteFileOptionsJsonParseExtension =
                     .GetValue<System.String> ()
 
             let arg_6 =
-                match node.["newBranch"] with
+                match node.["new_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25340,7 +25865,7 @@ module DeleteFileOptionsJsonParseExtension =
                         || key = "committer"
                         || key = "dates"
                         || key = "message"
-                        || key = "newBranch"
+                        || key = "new_branch"
                         || key = "sha"
                         || key = "signoff"
                     then
@@ -25371,98 +25896,103 @@ module EditRepoOptionJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : EditRepoOption =
-            let arg_26 =
+            let arg_27 =
                 match node.["website"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_25 =
+            let arg_26 =
                 match node.["template"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_24 =
+            let arg_25 =
                 match node.["private"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_23 =
+            let arg_24 =
                 match node.["name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_22 =
-                match node.["mirrorInterval"] with
+            let arg_23 =
+                match node.["mirror_interval"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_21 =
-                match node.["internalTracker"] with
+            let arg_22 =
+                match node.["internal_tracker"] with
                 | null -> None
                 | v -> InternalTracker.jsonParse v |> Some
 
+            let arg_21 =
+                match node.["ignore_whitespace_conflicts"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
             let arg_20 =
-                match node.["ignoreWhitespaceConflicts"] with
+                match node.["has_wiki"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_19 =
-                match node.["hasWiki"] with
+                match node.["has_pull_requests"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_18 =
-                match node.["hasPullRequests"] with
+                match node.["has_projects"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_17 =
-                match node.["hasProjects"] with
+                match node.["has_issues"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_16 =
-                match node.["hasIssues"] with
-                | null -> None
-                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
-
-            let arg_15 =
-                match node.["externalWiki"] with
+                match node.["external_wiki"] with
                 | null -> None
                 | v -> ExternalWiki.jsonParse v |> Some
 
-            let arg_14 =
-                match node.["externalTracker"] with
+            let arg_15 =
+                match node.["external_tracker"] with
                 | null -> None
                 | v -> ExternalTracker.jsonParse v |> Some
 
-            let arg_13 =
-                match node.["enablePrune"] with
+            let arg_14 =
+                match node.["enable_prune"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
+            let arg_13 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_12 =
-                match node.["defaultMergeStyle"] with
+                match node.["default_merge_style"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_11 =
-                match node.["defaultDeleteBranchAfterMerge"] with
+                match node.["default_delete_branch_after_merge"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_10 =
-                match node.["defaultBranch"] with
+                match node.["default_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_9 =
-                match node.["defaultAllowMaintainerEdit"] with
+                match node.["default_allow_maintainer_edit"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_8 =
-                match node.["autodetectManualMerge"] with
+                match node.["autodetect_manual_merge"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -25472,32 +26002,32 @@ module EditRepoOptionJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_6 =
-                match node.["allowSquashMerge"] with
+                match node.["allow_squash_merge"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_5 =
-                match node.["allowRebaseUpdate"] with
+                match node.["allow_rebase_update"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["allowRebaseExplicit"] with
+                match node.["allow_rebase_explicit"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["allowRebase"] with
+                match node.["allow_rebase"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["allowMergeCommits"] with
+                match node.["allow_merge_commits"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_1 =
-                match node.["allowManualMerge"] with
+                match node.["allow_manual_merge"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -25509,28 +26039,29 @@ module EditRepoOptionJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "allowManualMerge"
-                        || key = "allowMergeCommits"
-                        || key = "allowRebase"
-                        || key = "allowRebaseExplicit"
-                        || key = "allowRebaseUpdate"
-                        || key = "allowSquashMerge"
+                        key = "allow_manual_merge"
+                        || key = "allow_merge_commits"
+                        || key = "allow_rebase"
+                        || key = "allow_rebase_explicit"
+                        || key = "allow_rebase_update"
+                        || key = "allow_squash_merge"
                         || key = "archived"
-                        || key = "autodetectManualMerge"
-                        || key = "defaultAllowMaintainerEdit"
-                        || key = "defaultBranch"
-                        || key = "defaultDeleteBranchAfterMerge"
-                        || key = "defaultMergeStyle"
-                        || key = "enablePrune"
-                        || key = "externalTracker"
-                        || key = "externalWiki"
-                        || key = "hasIssues"
-                        || key = "hasProjects"
-                        || key = "hasPullRequests"
-                        || key = "hasWiki"
-                        || key = "ignoreWhitespaceConflicts"
-                        || key = "internalTracker"
-                        || key = "mirrorInterval"
+                        || key = "autodetect_manual_merge"
+                        || key = "default_allow_maintainer_edit"
+                        || key = "default_branch"
+                        || key = "default_delete_branch_after_merge"
+                        || key = "default_merge_style"
+                        || key = "description"
+                        || key = "enable_prune"
+                        || key = "external_tracker"
+                        || key = "external_wiki"
+                        || key = "has_issues"
+                        || key = "has_projects"
+                        || key = "has_pull_requests"
+                        || key = "has_wiki"
+                        || key = "ignore_whitespace_conflicts"
+                        || key = "internal_tracker"
+                        || key = "mirror_interval"
                         || key = "name"
                         || key = "private"
                         || key = "template"
@@ -25556,20 +26087,72 @@ module EditRepoOptionJsonParseExtension =
                 DefaultBranch = arg_10
                 DefaultDeleteBranchAfterMerge = arg_11
                 DefaultMergeStyle = arg_12
-                EnablePrune = arg_13
-                ExternalTracker = arg_14
-                ExternalWiki = arg_15
-                HasIssues = arg_16
-                HasProjects = arg_17
-                HasPullRequests = arg_18
-                HasWiki = arg_19
-                IgnoreWhitespaceConflicts = arg_20
-                InternalTracker = arg_21
-                MirrorInterval = arg_22
-                Name = arg_23
-                Private = arg_24
-                Template = arg_25
-                Website = arg_26
+                Description = arg_13
+                EnablePrune = arg_14
+                ExternalTracker = arg_15
+                ExternalWiki = arg_16
+                HasIssues = arg_17
+                HasProjects = arg_18
+                HasPullRequests = arg_19
+                HasWiki = arg_20
+                IgnoreWhitespaceConflicts = arg_21
+                InternalTracker = arg_22
+                MirrorInterval = arg_23
+                Name = arg_24
+                Private = arg_25
+                Template = arg_26
+                Website = arg_27
+            }
+namespace Gitea
+
+/// Module containing JSON parsing extension members for the IssueFormField type
+[<AutoOpen>]
+module IssueFormFieldJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type IssueFormField with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : IssueFormField =
+            let arg_4 =
+                match node.["validations"] with
+                | null -> None
+                | v -> Type6.jsonParse v |> Some
+
+            let arg_3 =
+                match node.["type"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
+            let arg_2 =
+                match node.["id"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
+            let arg_1 =
+                match node.["attributes"] with
+                | null -> None
+                | v -> Type5.jsonParse v |> Some
+
+            let arg_0 =
+                let result =
+                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode> ()
+
+                let node = node.AsObject ()
+
+                for KeyValue (key, value) in node do
+                    if key = "attributes" || key = "id" || key = "type" || key = "validations" then
+                        ()
+                    else
+                        result.Add (key, node.[key])
+
+                result
+
+            {
+                AdditionalProperties = arg_0
+                Attributes = arg_1
+                Id = arg_2
+                Type = arg_3
+                Validations = arg_4
             }
 namespace Gitea
 
@@ -25606,7 +26189,7 @@ module IssueTemplateJsonParseExtension =
                     |> Some
 
             let arg_4 =
-                match node.["fileName"] with
+                match node.["file_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25640,7 +26223,7 @@ module IssueTemplateJsonParseExtension =
                         key = "about"
                         || key = "body"
                         || key = "content"
-                        || key = "fileName"
+                        || key = "file_name"
                         || key = "labels"
                         || key = "name"
                         || key = "ref"
@@ -25673,48 +26256,53 @@ module MilestoneJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Milestone =
-            let arg_9 =
-                match node.["updatedAt"] with
+            let arg_10 =
+                match node.["updated_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_8 =
+            let arg_9 =
                 match node.["title"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_7 =
+            let arg_8 =
                 match node.["state"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_6 =
-                match node.["openIssues"] with
+            let arg_7 =
+                match node.["open_issues"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_5 =
+            let arg_6 =
                 match node.["id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
+            let arg_5 =
+                match node.["due_on"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_4 =
-                match node.["dueOn"] with
+                match node.["description"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["closedIssues"] with
+                match node.["closed_issues"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_1 =
-                match node.["closedAt"] with
+                match node.["closed_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25726,15 +26314,16 @@ module MilestoneJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "closedAt"
-                        || key = "closedIssues"
-                        || key = "createdAt"
-                        || key = "dueOn"
+                        key = "closed_at"
+                        || key = "closed_issues"
+                        || key = "created_at"
+                        || key = "description"
+                        || key = "due_on"
                         || key = "id"
-                        || key = "openIssues"
+                        || key = "open_issues"
                         || key = "state"
                         || key = "title"
-                        || key = "updatedAt"
+                        || key = "updated_at"
                     then
                         ()
                     else
@@ -25747,12 +26336,13 @@ module MilestoneJsonParseExtension =
                 ClosedAt = arg_1
                 ClosedIssues = arg_2
                 CreatedAt = arg_3
-                DueOn = arg_4
-                Id = arg_5
-                OpenIssues = arg_6
-                State = arg_7
-                Title = arg_8
-                UpdatedAt = arg_9
+                Description = arg_4
+                DueOn = arg_5
+                Id = arg_6
+                OpenIssues = arg_7
+                State = arg_8
+                Title = arg_9
+                UpdatedAt = arg_10
             }
 namespace Gitea
 
@@ -25809,8 +26399,13 @@ module NotificationSubjectJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : NotificationSubject =
-            let arg_6 =
+            let arg_7 =
                 match node.["url"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
+            let arg_6 =
+                match node.["type"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25825,17 +26420,17 @@ module NotificationSubjectJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["latestCommentUrl"] with
+                match node.["latest_comment_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["latestCommentHtmlUrl"] with
+                match node.["latest_comment_html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25847,11 +26442,12 @@ module NotificationSubjectJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "htmlUrl"
-                        || key = "latestCommentHtmlUrl"
-                        || key = "latestCommentUrl"
+                        key = "html_url"
+                        || key = "latest_comment_html_url"
+                        || key = "latest_comment_url"
                         || key = "state"
                         || key = "title"
+                        || key = "type"
                         || key = "url"
                     then
                         ()
@@ -25867,7 +26463,8 @@ module NotificationSubjectJsonParseExtension =
                 LatestCommentUrl = arg_3
                 State = arg_4
                 Title = arg_5
-                Url = arg_6
+                Type = arg_6
+                Url = arg_7
             }
 namespace Gitea
 
@@ -25958,12 +26555,12 @@ module PublicKeyJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["readOnly"] with
+                match node.["read_only"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_5 =
-                match node.["keyType"] with
+                match node.["key_type"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25983,7 +26580,7 @@ module PublicKeyJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -25995,12 +26592,12 @@ module PublicKeyJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "createdAt"
+                        key = "created_at"
                         || key = "fingerprint"
                         || key = "id"
                         || key = "key"
-                        || key = "keyType"
-                        || key = "readOnly"
+                        || key = "key_type"
+                        || key = "read_only"
                         || key = "title"
                         || key = "url"
                         || key = "user"
@@ -26039,7 +26636,7 @@ module PullReviewJsonParseExtension =
                 | v -> User.jsonParse v |> Some
 
             let arg_13 =
-                match node.["updatedAt"] with
+                match node.["updated_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26049,7 +26646,7 @@ module PullReviewJsonParseExtension =
                 | v -> Team.jsonParse v |> Some
 
             let arg_11 =
-                match node.["submittedAt"] with
+                match node.["submitted_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26064,7 +26661,7 @@ module PullReviewJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_8 =
-                match node.["pullRequestUrl"] with
+                match node.["pull_request_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26079,7 +26676,7 @@ module PullReviewJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_5 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26089,12 +26686,12 @@ module PullReviewJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["commitId"] with
+                match node.["commit_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["commentsCount"] with
+                match node.["comments_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -26112,18 +26709,18 @@ module PullReviewJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "body"
-                        || key = "commentsCount"
-                        || key = "commitId"
+                        || key = "comments_count"
+                        || key = "commit_id"
                         || key = "dismissed"
-                        || key = "htmlUrl"
+                        || key = "html_url"
                         || key = "id"
                         || key = "official"
-                        || key = "pullRequestUrl"
+                        || key = "pull_request_url"
                         || key = "stale"
                         || key = "state"
-                        || key = "submittedAt"
+                        || key = "submitted_at"
                         || key = "team"
-                        || key = "updatedAt"
+                        || key = "updated_at"
                         || key = "user"
                     then
                         ()
@@ -26165,7 +26762,7 @@ module PullReviewCommentJsonParseExtension =
                 | v -> User.jsonParse v |> Some
 
             let arg_14 =
-                match node.["updatedAt"] with
+                match node.["updated_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26175,12 +26772,12 @@ module PullReviewCommentJsonParseExtension =
                 | v -> User.jsonParse v |> Some
 
             let arg_12 =
-                match node.["pullRequestUrl"] with
+                match node.["pull_request_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_11 =
-                match node.["pullRequestReviewId"] with
+                match node.["pull_request_review_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -26195,12 +26792,12 @@ module PullReviewCommentJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_8 =
-                match node.["originalPosition"] with
+                match node.["original_position"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_7 =
-                match node.["originalCommitId"] with
+                match node.["original_commit_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26210,22 +26807,22 @@ module PullReviewCommentJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_5 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_4 =
-                match node.["diffHunk"] with
+                match node.["diff_hunk"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["commitId"] with
+                match node.["commit_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26243,19 +26840,19 @@ module PullReviewCommentJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "body"
-                        || key = "commitId"
-                        || key = "createdAt"
-                        || key = "diffHunk"
-                        || key = "htmlUrl"
+                        || key = "commit_id"
+                        || key = "created_at"
+                        || key = "diff_hunk"
+                        || key = "html_url"
                         || key = "id"
-                        || key = "originalCommitId"
-                        || key = "originalPosition"
+                        || key = "original_commit_id"
+                        || key = "original_position"
                         || key = "path"
                         || key = "position"
-                        || key = "pullRequestReviewId"
-                        || key = "pullRequestUrl"
+                        || key = "pull_request_review_id"
+                        || key = "pull_request_url"
                         || key = "resolver"
-                        || key = "updatedAt"
+                        || key = "updated_at"
                         || key = "user"
                     then
                         ()
@@ -26298,7 +26895,7 @@ module ReactionJsonParseExtension =
                 | v -> User.jsonParse v |> Some
 
             let arg_2 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26314,7 +26911,7 @@ module ReactionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "content" || key = "createdAt" || key = "user" then
+                    if key = "content" || key = "created_at" || key = "user" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -26338,7 +26935,7 @@ module ReleaseJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Release =
             let arg_15 =
-                match node.["zipballUrl"] with
+                match node.["zipball_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26348,22 +26945,22 @@ module ReleaseJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_13 =
-                match node.["targetCommitish"] with
+                match node.["target_commitish"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_12 =
-                match node.["tarballUrl"] with
+                match node.["tarball_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_11 =
-                match node.["tagName"] with
+                match node.["tag_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_10 =
-                match node.["publishedAt"] with
+                match node.["published_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26383,7 +26980,7 @@ module ReleaseJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_6 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26393,7 +26990,7 @@ module ReleaseJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26427,18 +27024,18 @@ module ReleaseJsonParseExtension =
                         key = "assets"
                         || key = "author"
                         || key = "body"
-                        || key = "createdAt"
+                        || key = "created_at"
                         || key = "draft"
-                        || key = "htmlUrl"
+                        || key = "html_url"
                         || key = "id"
                         || key = "name"
                         || key = "prerelease"
-                        || key = "publishedAt"
-                        || key = "tagName"
-                        || key = "tarballUrl"
-                        || key = "targetCommitish"
+                        || key = "published_at"
+                        || key = "tag_name"
+                        || key = "tarball_url"
+                        || key = "target_commitish"
                         || key = "url"
-                        || key = "zipballUrl"
+                        || key = "zipball_url"
                     then
                         ()
                     else
@@ -26480,7 +27077,7 @@ module RepoCollaboratorPermissionJsonParseExtension =
                 | v -> User.jsonParse v |> Some
 
             let arg_2 =
-                match node.["roleName"] with
+                match node.["role_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26496,7 +27093,7 @@ module RepoCollaboratorPermissionJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "permission" || key = "roleName" || key = "user" then
+                    if key = "permission" || key = "role_name" || key = "user" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -26634,235 +27231,233 @@ module RepositoryJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Repository =
-            let arg_51 =
+            let arg_52 =
                 match node.["website"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_50 =
-                match node.["watchersCount"] with
+            let arg_51 =
+                match node.["watchers_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_49 =
-                match node.["updatedAt"] with
+            let arg_50 =
+                match node.["updated_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_48 =
+            let arg_49 =
                 match node.["template"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_47 =
-                match node.["starsCount"] with
+            let arg_48 =
+                match node.["stars_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_46 =
-                match node.["sshUrl"] with
+            let arg_47 =
+                match node.["ssh_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_45 =
+            let arg_46 =
                 match node.["size"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_44 =
-                match node.["repoTransfer"] with
+            let arg_45 =
+                match node.["repo_transfer"] with
                 | null -> None
                 | v -> RepoTransfer.jsonParse v |> Some
 
-            let arg_43 =
-                match node.["releaseCounter"] with
+            let arg_44 =
+                match node.["release_counter"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_42 =
+            let arg_43 =
                 match node.["private"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_41 =
+            let arg_42 =
                 match node.["permissions"] with
                 | null -> None
                 | v -> Permission.jsonParse v |> Some
 
-            let arg_40 =
-                Repository.jsonParse (
-                    match node.["parent"] with
-                    | null ->
-                        raise (
-                            System.Collections.Generic.KeyNotFoundException (
-                                sprintf "Required key '%s' not found on JSON object" ("parent")
-                            )
-                        )
-                    | v -> v
-                )
+            let arg_41 =
+                match node.["parent"] with
+                | null -> None
+                | v -> Repository.jsonParse v |> Some
 
-            let arg_39 =
+            let arg_40 =
                 match node.["owner"] with
                 | null -> None
                 | v -> User.jsonParse v |> Some
 
-            let arg_38 =
-                match node.["originalUrl"] with
+            let arg_39 =
+                match node.["original_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_38 =
+                match node.["open_pr_counter"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.Int32> () |> Some
+
             let arg_37 =
-                match node.["openPrCounter"] with
+                match node.["open_issues_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_36 =
-                match node.["openIssuesCount"] with
-                | null -> None
-                | v -> v.AsValue().GetValue<System.Int32> () |> Some
-
-            let arg_35 =
                 match node.["name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_35 =
+                match node.["mirror_updated"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_34 =
-                match node.["mirrorUpdated"] with
+                match node.["mirror_interval"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_33 =
-                match node.["mirrorInterval"] with
-                | null -> None
-                | v -> v.AsValue().GetValue<System.String> () |> Some
-
-            let arg_32 =
                 match node.["mirror"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_31 =
+            let arg_32 =
                 match node.["link"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_30 =
-                match node.["languagesUrl"] with
+            let arg_31 =
+                match node.["languages_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_29 =
+            let arg_30 =
                 match node.["language"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_28 =
-                match node.["internalTracker"] with
+            let arg_29 =
+                match node.["internal_tracker"] with
                 | null -> None
                 | v -> InternalTracker.jsonParse v |> Some
 
-            let arg_27 =
+            let arg_28 =
                 match node.["internal"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_26 =
-                match node.["ignoreWhitespaceConflicts"] with
+            let arg_27 =
+                match node.["ignore_whitespace_conflicts"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_25 =
+            let arg_26 =
                 match node.["id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_24 =
-                match node.["htmlUrl"] with
+            let arg_25 =
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
+            let arg_24 =
+                match node.["has_wiki"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
             let arg_23 =
-                match node.["hasWiki"] with
+                match node.["has_pull_requests"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_22 =
-                match node.["hasPullRequests"] with
+                match node.["has_projects"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_21 =
-                match node.["hasProjects"] with
+                match node.["has_issues"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_20 =
-                match node.["hasIssues"] with
-                | null -> None
-                | v -> v.AsValue().GetValue<System.Boolean> () |> Some
-
-            let arg_19 =
-                match node.["fullName"] with
+                match node.["full_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
-            let arg_18 =
-                match node.["forksCount"] with
+            let arg_19 =
+                match node.["forks_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
-            let arg_17 =
+            let arg_18 =
                 match node.["fork"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
-            let arg_16 =
-                match node.["externalWiki"] with
+            let arg_17 =
+                match node.["external_wiki"] with
                 | null -> None
                 | v -> ExternalWiki.jsonParse v |> Some
 
-            let arg_15 =
-                match node.["externalTracker"] with
+            let arg_16 =
+                match node.["external_tracker"] with
                 | null -> None
                 | v -> ExternalTracker.jsonParse v |> Some
 
-            let arg_14 =
+            let arg_15 =
                 match node.["empty"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
+            let arg_14 =
+                match node.["description"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_13 =
-                match node.["defaultMergeStyle"] with
+                match node.["default_merge_style"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_12 =
-                match node.["defaultDeleteBranchAfterMerge"] with
+                match node.["default_delete_branch_after_merge"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_11 =
-                match node.["defaultBranch"] with
+                match node.["default_branch"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_10 =
-                match node.["defaultAllowMaintainerEdit"] with
+                match node.["default_allow_maintainer_edit"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_9 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_8 =
-                match node.["cloneUrl"] with
+                match node.["clone_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_7 =
-                match node.["avatarUrl"] with
+                match node.["avatar_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -26872,27 +27467,27 @@ module RepositoryJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_5 =
-                match node.["allowSquashMerge"] with
+                match node.["allow_squash_merge"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_4 =
-                match node.["allowRebaseUpdate"] with
+                match node.["allow_rebase_update"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_3 =
-                match node.["allowRebaseExplicit"] with
+                match node.["allow_rebase_explicit"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["allowRebase"] with
+                match node.["allow_rebase"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_1 =
-                match node.["allowMergeCommits"] with
+                match node.["allow_merge_commits"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -26904,56 +27499,57 @@ module RepositoryJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "allowMergeCommits"
-                        || key = "allowRebase"
-                        || key = "allowRebaseExplicit"
-                        || key = "allowRebaseUpdate"
-                        || key = "allowSquashMerge"
+                        key = "allow_merge_commits"
+                        || key = "allow_rebase"
+                        || key = "allow_rebase_explicit"
+                        || key = "allow_rebase_update"
+                        || key = "allow_squash_merge"
                         || key = "archived"
-                        || key = "avatarUrl"
-                        || key = "cloneUrl"
-                        || key = "createdAt"
-                        || key = "defaultAllowMaintainerEdit"
-                        || key = "defaultBranch"
-                        || key = "defaultDeleteBranchAfterMerge"
-                        || key = "defaultMergeStyle"
+                        || key = "avatar_url"
+                        || key = "clone_url"
+                        || key = "created_at"
+                        || key = "default_allow_maintainer_edit"
+                        || key = "default_branch"
+                        || key = "default_delete_branch_after_merge"
+                        || key = "default_merge_style"
+                        || key = "description"
                         || key = "empty"
-                        || key = "externalTracker"
-                        || key = "externalWiki"
+                        || key = "external_tracker"
+                        || key = "external_wiki"
                         || key = "fork"
-                        || key = "forksCount"
-                        || key = "fullName"
-                        || key = "hasIssues"
-                        || key = "hasProjects"
-                        || key = "hasPullRequests"
-                        || key = "hasWiki"
-                        || key = "htmlUrl"
+                        || key = "forks_count"
+                        || key = "full_name"
+                        || key = "has_issues"
+                        || key = "has_projects"
+                        || key = "has_pull_requests"
+                        || key = "has_wiki"
+                        || key = "html_url"
                         || key = "id"
-                        || key = "ignoreWhitespaceConflicts"
+                        || key = "ignore_whitespace_conflicts"
                         || key = "internal"
-                        || key = "internalTracker"
+                        || key = "internal_tracker"
                         || key = "language"
-                        || key = "languagesUrl"
+                        || key = "languages_url"
                         || key = "link"
                         || key = "mirror"
-                        || key = "mirrorInterval"
-                        || key = "mirrorUpdated"
+                        || key = "mirror_interval"
+                        || key = "mirror_updated"
                         || key = "name"
-                        || key = "openIssuesCount"
-                        || key = "openPrCounter"
-                        || key = "originalUrl"
+                        || key = "open_issues_count"
+                        || key = "open_pr_counter"
+                        || key = "original_url"
                         || key = "owner"
                         || key = "parent"
                         || key = "permissions"
                         || key = "private"
-                        || key = "releaseCounter"
-                        || key = "repoTransfer"
+                        || key = "release_counter"
+                        || key = "repo_transfer"
                         || key = "size"
-                        || key = "sshUrl"
-                        || key = "starsCount"
+                        || key = "ssh_url"
+                        || key = "stars_count"
                         || key = "template"
-                        || key = "updatedAt"
-                        || key = "watchersCount"
+                        || key = "updated_at"
+                        || key = "watchers_count"
                         || key = "website"
                     then
                         ()
@@ -26977,44 +27573,45 @@ module RepositoryJsonParseExtension =
                 DefaultBranch = arg_11
                 DefaultDeleteBranchAfterMerge = arg_12
                 DefaultMergeStyle = arg_13
-                Empty = arg_14
-                ExternalTracker = arg_15
-                ExternalWiki = arg_16
-                Fork = arg_17
-                ForksCount = arg_18
-                FullName = arg_19
-                HasIssues = arg_20
-                HasProjects = arg_21
-                HasPullRequests = arg_22
-                HasWiki = arg_23
-                HtmlUrl = arg_24
-                Id = arg_25
-                IgnoreWhitespaceConflicts = arg_26
-                Internal = arg_27
-                InternalTracker = arg_28
-                Language = arg_29
-                LanguagesUrl = arg_30
-                Link = arg_31
-                Mirror = arg_32
-                MirrorInterval = arg_33
-                MirrorUpdated = arg_34
-                Name = arg_35
-                OpenIssuesCount = arg_36
-                OpenPrCounter = arg_37
-                OriginalUrl = arg_38
-                Owner = arg_39
-                Parent = arg_40
-                Permissions = arg_41
-                Private = arg_42
-                ReleaseCounter = arg_43
-                RepoTransfer = arg_44
-                Size = arg_45
-                SshUrl = arg_46
-                StarsCount = arg_47
-                Template = arg_48
-                UpdatedAt = arg_49
-                WatchersCount = arg_50
-                Website = arg_51
+                Description = arg_14
+                Empty = arg_15
+                ExternalTracker = arg_16
+                ExternalWiki = arg_17
+                Fork = arg_18
+                ForksCount = arg_19
+                FullName = arg_20
+                HasIssues = arg_21
+                HasProjects = arg_22
+                HasPullRequests = arg_23
+                HasWiki = arg_24
+                HtmlUrl = arg_25
+                Id = arg_26
+                IgnoreWhitespaceConflicts = arg_27
+                Internal = arg_28
+                InternalTracker = arg_29
+                Language = arg_30
+                LanguagesUrl = arg_31
+                Link = arg_32
+                Mirror = arg_33
+                MirrorInterval = arg_34
+                MirrorUpdated = arg_35
+                Name = arg_36
+                OpenIssuesCount = arg_37
+                OpenPrCounter = arg_38
+                OriginalUrl = arg_39
+                Owner = arg_40
+                Parent = arg_41
+                Permissions = arg_42
+                Private = arg_43
+                ReleaseCounter = arg_44
+                RepoTransfer = arg_45
+                Size = arg_46
+                SshUrl = arg_47
+                StarsCount = arg_48
+                Template = arg_49
+                UpdatedAt = arg_50
+                WatchersCount = arg_51
+                Website = arg_52
             }
 namespace Gitea
 
@@ -27152,7 +27749,7 @@ module CombinedStatusJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["totalCount"] with
+                match node.["total_count"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -27181,7 +27778,7 @@ module CombinedStatusJsonParseExtension =
                 | v -> Repository.jsonParse v |> Some
 
             let arg_1 =
-                match node.["commitUrl"] with
+                match node.["commit_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -27193,12 +27790,12 @@ module CombinedStatusJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "commitUrl"
+                        key = "commit_url"
                         || key = "repository"
                         || key = "sha"
                         || key = "state"
                         || key = "statuses"
-                        || key = "totalCount"
+                        || key = "total_count"
                         || key = "url"
                     then
                         ()
@@ -27252,7 +27849,7 @@ module CommitJsonParseExtension =
                     |> Some
 
             let arg_6 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -27298,7 +27895,7 @@ module CommitJsonParseExtension =
                         || key = "committer"
                         || key = "created"
                         || key = "files"
-                        || key = "htmlUrl"
+                        || key = "html_url"
                         || key = "parents"
                         || key = "sha"
                         || key = "stats"
@@ -27349,12 +27946,12 @@ module DeployKeyJsonParseExtension =
                 | v -> Repository.jsonParse v |> Some
 
             let arg_6 =
-                match node.["readOnly"] with
+                match node.["read_only"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_5 =
-                match node.["keyId"] with
+                match node.["key_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -27374,7 +27971,7 @@ module DeployKeyJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_1 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -27386,12 +27983,12 @@ module DeployKeyJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "createdAt"
+                        key = "created_at"
                         || key = "fingerprint"
                         || key = "id"
                         || key = "key"
-                        || key = "keyId"
-                        || key = "readOnly"
+                        || key = "key_id"
+                        || key = "read_only"
                         || key = "repository"
                         || key = "title"
                         || key = "url"
@@ -27525,7 +28122,7 @@ module IssueJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_22 =
-                match node.["updatedAt"] with
+                match node.["updated_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -27550,17 +28147,17 @@ module IssueJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_17 =
-                match node.["pullRequest"] with
+                match node.["pull_request"] with
                 | null -> None
                 | v -> PullRequestMeta.jsonParse v |> Some
 
             let arg_16 =
-                match node.["originalAuthorId"] with
+                match node.["original_author_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_15 =
-                match node.["originalAuthor"] with
+                match node.["original_author"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -27580,7 +28177,7 @@ module IssueJsonParseExtension =
                 | v -> v.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq |> Some
 
             let arg_11 =
-                match node.["isLocked"] with
+                match node.["is_locked"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -27590,17 +28187,17 @@ module IssueJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_9 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_8 =
-                match node.["dueDate"] with
+                match node.["due_date"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_7 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -27610,7 +28207,7 @@ module IssueJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_5 =
-                match node.["closedAt"] with
+                match node.["closed_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -27650,24 +28247,24 @@ module IssueJsonParseExtension =
                         || key = "assignee"
                         || key = "assignees"
                         || key = "body"
-                        || key = "closedAt"
+                        || key = "closed_at"
                         || key = "comments"
-                        || key = "createdAt"
-                        || key = "dueDate"
-                        || key = "htmlUrl"
+                        || key = "created_at"
+                        || key = "due_date"
+                        || key = "html_url"
                         || key = "id"
-                        || key = "isLocked"
+                        || key = "is_locked"
                         || key = "labels"
                         || key = "milestone"
                         || key = "number"
-                        || key = "originalAuthor"
-                        || key = "originalAuthorId"
-                        || key = "pullRequest"
+                        || key = "original_author"
+                        || key = "original_author_id"
+                        || key = "pull_request"
                         || key = "ref"
                         || key = "repository"
                         || key = "state"
                         || key = "title"
-                        || key = "updatedAt"
+                        || key = "updated_at"
                         || key = "url"
                         || key = "user"
                     then
@@ -27840,7 +28437,7 @@ module NotificationThreadJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["updatedAt"] with
+                match node.["updated_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -27882,7 +28479,7 @@ module NotificationThreadJsonParseExtension =
                         || key = "repository"
                         || key = "subject"
                         || key = "unread"
-                        || key = "updatedAt"
+                        || key = "updated_at"
                         || key = "url"
                     then
                         ()
@@ -27917,7 +28514,7 @@ module PRBranchInfoJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_4 =
-                match node.["repoId"] with
+                match node.["repo_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -27943,7 +28540,7 @@ module PRBranchInfoJsonParseExtension =
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
-                    if key = "label" || key = "ref" || key = "repo" || key = "repoId" || key = "sha" then
+                    if key = "label" || key = "ref" || key = "repo" || key = "repo_id" || key = "sha" then
                         ()
                     else
                         result.Add (key, node.[key])
@@ -27968,8 +28565,13 @@ module PackageJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Package =
-            let arg_7 =
+            let arg_8 =
                 match node.["version"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
+            let arg_7 =
+                match node.["type"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -27999,7 +28601,7 @@ module PackageJsonParseExtension =
                 | v -> User.jsonParse v |> Some
 
             let arg_1 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28011,12 +28613,13 @@ module PackageJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "createdAt"
+                        key = "created_at"
                         || key = "creator"
                         || key = "id"
                         || key = "name"
                         || key = "owner"
                         || key = "repository"
+                        || key = "type"
                         || key = "version"
                     then
                         ()
@@ -28033,7 +28636,8 @@ module PackageJsonParseExtension =
                 Name = arg_4
                 Owner = arg_5
                 Repository = arg_6
-                Version = arg_7
+                Type = arg_7
+                Version = arg_8
             }
 namespace Gitea
 
@@ -28166,7 +28770,7 @@ module PullRequestJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_27 =
-                match node.["updatedAt"] with
+                match node.["updated_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28181,7 +28785,7 @@ module PullRequestJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_24 =
-                match node.["patchUrl"] with
+                match node.["patch_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28196,12 +28800,12 @@ module PullRequestJsonParseExtension =
                 | v -> Milestone.jsonParse v |> Some
 
             let arg_21 =
-                match node.["mergedBy"] with
+                match node.["merged_by"] with
                 | null -> None
                 | v -> User.jsonParse v |> Some
 
             let arg_20 =
-                match node.["mergedAt"] with
+                match node.["merged_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28216,12 +28820,12 @@ module PullRequestJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_17 =
-                match node.["mergeCommitSha"] with
+                match node.["merge_commit_sha"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_16 =
-                match node.["mergeBase"] with
+                match node.["merge_base"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28231,7 +28835,7 @@ module PullRequestJsonParseExtension =
                 | v -> v.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq |> Some
 
             let arg_14 =
-                match node.["isLocked"] with
+                match node.["is_locked"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -28241,7 +28845,7 @@ module PullRequestJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_12 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28251,17 +28855,17 @@ module PullRequestJsonParseExtension =
                 | v -> PRBranchInfo.jsonParse v |> Some
 
             let arg_10 =
-                match node.["dueDate"] with
+                match node.["due_date"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_9 =
-                match node.["diffUrl"] with
+                match node.["diff_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_8 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28271,7 +28875,7 @@ module PullRequestJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_6 =
-                match node.["closedAt"] with
+                match node.["closed_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28296,7 +28900,7 @@ module PullRequestJsonParseExtension =
                 | v -> User.jsonParse v |> Some
 
             let arg_1 =
-                match node.["allowMaintainerEdit"] with
+                match node.["allow_maintainer_edit"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
@@ -28308,33 +28912,33 @@ module PullRequestJsonParseExtension =
 
                 for KeyValue (key, value) in node do
                     if
-                        key = "allowMaintainerEdit"
+                        key = "allow_maintainer_edit"
                         || key = "assignee"
                         || key = "assignees"
                         || key = "base"
                         || key = "body"
-                        || key = "closedAt"
+                        || key = "closed_at"
                         || key = "comments"
-                        || key = "createdAt"
-                        || key = "diffUrl"
-                        || key = "dueDate"
+                        || key = "created_at"
+                        || key = "diff_url"
+                        || key = "due_date"
                         || key = "head"
-                        || key = "htmlUrl"
+                        || key = "html_url"
                         || key = "id"
-                        || key = "isLocked"
+                        || key = "is_locked"
                         || key = "labels"
-                        || key = "mergeBase"
-                        || key = "mergeCommitSha"
+                        || key = "merge_base"
+                        || key = "merge_commit_sha"
                         || key = "mergeable"
                         || key = "merged"
-                        || key = "mergedAt"
-                        || key = "mergedBy"
+                        || key = "merged_at"
+                        || key = "merged_by"
                         || key = "milestone"
                         || key = "number"
-                        || key = "patchUrl"
+                        || key = "patch_url"
                         || key = "state"
                         || key = "title"
-                        || key = "updatedAt"
+                        || key = "updated_at"
                         || key = "url"
                         || key = "user"
                     then
@@ -28387,12 +28991,12 @@ module TrackedTimeJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : TrackedTime =
             let arg_7 =
-                match node.["userName"] with
+                match node.["user_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_6 =
-                match node.["userId"] with
+                match node.["user_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -28402,7 +29006,7 @@ module TrackedTimeJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_4 =
-                match node.["issueId"] with
+                match node.["issue_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -28432,10 +29036,10 @@ module TrackedTimeJsonParseExtension =
                         key = "created"
                         || key = "id"
                         || key = "issue"
-                        || key = "issueId"
+                        || key = "issue_id"
                         || key = "time"
-                        || key = "userId"
-                        || key = "userName"
+                        || key = "user_id"
+                        || key = "user_name"
                     then
                         ()
                     else
@@ -28464,17 +29068,17 @@ module BranchJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Branch =
             let arg_9 =
-                match node.["userCanPush"] with
+                match node.["user_can_push"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_8 =
-                match node.["userCanMerge"] with
+                match node.["user_can_merge"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_7 =
-                match node.["statusCheckContexts"] with
+                match node.["status_check_contexts"] with
                 | null -> None
                 | v ->
                     v.AsArray ()
@@ -28483,7 +29087,7 @@ module BranchJsonParseExtension =
                     |> Some
 
             let arg_6 =
-                match node.["requiredApprovals"] with
+                match node.["required_approvals"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
@@ -28498,12 +29102,12 @@ module BranchJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_3 =
-                match node.["enableStatusCheck"] with
+                match node.["enable_status_check"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_2 =
-                match node.["effectiveBranchProtectionName"] with
+                match node.["effective_branch_protection_name"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28521,14 +29125,14 @@ module BranchJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "commit"
-                        || key = "effectiveBranchProtectionName"
-                        || key = "enableStatusCheck"
+                        || key = "effective_branch_protection_name"
+                        || key = "enable_status_check"
                         || key = "name"
                         || key = "protected"
-                        || key = "requiredApprovals"
-                        || key = "statusCheckContexts"
-                        || key = "userCanMerge"
-                        || key = "userCanPush"
+                        || key = "required_approvals"
+                        || key = "status_check_contexts"
+                        || key = "user_can_merge"
+                        || key = "user_can_push"
                     then
                         ()
                     else
@@ -28558,93 +29162,98 @@ module TimelineCommentJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : TimelineComment =
-            let arg_28 =
+            let arg_29 =
                 match node.["user"] with
                 | null -> None
                 | v -> User.jsonParse v |> Some
 
+            let arg_28 =
+                match node.["updated_at"] with
+                | null -> None
+                | v -> v.AsValue().GetValue<System.String> () |> Some
+
             let arg_27 =
-                match node.["updatedAt"] with
+                match node.["type"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_26 =
-                match node.["trackedTime"] with
+                match node.["tracked_time"] with
                 | null -> None
                 | v -> TrackedTime.jsonParse v |> Some
 
             let arg_25 =
-                match node.["reviewId"] with
+                match node.["review_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_24 =
-                match node.["resolveDoer"] with
+                match node.["resolve_doer"] with
                 | null -> None
                 | v -> User.jsonParse v |> Some
 
             let arg_23 =
-                match node.["removedAssignee"] with
+                match node.["removed_assignee"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Boolean> () |> Some
 
             let arg_22 =
-                match node.["refIssue"] with
+                match node.["ref_issue"] with
                 | null -> None
                 | v -> Issue.jsonParse v |> Some
 
             let arg_21 =
-                match node.["refCommitSha"] with
+                match node.["ref_commit_sha"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_20 =
-                match node.["refComment"] with
+                match node.["ref_comment"] with
                 | null -> None
                 | v -> Comment.jsonParse v |> Some
 
             let arg_19 =
-                match node.["refAction"] with
+                match node.["ref_action"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_18 =
-                match node.["pullRequestUrl"] with
+                match node.["pull_request_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_17 =
-                match node.["projectId"] with
+                match node.["project_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_16 =
-                match node.["oldTitle"] with
+                match node.["old_title"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_15 =
-                match node.["oldRef"] with
+                match node.["old_ref"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_14 =
-                match node.["oldProjectId"] with
+                match node.["old_project_id"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_13 =
-                match node.["oldMilestone"] with
+                match node.["old_milestone"] with
                 | null -> None
                 | v -> Milestone.jsonParse v |> Some
 
             let arg_12 =
-                match node.["newTitle"] with
+                match node.["new_title"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_11 =
-                match node.["newRef"] with
+                match node.["new_ref"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28659,7 +29268,7 @@ module TimelineCommentJsonParseExtension =
                 | v -> Label.jsonParse v |> Some
 
             let arg_8 =
-                match node.["issueUrl"] with
+                match node.["issue_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28669,17 +29278,17 @@ module TimelineCommentJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.Int32> () |> Some
 
             let arg_6 =
-                match node.["htmlUrl"] with
+                match node.["html_url"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_5 =
-                match node.["dependentIssue"] with
+                match node.["dependent_issue"] with
                 | null -> None
                 | v -> Issue.jsonParse v |> Some
 
             let arg_4 =
-                match node.["createdAt"] with
+                match node.["created_at"] with
                 | null -> None
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
@@ -28689,7 +29298,7 @@ module TimelineCommentJsonParseExtension =
                 | v -> v.AsValue().GetValue<System.String> () |> Some
 
             let arg_2 =
-                match node.["assigneeTeam"] with
+                match node.["assignee_team"] with
                 | null -> None
                 | v -> Team.jsonParse v |> Some
 
@@ -28707,32 +29316,33 @@ module TimelineCommentJsonParseExtension =
                 for KeyValue (key, value) in node do
                     if
                         key = "assignee"
-                        || key = "assigneeTeam"
+                        || key = "assignee_team"
                         || key = "body"
-                        || key = "createdAt"
-                        || key = "dependentIssue"
-                        || key = "htmlUrl"
+                        || key = "created_at"
+                        || key = "dependent_issue"
+                        || key = "html_url"
                         || key = "id"
-                        || key = "issueUrl"
+                        || key = "issue_url"
                         || key = "label"
                         || key = "milestone"
-                        || key = "newRef"
-                        || key = "newTitle"
-                        || key = "oldMilestone"
-                        || key = "oldProjectId"
-                        || key = "oldRef"
-                        || key = "oldTitle"
-                        || key = "projectId"
-                        || key = "pullRequestUrl"
-                        || key = "refAction"
-                        || key = "refComment"
-                        || key = "refCommitSha"
-                        || key = "refIssue"
-                        || key = "removedAssignee"
-                        || key = "resolveDoer"
-                        || key = "reviewId"
-                        || key = "trackedTime"
-                        || key = "updatedAt"
+                        || key = "new_ref"
+                        || key = "new_title"
+                        || key = "old_milestone"
+                        || key = "old_project_id"
+                        || key = "old_ref"
+                        || key = "old_title"
+                        || key = "project_id"
+                        || key = "pull_request_url"
+                        || key = "ref_action"
+                        || key = "ref_comment"
+                        || key = "ref_commit_sha"
+                        || key = "ref_issue"
+                        || key = "removed_assignee"
+                        || key = "resolve_doer"
+                        || key = "review_id"
+                        || key = "tracked_time"
+                        || key = "type"
+                        || key = "updated_at"
                         || key = "user"
                     then
                         ()
@@ -28769,8 +29379,9 @@ module TimelineCommentJsonParseExtension =
                 ResolveDoer = arg_24
                 ReviewId = arg_25
                 TrackedTime = arg_26
-                UpdatedAt = arg_27
-                User = arg_28
+                Type = arg_27
+                UpdatedAt = arg_28
+                User = arg_29
             }
 namespace Gitea
 
@@ -28839,7 +29450,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/activitypub/user/{username}"
+                                "activitypub/user/{username}"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -28882,7 +29493,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/activitypub/user/{username}/inbox"
+                                "activitypub/user/{username}/inbox"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -28896,12 +29507,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -28925,8 +29530,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/admin/cron"
-                                 + (if "/admin/cron".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("admin/cron"
+                                 + (if "admin/cron".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -28972,7 +29577,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/cron/{task}"
+                                "admin/cron/{task}"
                                     .Replace ("{task}", task.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -28986,12 +29591,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29015,8 +29614,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/admin/hooks"
-                                 + (if "/admin/hooks".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("admin/hooks"
+                                 + (if "admin/hooks".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -29061,7 +29660,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/admin/hooks", System.UriKind.Relative)
+                            System.Uri ("admin/hooks", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -29074,7 +29673,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateHookOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -29109,7 +29710,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/hooks/{id}"
+                                "admin/hooks/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -29152,7 +29753,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/hooks/{id}"
+                                "admin/hooks/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -29168,7 +29769,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditHookOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -29203,8 +29806,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/admin/orgs"
-                                 + (if "/admin/orgs".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("admin/orgs"
+                                 + (if "admin/orgs".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -29255,8 +29858,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/admin/unadopted"
-                                 + (if "/admin/unadopted".IndexOf (char 63) >= 0 then
+                                ("admin/unadopted"
+                                 + (if "admin/unadopted".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -29312,7 +29915,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/unadopted/{owner}/{repo}"
+                                "admin/unadopted/{owner}/{repo}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -29327,12 +29930,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29358,7 +29955,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/unadopted/{owner}/{repo}"
+                                "admin/unadopted/{owner}/{repo}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -29373,12 +29970,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29402,8 +29993,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/admin/users"
-                                 + (if "/admin/users".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("admin/users"
+                                 + (if "admin/users".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -29448,7 +30039,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/admin/users", System.UriKind.Relative)
+                            System.Uri ("admin/users", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -29461,7 +30052,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateUserOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -29496,9 +30089,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/admin/users/{username}"
+                                ("admin/users/{username}"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/admin/users/{username}".IndexOf (char 63) >= 0 then
+                                 + (if "admin/users/{username}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -29516,12 +30109,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29547,7 +30134,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/users/{username}"
+                                "admin/users/{username}"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -29563,7 +30150,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditUserOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -29600,7 +30189,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/users/{username}/keys"
+                                "admin/users/{username}/keys"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -29616,7 +30205,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             key
                             |> CreateKeyOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -29653,7 +30244,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/users/{username}/keys/{id}"
+                                "admin/users/{username}/keys/{id}"
                                     .Replace("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -29668,12 +30259,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29699,7 +30284,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/users/{username}/orgs"
+                                "admin/users/{username}/orgs"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -29715,7 +30300,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             organization
                             |> CreateOrgOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -29752,7 +30339,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/admin/users/{username}/repos"
+                                "admin/users/{username}/repos"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -29768,7 +30355,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             repository
                             |> CreateRepoOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -29803,7 +30392,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/amdin/hooks/{id}"
+                                "amdin/hooks/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -29817,12 +30406,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29845,7 +30428,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/markdown", System.UriKind.Relative)
+                            System.Uri ("markdown", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -29858,7 +30441,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> MarkdownOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "text/html"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -29887,7 +30472,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/markdown/raw", System.UriKind.Relative)
+                            System.Uri ("markdown/raw", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -29896,7 +30481,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.StringContent (body)
+                    let queryParams = new System.Net.Http.StringContent (body, null, "text/html")
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
@@ -29923,7 +30508,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/nodeinfo", System.UriKind.Relative)
+                            System.Uri ("nodeinfo", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -29974,8 +30559,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/notifications"
-                                 + (if "/notifications".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("notifications"
+                                 + (if "notifications".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "all="
                                  + ((all.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&status-types="
@@ -30042,8 +30627,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/notifications"
-                                 + (if "/notifications".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("notifications"
+                                 + (if "notifications".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "last_read_at="
                                  + ((last_read_at.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&all="
@@ -30095,7 +30680,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/notifications/new", System.UriKind.Relative)
+                            System.Uri ("notifications/new", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -30135,7 +30720,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/notifications/threads/{id}"
+                                "notifications/threads/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -30180,9 +30765,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/notifications/threads/{id}"
+                                ("notifications/threads/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/notifications/threads/{id}".IndexOf (char 63) >= 0 then
+                                 + (if "notifications/threads/{id}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -30231,7 +30816,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/org/{org}/repos"
+                                "org/{org}/repos"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -30247,7 +30832,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateRepoOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -30282,8 +30869,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/orgs"
-                                 + (if "/orgs".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("orgs"
+                                 + (if "orgs".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -30331,7 +30918,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/orgs", System.UriKind.Relative)
+                            System.Uri ("orgs", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -30344,7 +30931,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             organization
                             |> CreateOrgOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -30379,7 +30968,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}"
+                                "orgs/{org}"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -30422,7 +31011,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}"
+                                "orgs/{org}"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -30436,12 +31025,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30465,7 +31048,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}"
+                                "orgs/{org}"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -30481,7 +31064,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditOrgOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -30518,9 +31103,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/orgs/{org}/hooks"
+                                ("orgs/{org}/hooks"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/orgs/{org}/hooks".IndexOf (char 63) >= 0 then
+                                 + (if "orgs/{org}/hooks".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -30571,7 +31156,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/hooks"
+                                "orgs/{org}/hooks"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -30587,7 +31172,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateHookOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -30622,7 +31209,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/hooks/{id}"
+                                "orgs/{org}/hooks/{id}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -30666,7 +31253,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/hooks/{id}"
+                                "orgs/{org}/hooks/{id}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -30681,12 +31268,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30712,7 +31293,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/hooks/{id}"
+                                "orgs/{org}/hooks/{id}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -30729,7 +31310,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditHookOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -30766,9 +31349,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/orgs/{org}/labels"
+                                ("orgs/{org}/labels"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/orgs/{org}/labels".IndexOf (char 63) >= 0 then
+                                 + (if "orgs/{org}/labels".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -30819,7 +31402,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/labels"
+                                "orgs/{org}/labels"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -30835,7 +31418,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateLabelOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -30870,7 +31455,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/labels/{id}"
+                                "orgs/{org}/labels/{id}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -30914,7 +31499,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/labels/{id}"
+                                "orgs/{org}/labels/{id}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -30929,12 +31514,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30960,7 +31539,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/labels/{id}"
+                                "orgs/{org}/labels/{id}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -30977,7 +31556,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditLabelOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -31014,9 +31595,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/orgs/{org}/members"
+                                ("orgs/{org}/members"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/orgs/{org}/members".IndexOf (char 63) >= 0 then
+                                 + (if "orgs/{org}/members".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -31065,7 +31646,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/members/{username}"
+                                "orgs/{org}/members/{username}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -31080,12 +31661,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31109,7 +31684,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/members/{username}"
+                                "orgs/{org}/members/{username}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -31124,12 +31699,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31155,9 +31724,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/orgs/{org}/public_members"
+                                ("orgs/{org}/public_members"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/orgs/{org}/public_members".IndexOf (char 63) >= 0 then
+                                 + (if "orgs/{org}/public_members".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -31208,7 +31777,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/public_members/{username}"
+                                "orgs/{org}/public_members/{username}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -31223,12 +31792,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31254,7 +31817,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/public_members/{username}"
+                                "orgs/{org}/public_members/{username}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -31269,12 +31832,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31300,7 +31857,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/public_members/{username}"
+                                "orgs/{org}/public_members/{username}"
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -31315,12 +31872,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31346,9 +31897,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/orgs/{org}/repos"
+                                ("orgs/{org}/repos"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/orgs/{org}/repos".IndexOf (char 63) >= 0 then
+                                 + (if "orgs/{org}/repos".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -31402,7 +31953,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/repos"
+                                "orgs/{org}/repos"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -31418,7 +31969,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateRepoOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -31455,9 +32008,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/orgs/{org}/teams"
+                                ("orgs/{org}/teams"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/orgs/{org}/teams".IndexOf (char 63) >= 0 then
+                                 + (if "orgs/{org}/teams".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -31508,7 +32061,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/orgs/{org}/teams"
+                                "orgs/{org}/teams"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -31524,7 +32077,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateTeamOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -31568,9 +32123,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/orgs/{org}/teams/search"
+                                ("orgs/{org}/teams/search"
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/orgs/{org}/teams/search".IndexOf (char 63) >= 0 then
+                                 + (if "orgs/{org}/teams/search".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -31594,12 +32149,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31632,9 +32181,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/packages/{owner}"
+                                ("packages/{owner}"
                                     .Replace ("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/packages/{owner}".IndexOf (char 63) >= 0 then
+                                 + (if "packages/{owner}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -31695,7 +32244,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/packages/{owner}/{type}/{name}/{version}"
+                                "packages/{owner}/{type}/{name}/{version}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{type}", type'.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -31749,7 +32298,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/packages/{owner}/{type}/{name}/{version}"
+                                "packages/{owner}/{type}/{name}/{version}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{type}", type'.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -31766,12 +32315,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31803,7 +32346,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/packages/{owner}/{type}/{name}/{version}/files"
+                                "packages/{owner}/{type}/{name}/{version}/files"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{type}", type'.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -31872,8 +32415,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/issues/search"
-                                 + (if "/repos/issues/search".IndexOf (char 63) >= 0 then
+                                ("repos/issues/search"
+                                 + (if "repos/issues/search".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -31949,7 +32492,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/repos/migrate", System.UriKind.Relative)
+                            System.Uri ("repos/migrate", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -31962,7 +32505,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> MigrateRepoOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -32018,8 +32563,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/search"
-                                 + (if "/repos/search".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("repos/search"
+                                 + (if "repos/search".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "q="
                                  + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&topic="
@@ -32095,7 +32640,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}"
+                                "repos/{owner}/{repo}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -32139,7 +32684,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}"
+                                "repos/{owner}/{repo}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -32154,12 +32699,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32185,7 +32724,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}"
+                                "repos/{owner}/{repo}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -32202,7 +32741,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditRepoOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -32239,7 +32780,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/archive/{archive}"
+                                "repos/{owner}/{repo}/archive/{archive}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{archive}", archive.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -32255,12 +32796,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32284,7 +32819,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/assignees"
+                                "repos/{owner}/{repo}/assignees"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -32330,7 +32865,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/branch_protections"
+                                "repos/{owner}/{repo}/branch_protections"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -32384,7 +32919,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/branch_protections"
+                                "repos/{owner}/{repo}/branch_protections"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -32401,7 +32936,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateBranchProtectionOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -32438,7 +32975,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/branch_protections/{name}"
+                                "repos/{owner}/{repo}/branch_protections/{name}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -32485,7 +33022,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/branch_protections/{name}"
+                                "repos/{owner}/{repo}/branch_protections/{name}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -32501,12 +33038,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32538,7 +33069,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/branch_protections/{name}"
+                                "repos/{owner}/{repo}/branch_protections/{name}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -32556,7 +33087,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditBranchProtectionOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -32593,10 +33126,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/branches"
+                                ("repos/{owner}/{repo}/branches"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/branches".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/branches".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -32652,7 +33185,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/branches"
+                                "repos/{owner}/{repo}/branches"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -32669,7 +33202,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateBranchRepoOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -32706,7 +33241,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/branches/{branch}"
+                                "repos/{owner}/{repo}/branches/{branch}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{branch}", branch.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -32753,7 +33288,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/branches/{branch}"
+                                "repos/{owner}/{repo}/branches/{branch}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{branch}", branch.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -32769,12 +33304,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32800,10 +33329,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/collaborators"
+                                ("repos/{owner}/{repo}/collaborators"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/collaborators".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/collaborators".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -32854,7 +33383,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/collaborators/{collaborator}"
+                                "repos/{owner}/{repo}/collaborators/{collaborator}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace (
@@ -32873,12 +33402,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32904,7 +33427,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/collaborators/{collaborator}"
+                                "repos/{owner}/{repo}/collaborators/{collaborator}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace (
@@ -32923,12 +33446,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32960,7 +33477,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/collaborators/{collaborator}"
+                                "repos/{owner}/{repo}/collaborators/{collaborator}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace (
@@ -32981,18 +33498,14 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> AddCollaboratorOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -33018,7 +33531,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/collaborators/{collaborator}/permission"
+                                "repos/{owner}/{repo}/collaborators/{collaborator}/permission"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace (
@@ -33077,10 +33590,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/commits"
+                                ("repos/{owner}/{repo}/commits"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/commits".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/commits".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -33144,11 +33657,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/commits/{ref}/status"
+                                ("repos/{owner}/{repo}/commits/{ref}/status"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{ref}", ref.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/commits/{ref}/status".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/commits/{ref}/status".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -33208,11 +33721,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/commits/{ref}/statuses"
+                                ("repos/{owner}/{repo}/commits/{ref}/statuses"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{ref}", ref.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/commits/{ref}/statuses".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/commits/{ref}/statuses".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -33270,10 +33783,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/contents"
+                                ("repos/{owner}/{repo}/contents"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/contents".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/contents".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -33331,11 +33844,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/contents/{filepath}"
+                                ("repos/{owner}/{repo}/contents/{filepath}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/contents/{filepath}".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/contents/{filepath}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -33390,7 +33903,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/contents/{filepath}"
+                                "repos/{owner}/{repo}/contents/{filepath}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -33408,7 +33921,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateFileOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -33451,7 +33966,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/contents/{filepath}"
+                                "repos/{owner}/{repo}/contents/{filepath}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -33469,7 +33984,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> DeleteFileOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -33512,7 +34029,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/contents/{filepath}"
+                                "repos/{owner}/{repo}/contents/{filepath}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -33530,7 +34047,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> UpdateFileOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -33567,7 +34086,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/diffpatch"
+                                "repos/{owner}/{repo}/diffpatch"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -33584,7 +34103,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> UpdateFileOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -33627,11 +34148,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/editorconfig/{filepath}"
+                                ("repos/{owner}/{repo}/editorconfig/{filepath}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/editorconfig/{filepath}".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/editorconfig/{filepath}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -33649,12 +34170,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -33680,10 +34195,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/forks"
+                                ("repos/{owner}/{repo}/forks"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/forks".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/forks".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -33737,7 +34252,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/forks"
+                                "repos/{owner}/{repo}/forks"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -33754,7 +34269,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateForkOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -33791,7 +34308,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/git/blobs/{sha}"
+                                "repos/{owner}/{repo}/git/blobs/{sha}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -33838,7 +34355,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/git/commits/{sha}"
+                                "repos/{owner}/{repo}/git/commits/{sha}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -33891,7 +34408,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/git/commits/{sha}.{diffType}"
+                                "repos/{owner}/{repo}/git/commits/{sha}.{diffType}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -33934,7 +34451,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/git/notes/{sha}"
+                                "repos/{owner}/{repo}/git/notes/{sha}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -33981,7 +34498,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/git/refs"
+                                "repos/{owner}/{repo}/git/refs"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -34030,7 +34547,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/git/refs/{ref}"
+                                "repos/{owner}/{repo}/git/refs/{ref}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{ref}", ref.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -34080,7 +34597,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/git/tags/{sha}"
+                                "repos/{owner}/{repo}/git/tags/{sha}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -34135,11 +34652,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/git/trees/{sha}"
+                                ("repos/{owner}/{repo}/git/trees/{sha}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/git/trees/{sha}".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/git/trees/{sha}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -34192,10 +34709,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/hooks"
+                                ("repos/{owner}/{repo}/hooks"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/hooks".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/hooks".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -34246,7 +34763,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/hooks"
+                                "repos/{owner}/{repo}/hooks"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -34263,7 +34780,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateHookOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -34298,7 +34817,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/hooks/git"
+                                "repos/{owner}/{repo}/hooks/git"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -34344,7 +34863,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/hooks/git/{id}"
+                                "repos/{owner}/{repo}/hooks/git/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -34391,7 +34910,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/hooks/git/{id}"
+                                "repos/{owner}/{repo}/hooks/git/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -34407,12 +34926,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -34444,7 +34957,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/hooks/git/{id}"
+                                "repos/{owner}/{repo}/hooks/git/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -34462,7 +34975,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditGitHookOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -34499,7 +35014,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/hooks/{id}"
+                                "repos/{owner}/{repo}/hooks/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -34546,7 +35061,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/hooks/{id}"
+                                "repos/{owner}/{repo}/hooks/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -34562,12 +35077,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -34599,7 +35108,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/hooks/{id}"
+                                "repos/{owner}/{repo}/hooks/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -34617,7 +35126,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditHookOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -34654,11 +35165,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/hooks/{id}/tests"
+                                ("repos/{owner}/{repo}/hooks/{id}/tests"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/hooks/{id}/tests".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/hooks/{id}/tests".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -34676,12 +35187,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -34707,7 +35212,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issue_templates"
+                                "repos/{owner}/{repo}/issue_templates"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -34772,10 +35277,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/issues"
+                                ("repos/{owner}/{repo}/issues"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/issues".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/issues".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -34846,7 +35351,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues"
+                                "repos/{owner}/{repo}/issues"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -34863,7 +35368,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateIssueOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -34908,10 +35415,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/issues/comments"
+                                ("repos/{owner}/{repo}/issues/comments"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/issues/comments".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/issues/comments".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -34966,7 +35473,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/comments/{id}"
+                                "repos/{owner}/{repo}/issues/comments/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -34982,12 +35489,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35013,7 +35514,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/comments/{id}/assets"
+                                "repos/{owner}/{repo}/issues/comments/{id}/assets"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -35069,7 +35570,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
+                                "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -35126,7 +35627,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
+                                "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -35146,12 +35647,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35184,7 +35679,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
+                                "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -35206,7 +35701,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditAttachmentOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -35243,7 +35740,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/comments/{id}/reactions"
+                                "repos/{owner}/{repo}/issues/comments/{id}/reactions"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -35296,7 +35793,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/comments/{id}/reactions"
+                                "repos/{owner}/{repo}/issues/comments/{id}/reactions"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -35314,18 +35811,14 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             content
                             |> EditReactionOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35351,7 +35844,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}"
+                                "repos/{owner}/{repo}/issues/{index}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -35398,7 +35891,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}"
+                                "repos/{owner}/{repo}/issues/{index}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -35414,12 +35907,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35451,7 +35938,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}"
+                                "repos/{owner}/{repo}/issues/{index}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -35469,7 +35956,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditIssueOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -35506,7 +35995,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/assets"
+                                "repos/{owner}/{repo}/issues/{index}/assets"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -35562,7 +36051,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
+                                "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -35619,7 +36108,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
+                                "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -35639,12 +36128,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35677,7 +36160,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
+                                "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -35699,7 +36182,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditAttachmentOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -35743,11 +36228,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/issues/{index}/comments"
+                                ("repos/{owner}/{repo}/issues/{index}/comments"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/issues/{index}/comments".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/issues/{index}/comments".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -35804,7 +36289,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/comments"
+                                "repos/{owner}/{repo}/issues/{index}/comments"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -35822,7 +36307,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateIssueCommentOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -35859,7 +36346,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/comments/{id}"
+                                "repos/{owner}/{repo}/issues/{index}/comments/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -35876,12 +36363,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35913,7 +36394,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/deadline"
+                                "repos/{owner}/{repo}/issues/{index}/deadline"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -35931,7 +36412,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditDeadlineOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -35968,7 +36451,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/labels"
+                                "repos/{owner}/{repo}/issues/{index}/labels"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36021,7 +36504,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/labels"
+                                "repos/{owner}/{repo}/issues/{index}/labels"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36039,7 +36522,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> IssueLabelsOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -36076,7 +36561,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/labels"
+                                "repos/{owner}/{repo}/issues/{index}/labels"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36092,12 +36577,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36129,7 +36608,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/labels"
+                                "repos/{owner}/{repo}/issues/{index}/labels"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36147,7 +36626,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> IssueLabelsOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -36184,7 +36665,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/labels/{id}"
+                                "repos/{owner}/{repo}/issues/{index}/labels/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -36201,12 +36682,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36239,11 +36714,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/issues/{index}/reactions"
+                                ("repos/{owner}/{repo}/issues/{index}/reactions"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/issues/{index}/reactions".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/issues/{index}/reactions".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -36300,7 +36775,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/reactions"
+                                "repos/{owner}/{repo}/issues/{index}/reactions"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36318,18 +36793,14 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             content
                             |> EditReactionOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36355,7 +36826,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/stopwatch/delete"
+                                "repos/{owner}/{repo}/issues/{index}/stopwatch/delete"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36371,12 +36842,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36402,7 +36867,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/stopwatch/start"
+                                "repos/{owner}/{repo}/issues/{index}/stopwatch/start"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36418,12 +36883,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36449,7 +36908,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/stopwatch/stop"
+                                "repos/{owner}/{repo}/issues/{index}/stopwatch/stop"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36465,12 +36924,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36503,11 +36956,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/issues/{index}/subscriptions"
+                                ("repos/{owner}/{repo}/issues/{index}/subscriptions"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/issues/{index}/subscriptions".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/issues/{index}/subscriptions".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -36558,7 +37011,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/subscriptions/check"
+                                "repos/{owner}/{repo}/issues/{index}/subscriptions/check"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36614,11 +37067,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/issues/{index}/timeline"
+                                ("repos/{owner}/{repo}/issues/{index}/timeline"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/issues/{index}/timeline".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/issues/{index}/timeline".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -36686,11 +37139,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/issues/{index}/times"
+                                ("repos/{owner}/{repo}/issues/{index}/times"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/issues/{index}/times".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/issues/{index}/times".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -36756,7 +37209,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/times"
+                                "repos/{owner}/{repo}/issues/{index}/times"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36774,7 +37227,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> AddTimeOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -36811,7 +37266,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/times"
+                                "repos/{owner}/{repo}/issues/{index}/times"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -36827,12 +37282,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36858,7 +37307,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/issues/{index}/times/{id}"
+                                "repos/{owner}/{repo}/issues/{index}/times/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -36875,12 +37324,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36914,10 +37357,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/keys"
+                                ("repos/{owner}/{repo}/keys"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/keys".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/keys".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -36975,7 +37418,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/keys"
+                                "repos/{owner}/{repo}/keys"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -36992,7 +37435,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateKeyOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -37029,7 +37474,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/keys/{id}"
+                                "repos/{owner}/{repo}/keys/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -37076,7 +37521,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/keys/{id}"
+                                "repos/{owner}/{repo}/keys/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -37092,12 +37537,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37123,10 +37562,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/labels"
+                                ("repos/{owner}/{repo}/labels"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/labels".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/labels".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -37177,7 +37616,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/labels"
+                                "repos/{owner}/{repo}/labels"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -37194,7 +37633,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateLabelOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -37231,7 +37672,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/labels/{id}"
+                                "repos/{owner}/{repo}/labels/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -37278,7 +37719,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/labels/{id}"
+                                "repos/{owner}/{repo}/labels/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -37294,12 +37735,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37331,7 +37766,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/labels/{id}"
+                                "repos/{owner}/{repo}/labels/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -37349,7 +37784,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditLabelOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -37384,7 +37821,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/languages"
+                                "repos/{owner}/{repo}/languages"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -37436,11 +37873,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/media/{filepath}"
+                                ("repos/{owner}/{repo}/media/{filepath}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/media/{filepath}".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/media/{filepath}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -37458,12 +37895,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37497,10 +37928,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/milestones"
+                                ("repos/{owner}/{repo}/milestones"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/milestones".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/milestones".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -37563,7 +37994,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/milestones"
+                                "repos/{owner}/{repo}/milestones"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -37580,7 +38011,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateMilestoneOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -37617,7 +38050,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/milestones/{id}"
+                                "repos/{owner}/{repo}/milestones/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -37664,7 +38097,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/milestones/{id}"
+                                "repos/{owner}/{repo}/milestones/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -37680,12 +38113,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37717,7 +38144,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/milestones/{id}"
+                                "repos/{owner}/{repo}/milestones/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -37735,7 +38162,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditMilestoneOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -37770,7 +38199,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/mirror-sync"
+                                "repos/{owner}/{repo}/mirror-sync"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -37785,12 +38214,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37827,10 +38250,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/notifications"
+                                ("repos/{owner}/{repo}/notifications"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -37902,10 +38325,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/notifications"
+                                ("repos/{owner}/{repo}/notifications"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -37973,10 +38396,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/pulls"
+                                ("repos/{owner}/{repo}/pulls"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/pulls".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/pulls".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -38043,7 +38466,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls"
+                                "repos/{owner}/{repo}/pulls"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -38060,7 +38483,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreatePullRequestOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -38097,7 +38522,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}"
+                                "repos/{owner}/{repo}/pulls/{index}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -38150,7 +38575,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}"
+                                "repos/{owner}/{repo}/pulls/{index}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -38168,7 +38593,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditPullRequestOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -38212,12 +38639,12 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/pulls/{index}.{diffType}"
+                                ("repos/{owner}/{repo}/pulls/{index}.{diffType}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{diffType}", diffType.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/pulls/{index}.{diffType}".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/pulls/{index}.{diffType}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -38268,11 +38695,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/pulls/{index}/commits"
+                                ("repos/{owner}/{repo}/pulls/{index}/commits"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/pulls/{index}/commits".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/pulls/{index}/commits".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -38332,11 +38759,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/pulls/{index}/files"
+                                ("repos/{owner}/{repo}/pulls/{index}/files"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/pulls/{index}/files".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/pulls/{index}/files".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -38394,7 +38821,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/merge"
+                                "repos/{owner}/{repo}/pulls/{index}/merge"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -38410,12 +38837,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38447,7 +38868,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/merge"
+                                "repos/{owner}/{repo}/pulls/{index}/merge"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -38465,18 +38886,14 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> MergePullRequestOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38502,7 +38919,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/merge"
+                                "repos/{owner}/{repo}/pulls/{index}/merge"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -38518,12 +38935,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38555,7 +38966,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
+                                "repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -38573,7 +38984,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> PullReviewRequestOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -38619,7 +39032,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
+                                "repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -38637,18 +39050,14 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> PullReviewRequestOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38681,11 +39090,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/pulls/{index}/reviews"
+                                ("repos/{owner}/{repo}/pulls/{index}/reviews"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/pulls/{index}/reviews".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/pulls/{index}/reviews".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -38745,7 +39154,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/reviews"
+                                "repos/{owner}/{repo}/pulls/{index}/reviews"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -38763,7 +39172,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreatePullReviewOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -38800,7 +39211,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}"
+                                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -38855,7 +39266,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}"
+                                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -38874,7 +39285,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> SubmitPullReviewOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -38911,7 +39324,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}"
+                                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -38928,12 +39341,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38959,7 +39366,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments"
+                                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -39017,7 +39424,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/dismissals"
+                                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/dismissals"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -39036,7 +39443,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> DismissPullReviewOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -39073,7 +39482,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/pulls/{index}/reviews/{id}/undismissals"
+                                "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/undismissals"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -39127,11 +39536,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/pulls/{index}/update"
+                                ("repos/{owner}/{repo}/pulls/{index}/update"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/pulls/{index}/update".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/pulls/{index}/update".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -39149,12 +39558,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39180,10 +39583,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/push_mirrors"
+                                ("repos/{owner}/{repo}/push_mirrors"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/push_mirrors".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/push_mirrors".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -39242,7 +39645,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/push_mirrors"
+                                "repos/{owner}/{repo}/push_mirrors"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -39259,7 +39662,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreatePushMirrorOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -39296,7 +39701,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/push_mirrors-sync"
+                                "repos/{owner}/{repo}/push_mirrors-sync"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -39311,12 +39716,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39342,7 +39741,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/push_mirrors/{name}"
+                                "repos/{owner}/{repo}/push_mirrors/{name}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -39389,7 +39788,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/push_mirrors/{name}"
+                                "repos/{owner}/{repo}/push_mirrors/{name}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -39405,12 +39804,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39442,11 +39835,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/raw/{filepath}"
+                                ("repos/{owner}/{repo}/raw/{filepath}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/raw/{filepath}".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/raw/{filepath}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -39464,12 +39857,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39504,10 +39891,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/releases"
+                                ("repos/{owner}/{repo}/releases"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/releases".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/releases".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -39569,7 +39956,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases"
+                                "repos/{owner}/{repo}/releases"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -39586,7 +39973,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateReleaseOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -39623,7 +40012,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/latest"
+                                "repos/{owner}/{repo}/releases/latest"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -39669,7 +40058,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/tags/{tag}"
+                                "repos/{owner}/{repo}/releases/tags/{tag}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{tag}", tag.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -39716,7 +40105,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/tags/{tag}"
+                                "repos/{owner}/{repo}/releases/tags/{tag}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{tag}", tag.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -39732,12 +40121,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39763,7 +40146,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/{id}"
+                                "repos/{owner}/{repo}/releases/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -39810,7 +40193,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/{id}"
+                                "repos/{owner}/{repo}/releases/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -39826,12 +40209,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39863,7 +40240,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/{id}"
+                                "repos/{owner}/{repo}/releases/{id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -39881,7 +40258,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditReleaseOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -39918,7 +40297,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/{id}/assets"
+                                "repos/{owner}/{repo}/releases/{id}/assets"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -39974,7 +40353,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
+                                "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -40031,7 +40410,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
+                                "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -40051,12 +40430,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40089,7 +40462,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
+                                "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
@@ -40111,7 +40484,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditAttachmentOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -40146,7 +40521,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/reviewers"
+                                "repos/{owner}/{repo}/reviewers"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -40190,7 +40565,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/signing-key.gpg"
+                                "repos/{owner}/{repo}/signing-key.gpg"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -40205,12 +40580,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40236,10 +40605,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/stargazers"
+                                ("repos/{owner}/{repo}/stargazers"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/stargazers".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/stargazers".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -40299,11 +40668,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/statuses/{sha}"
+                                ("repos/{owner}/{repo}/statuses/{sha}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/statuses/{sha}".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/statuses/{sha}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -40367,7 +40736,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/statuses/{sha}"
+                                "repos/{owner}/{repo}/statuses/{sha}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -40385,7 +40754,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateStatusOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -40422,10 +40793,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/subscribers"
+                                ("repos/{owner}/{repo}/subscribers"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/subscribers".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/subscribers".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -40476,7 +40847,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/subscription"
+                                "repos/{owner}/{repo}/subscription"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -40522,7 +40893,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/subscription"
+                                "repos/{owner}/{repo}/subscription"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -40537,12 +40908,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40568,7 +40933,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/subscription"
+                                "repos/{owner}/{repo}/subscription"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -40614,10 +40979,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/tags"
+                                ("repos/{owner}/{repo}/tags"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/tags".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/tags".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -40668,7 +41033,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/tags"
+                                "repos/{owner}/{repo}/tags"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -40685,7 +41050,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateTagOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -40722,7 +41089,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/tags/{tag}"
+                                "repos/{owner}/{repo}/tags/{tag}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{tag}", tag.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -40769,7 +41136,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/tags/{tag}"
+                                "repos/{owner}/{repo}/tags/{tag}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{tag}", tag.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -40785,12 +41152,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40814,7 +41175,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/teams"
+                                "repos/{owner}/{repo}/teams"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -40860,7 +41221,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/teams/{team}"
+                                "repos/{owner}/{repo}/teams/{team}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{team}", team.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -40907,7 +41268,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/teams/{team}"
+                                "repos/{owner}/{repo}/teams/{team}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{team}", team.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -40923,12 +41284,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40954,7 +41309,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/teams/{team}"
+                                "repos/{owner}/{repo}/teams/{team}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{team}", team.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -40970,12 +41325,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41010,10 +41359,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/times"
+                                ("repos/{owner}/{repo}/times"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/times".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/times".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -41073,7 +41422,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/times/{user}"
+                                "repos/{owner}/{repo}/times/{user}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{user}", user.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -41123,10 +41472,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/topics"
+                                ("repos/{owner}/{repo}/topics"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/topics".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/topics".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -41177,7 +41526,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/topics"
+                                "repos/{owner}/{repo}/topics"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -41194,18 +41543,14 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> RepoTopicOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41231,7 +41576,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/topics/{topic}"
+                                "repos/{owner}/{repo}/topics/{topic}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{topic}", topic.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -41247,12 +41592,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41278,7 +41617,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/topics/{topic}"
+                                "repos/{owner}/{repo}/topics/{topic}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{topic}", topic.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -41294,12 +41633,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41330,7 +41663,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/transfer"
+                                "repos/{owner}/{repo}/transfer"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -41347,7 +41680,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> TransferRepoOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -41384,7 +41719,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/transfer/accept"
+                                "repos/{owner}/{repo}/transfer/accept"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -41430,7 +41765,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/transfer/reject"
+                                "repos/{owner}/{repo}/transfer/reject"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -41481,7 +41816,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/wiki/new"
+                                "repos/{owner}/{repo}/wiki/new"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -41498,7 +41833,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateWikiPageOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -41535,7 +41872,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/wiki/page/{pageName}"
+                                "repos/{owner}/{repo}/wiki/page/{pageName}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{pageName}", pageName.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -41582,7 +41919,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/wiki/page/{pageName}"
+                                "repos/{owner}/{repo}/wiki/page/{pageName}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{pageName}", pageName.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -41598,12 +41935,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41635,7 +41966,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{owner}/{repo}/wiki/page/{pageName}"
+                                "repos/{owner}/{repo}/wiki/page/{pageName}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{pageName}", pageName.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -41653,7 +41984,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateWikiPageOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -41690,10 +42023,10 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/wiki/pages"
+                                ("repos/{owner}/{repo}/wiki/pages"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/wiki/pages".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/wiki/pages".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -41753,11 +42086,11 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/repos/{owner}/{repo}/wiki/revisions/{pageName}"
+                                ("repos/{owner}/{repo}/wiki/revisions/{pageName}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{pageName}", pageName.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/repos/{owner}/{repo}/wiki/revisions/{pageName}".IndexOf (char 63) >= 0 then
+                                 + (if "repos/{owner}/{repo}/wiki/revisions/{pageName}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -41811,7 +42144,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repos/{template_owner}/{template_repo}/generate"
+                                "repos/{template_owner}/{template_repo}/generate"
                                     .Replace(
                                         "{template_owner}",
                                         template_owner.ToString () |> System.Web.HttpUtility.UrlEncode
@@ -41834,7 +42167,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> GenerateRepoOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -41869,7 +42204,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/repositories/{id}"
+                                "repositories/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -41911,7 +42246,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/settings/api", System.UriKind.Relative)
+                            System.Uri ("settings/api", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -41950,7 +42285,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/settings/attachment", System.UriKind.Relative)
+                            System.Uri ("settings/attachment", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -41989,7 +42324,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/settings/repository", System.UriKind.Relative)
+                            System.Uri ("settings/repository", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -42028,7 +42363,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/settings/ui", System.UriKind.Relative)
+                            System.Uri ("settings/ui", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -42067,7 +42402,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/signing-key.gpg", System.UriKind.Relative)
+                            System.Uri ("signing-key.gpg", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -42078,12 +42413,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42107,7 +42436,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/teams/{id}"
+                                "teams/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -42150,7 +42479,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/teams/{id}"
+                                "teams/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -42164,12 +42493,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42193,7 +42516,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/teams/{id}"
+                                "teams/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -42209,7 +42532,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditTeamOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -42246,9 +42571,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/teams/{id}/members"
+                                ("teams/{id}/members"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/teams/{id}/members".IndexOf (char 63) >= 0 then
+                                 + (if "teams/{id}/members".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -42297,7 +42622,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/teams/{id}/members/{username}"
+                                "teams/{id}/members/{username}"
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -42341,7 +42666,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/teams/{id}/members/{username}"
+                                "teams/{id}/members/{username}"
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -42356,12 +42681,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42385,7 +42704,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/teams/{id}/members/{username}"
+                                "teams/{id}/members/{username}"
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -42400,12 +42719,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42431,9 +42744,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/teams/{id}/repos"
+                                ("teams/{id}/repos"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/teams/{id}/repos".IndexOf (char 63) >= 0 then
+                                 + (if "teams/{id}/repos".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -42487,7 +42800,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/teams/{id}/repos/{org}/{repo}"
+                                "teams/{id}/repos/{org}/{repo}"
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -42534,7 +42847,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/teams/{id}/repos/{org}/{repo}"
+                                "teams/{id}/repos/{org}/{repo}"
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -42550,12 +42863,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42581,7 +42888,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/teams/{id}/repos/{org}/{repo}"
+                                "teams/{id}/repos/{org}/{repo}"
                                     .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
@@ -42597,12 +42904,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42626,8 +42927,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/topics/search"
-                                 + (if "/topics/search".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("topics/search"
+                                 + (if "topics/search".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "q="
                                  + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&page="
@@ -42677,7 +42978,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user", System.UriKind.Relative)
+                            System.Uri ("user", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -42719,8 +43020,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/applications/oauth2"
-                                 + (if "/user/applications/oauth2".IndexOf (char 63) >= 0 then
+                                ("user/applications/oauth2"
+                                 + (if "user/applications/oauth2".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -42773,7 +43074,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user/applications/oauth2", System.UriKind.Relative)
+                            System.Uri ("user/applications/oauth2", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -42786,7 +43087,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateOAuth2ApplicationOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -42821,7 +43124,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/applications/oauth2/{id}"
+                                "user/applications/oauth2/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -42864,7 +43167,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/applications/oauth2/{id}"
+                                "user/applications/oauth2/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -42878,12 +43181,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42909,7 +43206,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/applications/oauth2/{id}"
+                                "user/applications/oauth2/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -42925,7 +43222,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateOAuth2ApplicationOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -42959,7 +43258,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user/emails", System.UriKind.Relative)
+                            System.Uri ("user/emails", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -42998,7 +43297,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user/emails", System.UriKind.Relative)
+                            System.Uri ("user/emails", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -43011,7 +43310,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateEmailOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -43045,7 +43346,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user/emails", System.UriKind.Relative)
+                            System.Uri ("user/emails", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -43058,18 +43359,14 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> DeleteEmailOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43095,11 +43392,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/followers"
-                                 + (if "/user/followers".IndexOf (char 63) >= 0 then
-                                        "&"
-                                    else
-                                        "?")
+                                ("user/followers"
+                                 + (if "user/followers".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -43147,11 +43441,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/following"
-                                 + (if "/user/following".IndexOf (char 63) >= 0 then
-                                        "&"
-                                    else
-                                        "?")
+                                ("user/following"
+                                 + (if "user/following".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -43197,7 +43488,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/following/{username}"
+                                "user/following/{username}"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -43211,12 +43502,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43240,7 +43525,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/following/{username}"
+                                "user/following/{username}"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -43254,12 +43539,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43283,7 +43562,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/following/{username}"
+                                "user/following/{username}"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -43297,12 +43576,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43325,7 +43598,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user/gpg_key_token", System.UriKind.Relative)
+                            System.Uri ("user/gpg_key_token", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -43360,7 +43633,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/gpg_keys/{id}"
+                                "user/gpg_keys/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -43374,12 +43647,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43405,8 +43672,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/keys"
-                                 + (if "/user/keys".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("user/keys"
+                                 + (if "user/keys".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "fingerprint="
                                  + ((fingerprint.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&page="
@@ -43456,7 +43723,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user/keys", System.UriKind.Relative)
+                            System.Uri ("user/keys", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -43469,7 +43736,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateKeyOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -43504,7 +43773,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/keys/{id}"
+                                "user/keys/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -43547,7 +43816,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/keys/{id}"
+                                "user/keys/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -43561,12 +43830,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43590,8 +43853,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/orgs"
-                                 + (if "/user/orgs".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("user/orgs"
+                                 + (if "user/orgs".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -43640,8 +43903,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/repos"
-                                 + (if "/user/repos".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("user/repos"
+                                 + (if "user/repos".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -43689,7 +43952,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user/repos", System.UriKind.Relative)
+                            System.Uri ("user/repos", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -43702,7 +43965,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateRepoOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -43736,7 +44001,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user/settings", System.UriKind.Relative)
+                            System.Uri ("user/settings", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -43778,7 +44043,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/user/settings", System.UriKind.Relative)
+                            System.Uri ("user/settings", System.UriKind.Relative)
                         )
 
                     let httpMessage =
@@ -43791,7 +44056,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> UserSettingsOptions.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -43829,8 +44096,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/starred"
-                                 + (if "/user/starred".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("user/starred"
+                                 + (if "user/starred".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -43881,7 +44148,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/starred/{owner}/{repo}"
+                                "user/starred/{owner}/{repo}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -43896,12 +44163,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43927,7 +44188,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/starred/{owner}/{repo}"
+                                "user/starred/{owner}/{repo}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -43942,12 +44203,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43973,7 +44228,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/user/starred/{owner}/{repo}"
+                                "user/starred/{owner}/{repo}"
                                     .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -43988,12 +44243,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44017,8 +44266,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/stopwatches"
-                                 + (if "/user/stopwatches".IndexOf (char 63) >= 0 then
+                                ("user/stopwatches"
+                                 + (if "user/stopwatches".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44072,8 +44321,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/subscriptions"
-                                 + (if "/user/subscriptions".IndexOf (char 63) >= 0 then
+                                ("user/subscriptions"
+                                 + (if "user/subscriptions".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44125,8 +44374,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/teams"
-                                 + (if "/user/teams".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("user/teams"
+                                 + (if "user/teams".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -44180,8 +44429,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/user/times"
-                                 + (if "/user/times".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("user/times"
+                                 + (if "user/times".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
                                  + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&limit="
@@ -44236,8 +44485,8 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/users/search"
-                                 + (if "/users/search".IndexOf (char 63) >= 0 then "&" else "?")
+                                ("users/search"
+                                 + (if "users/search".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "q="
                                  + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)
                                  + "&uid="
@@ -44258,12 +44507,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44287,7 +44530,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/users/{username}"
+                                "users/{username}"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -44332,9 +44575,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/users/{username}/followers"
+                                ("users/{username}/followers"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/users/{username}/followers".IndexOf (char 63) >= 0 then
+                                 + (if "users/{username}/followers".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44385,9 +44628,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/users/{username}/following"
+                                ("users/{username}/following"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/users/{username}/following".IndexOf (char 63) >= 0 then
+                                 + (if "users/{username}/following".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44438,7 +44681,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/users/{username}/following/{target}"
+                                "users/{username}/following/{target}"
                                     .Replace("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{target}", target.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -44453,12 +44696,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44482,7 +44719,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/users/{username}/heatmap"
+                                "users/{username}/heatmap"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -44536,9 +44773,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/users/{username}/keys"
+                                ("users/{username}/keys"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/users/{username}/keys".IndexOf (char 63) >= 0 then
+                                 + (if "users/{username}/keys".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44594,9 +44831,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/users/{username}/orgs"
+                                ("users/{username}/orgs"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/users/{username}/orgs".IndexOf (char 63) >= 0 then
+                                 + (if "users/{username}/orgs".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44650,7 +44887,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/users/{username}/orgs/{org}/permissions"
+                                "users/{username}/orgs/{org}/permissions"
                                     .Replace("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -44696,9 +44933,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/users/{username}/repos"
+                                ("users/{username}/repos"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/users/{username}/repos".IndexOf (char 63) >= 0 then
+                                 + (if "users/{username}/repos".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44752,9 +44989,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/users/{username}/starred"
+                                ("users/{username}/starred"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/users/{username}/starred".IndexOf (char 63) >= 0 then
+                                 + (if "users/{username}/starred".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44808,9 +45045,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/users/{username}/subscriptions"
+                                ("users/{username}/subscriptions"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/users/{username}/subscriptions".IndexOf (char 63) >= 0 then
+                                 + (if "users/{username}/subscriptions".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44864,9 +45101,9 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                ("/users/{username}/tokens"
+                                ("users/{username}/tokens"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                 + (if "/users/{username}/tokens".IndexOf (char 63) >= 0 then
+                                 + (if "users/{username}/tokens".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
@@ -44920,7 +45157,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/users/{username}/tokens"
+                                "users/{username}/tokens"
                                     .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
                             )
@@ -44936,7 +45173,9 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateAccessTokenOption.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node -> if isNull node then "null" else node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -44973,7 +45212,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "/users/{username}/tokens/{token}"
+                                "users/{username}/tokens/{token}"
                                     .Replace("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
                                     .Replace ("{token}", token.ToString () |> System.Web.HttpUtility.UrlEncode),
                                 System.UriKind.Relative
@@ -44988,12 +45227,6 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
-                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
-
-                    let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
-                        |> Async.AwaitTask
-
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -45016,7 +45249,7 @@ module Gitea =
                                  | v -> v),
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
-                            System.Uri ("/version", System.UriKind.Relative)
+                            System.Uri ("version", System.UriKind.Relative)
                         )
 
                     let httpMessage =

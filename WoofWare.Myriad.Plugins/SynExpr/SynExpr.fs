@@ -374,3 +374,6 @@ module internal SynExpr =
         |> paren
 
     let assign (lhs : SynLongIdent) (rhs : SynExpr) : SynExpr = SynExpr.LongIdentSet (lhs, rhs, range0)
+
+    let assignIndex (lhs : SynExpr) (index : SynExpr) (rhs : SynExpr) : SynExpr =
+        SynExpr.DotIndexedSet (lhs, index, rhs, range0, range0, range0)

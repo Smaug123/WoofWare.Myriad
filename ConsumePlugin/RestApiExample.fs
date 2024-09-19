@@ -188,6 +188,7 @@ type IApiWithHeaders =
     abstract SomeOtherHeader : int
 
     [<Get "endpoint/{param}">]
+    [<Header("Something-Else", "val")>]
     abstract GetPathParam : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
 
 [<WoofWare.Myriad.Plugins.HttpClient>]

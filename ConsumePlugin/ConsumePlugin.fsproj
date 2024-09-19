@@ -60,7 +60,7 @@
     <Compile Include="GeneratedSwaggerGitea.fs">
       <MyriadFile>swagger-gitea.json</MyriadFile>
       <MyriadParams>
-        <GenerateMock>true</GenerateMock>
+        <GenerateMockInternal>true</GenerateMockInternal>
         <ClassName>Gitea</ClassName>
       </MyriadParams>
     </Compile>

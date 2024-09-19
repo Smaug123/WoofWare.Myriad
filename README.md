@@ -273,14 +273,16 @@ You *do* need to include the following configuration:
 ```
 
 The `<ClassName />` key tells us what to name the resulting interface (it gets an `I` prepended for you).
-You can optionally also set `<GenerateMock>true</GenerateMock>` to add the `[<GenerateMock true>]` attribute to the type, so that the following manoeuvre will result in a generated mock:
+You can optionally also set `<GenerateMockInternal>v</GenerateMockInternal>` to add the `[<GenerateMock v>]` attribute to the type
+(where `v` should be `true` or `false`, indicating "resulting mock type is internal" vs "is public"),
+so that the following manoeuvre will result in a generated mock:
 
 ```xml
 <None Include="swagger-gitea.json" />
 <Compile Include="GeneratedSwaggerGitea.fs">
   <MyriadFile>swagger-gitea.json</MyriadFile>
   <MyriadParams>
-    <GenerateMock>true</GenerateMock>
+    <GenerateMockInternal>true</GenerateMockInternal>
     <ClassName>Gitea</ClassName>
   </MyriadParams>
 </Compile>
