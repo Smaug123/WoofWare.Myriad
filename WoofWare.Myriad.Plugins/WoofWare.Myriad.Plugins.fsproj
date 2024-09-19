@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Compile Include="List.fs"/>
+    <Compile Include="Text.fs" />
     <Compile Include="Teq.fs" />
     <Compile Include="Primitives.fs" />
     <Compile Include="SynExpr\SynAttributes.fs" />
@@ -58,6 +59,8 @@
     <Compile Include="HttpClientGenerator.fs"/>
     <Compile Include="CataGenerator.fs" />
     <Compile Include="ArgParserGenerator.fs" />
+    <Compile Include="Swagger.fs" />
+    <Compile Include="SwaggerClientGenerator.fs" />
     <None Include="TeqLicence.txt" />
     <EmbeddedResource Include="version.json"/>
     <EmbeddedResource Include="SurfaceBaseline.txt"/>
