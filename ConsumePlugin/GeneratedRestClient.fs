@@ -1557,6 +1557,7 @@ module ApiWithHeaders =
                     do httpMessage.Headers.Add ("X-Foo", this.SomeHeader.ToString ())
                     do httpMessage.Headers.Add ("Authorization", this.SomeOtherHeader.ToString ())
                     do httpMessage.Headers.Add ("Header-Name", "Header-Value")
+                    do httpMessage.Headers.Add ("Something-Else", "val")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
