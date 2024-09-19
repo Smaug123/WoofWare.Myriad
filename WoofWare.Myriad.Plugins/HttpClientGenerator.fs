@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
+open System.IO
 open System.Net.Http
 open Fantomas.FCS.Syntax
 
@@ -11,6 +12,17 @@ type internal HttpClientGeneratorOutputSpec =
 [<RequireQualifiedAccess>]
 module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range
+
+    let outputFile = FileInfo "/tmp/output.txt"
+
+    // do
+    //     use _ = File.Create outputFile.FullName
+    //     ()
+
+    let log (line : string) =
+        // use w = outputFile.AppendText ()
+        // w.WriteLine line
+        ()
 
     [<RequireQualifiedAccess>]
     type PathSpec =
@@ -60,6 +72,9 @@ module internal HttpClientGenerator =
             BaseAddress : SynExpr option
             BasePath : SynExpr option
             Accessibility : SynAccess option
+            /// Headers which apply *only* to this endpoint.
+            /// For example, SynConst "Authorization" and SynConst "token BLAH".
+            Headers : (SynExpr * SynExpr) list
         }
 
     let httpMethodString (m : HttpMethod) : string =
@@ -422,14 +437,54 @@ module internal HttpClientGenerator =
                     retType
                     (SynExpr.createIdent "jsonNode")
 
+        let contentTypeHeader, memberHeaders =
+            info.Headers
+            |> List.partition (fun (headerName, headerValue) ->
+                match headerName |> SynExpr.stripOptionalParen with
+                | SynExpr.Const (SynConst.String ("Content-Type", _, _), _) -> true
+                | _ -> false
+            )
+
+        let contentTypeHeader =
+            match contentTypeHeader with
+            | [] -> None
+            | [ _, ct ] -> Some (SynExpr.stripOptionalParen ct)
+            | _ -> failwith "Unexpectedly got multiple Content-Type headers"
+
+        let createStringContent (contents : SynExpr) =
+            SynExpr.createNew
+                (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "StringContent" ])
+                (SynExpr.tupleNoParen
+                    [
+                        yield contents
+                        match contentTypeHeader with
+                        | None -> ()
+                        | Some ch ->
+                            yield SynExpr.createNull ()
+                            // Sigh, Gitea in particular passes "json" here
+                            match ch with
+                            | SynExpr.Const (SynConst.String ("json", _, _), _) ->
+                                yield SynExpr.CreateConst "application/json"
+                            | SynExpr.Const (SynConst.String ("html", _, _), _) -> yield SynExpr.CreateConst "text/html"
+                            | _ -> yield ch
+                    ])
+
         let handleBodyParams =
             match bodyParam with
             | None -> []
             | Some (bodyParamType, bodyParamName) ->
                 match bodyParamType with
-                | BodyParamMethods.StreamContent
-                | BodyParamMethods.ByteArrayContent
                 | BodyParamMethods.StringContent ->
+                    [
+                        Let ("queryParams", createStringContent (SynExpr.createIdent' bodyParamName))
+                        Do (
+                            SynExpr.assign
+                                (SynLongIdent.createS' [ "httpMessage" ; "Content" ])
+                                (SynExpr.createIdent "queryParams")
+                        )
+                    ]
+                | BodyParamMethods.StreamContent
+                | BodyParamMethods.ByteArrayContent ->
                     [
                         Let (
                             "queryParams",
@@ -456,22 +511,22 @@ module internal HttpClientGenerator =
                     [
                         Let (
                             "queryParams",
-                            SynExpr.createNew
-                                (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "StringContent" ])
-                                (SynExpr.createIdent' bodyParamName
-                                 |> SynExpr.pipeThroughFunction (fst (JsonSerializeGenerator.serializeNode ty))
-                                 |> SynExpr.pipeThroughFunction (
-                                     SynExpr.createLambda
-                                         "node"
-                                         (SynExpr.ifThenElse
-                                             (SynExpr.applyFunction
-                                                 (SynExpr.createIdent "isNull")
-                                                 (SynExpr.createIdent "node"))
-                                             (SynExpr.applyFunction
-                                                 (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
-                                                 (SynExpr.CreateConst ()))
-                                             (SynExpr.CreateConst "null"))
-                                 ))
+                            createStringContent (
+                                SynExpr.createIdent' bodyParamName
+                                |> SynExpr.pipeThroughFunction (fst (JsonSerializeGenerator.serializeNode ty))
+                                |> SynExpr.pipeThroughFunction (
+                                    SynExpr.createLambda
+                                        "node"
+                                        (SynExpr.ifThenElse
+                                            (SynExpr.applyFunction
+                                                (SynExpr.createIdent "isNull")
+                                                (SynExpr.createIdent "node"))
+                                            (SynExpr.applyFunction
+                                                (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
+                                                (SynExpr.CreateConst ()))
+                                            (SynExpr.CreateConst "null"))
+                                )
+                            )
                         )
                         Do (
                             SynExpr.assign
@@ -540,6 +595,16 @@ module internal HttpClientGenerator =
                     |> Do
                 )
 
+            let setMemberHeaders =
+                memberHeaders
+                |> List.map (fun (headerName, headerValue) ->
+                    // Best-effort: assume this is a message header.
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "httpMessage" ; "Headers" ; "Add" ])
+                        (SynExpr.tuple [ headerName ; headerValue ])
+                    |> Do
+                )
+
             [
                 yield LetBang ("ct", SynExpr.createLongIdent [ "Async" ; "CancellationToken" ])
                 yield Let ("uri", requestUri)
@@ -555,6 +620,7 @@ module internal HttpClientGenerator =
 
                 yield! setVariableHeaders
                 yield! setConstantHeaders
+                yield! setMemberHeaders
 
                 yield
                     LetBang (
@@ -581,6 +647,9 @@ module internal HttpClientGenerator =
                     yield jsonNode
                 | String -> yield responseString
                 | Stream -> yield responseStream
+                | Unit ->
+                    // What we're returning doesn't depend on the content, so don't bother!
+                    ()
                 | _ ->
                     yield responseStream
                     yield jsonNode
@@ -741,6 +810,16 @@ module internal HttpClientGenerator =
             |> List.map (fun mem ->
                 let httpMethod, url = extractHttpInformation mem.Attributes
 
+                let specificHeaders =
+                    extractHeaderInformation mem.Attributes
+                    |> List.map (fun l ->
+                        match l with
+                        | [ x ; y ] -> x, y
+                        | _ ->
+                            failwith
+                                $"Expected Header attribute on member %s{mem.Identifier.idText} to have exactly two arguments."
+                    )
+
                 let shouldEnsureSuccess = not (shouldAllowAnyStatusCode mem.Attributes)
 
                 let returnType =
@@ -781,6 +860,7 @@ module internal HttpClientGenerator =
                     BaseAddress = baseAddress
                     BasePath = basePath
                     Accessibility = mem.Accessibility
+                    Headers = specificHeaders
                 }
             )
             |> List.map (constructMember constantHeaders properties)
