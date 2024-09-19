@@ -699,9 +699,15 @@ type SwaggerClientGenerator () =
                     |> Map.ofList
 
                 let createMock =
-                    match Map.tryFind "GENERATEMOCKINTERNAL" pars with
+                    match Map.tryFind "GENERATEMOCKVISIBILITY" pars with
                     | None -> None
-                    | Some v -> v |> System.Boolean.Parse |> Some
+                    | Some v ->
+                        match v.ToLowerInvariant () with
+                        | "internal" -> Some true
+                        | "public" -> Some false
+                        | _ ->
+                            failwith
+                                $"Expected GenerateMockVisibility parameter to be 'internal' or 'public', but was: '%s{v.ToLowerInvariant ()}'"
 
                 let className =
                     match Map.tryFind "CLASSNAME" pars with

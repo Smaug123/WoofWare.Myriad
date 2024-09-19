@@ -273,8 +273,8 @@ You *do* need to include the following configuration:
 ```
 
 The `<ClassName />` key tells us what to name the resulting interface (it gets an `I` prepended for you).
-You can optionally also set `<GenerateMockInternal>v</GenerateMockInternal>` to add the `[<GenerateMock v>]` attribute to the type
-(where `v` should be `true` or `false`, indicating "resulting mock type is internal" vs "is public"),
+You can optionally also set `<GenerateMockVisibility>v</GenerateMockVisibility>` to add the `[<GenerateMock>]` attribute to the type
+(where `v` should be `internal` or `public`, indicating "resulting mock type is internal" vs "is public"),
 so that the following manoeuvre will result in a generated mock:
 
 ```xml
@@ -282,7 +282,7 @@ so that the following manoeuvre will result in a generated mock:
 <Compile Include="GeneratedSwaggerGitea.fs">
   <MyriadFile>swagger-gitea.json</MyriadFile>
   <MyriadParams>
-    <GenerateMockInternal>true</GenerateMockInternal>
+    <GenerateMockVisibility>public</GenerateMockVisibility>
     <ClassName>Gitea</ClassName>
   </MyriadParams>
 </Compile>
@@ -303,9 +303,8 @@ Also, builds using `SwaggerProvider` appear to be inherently nondeterministic, e
 ## Limitations
 
 Swagger API specs appear to be pretty cowboy in the wild.
-(For example, the Gitea JSON schema isn't a valid JSON schema.)
 I try to cope with invalid schemas I have seen, but I can't guarantee I do so correctly.
-Definitely do perform integration tests and let me know of weird specs you encounter!
+Definitely do perform integration tests and let me know of weird specs you encounter, and bits of the (very extensive) Swagger spec I have omitted!
 
 ## `RemoveOptions`
 
