@@ -27,8 +27,7 @@ jobs:
       - name: Run passthru
         run: |
             set -o pipefail
-            ./result | tee /tmp/passthru.txt
-            cp /"$(cat /tmp/passthru.txt | grep " wrote lockfile to " | cut -d / -f 2-)" nix/deps.nix
+            ./result nix/deps.nix
 
       - name: Format
         run: 'nix develop --command alejandra .'
