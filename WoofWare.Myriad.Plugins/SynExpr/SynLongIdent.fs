@@ -39,6 +39,12 @@ module internal SynLongIdent =
     let booleanOr =
         SynLongIdent.SynLongIdent ([ Ident.create "op_BooleanOr" ], [], [ Some (IdentTrivia.OriginalNotation "||") ])
 
+    let plus =
+        SynLongIdent.SynLongIdent ([ Ident.create "op_Addition" ], [], [ Some (IdentTrivia.OriginalNotation "+") ])
+
+    let times =
+        SynLongIdent.SynLongIdent ([ Ident.create "op_Multiply" ], [], [ Some (IdentTrivia.OriginalNotation "*") ])
+
     let pipe =
         SynLongIdent.SynLongIdent ([ Ident.create "op_PipeRight" ], [], [ Some (IdentTrivia.OriginalNotation "|>") ])
 

@@ -31,7 +31,7 @@ module MyListCata =
     [<RequireQualifiedAccess>]
     type private Instruction<'a> =
         | Process__MyList of MyList<'a>
-        | MyList_Cons of 'a
+        | MyList_Cons of head : 'a
 
     let private loop (cata : MyListCata<'a, 'MyList>) (instructions : ResizeArray<Instruction<'a>>) =
         let myListStack = ResizeArray<'MyList> ()

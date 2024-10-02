@@ -4,8 +4,6 @@ open System
 open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
-open Fantomas.FCS.Xml
-open Myriad.Core
 
 type internal ArgParserOutputSpec =
     {
@@ -1224,7 +1222,7 @@ module internal ArgParserGenerator =
                                     (SynExpr.CreateConst ()))
                         ])
                 SynMatchClause.create
-                    (SynPat.listCons (SynPat.createConst (SynConst.CreateString "--")) (SynPat.named "rest"))
+                    (SynPat.listCons (SynPat.createConst (SynConst.Create "--")) (SynPat.named "rest"))
                     (SynExpr.callMethodArg
                         "AddRange"
                         (SynExpr.paren (
@@ -1643,7 +1641,7 @@ module internal ArgParserGenerator =
         let modInfo =
             SynComponentInfo.create modName
             |> SynComponentInfo.withDocString (
-                PreXmlDoc.Create $" Methods to parse arguments for the type %s{taggedType.Name.idText}"
+                PreXmlDoc.create $"Methods to parse arguments for the type %s{taggedType.Name.idText}"
             )
             |> SynComponentInfo.addAttributes modAttrs
 
@@ -1666,7 +1664,7 @@ module internal ArgParserGenerator =
                             [
                                 {
                                     Attrs = []
-                                    Ident = Ident.create "key"
+                                    Ident = Some (Ident.create "key")
                                     Type = SynType.string
                                 }
                             ]
@@ -1740,75 +1738,12 @@ module internal ArgParserGenerator =
 
         [
             for openStatement in opens do
-                yield SynModuleDecl.CreateOpen openStatement
+                yield SynModuleDecl.openAny openStatement
             yield taggedMod
         ]
         |> SynModuleOrNamespace.createNamespace ns
 
-    let generate (context : GeneratorContext) : Output =
-        let ast, _ =
-            Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
-
-        let types =
-            Ast.extractTypeDefn ast
-            |> List.groupBy (fst >> List.map _.idText >> String.concat ".")
-            |> List.map (fun (_, v) -> fst (List.head v), List.collect snd v)
-
-        let opens = AstHelper.extractOpens ast
-
-        let namespaceAndTypes =
-            types
-            |> List.collect (fun (ns, types) ->
-                let typeWithAttr =
-                    types
-                    |> List.choose (fun ty ->
-                        match Ast.getAttribute<ArgParserAttribute> ty with
-                        | None -> None
-                        | Some attr ->
-                            let arg =
-                                match SynExpr.stripOptionalParen attr.ArgExpr with
-                                | SynExpr.Const (SynConst.Bool value, _) -> value
-                                | SynExpr.Const (SynConst.Unit, _) -> ArgParserAttribute.DefaultIsExtensionMethod
-                                | arg ->
-                                    failwith
-                                        $"Unrecognised argument %+A{arg} to [<%s{nameof ArgParserAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."
-
-                            let spec =
-                                {
-                                    ExtensionMethods = arg
-                                }
-
-                            Some (ty, spec)
-                    )
-
-                typeWithAttr
-                |> List.map (fun taggedType ->
-                    let unions, records, others =
-                        (([], [], []), types)
-                        ||> List.fold (fun
-                                           (unions, records, others)
-                                           (SynTypeDefn.SynTypeDefn (sci, repr, smd, _, _, _) as ty) ->
-                            match repr with
-                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (access, cases, _), _) ->
-                                UnionType.OfUnion sci smd access cases :: unions, records, others
-                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access, fields, _), _) ->
-                                unions, RecordType.OfRecord sci smd access fields :: records, others
-                            | _ -> unions, records, ty :: others
-                        )
-
-                    if not others.IsEmpty then
-                        failwith
-                            $"Error: all types recursively defined together with an ArgParserGenerator type must be discriminated unions or records. %+A{others}"
-
-                    (ns, taggedType, unions, records)
-                )
-            )
-
-        let modules =
-            namespaceAndTypes
-            |> List.map (fun (ns, taggedType, unions, records) -> createModule opens ns taggedType unions records)
-
-        Output.Ast modules
+open Myriad.Core
 
 /// Myriad generator that provides a catamorphism for an algebraic data type.
 [<MyriadGenerator("arg-parser")>]
@@ -1817,4 +1752,69 @@ type ArgParserGenerator () =
     interface IMyriadGenerator with
         member _.ValidInputExtensions = [ ".fs" ]
 
-        member _.Generate (context : GeneratorContext) = ArgParserGenerator.generate context
+        member _.Generate (context : GeneratorContext) =
+            let ast, _ =
+                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+
+            let types =
+                Ast.extractTypeDefn ast
+                |> List.groupBy (fst >> List.map _.idText >> String.concat ".")
+                |> List.map (fun (_, v) -> fst (List.head v), List.collect snd v)
+
+            let opens = AstHelper.extractOpens ast
+
+            let namespaceAndTypes =
+                types
+                |> List.collect (fun (ns, types) ->
+                    let typeWithAttr =
+                        types
+                        |> List.choose (fun ty ->
+                            match SynTypeDefn.getAttribute typeof<ArgParserAttribute>.Name ty with
+                            | None -> None
+                            | Some attr ->
+                                let arg =
+                                    match SynExpr.stripOptionalParen attr.ArgExpr with
+                                    | SynExpr.Const (SynConst.Bool value, _) -> value
+                                    | SynExpr.Const (SynConst.Unit, _) -> ArgParserAttribute.DefaultIsExtensionMethod
+                                    | arg ->
+                                        failwith
+                                            $"Unrecognised argument %+A{arg} to [<%s{nameof ArgParserAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."
+
+                                let spec =
+                                    {
+                                        ExtensionMethods = arg
+                                    }
+
+                                Some (ty, spec)
+                        )
+
+                    typeWithAttr
+                    |> List.map (fun taggedType ->
+                        let unions, records, others =
+                            (([], [], []), types)
+                            ||> List.fold (fun
+                                               (unions, records, others)
+                                               (SynTypeDefn.SynTypeDefn (sci, repr, smd, _, _, _) as ty) ->
+                                match repr with
+                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (access, cases, _), _) ->
+                                    UnionType.OfUnion sci smd access cases :: unions, records, others
+                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access, fields, _), _) ->
+                                    unions, RecordType.OfRecord sci smd access fields :: records, others
+                                | _ -> unions, records, ty :: others
+                            )
+
+                        if not others.IsEmpty then
+                            failwith
+                                $"Error: all types recursively defined together with an ArgParserGenerator type must be discriminated unions or records. %+A{others}"
+
+                        (ns, taggedType, unions, records)
+                    )
+                )
+
+            let modules =
+                namespaceAndTypes
+                |> List.map (fun (ns, taggedType, unions, records) ->
+                    ArgParserGenerator.createModule opens ns taggedType unions records
+                )
+
+            Output.Ast modules

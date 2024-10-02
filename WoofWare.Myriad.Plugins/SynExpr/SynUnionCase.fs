@@ -23,14 +23,14 @@ type UnionCase<'ident> =
 
 [<RequireQualifiedAccess>]
 module internal SynUnionCase =
-    let create (case : UnionCase<Ident>) : SynUnionCase =
+    let create (case : UnionCase<Ident option>) : SynUnionCase =
         let fields =
             case.Fields
             |> List.map (fun field ->
                 SynField.SynField (
                     SynAttributes.ofAttrs field.Attrs,
                     false,
-                    Some field.Ident,
+                    field.Ident,
                     field.Type,
                     false,
                     PreXmlDoc.Empty,

@@ -2,14 +2,13 @@ namespace WoofWare.Myriad.Plugins
 
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
-open Myriad.Core
 open Fantomas.FCS.Text.Range
 
 [<AutoOpen>]
 module internal SynExprExtensions =
     type SynExpr with
         static member CreateConst (s : string) : SynExpr =
-            SynExpr.Const (SynConst.String (s, SynStringKind.Regular, range0), range0)
+            SynExpr.Const (SynConst.Create s, range0)
 
         static member CreateConst () : SynExpr = SynExpr.Const (SynConst.Unit, range0)
 
@@ -17,7 +16,13 @@ module internal SynExprExtensions =
 
         static member CreateConst (c : char) : SynExpr =
             // apparent Myriad bug: `IndexOf '?'` gets formatted as `IndexOf ?` which is clearly wrong
-            SynExpr.CreateApp (SynExpr.Ident (Ident.Create "char"), SynExpr.CreateConst (int c))
+            SynExpr.App (
+                ExprAtomicFlag.NonAtomic,
+                false,
+                SynExpr.Ident (Ident.create "char"),
+                SynExpr.CreateConst (int c),
+                range0
+            )
             |> fun e -> SynExpr.Paren (e, range0, Some range0, range0)
 
         static member CreateConst (i : int32) : SynExpr =
@@ -27,15 +32,27 @@ module internal SynExprExtensions =
 module internal SynExpr =
 
     /// {f} {x}
-    let applyFunction (f : SynExpr) (x : SynExpr) : SynExpr = SynExpr.CreateApp (f, x)
+    let applyFunction (f : SynExpr) (x : SynExpr) : SynExpr =
+        SynExpr.App (ExprAtomicFlag.NonAtomic, false, f, x, range0)
 
     /// {f} {x}
     let inline applyTo (x : SynExpr) (f : SynExpr) : SynExpr = applyFunction f x
 
+    let inline private createAppInfix (f : SynExpr) (x : SynExpr) =
+        SynExpr.App (ExprAtomicFlag.NonAtomic, true, f, x, range0)
+
+    let inline createLongIdent'' (ident : SynLongIdent) : SynExpr =
+        SynExpr.LongIdent (false, ident, None, range0)
+
+    let inline createLongIdent' (ident : Ident list) : SynExpr =
+        createLongIdent'' (SynLongIdent.create ident)
+
+    let inline createLongIdent (ident : string list) : SynExpr =
+        createLongIdent' (ident |> List.map Ident.create)
+
     /// {expr} |> {func}
     let pipeThroughFunction (func : SynExpr) (expr : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.pipe, expr)
-        |> applyTo func
+        createAppInfix (createLongIdent'' SynLongIdent.pipe) expr |> applyTo func
 
     /// if {cond} then {trueBranch} else {falseBranch}
     /// Note that this function puts the trueBranch last, for pipelining convenience:
@@ -78,45 +95,23 @@ module internal SynExpr =
 
     /// {a} = {b}
     let equals (a : SynExpr) (b : SynExpr) =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.eq, a) |> applyTo b
+        createAppInfix (createLongIdent'' SynLongIdent.eq) a |> applyTo b
 
     /// {a} && {b}
     let booleanAnd (a : SynExpr) (b : SynExpr) =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.booleanAnd, a)
-        |> applyTo b
+        createAppInfix (createLongIdent'' SynLongIdent.booleanAnd) a |> applyTo b
 
     /// {a} || {b}
     let booleanOr (a : SynExpr) (b : SynExpr) =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.booleanOr, a)
-        |> applyTo b
+        createAppInfix (createLongIdent'' SynLongIdent.booleanOr) a |> applyTo b
 
     /// {a} + {b}
     let plus (a : SynExpr) (b : SynExpr) =
-        SynExpr.CreateAppInfix (
-            SynExpr.CreateLongIdent (
-                SynLongIdent.SynLongIdent (
-                    Ident.CreateLong "op_Addition",
-                    [],
-                    [ Some (IdentTrivia.OriginalNotation "+") ]
-                )
-            ),
-            a
-        )
-        |> applyTo b
+        createAppInfix (createLongIdent'' SynLongIdent.plus) a |> applyTo b
 
     /// {a} * {b}
     let times (a : SynExpr) (b : SynExpr) =
-        SynExpr.CreateAppInfix (
-            SynExpr.CreateLongIdent (
-                SynLongIdent.SynLongIdent (
-                    Ident.CreateLong "op_Multiply",
-                    [],
-                    [ Some (IdentTrivia.OriginalNotation "*") ]
-                )
-            ),
-            a
-        )
-        |> applyTo b
+        createAppInfix (createLongIdent'' SynLongIdent.times) a |> applyTo b
 
     let rec stripOptionalParen (expr : SynExpr) : SynExpr =
         match expr with
@@ -172,7 +167,7 @@ module internal SynExpr =
         SynExpr.Lambda (
             false,
             false,
-            SynSimplePats.Create [ SynSimplePat.CreateId (Ident.Create varName) ],
+            SynSimplePats.create [ SynSimplePat.createId (Ident.create varName) ],
             body,
             Some (parsedDataPat, body),
             range0,
@@ -186,7 +181,7 @@ module internal SynExpr =
         SynExpr.Lambda (
             false,
             false,
-            SynSimplePats.Create [],
+            SynSimplePats.create [],
             body,
             Some ([ SynPat.unit ], body),
             range0,
@@ -199,12 +194,6 @@ module internal SynExpr =
     let inline createIdent (s : string) : SynExpr = SynExpr.Ident (Ident (s, range0))
 
     let inline createIdent' (i : Ident) : SynExpr = SynExpr.Ident i
-
-    let inline createLongIdent' (ident : Ident list) : SynExpr =
-        SynExpr.LongIdent (false, SynLongIdent.create ident, None, range0)
-
-    let inline createLongIdent (ident : string list) : SynExpr =
-        createLongIdent' (ident |> List.map Ident.create)
 
     let tupleNoParen (args : SynExpr list) : SynExpr =
         SynExpr.Tuple (false, args, List.replicate (args.Length - 1) range0, range0)
@@ -332,7 +321,7 @@ module internal SynExpr =
 
     /// {ident} - {rhs}
     let minus (ident : SynLongIdent) (rhs : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.sub, SynExpr.CreateLongIdent ident)
+        createAppInfix (createLongIdent'' SynLongIdent.sub) (createLongIdent'' ident)
         |> applyTo rhs
 
     /// {ident} - {n}
@@ -340,26 +329,24 @@ module internal SynExpr =
 
     /// {y} > {x}
     let greaterThan (x : SynExpr) (y : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.gt, y) |> applyTo x
+        createAppInfix (createLongIdent'' SynLongIdent.gt) y |> applyTo x
 
     /// {y} < {x}
     let lessThan (x : SynExpr) (y : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.lt, y) |> applyTo x
+        createAppInfix (createLongIdent'' SynLongIdent.lt) y |> applyTo x
 
     /// {y} >= {x}
     let greaterThanOrEqual (x : SynExpr) (y : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.geq, y)
-        |> applyTo x
+        createAppInfix (createLongIdent'' SynLongIdent.geq) y |> applyTo x
 
     /// {y} <= {x}
     let lessThanOrEqual (x : SynExpr) (y : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (SynExpr.CreateLongIdent SynLongIdent.leq, y)
-        |> applyTo x
+        createAppInfix (createLongIdent'' SynLongIdent.leq) y |> applyTo x
 
     /// {x} :: {y}
     let listCons (x : SynExpr) (y : SynExpr) : SynExpr =
-        SynExpr.CreateAppInfix (
-            SynExpr.LongIdent (
+        createAppInfix
+            (SynExpr.LongIdent (
                 false,
                 SynLongIdent.SynLongIdent (
                     [ Ident.create "op_ColonColon" ],
@@ -368,9 +355,8 @@ module internal SynExpr =
                 ),
                 None,
                 range0
-            ),
-            tupleNoParen [ x ; y ]
-        )
+            ))
+            (tupleNoParen [ x ; y ])
         |> paren
 
     let assign (lhs : SynLongIdent) (rhs : SynExpr) : SynExpr = SynExpr.LongIdentSet (lhs, rhs, range0)

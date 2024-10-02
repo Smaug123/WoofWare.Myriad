@@ -544,7 +544,7 @@ type JsonSerializeGenerator () =
                 |> List.choose (fun (ns, types) ->
                     types
                     |> List.choose (fun typeDef ->
-                        match Ast.getAttribute<JsonSerializeAttribute> typeDef with
+                        match SynTypeDefn.getAttribute typeof<JsonSerializeAttribute>.Name typeDef with
                         | None ->
                             let name = SynTypeDefn.getName typeDef |> List.map _.idText |> String.concat "."
 
