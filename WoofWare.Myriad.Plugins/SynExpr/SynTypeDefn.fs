@@ -25,3 +25,7 @@ module internal SynTypeDefn =
         match r with
         | SynTypeDefn (typeInfo, typeRepr, _, ctor, range, trivia) ->
             SynTypeDefn.SynTypeDefn (typeInfo, typeRepr, members, ctor, range, trivia)
+
+    let getName (defn : SynTypeDefn) : LongIdent =
+        match defn with
+        | SynTypeDefn (SynComponentInfo.SynComponentInfo (_, _, _, id, _, _, _, _), _, _, _, _, _) -> id

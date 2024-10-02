@@ -26,6 +26,7 @@
     <Compile Include="TestHttpClient\TestVaultClient.fs" />
     <Compile Include="TestHttpClient\TestVariableHeader.fs" />
     <Compile Include="TestMockGenerator\TestMockGenerator.fs" />
+    <Compile Include="TestMockGenerator\TestMockGeneratorNoAttr.fs" />
     <Compile Include="TestJsonSerialize\TestJsonSerde.fs" />
     <Compile Include="TestCataGenerator\TestCataGenerator.fs" />
     <Compile Include="TestCataGenerator\TestDirectory.fs" />

@@ -53,6 +53,7 @@
     <Compile Include="Measure.fs" />
     <Compile Include="AstHelper.fs" />
     <Compile Include="RemoveOptionsGenerator.fs"/>
+    <Compile Include="MyriadParamParser.fs" />
     <Compile Include="InterfaceMockGenerator.fs"/>
     <Compile Include="JsonSerializeGenerator.fs"/>
     <Compile Include="JsonParseGenerator.fs"/>

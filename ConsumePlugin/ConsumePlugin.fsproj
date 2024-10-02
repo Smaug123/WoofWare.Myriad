@@ -32,6 +32,20 @@
     <Compile Include="GeneratedMock.fs">
       <MyriadFile>MockExample.fs</MyriadFile>
     </Compile>
+    <Compile Include="MockExampleNoAttributes.fs" />
+    <Compile Include="GeneratedMockNoAttributes.fs">
+      <MyriadFile>MockExampleNoAttributes.fs</MyriadFile>
+      <MyriadParams>
+        <IPublicTypeNoAttr>GenerateMock</IPublicTypeNoAttr>
+        <IPublicTypeInternalFalseNoAttr>GenerateMock(false)</IPublicTypeInternalFalseNoAttr>
+        <InternalTypeNoAttr>GenerateMock</InternalTypeNoAttr>
+        <PrivateTypeNoAttr>GenerateMock</PrivateTypeNoAttr>
+        <PrivateTypeInternalFalseNoAttr>GenerateMock(false)</PrivateTypeInternalFalseNoAttr>
+        <VeryPublicTypeNoAttr>GenerateMock</VeryPublicTypeNoAttr>
+        <CurriedNoAttr>GenerateMock</CurriedNoAttr>
+        <TypeWithInterfaceNoAttr>GenerateMock</TypeWithInterfaceNoAttr>
+      </MyriadParams>
+    </Compile>
     <Compile Include="Vault.fs" />
     <Compile Include="GeneratedVault.fs">
       <MyriadFile>Vault.fs</MyriadFile>
