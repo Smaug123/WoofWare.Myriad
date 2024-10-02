@@ -672,31 +672,16 @@ type SwaggerClientGenerator () =
                 |> Seq.toList
 
             let config =
-                // Bug in Myriad, their arg parsing is borked.
-                let pars =
-                    context.AdditionalParameters
-                    |> Seq.map (fun (KeyValue (k, v)) -> k, v)
-                    |> Seq.toList
+                let pars = MyriadParamParser.render context.AdditionalParameters
 
                 let pars =
-                    match pars with
-                    | [] ->
-                        failwith "No parameters given. You must supply the <ClassName /> parameter in <MyriadParams />."
-                    | [ key, value ] ->
-                        let semicolon = value.IndexOf ';'
+                    pars
+                    |> Map.toSeq
+                    |> Seq.map (fun (k, v) -> k.ToUpperInvariant (), v)
+                    |> Map.ofSeq
 
-                        if semicolon >= 0 then
-                            let equals = value.IndexOf ('=', semicolon)
-
-                            [
-                                key, value.Substring (0, semicolon)
-                                value.Substring (semicolon + 1, equals - semicolon - 1), value.Substring (equals + 1)
-                            ]
-                        else
-                            [ key, value ]
-                    | rest -> rest
-                    |> List.map (fun (key, value) -> key.ToUpperInvariant (), value)
-                    |> Map.ofList
+                if pars.IsEmpty then
+                    failwith "No parameters given. You must supply the <ClassName /> parameter in <MyriadParams />."
 
                 let createMock =
                     match Map.tryFind "GENERATEMOCKVISIBILITY" pars with

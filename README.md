@@ -604,6 +604,36 @@ For example, this specifies that Myriad is to use the contents of `Client.fs` to
 </ItemGroup>
 ```
 
+## Alternative use without the attributes
+
+You can avoid taking a reference on the `WoofWare.Myriad.Plugins.Attributes` assembly, instead putting all the configuration into the project file.
+This is implemented for everything except the SwaggerClientGenerator.
+
+```xml
+<Project>
+  <ItemGroup>
+    <Compile Include="Client.fs" />
+    <Compile Include="GeneratedClient.fs">
+        <MyriadFile>Client.fs</MyriadFile>
+        <MyriadParams>
+          <MyTypeName1>GenerateMock(false)!JsonParse</MyTypeName1>
+          <SomeOtherTypeName>GenerateMock</SomeOtherTypeName>
+        </MyriadParams>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WoofWare.Myriad.Plugins" Version="$(WoofWareMyriadPluginVersion)" PrivateAssets="all" />
+    <PackageReference Include="Myriad.Sdk" Version="0.8.3" PrivateAssets="all" />
+  </ItemGroup>
+</Project>
+```
+
+That is, you specify a `!`-delimited list of the attributes you *would* apply to the type.
+Supply "arguments" to the attribute name in the project file as you would to the attribute itself.
+
+(Yes, this is indeed incredibly cumbersome, and you're not interested in the reasons it's all so mad!
+I'm hopefully going to get round to writing a more powerful source generation system which won't have these limitations.)
+
 ### Myriad Gotchas
 
 * MsBuild doesn't always realise that it needs to invoke Myriad during rebuild.

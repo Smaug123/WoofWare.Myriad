@@ -992,6 +992,10 @@ type HttpClientGenerator () =
         member _.ValidInputExtensions = [ ".fs" ]
 
         member _.Generate (context : GeneratorContext) =
+            let targetedTypes =
+                MyriadParamParser.render context.AdditionalParameters
+                |> Map.map (fun _ v -> v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
@@ -1005,12 +1009,32 @@ type HttpClientGenerator () =
                     types
                     |> List.choose (fun typeDef ->
                         match Ast.getAttribute<HttpClientAttribute> typeDef with
-                        | None -> None
+                        | None ->
+                            let name = SynTypeDefn.getName typeDef |> List.map _.idText |> String.concat "."
+
+                            match Map.tryFind name targetedTypes with
+                            | Some desired ->
+                                desired
+                                |> List.tryPick (fun generator ->
+                                    match generator with
+                                    | DesiredGenerator.HttpClient arg ->
+                                        let spec =
+                                            {
+                                                ExtensionMethods =
+                                                    arg
+                                                    |> Option.defaultValue
+                                                        HttpClientAttribute.DefaultIsExtensionMethod
+                                            }
+
+                                        Some (typeDef, spec)
+                                    | _ -> None
+                                )
+                            | _ -> None
                         | Some attr ->
                             let arg =
                                 match SynExpr.stripOptionalParen attr.ArgExpr with
                                 | SynExpr.Const (SynConst.Bool value, _) -> value
-                                | SynExpr.Const (SynConst.Unit, _) -> JsonParseAttribute.DefaultIsExtensionMethod
+                                | SynExpr.Const (SynConst.Unit, _) -> HttpClientAttribute.DefaultIsExtensionMethod
                                 | arg ->
                                     failwith
                                         $"Unrecognised argument %+A{arg} to [<%s{nameof HttpClientAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."

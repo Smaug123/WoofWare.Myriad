@@ -702,6 +702,10 @@ type JsonParseGenerator () =
         member _.ValidInputExtensions = [ ".fs" ]
 
         member _.Generate (context : GeneratorContext) =
+            let targetedTypes =
+                MyriadParamParser.render context.AdditionalParameters
+                |> Map.map (fun _ v -> v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
@@ -724,7 +728,28 @@ type JsonParseGenerator () =
                     types
                     |> List.choose (fun typeDef ->
                         match Ast.getAttribute<JsonParseAttribute> typeDef with
-                        | None -> None
+                        | None ->
+                            let name = SynTypeDefn.getName typeDef |> List.map _.idText |> String.concat "."
+
+                            match Map.tryFind name targetedTypes with
+                            | Some desired ->
+                                desired
+                                |> List.tryPick (fun generator ->
+                                    match generator with
+                                    | DesiredGenerator.JsonParse arg ->
+                                        let spec =
+                                            {
+                                                ExtensionMethods =
+                                                    arg
+                                                    |> Option.defaultValue
+                                                        JsonParseAttribute.DefaultIsExtensionMethod
+                                            }
+
+                                        Some (typeDef, spec)
+                                    | _ -> None
+                                )
+                            | _ -> None
+
                         | Some attr ->
                             let arg =
                                 match SynExpr.stripOptionalParen attr.ArgExpr with
