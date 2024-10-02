@@ -150,7 +150,10 @@ type RemoveOptionsGenerator () =
             let namespaceAndRecords =
                 records
                 |> List.choose (fun (ns, types) ->
-                    match types |> List.filter Ast.hasAttribute<RemoveOptionsAttribute> with
+                    match
+                        types
+                        |> List.filter (SynTypeDefn.hasAttribute typeof<RemoveOptionsAttribute>.Name)
+                    with
                     | [] -> None
                     | types ->
                         let types =

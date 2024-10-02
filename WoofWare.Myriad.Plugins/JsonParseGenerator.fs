@@ -727,7 +727,7 @@ type JsonParseGenerator () =
                 |> List.choose (fun (ns, types) ->
                     types
                     |> List.choose (fun typeDef ->
-                        match Ast.getAttribute<JsonParseAttribute> typeDef with
+                        match SynTypeDefn.getAttribute typeof<JsonParseAttribute>.Name typeDef with
                         | None ->
                             let name = SynTypeDefn.getName typeDef |> List.map _.idText |> String.concat "."
 

@@ -1008,7 +1008,7 @@ type HttpClientGenerator () =
                 |> List.choose (fun (ns, types) ->
                     types
                     |> List.choose (fun typeDef ->
-                        match Ast.getAttribute<HttpClientAttribute> typeDef with
+                        match SynTypeDefn.getAttribute typeof<HttpClientAttribute>.Name typeDef with
                         | None ->
                             let name = SynTypeDefn.getName typeDef |> List.map _.idText |> String.concat "."
 

@@ -29,8 +29,13 @@
     <Compile Include="Teq.fs" />
     <Compile Include="Primitives.fs" />
     <Compile Include="SynExpr\SynAttributes.fs" />
+    <Compile Include="SynExpr\SynConst.fs" />
+    <Compile Include="SynExpr\SynArgInfo.fs" />
+    <Compile Include="SynExpr\SynValInfo.fs" />
     <Compile Include="SynExpr\PreXmlDoc.fs" />
     <Compile Include="SynExpr\Ident.fs" />
+    <Compile Include="SynExpr\SynSimplePat.fs" />
+    <Compile Include="SynExpr\SynSimplePats.fs" />
     <Compile Include="SynExpr\SynIdent.fs" />
     <Compile Include="SynExpr\SynLongIdent.fs" />
     <Compile Include="SynExpr\SynExprLetOrUseTrivia.fs" />

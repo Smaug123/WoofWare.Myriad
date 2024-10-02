@@ -3,7 +3,6 @@ namespace WoofWare.Myriad.Plugins
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
-open Myriad.Core
 
 [<RequireQualifiedAccess>]
 module internal CataGenerator =
@@ -176,7 +175,7 @@ module internal CataGenerator =
             |> SynExpr.createLet
                 [
                     SynBinding.Let (
-                        valData = SynValData.SynValData (None, SynValInfo.Empty, None),
+                        valData = SynValData.SynValData (None, SynValInfo.empty, None),
                         pattern =
                             SynPat.tupleNoParen (
                                 allArtificialTyparNames
@@ -463,18 +462,39 @@ module internal CataGenerator =
                         {
                             SynFieldData.Type = field.Type
                             Attrs = []
-                            Ident = None
+                            Ident = field.Name
                         }
-                        |> SynField.make
                     )
 
-                SynUnionCase.Create (unionCase.Name, fields)
+                {
+                    Name = unionCase.Name
+                    XmlDoc = None
+                    Access = None
+                    Attributes = []
+                    Fields = fields
+                }
+                |> SynUnionCase.create
             )
 
         let casesFromCases =
             recursiveCases analysis
             |> List.map (fun case ->
-                SynUnionCase.Create (case.Name, case.Fields |> List.map (fun field -> SynField.Create field.Type))
+                {
+                    UnionCase.Name = case.Name
+                    XmlDoc = None
+                    Access = None
+                    Attributes = []
+                    Fields =
+                        case.Fields
+                        |> List.map (fun field ->
+                            {
+                                SynFieldData.Type = field.Type
+                                Attrs = []
+                                Ident = field.Name
+                            }
+                        )
+                }
+                |> SynUnionCase.create
             )
 
         let cases = casesFromProcess @ casesFromCases
@@ -539,8 +559,8 @@ module internal CataGenerator =
             |> List.map (fun case ->
                 let arity =
                     SynValInfo.SynValInfo (
-                        case.Fields |> List.map (fun field -> [ SynArgInfo.Empty ]),
-                        SynArgInfo.Empty
+                        case.Fields |> List.map (fun field -> [ SynArgInfo.empty ]),
+                        SynArgInfo.empty
                     )
 
                 (SynType.var generics.[analysis.GenericName.idText], List.rev case.FlattenedFields)
@@ -852,9 +872,7 @@ module internal CataGenerator =
                     else
                         []
 
-                SynMatchClause.create
-                    (SynPat.CreateLongIdent (SynLongIdent.create unionCase.Match, matchLhs))
-                    matchBody
+                SynMatchClause.create (SynPat.identWithArgs unionCase.Match (SynArgPats.create matchLhs)) matchBody
             )
 
         SynExpr.createMatch (SynExpr.createIdent "x") matchCases
@@ -1059,7 +1077,7 @@ module internal CataGenerator =
                             (SynExpr.CreateConst 0)
                             (SynExpr.createLongIdent [ "instructions" ; "Count" ]))
                         body
-                    SynExpr.CreateTuple (
+                    SynExpr.tupleNoParen (
                         analysis
                         |> List.map (fun unionAnalysis -> [ unionAnalysis.StackName ] |> SynExpr.createLongIdent')
                     )
@@ -1103,7 +1121,7 @@ module internal CataGenerator =
         let modInfo =
             SynComponentInfo.create moduleName
             |> SynComponentInfo.withDocString (
-                PreXmlDoc.Create $" Methods to perform a catamorphism over the type %s{parentName}"
+                PreXmlDoc.create $"Methods to perform a catamorphism over the type %s{parentName}"
             )
             |> SynComponentInfo.addAttributes [ SynAttribute.requireQualifiedAccess ]
 
@@ -1150,7 +1168,7 @@ module internal CataGenerator =
 
         [
             for openStatement in opens do
-                yield SynModuleDecl.CreateOpen openStatement
+                yield SynModuleDecl.openAny openStatement
             yield! cataStructures
             yield cataRecord
             yield
@@ -1162,53 +1180,7 @@ module internal CataGenerator =
         ]
         |> SynModuleOrNamespace.createNamespace ns
 
-    let generate (context : GeneratorContext) : Output =
-        let ast, _ =
-            Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
-
-        let types = Ast.extractTypeDefn ast
-
-        let opens = AstHelper.extractOpens ast
-
-        let namespaceAndTypes =
-            types
-            |> List.choose (fun (ns, types) ->
-                let typeWithAttr =
-                    types
-                    |> List.tryPick (fun ty ->
-                        match Ast.getAttribute<CreateCatamorphismAttribute> ty with
-                        | None -> None
-                        | Some attr -> Some (attr.ArgExpr, ty)
-                    )
-
-                match typeWithAttr with
-                | Some taggedType ->
-                    let unions, records, others =
-                        (([], [], []), types)
-                        ||> List.fold (fun
-                                           (unions, records, others)
-                                           (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _) as ty) ->
-                            match repr with
-                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union _, _) ->
-                                ty :: unions, records, others
-                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record _, _) ->
-                                unions, ty :: records, others
-                            | _ -> unions, records, ty :: others
-                        )
-
-                    if not others.IsEmpty then
-                        failwith
-                            $"Error: all types recursively defined together with a CreateCatamorphism type must be discriminated unions or records. %+A{others}"
-
-                    Some (ns, taggedType, unions, records)
-                | _ -> None
-            )
-
-        let modules =
-            namespaceAndTypes
-            |> List.map (fun (ns, taggedType, unions, records) -> createModule opens ns taggedType unions records)
-
-        Output.Ast modules
+open Myriad.Core
 
 /// Myriad generator that provides a catamorphism for an algebraic data type.
 [<MyriadGenerator("create-catamorphism")>]
@@ -1217,4 +1189,52 @@ type CreateCatamorphismGenerator () =
     interface IMyriadGenerator with
         member _.ValidInputExtensions = [ ".fs" ]
 
-        member _.Generate (context : GeneratorContext) = CataGenerator.generate context
+        member _.Generate (context : GeneratorContext) =
+            let ast, _ =
+                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+
+            let types = Ast.extractTypeDefn ast
+
+            let opens = AstHelper.extractOpens ast
+
+            let namespaceAndTypes =
+                types
+                |> List.choose (fun (ns, types) ->
+                    let typeWithAttr =
+                        types
+                        |> List.tryPick (fun ty ->
+                            match SynTypeDefn.getAttribute typeof<CreateCatamorphismAttribute>.Name ty with
+                            | None -> None
+                            | Some attr -> Some (attr.ArgExpr, ty)
+                        )
+
+                    match typeWithAttr with
+                    | Some taggedType ->
+                        let unions, records, others =
+                            (([], [], []), types)
+                            ||> List.fold (fun
+                                               (unions, records, others)
+                                               (SynTypeDefn.SynTypeDefn (_, repr, _, _, _, _) as ty) ->
+                                match repr with
+                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union _, _) ->
+                                    ty :: unions, records, others
+                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record _, _) ->
+                                    unions, ty :: records, others
+                                | _ -> unions, records, ty :: others
+                            )
+
+                        if not others.IsEmpty then
+                            failwith
+                                $"Error: all types recursively defined together with a CreateCatamorphism type must be discriminated unions or records. %+A{others}"
+
+                        Some (ns, taggedType, unions, records)
+                    | _ -> None
+                )
+
+            let modules =
+                namespaceAndTypes
+                |> List.map (fun (ns, taggedType, unions, records) ->
+                    CataGenerator.createModule opens ns taggedType unions records
+                )
+
+            Output.Ast modules

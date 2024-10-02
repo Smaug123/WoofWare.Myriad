@@ -31,7 +31,7 @@ module FileSystemItemCata =
     [<RequireQualifiedAccess>]
     type private Instruction =
         | Process__FileSystemItem of FileSystemItem
-        | FileSystemItem_Directory of string * int * int
+        | FileSystemItem_Directory of name : string * dirSize : int * contents : int
 
     let private loop (cata : FileSystemCata<'FileSystemItem>) (instructions : ResizeArray<Instruction>) =
         let fileSystemItemStack = ResizeArray<'FileSystemItem> ()
@@ -106,7 +106,7 @@ module GiftCata =
         | Process__Gift of Gift
         | Gift_Wrapped of WrappingPaperStyle
         | Gift_Boxed
-        | Gift_WithACard of string
+        | Gift_WithACard of message : string
 
     let private loop (cata : GiftCata<'Gift>) (instructions : ResizeArray<Instruction>) =
         let giftStack = ResizeArray<'Gift> ()

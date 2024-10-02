@@ -29,3 +29,18 @@ module internal SynTypeDefn =
     let getName (defn : SynTypeDefn) : LongIdent =
         match defn with
         | SynTypeDefn (SynComponentInfo.SynComponentInfo (_, _, _, id, _, _, _, _), _, _, _, _, _) -> id
+
+    let getAttribute (attrName : string) (defn : SynTypeDefn) : SynAttribute option =
+        match defn with
+        | SynTypeDefn (SynComponentInfo.SynComponentInfo (attrs, _, _, _, _, _, _, _), _, _, _, _, _) ->
+            attrs
+            |> List.collect (fun a -> a.Attributes)
+            |> List.tryFind (fun i ->
+                match i.TypeName with
+                | SynLongIdent.SynLongIdent (id, _, _) ->
+                    let name = List.last(id).idText
+                    name = attrName || name + "Attribute" = attrName
+            )
+
+    let hasAttribute (attrName : string) (defn : SynTypeDefn) : bool =
+        getAttribute attrName defn |> Option.isSome
