@@ -234,7 +234,7 @@ module internal HttpClientGenerator =
                                     SynExpr.CreateConst ("{" + substituteId + "}")
                                     SynExpr.callMethod "ToString" (SynExpr.createIdent' varName)
                                     |> SynExpr.pipeThroughFunction (
-                                        SynExpr.createLongIdent [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ]
+                                        SynExpr.createLongIdent [ "System" ; "Uri" ; "EscapeDataString" ]
                                     )
                                 ])
                     | _ -> template
@@ -286,9 +286,7 @@ module internal HttpClientGenerator =
                     SynExpr.createIdent' firstValueId
                     |> SynExpr.toString firstValue.Type
                     |> SynExpr.paren
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.createLongIdent [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ]
-                    )
+                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Uri" ; "EscapeDataString" ])
                     |> SynExpr.paren
                     |> SynExpr.plus (SynExpr.plus urlSeparator (SynExpr.CreateConst (firstKey + "=")))
 
@@ -301,9 +299,7 @@ module internal HttpClientGenerator =
 
                     SynExpr.toString paramValue.Type (SynExpr.createIdent' paramValueId)
                     |> SynExpr.paren
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.createLongIdent [ "System" ; "Web" ; "HttpUtility" ; "UrlEncode" ]
-                    )
+                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Uri" ; "EscapeDataString" ])
                     |> SynExpr.paren
                     |> SynExpr.plus (SynExpr.plus uri (SynExpr.CreateConst ("&" + paramKey + "=")))
                 )

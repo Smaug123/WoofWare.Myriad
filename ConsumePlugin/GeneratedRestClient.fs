@@ -63,7 +63,7 @@ module PureGymApi =
                              | v -> v),
                             System.Uri (
                                 "v1/gyms/{gym_id}/attendance"
-                                    .Replace ("{gym_id}", gymId.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{gym_id}", gymId.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -97,7 +97,7 @@ module PureGymApi =
                              | v -> v),
                             System.Uri (
                                 "v1/gyms/{gym_id}/attendance"
-                                    .Replace ("{gym_id}", gymId.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{gym_id}", gymId.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -161,7 +161,7 @@ module PureGymApi =
                              | v -> v),
                             System.Uri (
                                 "v1/gyms/{gym}"
-                                    .Replace ("{gym}", gym.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{gym}", gym.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -326,9 +326,9 @@ module PureGymApi =
                                     else
                                         "?")
                                  + "fromDate="
-                                 + ((fromDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)
+                                 + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
                                  + "&toDate="
-                                 + ((toDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -367,9 +367,9 @@ module PureGymApi =
                                     else
                                         "?")
                                  + "fromDate="
-                                 + ((fromDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)
+                                 + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
                                  + "&toDate="
-                                 + ((toDate.ToString "yyyy-MM-dd") |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -663,7 +663,7 @@ module PureGymApi =
                              | v -> v),
                             System.Uri (
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1076,7 +1076,7 @@ module internal ApiWithoutBaseAddress =
                              | v -> v),
                             System.Uri (
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1130,7 +1130,7 @@ module ApiWithBasePath =
                             ),
                             System.Uri (
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1178,7 +1178,7 @@ module ApiWithBasePathAndAddress =
                             ),
                             System.Uri (
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1232,7 +1232,7 @@ module ApiWithAbsoluteBasePath =
                             ),
                             System.Uri (
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1280,7 +1280,7 @@ module ApiWithAbsoluteBasePathAndAddress =
                             ),
                             System.Uri (
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1334,7 +1334,7 @@ module ApiWithBasePathAndAbsoluteEndpoint =
                             ),
                             System.Uri (
                                 "/endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1382,7 +1382,7 @@ module ApiWithBasePathAndAddressAndAbsoluteEndpoint =
                             ),
                             System.Uri (
                                 "/endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1436,7 +1436,7 @@ module ApiWithAbsoluteBasePathAndAbsoluteEndpoint =
                             ),
                             System.Uri (
                                 "/endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1484,7 +1484,7 @@ module ApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
                             ),
                             System.Uri (
                                 "/endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1543,7 +1543,7 @@ module ApiWithHeaders =
                              | v -> v),
                             System.Uri (
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -1606,7 +1606,7 @@ module ApiWithHeaders2 =
                              | v -> v),
                             System.Uri (
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )

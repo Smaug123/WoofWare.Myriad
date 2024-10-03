@@ -476,11 +476,8 @@ module VaultClient =
                              | v -> v),
                             System.Uri (
                                 "v1/{mountPoint}/{path}"
-                                    .Replace("{path}", path.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace (
-                                        "{mountPoint}",
-                                        mountPoint.ToString () |> System.Web.HttpUtility.UrlEncode
-                                    ),
+                                    .Replace("{path}", path.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{mountPoint}", mountPoint.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -573,11 +570,8 @@ module VaultClientNonExtensionMethod =
                              | v -> v),
                             System.Uri (
                                 "v1/{mountPoint}/{path}"
-                                    .Replace("{path}", path.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace (
-                                        "{mountPoint}",
-                                        mountPoint.ToString () |> System.Web.HttpUtility.UrlEncode
-                                    ),
+                                    .Replace("{path}", path.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{mountPoint}", mountPoint.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -673,11 +667,8 @@ module VaultClientExtensionMethodHttpClientExtension =
                                  | v -> v),
                                 System.Uri (
                                     "v1/{mountPoint}/{path}"
-                                        .Replace("{path}", path.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                        .Replace (
-                                            "{mountPoint}",
-                                            mountPoint.ToString () |> System.Web.HttpUtility.UrlEncode
-                                        ),
+                                        .Replace("{path}", path.ToString () |> System.Uri.EscapeDataString)
+                                        .Replace ("{mountPoint}", mountPoint.ToString () |> System.Uri.EscapeDataString),
                                     System.UriKind.Relative
                                 )
                             )
