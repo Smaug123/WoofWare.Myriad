@@ -33,4 +33,4 @@ module TestPathParam =
         let api = PureGymApi.make client
 
         api.GetPathParam("hello/world?(hi)").Result
-        |> shouldEqual "hello%2fworld%3f(hi)"
+        |> shouldEqual "hello%2Fworld%3F%28hi%29"
