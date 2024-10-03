@@ -26643,7 +26643,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "activitypub/user/{username}"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -26686,7 +26686,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "activitypub/user/{username}/inbox"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -26725,9 +26725,9 @@ module Gitea =
                                 ("admin/cron"
                                  + (if "admin/cron".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -26770,7 +26770,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/cron/{task}"
-                                    .Replace ("{task}", task.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{task}", task.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -26809,9 +26809,9 @@ module Gitea =
                                 ("admin/hooks"
                                  + (if "admin/hooks".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -26903,7 +26903,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/hooks/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -26946,7 +26946,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/hooks/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27001,9 +27001,9 @@ module Gitea =
                                 ("admin/orgs"
                                  + (if "admin/orgs".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -27056,11 +27056,11 @@ module Gitea =
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&pattern="
-                                 + ((pattern.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((pattern.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -27108,8 +27108,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/unadopted/{owner}/{repo}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27148,8 +27148,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/unadopted/{owner}/{repo}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27188,9 +27188,9 @@ module Gitea =
                                 ("admin/users"
                                  + (if "admin/users".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -27282,13 +27282,13 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/users/{username}"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
                                  + (if "admin/users/{username}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "purge="
-                                 + ((purge.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((purge.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -27327,7 +27327,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/users/{username}"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27382,7 +27382,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/users/{username}/keys"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27437,8 +27437,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/users/{username}/keys/{id}"
-                                    .Replace("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{username}", username.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27477,7 +27477,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/users/{username}/orgs"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27532,7 +27532,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "admin/users/{username}/repos"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27585,7 +27585,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "amdin/hooks/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27754,19 +27754,19 @@ module Gitea =
                                 ("notifications"
                                  + (if "notifications".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "all="
-                                 + ((all.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&subject-type="
-                                 + ((subject_type.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((subject_type.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -27822,13 +27822,13 @@ module Gitea =
                                 ("notifications"
                                  + (if "notifications".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "last_read_at="
-                                 + ((last_read_at.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&all="
-                                 + ((all.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&to-status="
-                                 + ((to_status.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((to_status.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -27913,7 +27913,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "notifications/threads/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -27958,13 +27958,13 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("notifications/threads/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                  + (if "notifications/threads/{id}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "to-status="
-                                 + ((to_status.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((to_status.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -28009,7 +28009,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "org/{org}/repos"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28064,9 +28064,9 @@ module Gitea =
                                 ("orgs"
                                  + (if "orgs".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -28160,8 +28160,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "orgs/{org}"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                "orgs/{org}".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28203,8 +28202,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "orgs/{org}"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                "orgs/{org}".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28240,8 +28238,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "orgs/{org}"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                "orgs/{org}".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28296,15 +28293,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/hooks"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
                                  + (if "orgs/{org}/hooks".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -28349,7 +28346,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/hooks"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28402,8 +28399,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/hooks/{id}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28446,8 +28443,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/hooks/{id}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28486,8 +28483,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/hooks/{id}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28542,15 +28539,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/labels"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
                                  + (if "orgs/{org}/labels".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -28595,7 +28592,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/labels"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28648,8 +28645,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/labels/{id}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28692,8 +28689,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/labels/{id}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28732,8 +28729,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/labels/{id}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28788,15 +28785,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/members"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
                                  + (if "orgs/{org}/members".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -28839,8 +28836,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/members/{username}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28877,8 +28874,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/members/{username}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -28917,15 +28914,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/public_members"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
                                  + (if "orgs/{org}/public_members".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -28970,8 +28967,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/public_members/{username}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29010,8 +29007,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/public_members/{username}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29050,8 +29047,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/public_members/{username}"
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29090,15 +29087,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/repos"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
                                  + (if "orgs/{org}/repos".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -29146,7 +29143,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/repos"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29201,15 +29198,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/teams"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
                                  + (if "orgs/{org}/teams".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -29254,7 +29251,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "orgs/{org}/teams"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29316,19 +29313,19 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/teams/search"
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
                                  + (if "orgs/{org}/teams/search".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "q="
-                                 + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&include_desc="
-                                 + ((include_desc.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((include_desc.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -29374,19 +29371,19 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("packages/{owner}"
-                                    .Replace ("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                  + (if "packages/{owner}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&type="
-                                 + ((type'.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((type'.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&q="
-                                 + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -29437,10 +29434,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "packages/{owner}/{type}/{name}/{version}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{type}", type'.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{version}", version.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{type}", type'.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{name}", name.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{version}", version.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29491,10 +29488,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "packages/{owner}/{type}/{name}/{version}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{type}", type'.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{version}", version.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{type}", type'.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{name}", name.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{version}", version.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29539,10 +29536,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "packages/{owner}/{type}/{name}/{version}/files"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{type}", type'.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{version}", version.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{type}", type'.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{name}", name.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{version}", version.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29613,37 +29610,37 @@ module Gitea =
                                     else
                                         "?")
                                  + "state="
-                                 + ((state.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&labels="
-                                 + ((labels.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((labels.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&milestones="
-                                 + ((milestones.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((milestones.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&q="
-                                 + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&priority_repo_id="
-                                 + ((priority_repo_id.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((priority_repo_id.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&type="
-                                 + ((type'.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((type'.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&assigned="
-                                 + ((assigned.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((assigned.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&created="
-                                 + ((created.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((created.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&mentioned="
-                                 + ((mentioned.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((mentioned.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&review_requested="
-                                 + ((review_requested.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((review_requested.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&owner="
-                                 + ((owner.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((owner.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&team="
-                                 + ((team.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((team.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -29758,39 +29755,39 @@ module Gitea =
                                 ("repos/search"
                                  + (if "repos/search".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "q="
-                                 + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&topic="
-                                 + ((topic.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((topic.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&includeDesc="
-                                 + ((includeDesc.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((includeDesc.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&uid="
-                                 + ((uid.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((uid.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&priority_owner_id="
-                                 + ((priority_owner_id.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((priority_owner_id.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&team_id="
-                                 + ((team_id.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((team_id.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&starredBy="
-                                 + ((starredBy.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((starredBy.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&private="
-                                 + ((private'.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((private'.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&is_private="
-                                 + ((is_private.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((is_private.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&template="
-                                 + ((template.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((template.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&archived="
-                                 + ((archived.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((archived.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&mode="
-                                 + ((mode.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((mode.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&exclusive="
-                                 + ((exclusive.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((exclusive.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&sort="
-                                 + ((sort.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&order="
-                                 + ((order.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((order.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -29833,8 +29830,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29877,8 +29874,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29917,8 +29914,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -29973,9 +29970,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/archive/{archive}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{archive}", archive.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{archive}", archive.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30012,8 +30009,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/assignees"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30058,8 +30055,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/branch_protections"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30112,8 +30109,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/branch_protections"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30168,9 +30165,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/branch_protections/{name}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{name}", name.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30215,9 +30212,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/branch_protections/{name}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{name}", name.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30262,9 +30259,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/branch_protections/{name}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{name}", name.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30319,16 +30316,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/branches"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/branches".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -30378,8 +30375,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/branches"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30434,9 +30431,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/branches/{branch}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{branch}", branch.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{branch}", branch.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30481,9 +30478,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/branches/{branch}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{branch}", branch.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{branch}", branch.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30522,16 +30519,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/collaborators"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/collaborators".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -30576,12 +30573,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/collaborators/{collaborator}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace (
-                                        "{collaborator}",
-                                        collaborator.ToString () |> System.Web.HttpUtility.UrlEncode
-                                    ),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{collaborator}", collaborator.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30620,12 +30614,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/collaborators/{collaborator}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace (
-                                        "{collaborator}",
-                                        collaborator.ToString () |> System.Web.HttpUtility.UrlEncode
-                                    ),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{collaborator}", collaborator.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30670,12 +30661,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/collaborators/{collaborator}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace (
-                                        "{collaborator}",
-                                        collaborator.ToString () |> System.Web.HttpUtility.UrlEncode
-                                    ),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{collaborator}", collaborator.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30724,12 +30712,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/collaborators/{collaborator}/permission"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace (
-                                        "{collaborator}",
-                                        collaborator.ToString () |> System.Web.HttpUtility.UrlEncode
-                                    ),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{collaborator}", collaborator.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -30783,22 +30768,22 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/commits"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/commits".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "sha="
-                                 + ((sha.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((sha.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&path="
-                                 + ((path.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((path.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&stat="
-                                 + ((stat.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((stat.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -30850,17 +30835,17 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/commits/{ref}/status"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{ref}", ref.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{ref}", ref.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/commits/{ref}/status".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -30914,21 +30899,21 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/commits/{ref}/statuses"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{ref}", ref.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{ref}", ref.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/commits/{ref}/statuses".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "sort="
-                                 + ((sort.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&state="
-                                 + ((state.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -30976,14 +30961,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/contents"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/contents".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "ref="
-                                 + ((ref.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -31037,15 +31022,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/contents/{filepath}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/contents/{filepath}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "ref="
-                                 + ((ref.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -31096,9 +31081,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/contents/{filepath}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31159,9 +31144,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/contents/{filepath}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31222,9 +31207,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/contents/{filepath}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31279,8 +31264,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/diffpatch"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31341,15 +31326,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/editorconfig/{filepath}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/editorconfig/{filepath}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "ref="
-                                 + ((ref.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -31388,16 +31373,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/forks"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/forks".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -31445,8 +31430,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/forks"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31501,9 +31486,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/git/blobs/{sha}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31548,9 +31533,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/git/commits/{sha}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31601,10 +31586,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/git/commits/{sha}.{diffType}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{diffType}", diffType.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{sha}", sha.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{diffType}", diffType.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31644,9 +31629,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/git/notes/{sha}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31691,8 +31676,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/git/refs"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31740,9 +31725,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/git/refs/{ref}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{ref}", ref.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{ref}", ref.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31790,9 +31775,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/git/tags/{sha}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -31845,19 +31830,19 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/git/trees/{sha}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/git/trees/{sha}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "recursive="
-                                 + ((recursive.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((recursive.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&per_page="
-                                 + ((per_page.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((per_page.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -31902,16 +31887,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/hooks"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/hooks".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -31956,8 +31941,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/hooks"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32010,8 +31995,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/hooks/git"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32056,9 +32041,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/hooks/git/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32103,9 +32088,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/hooks/git/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32150,9 +32135,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/hooks/git/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32207,9 +32192,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/hooks/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32254,9 +32239,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/hooks/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32301,9 +32286,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/hooks/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32358,15 +32343,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/hooks/{id}/tests"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/hooks/{id}/tests".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "ref="
-                                 + ((ref.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -32405,8 +32390,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issue_templates"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32470,36 +32455,36 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/issues"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/issues".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "state="
-                                 + ((state.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&labels="
-                                 + ((labels.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((labels.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&q="
-                                 + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&type="
-                                 + ((type'.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((type'.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&milestones="
-                                 + ((milestones.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((milestones.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&created_by="
-                                 + ((created_by.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((created_by.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&assigned_by="
-                                 + ((assigned_by.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((assigned_by.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&mentioned_by="
-                                 + ((mentioned_by.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((mentioned_by.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -32544,8 +32529,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32608,20 +32593,20 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/issues/comments"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/issues/comments".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -32666,9 +32651,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/comments/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32707,9 +32692,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/comments/{id}/assets"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32763,12 +32748,12 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                     .Replace (
                                         "{attachment_id}",
-                                        attachment_id.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        attachment_id.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -32820,12 +32805,12 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                     .Replace (
                                         "{attachment_id}",
-                                        attachment_id.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        attachment_id.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -32872,12 +32857,12 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                     .Replace (
                                         "{attachment_id}",
-                                        attachment_id.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        attachment_id.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -32933,9 +32918,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/comments/{id}/reactions"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -32986,9 +32971,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/comments/{id}/reactions"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33037,9 +33022,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33084,9 +33069,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33131,9 +33116,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33188,9 +33173,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/assets"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33244,12 +33229,12 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                     .Replace (
                                         "{attachment_id}",
-                                        attachment_id.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        attachment_id.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -33301,12 +33286,12 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                     .Replace (
                                         "{attachment_id}",
-                                        attachment_id.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        attachment_id.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -33353,12 +33338,12 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                     .Replace (
                                         "{attachment_id}",
-                                        attachment_id.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        attachment_id.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -33421,17 +33406,17 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/issues/{index}/comments"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/issues/{index}/comments".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -33482,9 +33467,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/comments"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33539,10 +33524,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/comments/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33587,9 +33572,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/deadline"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33644,9 +33629,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/labels"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33697,9 +33682,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/labels"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33754,9 +33739,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/labels"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33801,9 +33786,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/labels"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33858,10 +33843,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/labels/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -33907,17 +33892,17 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/issues/{index}/reactions"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/issues/{index}/reactions".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -33968,9 +33953,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/reactions"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34019,9 +34004,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/stopwatch/delete"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34060,9 +34045,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/stopwatch/start"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34101,9 +34086,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/stopwatch/stop"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34149,17 +34134,17 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/issues/{index}/subscriptions"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/issues/{index}/subscriptions".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -34204,9 +34189,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/subscriptions/check"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34260,21 +34245,21 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/issues/{index}/timeline"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/issues/{index}/timeline".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -34332,23 +34317,23 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/issues/{index}/times"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/issues/{index}/times".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "user="
-                                 + ((user.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((user.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -34402,9 +34387,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/times"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34459,9 +34444,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/times"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34500,10 +34485,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/issues/{index}/times/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34550,20 +34535,20 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/keys"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/keys".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "key_id="
-                                 + ((key_id.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((key_id.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&fingerprint="
-                                 + ((fingerprint.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -34611,8 +34596,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/keys"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34667,9 +34652,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/keys/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34714,9 +34699,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/keys/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34755,16 +34740,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/labels"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/labels".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -34809,8 +34794,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/labels"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34865,9 +34850,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/labels/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34912,9 +34897,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/labels/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -34959,9 +34944,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/labels/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35014,8 +34999,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/languages"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35066,15 +35051,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/media/{filepath}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/media/{filepath}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "ref="
-                                 + ((ref.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -35121,20 +35106,20 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/milestones"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/milestones".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "state="
-                                 + ((state.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&name="
-                                 + ((name.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((name.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -35187,8 +35172,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/milestones"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35243,9 +35228,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/milestones/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35290,9 +35275,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/milestones/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35337,9 +35322,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/milestones/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35392,8 +35377,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/mirror-sync"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35443,26 +35428,26 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/notifications"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "all="
-                                 + ((all.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&subject-type="
-                                 + ((subject_type.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((subject_type.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -35518,20 +35503,20 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/notifications"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "all="
-                                 + ((all.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&to-status="
-                                 + ((to_status.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((to_status.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&last_read_at="
-                                 + ((last_read_at.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -35589,24 +35574,24 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/pulls"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/pulls".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "state="
-                                 + ((state.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&sort="
-                                 + ((sort.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&milestone="
-                                 + ((milestone.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((milestone.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&labels="
-                                 + ((labels.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((labels.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -35659,8 +35644,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35715,9 +35700,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35768,9 +35753,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -35832,16 +35817,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/pulls/{index}.{diffType}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{diffType}", diffType.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{diffType}", diffType.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/pulls/{index}.{diffType}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "binary="
-                                 + ((binary.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((binary.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -35888,17 +35873,17 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/pulls/{index}/commits"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/pulls/{index}/commits".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -35952,21 +35937,21 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/pulls/{index}/files"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/pulls/{index}/files".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "skip-to="
-                                 + ((skip_to.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((skip_to.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&whitespace="
-                                 + ((whitespace.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((whitespace.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -36014,9 +35999,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/merge"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36061,9 +36046,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/merge"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36112,9 +36097,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/merge"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36159,9 +36144,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36225,9 +36210,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/requested_reviewers"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36283,17 +36268,17 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/pulls/{index}/reviews"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/pulls/{index}/reviews".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -36347,9 +36332,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/reviews"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36404,10 +36389,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/reviews/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36459,10 +36444,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/reviews/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36517,10 +36502,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/reviews/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36559,10 +36544,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/comments"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36617,10 +36602,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/dismissals"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36675,10 +36660,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/pulls/{index}/reviews/{id}/undismissals"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36729,15 +36714,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/pulls/{index}/update"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{index}", index.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/pulls/{index}/update".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "style="
-                                 + ((style.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((style.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -36776,16 +36761,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/push_mirrors"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/push_mirrors".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -36838,8 +36823,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/push_mirrors"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36894,8 +36879,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/push_mirrors-sync"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36934,9 +36919,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/push_mirrors/{name}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{name}", name.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -36981,9 +36966,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/push_mirrors/{name}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{name}", name.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{name}", name.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37028,15 +37013,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/raw/{filepath}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{filepath}", filepath.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/raw/{filepath}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "ref="
-                                 + ((ref.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -37084,22 +37069,22 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/releases"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/releases".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "draft="
-                                 + ((draft.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((draft.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&pre-release="
-                                 + ((pre_release.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((pre_release.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&per_page="
-                                 + ((per_page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((per_page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -37149,8 +37134,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37205,8 +37190,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/latest"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37251,9 +37236,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/tags/{tag}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{tag}", tag.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{tag}", tag.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37298,9 +37283,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/tags/{tag}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{tag}", tag.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{tag}", tag.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37339,9 +37324,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37386,9 +37371,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37433,9 +37418,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/{id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37490,9 +37475,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/{id}/assets"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37546,12 +37531,12 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                     .Replace (
                                         "{attachment_id}",
-                                        attachment_id.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        attachment_id.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -37603,12 +37588,12 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                     .Replace (
                                         "{attachment_id}",
-                                        attachment_id.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        attachment_id.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -37655,12 +37640,12 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                     .Replace (
                                         "{attachment_id}",
-                                        attachment_id.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        attachment_id.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -37714,8 +37699,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/reviewers"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37758,8 +37743,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/signing-key.gpg"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37798,16 +37783,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/stargazers"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/stargazers".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -37861,21 +37846,21 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/statuses/{sha}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/statuses/{sha}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "sort="
-                                 + ((sort.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&state="
-                                 + ((state.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -37929,9 +37914,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/statuses/{sha}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{sha}", sha.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -37986,16 +37971,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/subscribers"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/subscribers".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -38040,8 +38025,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/subscription"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38086,8 +38071,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/subscription"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38126,8 +38111,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/subscription"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38172,16 +38157,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/tags"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/tags".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -38226,8 +38211,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/tags"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38282,9 +38267,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/tags/{tag}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{tag}", tag.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{tag}", tag.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38329,9 +38314,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/tags/{tag}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{tag}", tag.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{tag}", tag.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38368,8 +38353,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/teams"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38414,9 +38399,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/teams/{team}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{team}", team.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{team}", team.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38461,9 +38446,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/teams/{team}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{team}", team.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{team}", team.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38502,9 +38487,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/teams/{team}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{team}", team.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{team}", team.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38552,22 +38537,22 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/times"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/times".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "user="
-                                 + ((user.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((user.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -38615,9 +38600,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/times/{user}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{user}", user.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{user}", user.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38665,16 +38650,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/topics"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/topics".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -38719,8 +38704,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/topics"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38769,9 +38754,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/topics/{topic}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{topic}", topic.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{topic}", topic.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38810,9 +38795,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/topics/{topic}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{topic}", topic.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{topic}", topic.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38856,8 +38841,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/transfer"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38912,8 +38897,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/transfer/accept"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -38958,8 +38943,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/transfer/reject"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39009,8 +38994,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/wiki/new"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39065,9 +39050,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/wiki/page/{pageName}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{pageName}", pageName.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{pageName}", pageName.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39112,9 +39097,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/wiki/page/{pageName}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{pageName}", pageName.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{pageName}", pageName.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39159,9 +39144,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repos/{owner}/{repo}/wiki/page/{pageName}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{pageName}", pageName.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{pageName}", pageName.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39216,16 +39201,16 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/wiki/pages"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/wiki/pages".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -39279,15 +39264,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/{owner}/{repo}/wiki/revisions/{pageName}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{pageName}", pageName.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{pageName}", pageName.ToString () |> System.Uri.EscapeDataString)
                                  + (if "repos/{owner}/{repo}/wiki/revisions/{pageName}".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -39339,11 +39324,11 @@ module Gitea =
                                 "repos/{template_owner}/{template_repo}/generate"
                                     .Replace(
                                         "{template_owner}",
-                                        template_owner.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        template_owner.ToString () |> System.Uri.EscapeDataString
                                     )
                                     .Replace (
                                         "{template_repo}",
-                                        template_repo.ToString () |> System.Web.HttpUtility.UrlEncode
+                                        template_repo.ToString () |> System.Uri.EscapeDataString
                                     ),
                                 System.UriKind.Relative
                             )
@@ -39397,7 +39382,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "repositories/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39628,8 +39613,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "teams/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                "teams/{id}".Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39671,8 +39655,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "teams/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                "teams/{id}".Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39708,8 +39691,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "teams/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                "teams/{id}".Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39764,15 +39746,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("teams/{id}/members"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                  + (if "teams/{id}/members".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -39815,8 +39797,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "teams/{id}/members/{username}"
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39859,8 +39841,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "teams/{id}/members/{username}"
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39897,8 +39879,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "teams/{id}/members/{username}"
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -39937,15 +39919,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("teams/{id}/repos"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
                                  + (if "teams/{id}/repos".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -39993,9 +39975,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "teams/{id}/repos/{org}/{repo}"
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40040,9 +40022,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "teams/{id}/repos/{org}/{repo}"
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40081,9 +40063,9 @@ module Gitea =
                             ),
                             System.Uri (
                                 "teams/{id}/repos/{org}/{repo}"
-                                    .Replace("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{id}", id.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{org}", org.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40122,11 +40104,11 @@ module Gitea =
                                 ("topics/search"
                                  + (if "topics/search".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "q="
-                                 + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -40218,9 +40200,9 @@ module Gitea =
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -40317,7 +40299,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/applications/oauth2/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40360,7 +40342,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/applications/oauth2/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40399,7 +40381,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/applications/oauth2/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40587,9 +40569,9 @@ module Gitea =
                                 ("user/followers"
                                  + (if "user/followers".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -40636,9 +40618,9 @@ module Gitea =
                                 ("user/following"
                                  + (if "user/following".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -40681,7 +40663,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/following/{username}"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40718,7 +40700,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/following/{username}"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40755,7 +40737,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/following/{username}"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40826,7 +40808,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/gpg_keys/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -40867,11 +40849,11 @@ module Gitea =
                                 ("user/keys"
                                  + (if "user/keys".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "fingerprint="
-                                 + ((fingerprint.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -40965,8 +40947,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "user/keys/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                "user/keys/{id}".Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -41008,8 +40989,7 @@ module Gitea =
                                 System.Uri ("/api/v1/", System.UriKind.Relative)
                             ),
                             System.Uri (
-                                "user/keys/{id}"
-                                    .Replace ("{id}", id.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                "user/keys/{id}".Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -41048,9 +41028,9 @@ module Gitea =
                                 ("user/orgs"
                                  + (if "user/orgs".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41098,9 +41078,9 @@ module Gitea =
                                 ("user/repos"
                                  + (if "user/repos".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41291,9 +41271,9 @@ module Gitea =
                                 ("user/starred"
                                  + (if "user/starred".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41341,8 +41321,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/starred/{owner}/{repo}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -41381,8 +41361,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/starred/{owner}/{repo}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -41421,8 +41401,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "user/starred/{owner}/{repo}"
-                                    .Replace("{owner}", owner.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{repo}", repo.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -41464,9 +41444,9 @@ module Gitea =
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41519,9 +41499,9 @@ module Gitea =
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41569,9 +41549,9 @@ module Gitea =
                                 ("user/teams"
                                  + (if "user/teams".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41624,13 +41604,13 @@ module Gitea =
                                 ("user/times"
                                  + (if "user/times".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&since="
-                                 + ((since.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&before="
-                                 + ((before.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41680,13 +41660,13 @@ module Gitea =
                                 ("users/search"
                                  + (if "users/search".IndexOf (char 63) >= 0 then "&" else "?")
                                  + "q="
-                                 + ((q.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&uid="
-                                 + ((uid.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((uid.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41723,7 +41703,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "users/{username}"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -41768,15 +41748,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/{username}/followers"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
                                  + (if "users/{username}/followers".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41821,15 +41801,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/{username}/following"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
                                  + (if "users/{username}/following".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -41874,8 +41854,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "users/{username}/following/{target}"
-                                    .Replace("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{target}", target.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{username}", username.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{target}", target.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -41912,7 +41892,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "users/{username}/heatmap"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -41966,17 +41946,17 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/{username}/keys"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
                                  + (if "users/{username}/keys".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "fingerprint="
-                                 + ((fingerprint.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -42024,15 +42004,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/{username}/orgs"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
                                  + (if "users/{username}/orgs".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -42080,8 +42060,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "users/{username}/orgs/{org}/permissions"
-                                    .Replace("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{org}", org.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{username}", username.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -42126,15 +42106,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/{username}/repos"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
                                  + (if "users/{username}/repos".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -42182,15 +42162,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/{username}/starred"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
                                  + (if "users/{username}/starred".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -42238,15 +42218,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/{username}/subscriptions"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
                                  + (if "users/{username}/subscriptions".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -42294,15 +42274,15 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/{username}/tokens"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
                                  + (if "users/{username}/tokens".IndexOf (char 63) >= 0 then
                                         "&"
                                     else
                                         "?")
                                  + "page="
-                                 + ((page.ToString ()) |> System.Web.HttpUtility.UrlEncode)
+                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
                                  + "&limit="
-                                 + ((limit.ToString ()) |> System.Web.HttpUtility.UrlEncode)),
+                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
                                 System.UriKind.Relative
                             )
                         )
@@ -42350,7 +42330,7 @@ module Gitea =
                             ),
                             System.Uri (
                                 "users/{username}/tokens"
-                                    .Replace ("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
@@ -42405,8 +42385,8 @@ module Gitea =
                             ),
                             System.Uri (
                                 "users/{username}/tokens/{token}"
-                                    .Replace("{username}", username.ToString () |> System.Web.HttpUtility.UrlEncode)
-                                    .Replace ("{token}", token.ToString () |> System.Web.HttpUtility.UrlEncode),
+                                    .Replace("{username}", username.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace ("{token}", token.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
