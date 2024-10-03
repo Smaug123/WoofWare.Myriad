@@ -3,7 +3,6 @@
 //        Changes to this file will be lost when the code is regenerated.
 //------------------------------------------------------------------------------
 
-
 namespace Gitea
 
 open WoofWare.Myriad.Plugins

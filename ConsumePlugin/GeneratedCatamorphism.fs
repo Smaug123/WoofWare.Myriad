@@ -6,7 +6,6 @@
 
 
 
-
 namespace ConsumePlugin
 
 open WoofWare.Myriad.Plugins

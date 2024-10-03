@@ -1,6 +1,9 @@
 namespace WoofWare.Myriad.Plugins
 
+open System
+open System.Text
 open Fantomas.FCS.Syntax
+open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
 
 [<RequireQualifiedAccess>]
@@ -131,21 +134,26 @@ module internal RemoveOptionsGenerator =
         |> List.singleton
         |> SynModuleOrNamespace.createNamespace namespaceId
 
-open Myriad.Core
+open WoofWare.Whippet.Core
 
 /// Myriad generator that stamps out a record with option types stripped
 /// from the fields at the top level.
-[<MyriadGenerator("remove-options")>]
+[<WhippetGenerator>]
 type RemoveOptionsGenerator () =
 
-    interface IMyriadGenerator with
-        member _.ValidInputExtensions = [ ".fs" ]
+    interface IGenerateRawFromRaw with
 
-        member _.Generate (context : GeneratorContext) =
+        member _.GenerateRawFromRaw (args : RawSourceGenerationArgs) : string =
+            if not (args.FilePath.EndsWith (".fs", StringComparison.OrdinalIgnoreCase)) then
+                null
+            else
+
             let ast, _ =
-                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+                Fantomas.Core.CodeFormatter.ParseAsync (false, Encoding.UTF8.GetString args.FileContents)
+                |> Async.RunSynchronously
+                |> Array.head
 
-            let records = Ast.extractRecords ast
+            let records = Myriad.Core.Ast.extractRecords ast
 
             let namespaceAndRecords =
                 records
@@ -185,4 +193,29 @@ type RemoveOptionsGenerator () =
                     )
                 )
 
-            Output.Ast modules
+            if modules.IsEmpty then
+                null
+            else
+
+            let parseTree =
+                ParsedInput.ImplFile (
+                    ParsedImplFileInput.ParsedImplFileInput (
+                        "file.fs",
+                        false,
+                        QualifiedNameOfFile.QualifiedNameOfFile (Ident.create "file"),
+                        [],
+                        [],
+                        modules,
+                        (false, false),
+                        {
+                            ParsedImplFileInputTrivia.CodeComments = []
+                            ConditionalDirectives = []
+                        },
+                        Set.empty
+                    )
+                )
+
+            let cfg = Fantomas.Core.FormatConfig.Default
+
+            Fantomas.Core.CodeFormatter.FormatASTAsync (parseTree, cfg)
+            |> Async.RunSynchronously

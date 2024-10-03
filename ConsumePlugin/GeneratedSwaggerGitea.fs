@@ -8,7 +8,6 @@
 
 
 
-
 namespace Gitea
 
 open WoofWare.Myriad.Plugins

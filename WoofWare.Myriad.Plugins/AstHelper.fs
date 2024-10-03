@@ -294,21 +294,6 @@ module internal AstHelper =
             }
         | _ -> failwithf "Didn't have alternating type-and-star in interface member definition: %+A" tupleType
 
-    /// Returns the args (where these are tuple types if curried) in order, and the return type.
-    let rec getType (ty : SynType) : (SynType * bool) list * SynType =
-        match ty with
-        | SynType.Paren (ty, _) -> getType ty
-        | SynType.Fun (argType, returnType, _, _) ->
-            let args, ret = getType returnType
-            // TODO this code is clearly wrong
-            let (inputArgs, inputRet), hasParen =
-                match argType with
-                | SynType.Paren (argType, _) -> getType argType, true
-                | _ -> getType argType, false
-
-            ((SynType.toFun (List.map fst inputArgs) inputRet), hasParen) :: args, ret
-        | _ -> [], ty
-
     let private parseMember (slotSig : SynValSig) (flags : SynMemberFlags) : Choice<MemberInfo, PropertyInfo> =
         if not flags.IsInstance then
             failwith "member was not an instance member"
@@ -341,7 +326,7 @@ module internal AstHelper =
 
             let attrs = attrs |> List.collect _.Attributes
 
-            let args, ret = getType synType
+            let args, ret = SynType.getType synType
 
             let args =
                 args

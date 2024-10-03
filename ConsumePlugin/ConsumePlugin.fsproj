@@ -14,7 +14,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="RecordFile.fs"/>
     <Compile Include="GeneratedRecord.fs">
-      <MyriadFile>RecordFile.fs</MyriadFile>
+      <WhippetFile>RecordFile.fs</WhippetFile>
     </Compile>
     <Compile Include="JsonRecord.fs"/>
     <Compile Include="GeneratedJson.fs">

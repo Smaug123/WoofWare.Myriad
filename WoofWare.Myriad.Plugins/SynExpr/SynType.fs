@@ -285,6 +285,7 @@ module internal SynTypePatterns =
 
 [<RequireQualifiedAccess>]
 module internal SynType =
+
     let rec stripOptionalParen (ty : SynType) : SynType =
         match ty with
         | SynType.Paren (ty, _) -> stripOptionalParen ty
@@ -537,3 +538,18 @@ module internal SynType =
             let ident2 = ident2 |> List.map _.idText
             ident1 = ident2
         | _, _ -> false
+
+    /// Returns the args (where these are tuple types if curried) in order, and the return type.
+    let rec getType (ty : SynType) : (SynType * bool) list * SynType =
+        match ty with
+        | SynType.Paren (ty, _) -> getType ty
+        | SynType.Fun (argType, returnType, _, _) ->
+            let args, ret = getType returnType
+            // TODO this code is clearly wrong
+            let (inputArgs, inputRet), hasParen =
+                match argType with
+                | SynType.Paren (argType, _) -> getType argType, true
+                | _ -> getType argType, false
+
+            ((toFun (List.map fst inputArgs) inputRet), hasParen) :: args, ret
+        | _ -> [], ty
