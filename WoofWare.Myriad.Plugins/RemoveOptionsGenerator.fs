@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
+open System
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Xml
 open WoofWare.Whippet.Fantomas
@@ -59,7 +60,7 @@ module internal RemoveOptionsGenerator =
                 Attributes = []
             }
 
-        let typeDecl = AstHelper.defineRecordType record
+        let typeDecl = RecordType.ToAst record
 
         SynModuleDecl.Types ([ typeDecl ], range0)
 
@@ -146,44 +147,31 @@ type RemoveOptionsGenerator () =
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
-            let records = Ast.extractRecords ast
+            let records = Ast.getRecords ast
 
             let namespaceAndRecords =
                 records
-                |> List.choose (fun (ns, types) ->
-                    match
-                        types
-                        |> List.filter (SynTypeDefn.hasAttribute typeof<RemoveOptionsAttribute>.Name)
-                    with
-                    | [] -> None
-                    | types ->
-                        let types =
-                            types
-                            |> List.map (fun ty ->
-                                match ty with
-                                | SynTypeDefn.SynTypeDefn (sci,
-                                                           SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access,
-                                                                                                                 fields,
-                                                                                                                 _),
-                                                                                   _),
-                                                           smd,
-                                                           smdo,
-                                                           _,
-                                                           _) -> RecordType.OfRecord sci smd access fields
-                                | _ -> failwith "unexpectedly not a record"
-                            )
-
-                        Some (ns, types)
+                |> List.collect (fun (ns, ty) ->
+                    ty
+                    |> List.filter (fun record ->
+                        record.Attributes
+                        |> List.exists (fun attr ->
+                            attr.TypeName.LongIdent
+                            |> List.last
+                            |> _.idText
+                            |> fun s ->
+                                if s.EndsWith ("Attribute", StringComparison.Ordinal) then
+                                    s
+                                else
+                                    $"%s{s}Attribute"
+                            |> (=) typeof<RemoveOptionsAttribute>.Name
+                        )
+                    )
+                    |> List.map (fun ty -> ns, ty)
                 )
 
             let modules =
                 namespaceAndRecords
-                |> List.collect (fun (ns, records) ->
-                    records
-                    |> List.map (fun record ->
-                        let recordModule = RemoveOptionsGenerator.createRecordModule ns record
-                        recordModule
-                    )
-                )
+                |> List.map (fun (ns, record) -> RemoveOptionsGenerator.createRecordModule ns record)
 
             Output.Ast modules

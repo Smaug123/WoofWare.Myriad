@@ -291,14 +291,14 @@ type InterfaceMockGenerator () =
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
-            let types = Ast.extractTypeDefn ast
+            let types = Ast.getTypes ast
 
             let namespaceAndInterfaces =
                 types
                 |> List.choose (fun (ns, types) ->
                     types
                     |> List.choose (fun typeDef ->
-                        match Ast.getAttribute<GenerateMockAttribute> typeDef with
+                        match SynTypeDefn.getAttribute typeof<GenerateMockAttribute>.Name typeDef with
                         | None ->
                             let name = SynTypeDefn.getName typeDef |> List.map _.idText |> String.concat "."
 
