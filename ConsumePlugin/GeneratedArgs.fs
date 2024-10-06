@@ -6,94 +6,96 @@ open System.IO
 open WoofWare.Myriad.Plugins
 
 /// Methods to parse arguments for the type BasicNoPositionals
-[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module BasicNoPositionals =
     type private ParseState_BasicNoPositionals =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable: string -> string) (args: string list) : BasicNoPositionals =
-        let ArgParser_errors = ResizeArray()
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : BasicNoPositionals =
+        let ArgParser_errors = ResizeArray ()
 
         let helpText () =
-            [ (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
-              (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
-              (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
-              (sprintf "%s  int32%s%s" (sprintf "--%s" "rest") " (can be repeated)" "") ]
+            [
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "rest") " (can be repeated)" "")
+            ]
             |> String.concat "\n"
 
-        let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-        let mutable arg_0: int option = None
-        let mutable arg_1: string option = None
-        let mutable arg_2: bool option = None
-        let arg_3: int ResizeArray = ResizeArray()
+        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let mutable arg_0 : int option = None
+        let mutable arg_1 : string option = None
+        let mutable arg_2 : bool option = None
+        let arg_3 : int ResizeArray = ResizeArray ()
 
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-            if System.String.Equals(key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
+        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+            if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
                 value |> (fun x -> System.Int32.Parse x) |> arg_3.Add
                 () |> Ok
-            else if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "baz")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "bar")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_1 <- value |> (fun x -> x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "foo")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else
                 Error None
 
         /// Returns false if we didn't set a value.
-        let setFlagValue (key: string) : bool =
-            if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+        let setFlagValue (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
@@ -106,7 +108,7 @@ module BasicNoPositionals =
             else
                 false
 
-        let rec go (state: ParseState_BasicNoPositionals) (args: string list) =
+        let rec go (state : ParseState_BasicNoPositionals) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -119,15 +121,15 @@ module BasicNoPositionals =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
                 | ParseState_BasicNoPositionals.AwaitingKey ->
-                    if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                         if arg = "--help" then
                             helpText () |> failwithf "Help text requested.\n%s"
                         else
-                            let equals = arg.IndexOf(char 61)
+                            let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
                                 args |> go (ParseState_BasicNoPositionals.AwaitingValue arg)
@@ -202,14 +204,16 @@ module BasicNoPositionals =
         let arg_3 = arg_3 |> Seq.toList
 
         if 0 = ArgParser_errors.Count then
-            { Bar = arg_1
-              Baz = arg_2
-              Foo = arg_0
-              Rest = arg_3 }
+            {
+                Bar = arg_1
+                Baz = arg_2
+                Foo = arg_0
+                Rest = arg_3
+            }
         else
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-    let parse (args: string list) : BasicNoPositionals =
+    let parse (args : string list) : BasicNoPositionals =
         parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -218,97 +222,99 @@ open System.IO
 open WoofWare.Myriad.Plugins
 
 /// Methods to parse arguments for the type Basic
-[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Basic =
     type private ParseState_Basic =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable: string -> string) (args: string list) : Basic =
-        let ArgParser_errors = ResizeArray()
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : Basic =
+        let ArgParser_errors = ResizeArray ()
 
         let helpText () =
-            [ (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" (sprintf " : %s" ("This is a foo!")))
-              (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
-              (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
-              (sprintf
-                  "%s  string%s%s"
-                  (sprintf "--%s" "rest")
-                  " (positional args) (can be repeated)"
-                  (sprintf " : %s" ("Here's where the rest of the args go"))) ]
+            [
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" (sprintf " : %s" ("This is a foo!")))
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf
+                    "%s  string%s%s"
+                    (sprintf "--%s" "rest")
+                    " (positional args) (can be repeated)"
+                    (sprintf " : %s" ("Here's where the rest of the args go")))
+            ]
             |> String.concat "\n"
 
-        let arg_3: string ResizeArray = ResizeArray()
-        let mutable arg_0: int option = None
-        let mutable arg_1: string option = None
-        let mutable arg_2: bool option = None
+        let arg_3 : string ResizeArray = ResizeArray ()
+        let mutable arg_0 : int option = None
+        let mutable arg_1 : string option = None
+        let mutable arg_2 : bool option = None
 
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-            if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "baz")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "bar")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_1 <- value |> (fun x -> x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "foo")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
                 value |> (fun x -> x) |> arg_3.Add
                 () |> Ok
             else
                 Error None
 
         /// Returns false if we didn't set a value.
-        let setFlagValue (key: string) : bool =
-            if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+        let setFlagValue (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
@@ -321,7 +327,7 @@ module Basic =
             else
                 false
 
-        let rec go (state: ParseState_Basic) (args: string list) =
+        let rec go (state : ParseState_Basic) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -334,15 +340,15 @@ module Basic =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> arg_3.AddRange(rest |> Seq.map (fun x -> x))
+            | "--" :: rest -> arg_3.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
                 | ParseState_Basic.AwaitingKey ->
-                    if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                         if arg = "--help" then
                             helpText () |> failwithf "Help text requested.\n%s"
                         else
-                            let equals = arg.IndexOf(char 61)
+                            let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
                                 args |> go (ParseState_Basic.AwaitingValue arg)
@@ -405,14 +411,16 @@ module Basic =
             | Some x -> x
 
         if 0 = ArgParser_errors.Count then
-            { Bar = arg_1
-              Baz = arg_2
-              Foo = arg_0
-              Rest = arg_3 }
+            {
+                Bar = arg_1
+                Baz = arg_2
+                Foo = arg_0
+                Rest = arg_3
+            }
         else
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-    let parse (args: string list) : Basic =
+    let parse (args : string list) : Basic =
         parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -421,93 +429,95 @@ open System.IO
 open WoofWare.Myriad.Plugins
 
 /// Methods to parse arguments for the type BasicWithIntPositionals
-[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module BasicWithIntPositionals =
     type private ParseState_BasicWithIntPositionals =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable: string -> string) (args: string list) : BasicWithIntPositionals =
-        let ArgParser_errors = ResizeArray()
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : BasicWithIntPositionals =
+        let ArgParser_errors = ResizeArray ()
 
         let helpText () =
-            [ (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
-              (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
-              (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
-              (sprintf "%s  int32%s%s" (sprintf "--%s" "rest") " (positional args) (can be repeated)" "") ]
+            [
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "rest") " (positional args) (can be repeated)" "")
+            ]
             |> String.concat "\n"
 
-        let arg_3: int ResizeArray = ResizeArray()
-        let mutable arg_0: int option = None
-        let mutable arg_1: string option = None
-        let mutable arg_2: bool option = None
+        let arg_3 : int ResizeArray = ResizeArray ()
+        let mutable arg_0 : int option = None
+        let mutable arg_1 : string option = None
+        let mutable arg_2 : bool option = None
 
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-            if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "baz")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "bar")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_1 <- value |> (fun x -> x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "foo")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
                 value |> (fun x -> System.Int32.Parse x) |> arg_3.Add
                 () |> Ok
             else
                 Error None
 
         /// Returns false if we didn't set a value.
-        let setFlagValue (key: string) : bool =
-            if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+        let setFlagValue (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
@@ -520,7 +530,7 @@ module BasicWithIntPositionals =
             else
                 false
 
-        let rec go (state: ParseState_BasicWithIntPositionals) (args: string list) =
+        let rec go (state : ParseState_BasicWithIntPositionals) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -533,15 +543,15 @@ module BasicWithIntPositionals =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> arg_3.AddRange(rest |> Seq.map (fun x -> System.Int32.Parse x))
+            | "--" :: rest -> arg_3.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
             | arg :: args ->
                 match state with
                 | ParseState_BasicWithIntPositionals.AwaitingKey ->
-                    if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                         if arg = "--help" then
                             helpText () |> failwithf "Help text requested.\n%s"
                         else
-                            let equals = arg.IndexOf(char 61)
+                            let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
                                 args |> go (ParseState_BasicWithIntPositionals.AwaitingValue arg)
@@ -604,14 +614,16 @@ module BasicWithIntPositionals =
             | Some x -> x
 
         if 0 = ArgParser_errors.Count then
-            { Bar = arg_1
-              Baz = arg_2
-              Foo = arg_0
-              Rest = arg_3 }
+            {
+                Bar = arg_1
+                Baz = arg_2
+                Foo = arg_0
+                Rest = arg_3
+            }
         else
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-    let parse (args: string list) : BasicWithIntPositionals =
+    let parse (args : string list) : BasicWithIntPositionals =
         parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -620,68 +632,70 @@ open System.IO
 open WoofWare.Myriad.Plugins
 
 /// Methods to parse arguments for the type LoadsOfTypes
-[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LoadsOfTypes =
     type private ParseState_LoadsOfTypes =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable: string -> string) (args: string list) : LoadsOfTypes =
-        let ArgParser_errors = ResizeArray()
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypes =
+        let ArgParser_errors = ResizeArray ()
 
         let helpText () =
-            [ (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
-              (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
-              (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
-              (sprintf "%s  FileInfo%s%s" (sprintf "--%s" "some-file") "" "")
-              (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-directory") "" "")
-              (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-list") " (can be repeated)" "")
-              (sprintf "%s  int32%s%s" (sprintf "--%s" "optional-thing-with-no-default") " (optional)" "")
+            [
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "%s  FileInfo%s%s" (sprintf "--%s" "some-file") "" "")
+                (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-directory") "" "")
+                (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-list") " (can be repeated)" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "optional-thing-with-no-default") " (optional)" "")
 
-              (sprintf
-                  "%s  bool%s%s"
-                  (sprintf "--%s" "optional-thing")
-                  (LoadsOfTypes.DefaultOptionalThing()
-                   |> (fun x -> x.ToString())
-                   |> sprintf " (default value: %s)")
-                  "")
+                (sprintf
+                    "%s  bool%s%s"
+                    (sprintf "--%s" "optional-thing")
+                    (LoadsOfTypes.DefaultOptionalThing ()
+                     |> (fun x -> x.ToString ())
+                     |> sprintf " (default value: %s)")
+                    "")
 
-              (sprintf
-                  "%s  int32%s%s"
-                  (sprintf "--%s" "another-optional-thing")
-                  (LoadsOfTypes.DefaultAnotherOptionalThing()
-                   |> (fun x -> x.ToString())
-                   |> sprintf " (default value: %s)")
-                  "")
+                (sprintf
+                    "%s  int32%s%s"
+                    (sprintf "--%s" "another-optional-thing")
+                    (LoadsOfTypes.DefaultAnotherOptionalThing ()
+                     |> (fun x -> x.ToString ())
+                     |> sprintf " (default value: %s)")
+                    "")
 
-              (sprintf
-                  "%s  string%s%s"
-                  (sprintf "--%s" "yet-another-optional-thing")
-                  ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
-                  "")
-              (sprintf "%s  int32%s%s" (sprintf "--%s" "positionals") " (positional args) (can be repeated)" "") ]
+                (sprintf
+                    "%s  string%s%s"
+                    (sprintf "--%s" "yet-another-optional-thing")
+                    ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
+                    "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "positionals") " (positional args) (can be repeated)" "")
+            ]
             |> String.concat "\n"
 
-        let arg_7: int ResizeArray = ResizeArray()
-        let mutable arg_0: int option = None
-        let mutable arg_1: string option = None
-        let mutable arg_2: bool option = None
-        let mutable arg_3: FileInfo option = None
-        let mutable arg_4: DirectoryInfo option = None
-        let arg_5: DirectoryInfo ResizeArray = ResizeArray()
-        let mutable arg_6: int option = None
-        let mutable arg_8: bool option = None
-        let mutable arg_9: int option = None
-        let mutable arg_10: string option = None
+        let arg_7 : int ResizeArray = ResizeArray ()
+        let mutable arg_0 : int option = None
+        let mutable arg_1 : string option = None
+        let mutable arg_2 : bool option = None
+        let mutable arg_3 : FileInfo option = None
+        let mutable arg_4 : DirectoryInfo option = None
+        let arg_5 : DirectoryInfo ResizeArray = ResizeArray ()
+        let mutable arg_6 : int option = None
+        let mutable arg_8 : bool option = None
+        let mutable arg_9 : int option = None
+        let mutable arg_10 : string option = None
 
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key: string) (value: string) : Result<unit, string option> =
+        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
             if
-                System.String.Equals(
+                System.String.Equals (
                     key,
                     sprintf "--%s" "yet-another-optional-thing",
                     System.StringComparison.OrdinalIgnoreCase
@@ -692,19 +706,19 @@ module LoadsOfTypes =
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "yet-another-optional-thing")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_10 <- value |> (fun x -> x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(
+                System.String.Equals (
                     key,
                     sprintf "--%s" "another-optional-thing",
                     System.StringComparison.OrdinalIgnoreCase
@@ -715,38 +729,38 @@ module LoadsOfTypes =
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "another-optional-thing")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_9 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match arg_8 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "optional-thing")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_8 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(
+                System.String.Equals (
                     key,
                     sprintf "--%s" "optional-thing-with-no-default",
                     System.StringComparison.OrdinalIgnoreCase
@@ -757,113 +771,113 @@ module LoadsOfTypes =
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "optional-thing-with-no-default")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_6 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
             then
                 value |> (fun x -> System.IO.DirectoryInfo x) |> arg_5.Add
                 () |> Ok
             else if
-                System.String.Equals(key, sprintf "--%s" "some-directory", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "some-directory", System.StringComparison.OrdinalIgnoreCase)
             then
                 match arg_4 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "some-directory")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_4 <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
             then
                 match arg_3 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "some-file")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_3 <- value |> (fun x -> System.IO.FileInfo x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "baz")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "bar")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_1 <- value |> (fun x -> x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "foo")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(key, sprintf "--%s" "positionals", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "positionals", System.StringComparison.OrdinalIgnoreCase)
             then
                 value |> (fun x -> System.Int32.Parse x) |> arg_7.Add
                 () |> Ok
@@ -871,9 +885,9 @@ module LoadsOfTypes =
                 Error None
 
         /// Returns false if we didn't set a value.
-        let setFlagValue (key: string) : bool =
+        let setFlagValue (key : string) : bool =
             if
-                System.String.Equals(key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match arg_8 with
                 | Some x ->
@@ -884,7 +898,7 @@ module LoadsOfTypes =
                 | None ->
                     arg_8 <- true |> Some
                     true
-            else if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
@@ -897,7 +911,7 @@ module LoadsOfTypes =
             else
                 false
 
-        let rec go (state: ParseState_LoadsOfTypes) (args: string list) =
+        let rec go (state : ParseState_LoadsOfTypes) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -910,15 +924,15 @@ module LoadsOfTypes =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> arg_7.AddRange(rest |> Seq.map (fun x -> System.Int32.Parse x))
+            | "--" :: rest -> arg_7.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
             | arg :: args ->
                 match state with
                 | ParseState_LoadsOfTypes.AwaitingKey ->
-                    if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                         if arg = "--help" then
                             helpText () |> failwithf "Help text requested.\n%s"
                         else
-                            let equals = arg.IndexOf(char 61)
+                            let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
                                 args |> go (ParseState_LoadsOfTypes.AwaitingValue arg)
@@ -1003,12 +1017,12 @@ module LoadsOfTypes =
 
         let arg_8 =
             match arg_8 with
-            | None -> LoadsOfTypes.DefaultOptionalThing() |> Choice2Of2
+            | None -> LoadsOfTypes.DefaultOptionalThing () |> Choice2Of2
             | Some x -> Choice1Of2 x
 
         let arg_9 =
             match arg_9 with
-            | None -> LoadsOfTypes.DefaultAnotherOptionalThing() |> Choice2Of2
+            | None -> LoadsOfTypes.DefaultAnotherOptionalThing () |> Choice2Of2
             | Some x -> Choice1Of2 x
 
         let arg_10 =
@@ -1028,21 +1042,23 @@ module LoadsOfTypes =
             | Some x -> Choice1Of2 x
 
         if 0 = ArgParser_errors.Count then
-            { AnotherOptionalThing = arg_9
-              Bar = arg_1
-              Baz = arg_2
-              Foo = arg_0
-              OptionalThing = arg_8
-              OptionalThingWithNoDefault = arg_6
-              Positionals = arg_7
-              SomeDirectory = arg_4
-              SomeFile = arg_3
-              SomeList = arg_5
-              YetAnotherOptionalThing = arg_10 }
+            {
+                AnotherOptionalThing = arg_9
+                Bar = arg_1
+                Baz = arg_2
+                Foo = arg_0
+                OptionalThing = arg_8
+                OptionalThingWithNoDefault = arg_6
+                Positionals = arg_7
+                SomeDirectory = arg_4
+                SomeFile = arg_3
+                SomeList = arg_5
+                YetAnotherOptionalThing = arg_10
+            }
         else
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-    let parse (args: string list) : LoadsOfTypes =
+    let parse (args : string list) : LoadsOfTypes =
         parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -1051,66 +1067,68 @@ open System.IO
 open WoofWare.Myriad.Plugins
 
 /// Methods to parse arguments for the type LoadsOfTypesNoPositionals
-[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LoadsOfTypesNoPositionals =
     type private ParseState_LoadsOfTypesNoPositionals =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable: string -> string) (args: string list) : LoadsOfTypesNoPositionals =
-        let ArgParser_errors = ResizeArray()
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypesNoPositionals =
+        let ArgParser_errors = ResizeArray ()
 
         let helpText () =
-            [ (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
-              (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
-              (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
-              (sprintf "%s  FileInfo%s%s" (sprintf "--%s" "some-file") "" "")
-              (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-directory") "" "")
-              (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-list") " (can be repeated)" "")
-              (sprintf "%s  int32%s%s" (sprintf "--%s" "optional-thing-with-no-default") " (optional)" "")
+            [
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
+                (sprintf "%s  string%s%s" (sprintf "--%s" "bar") "" "")
+                (sprintf "%s  bool%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "%s  FileInfo%s%s" (sprintf "--%s" "some-file") "" "")
+                (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-directory") "" "")
+                (sprintf "%s  DirectoryInfo%s%s" (sprintf "--%s" "some-list") " (can be repeated)" "")
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "optional-thing-with-no-default") " (optional)" "")
 
-              (sprintf
-                  "%s  bool%s%s"
-                  (sprintf "--%s" "optional-thing")
-                  (LoadsOfTypesNoPositionals.DefaultOptionalThing()
-                   |> (fun x -> x.ToString())
-                   |> sprintf " (default value: %s)")
-                  "")
+                (sprintf
+                    "%s  bool%s%s"
+                    (sprintf "--%s" "optional-thing")
+                    (LoadsOfTypesNoPositionals.DefaultOptionalThing ()
+                     |> (fun x -> x.ToString ())
+                     |> sprintf " (default value: %s)")
+                    "")
 
-              (sprintf
-                  "%s  int32%s%s"
-                  (sprintf "--%s" "another-optional-thing")
-                  (LoadsOfTypesNoPositionals.DefaultAnotherOptionalThing()
-                   |> (fun x -> x.ToString())
-                   |> sprintf " (default value: %s)")
-                  "")
-              (sprintf
-                  "%s  string%s%s"
-                  (sprintf "--%s" "yet-another-optional-thing")
-                  ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
-                  "") ]
+                (sprintf
+                    "%s  int32%s%s"
+                    (sprintf "--%s" "another-optional-thing")
+                    (LoadsOfTypesNoPositionals.DefaultAnotherOptionalThing ()
+                     |> (fun x -> x.ToString ())
+                     |> sprintf " (default value: %s)")
+                    "")
+                (sprintf
+                    "%s  string%s%s"
+                    (sprintf "--%s" "yet-another-optional-thing")
+                    ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
+                    "")
+            ]
             |> String.concat "\n"
 
-        let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-        let mutable arg_0: int option = None
-        let mutable arg_1: string option = None
-        let mutable arg_2: bool option = None
-        let mutable arg_3: FileInfo option = None
-        let mutable arg_4: DirectoryInfo option = None
-        let arg_5: DirectoryInfo ResizeArray = ResizeArray()
-        let mutable arg_6: int option = None
-        let mutable arg_7: bool option = None
-        let mutable arg_8: int option = None
-        let mutable arg_9: string option = None
+        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let mutable arg_0 : int option = None
+        let mutable arg_1 : string option = None
+        let mutable arg_2 : bool option = None
+        let mutable arg_3 : FileInfo option = None
+        let mutable arg_4 : DirectoryInfo option = None
+        let arg_5 : DirectoryInfo ResizeArray = ResizeArray ()
+        let mutable arg_6 : int option = None
+        let mutable arg_7 : bool option = None
+        let mutable arg_8 : int option = None
+        let mutable arg_9 : string option = None
 
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key: string) (value: string) : Result<unit, string option> =
+        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
             if
-                System.String.Equals(
+                System.String.Equals (
                     key,
                     sprintf "--%s" "yet-another-optional-thing",
                     System.StringComparison.OrdinalIgnoreCase
@@ -1121,19 +1139,19 @@ module LoadsOfTypesNoPositionals =
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "yet-another-optional-thing")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_9 <- value |> (fun x -> x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(
+                System.String.Equals (
                     key,
                     sprintf "--%s" "another-optional-thing",
                     System.StringComparison.OrdinalIgnoreCase
@@ -1144,38 +1162,38 @@ module LoadsOfTypesNoPositionals =
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "another-optional-thing")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_8 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match arg_7 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "optional-thing")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_7 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(
+                System.String.Equals (
                     key,
                     sprintf "--%s" "optional-thing-with-no-default",
                     System.StringComparison.OrdinalIgnoreCase
@@ -1186,118 +1204,118 @@ module LoadsOfTypesNoPositionals =
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "optional-thing-with-no-default")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_6 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
             then
                 value |> (fun x -> System.IO.DirectoryInfo x) |> arg_5.Add
                 () |> Ok
             else if
-                System.String.Equals(key, sprintf "--%s" "some-directory", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "some-directory", System.StringComparison.OrdinalIgnoreCase)
             then
                 match arg_4 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "some-directory")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_4 <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else if
-                System.String.Equals(key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
             then
                 match arg_3 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "some-file")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_3 <- value |> (fun x -> System.IO.FileInfo x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "baz")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_1 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "bar")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_1 <- value |> (fun x -> x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
-            else if System.String.Equals(key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "foo")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else
                 Error None
 
         /// Returns false if we didn't set a value.
-        let setFlagValue (key: string) : bool =
+        let setFlagValue (key : string) : bool =
             if
-                System.String.Equals(key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
+                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match arg_7 with
                 | Some x ->
@@ -1308,7 +1326,7 @@ module LoadsOfTypesNoPositionals =
                 | None ->
                     arg_7 <- true |> Some
                     true
-            else if System.String.Equals(key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_2 with
                 | Some x ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
@@ -1321,7 +1339,7 @@ module LoadsOfTypesNoPositionals =
             else
                 false
 
-        let rec go (state: ParseState_LoadsOfTypesNoPositionals) (args: string list) =
+        let rec go (state : ParseState_LoadsOfTypesNoPositionals) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -1334,15 +1352,15 @@ module LoadsOfTypesNoPositionals =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
                 | ParseState_LoadsOfTypesNoPositionals.AwaitingKey ->
-                    if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                         if arg = "--help" then
                             helpText () |> failwithf "Help text requested.\n%s"
                         else
-                            let equals = arg.IndexOf(char 61)
+                            let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
                                 args |> go (ParseState_LoadsOfTypesNoPositionals.AwaitingValue arg)
@@ -1437,12 +1455,12 @@ module LoadsOfTypesNoPositionals =
 
         let arg_7 =
             match arg_7 with
-            | None -> LoadsOfTypesNoPositionals.DefaultOptionalThing() |> Choice2Of2
+            | None -> LoadsOfTypesNoPositionals.DefaultOptionalThing () |> Choice2Of2
             | Some x -> Choice1Of2 x
 
         let arg_8 =
             match arg_8 with
-            | None -> LoadsOfTypesNoPositionals.DefaultAnotherOptionalThing() |> Choice2Of2
+            | None -> LoadsOfTypesNoPositionals.DefaultAnotherOptionalThing () |> Choice2Of2
             | Some x -> Choice1Of2 x
 
         let arg_9 =
@@ -1462,20 +1480,22 @@ module LoadsOfTypesNoPositionals =
             | Some x -> Choice1Of2 x
 
         if 0 = ArgParser_errors.Count then
-            { AnotherOptionalThing = arg_8
-              Bar = arg_1
-              Baz = arg_2
-              Foo = arg_0
-              OptionalThing = arg_7
-              OptionalThingWithNoDefault = arg_6
-              SomeDirectory = arg_4
-              SomeFile = arg_3
-              SomeList = arg_5
-              YetAnotherOptionalThing = arg_9 }
+            {
+                AnotherOptionalThing = arg_8
+                Bar = arg_1
+                Baz = arg_2
+                Foo = arg_0
+                OptionalThing = arg_7
+                OptionalThingWithNoDefault = arg_6
+                SomeDirectory = arg_4
+                SomeFile = arg_3
+                SomeList = arg_5
+                YetAnotherOptionalThing = arg_9
+            }
         else
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-    let parse (args: string list) : LoadsOfTypesNoPositionals =
+    let parse (args : string list) : LoadsOfTypesNoPositionals =
         parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -1490,42 +1510,44 @@ module DatesAndTimesArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type DatesAndTimes with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : DatesAndTimes =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : DatesAndTimes =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  TimeSpan%s%s" (sprintf "--%s" "plain") "" "")
-                  (sprintf "%s  TimeSpan%s%s" (sprintf "--%s" "invariant") "" "")
+                [
+                    (sprintf "%s  TimeSpan%s%s" (sprintf "--%s" "plain") "" "")
+                    (sprintf "%s  TimeSpan%s%s" (sprintf "--%s" "invariant") "" "")
 
-                  (sprintf
-                      "%s  TimeSpan%s%s"
-                      (sprintf "--%s" "exact")
-                      ""
-                      (sprintf " : %s" (sprintf "%s [Parse format (.NET): %s]" "An exact time please" @"hh\:mm\:ss")))
-                  (sprintf
-                      "%s  TimeSpan%s%s"
-                      (sprintf "--%s" "invariant-exact")
-                      ""
-                      (sprintf " : %s" (sprintf "[Parse format (.NET): %s]" @"hh\:mm\:ss"))) ]
+                    (sprintf
+                        "%s  TimeSpan%s%s"
+                        (sprintf "--%s" "exact")
+                        ""
+                        (sprintf " : %s" (sprintf "%s [Parse format (.NET): %s]" "An exact time please" @"hh\:mm\:ss")))
+                    (sprintf
+                        "%s  TimeSpan%s%s"
+                        (sprintf "--%s" "invariant-exact")
+                        ""
+                        (sprintf " : %s" (sprintf "[Parse format (.NET): %s]" @"hh\:mm\:ss")))
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: TimeSpan option = None
-            let mutable arg_1: TimeSpan option = None
-            let mutable arg_2: TimeSpan option = None
-            let mutable arg_3: TimeSpan option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : TimeSpan option = None
+            let mutable arg_1 : TimeSpan option = None
+            let mutable arg_2 : TimeSpan option = None
+            let mutable arg_3 : TimeSpan option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "invariant-exact",
                         System.StringComparison.OrdinalIgnoreCase
@@ -1536,104 +1558,107 @@ module DatesAndTimesArgParse =
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "invariant-exact")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_3 <-
                                 value
                                 |> (fun x ->
-                                    System.TimeSpan.ParseExact(
+                                    System.TimeSpan.ParseExact (
                                         x,
                                         @"hh\:mm\:ss",
                                         System.Globalization.CultureInfo.InvariantCulture
-                                    ))
+                                    )
+                                )
                                 |> Some
 
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "exact", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "exact", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_2 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "exact")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_2 <-
                                 value
                                 |> (fun x ->
-                                    System.TimeSpan.ParseExact(
+                                    System.TimeSpan.ParseExact (
                                         x,
                                         @"hh\:mm\:ss",
                                         System.Globalization.CultureInfo.CurrentCulture
-                                    ))
+                                    )
+                                )
                                 |> Some
 
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "invariant", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "invariant", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_1 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "invariant")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_1 <-
                                 value
                                 |> (fun x ->
-                                    System.TimeSpan.Parse(x, System.Globalization.CultureInfo.InvariantCulture))
+                                    System.TimeSpan.Parse (x, System.Globalization.CultureInfo.InvariantCulture)
+                                )
                                 |> Some
 
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "plain", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "plain", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "plain")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> System.TimeSpan.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool = false
+            let setFlagValue (key : string) : bool = false
 
-            let rec go (state: ParseState_DatesAndTimes) (args: string list) =
+            let rec go (state : ParseState_DatesAndTimes) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -1646,15 +1671,15 @@ module DatesAndTimesArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_DatesAndTimes.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_DatesAndTimes.AwaitingValue arg)
@@ -1743,14 +1768,16 @@ module DatesAndTimesArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { Exact = arg_2
-                  Invariant = arg_1
-                  InvariantExact = arg_3
-                  Plain = arg_0 }
+                {
+                    Exact = arg_2
+                    Invariant = arg_1
+                    InvariantExact = arg_3
+                    Plain = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : DatesAndTimes =
+        static member parse (args : string list) : DatesAndTimes =
             DatesAndTimes.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -1765,93 +1792,95 @@ module ParentRecordArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type ParentRecord with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : ParentRecord =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecord =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
-                  (sprintf "%s  string%s%s" (sprintf "--%s" "thing2") "" "")
-                  (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") "" "") ]
+                [
+                    (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "thing2") "" "")
+                    (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") "" "")
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: int option = None
-            let mutable arg_1: string option = None
-            let mutable arg_2: bool option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : int option = None
+            let mutable arg_1 : string option = None
+            let mutable arg_2 : bool option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if
-                    System.String.Equals(key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_2 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "and-another")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_1 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "thing2")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_1 <- value |> (fun x -> x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "thing1")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
+            let setFlagValue (key : string) : bool =
                 if
-                    System.String.Equals(key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_2 with
                     | Some x ->
@@ -1865,7 +1894,7 @@ module ParentRecordArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_ParentRecord) (args: string list) =
+            let rec go (state : ParseState_ParentRecord) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -1878,15 +1907,15 @@ module ParentRecordArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecord.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_ParentRecord.AwaitingValue arg)
@@ -1966,12 +1995,18 @@ module ParentRecordArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { AndAnother = arg_2
-                  Child = { Thing1 = arg_0; Thing2 = arg_1 } }
+                {
+                    AndAnother = arg_2
+                    Child =
+                        {
+                            Thing1 = arg_0
+                            Thing2 = arg_1
+                        }
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : ParentRecord =
+        static member parse (args : string list) : ParentRecord =
             ParentRecord.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -1986,66 +2021,68 @@ module ParentRecordChildPosArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type ParentRecordChildPos with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : ParentRecordChildPos =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecordChildPos =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") "" "")
-                  (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
-                  (sprintf "%s  URI%s%s" (sprintf "--%s" "thing2") " (positional args) (can be repeated)" "") ]
+                [
+                    (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") "" "")
+                    (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
+                    (sprintf "%s  URI%s%s" (sprintf "--%s" "thing2") " (positional args) (can be repeated)" "")
+                ]
                 |> String.concat "\n"
 
-            let arg_1: Uri ResizeArray = ResizeArray()
-            let mutable arg_2: bool option = None
-            let mutable arg_0: int option = None
+            let arg_1 : Uri ResizeArray = ResizeArray ()
+            let mutable arg_2 : bool option = None
+            let mutable arg_0 : int option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "thing1")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_2 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "and-another")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase)
                 then
                     value |> (fun x -> System.Uri x) |> arg_1.Add
                     () |> Ok
@@ -2053,9 +2090,9 @@ module ParentRecordChildPosArgParse =
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
+            let setFlagValue (key : string) : bool =
                 if
-                    System.String.Equals(key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_2 with
                     | Some x ->
@@ -2069,7 +2106,7 @@ module ParentRecordChildPosArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_ParentRecordChildPos) (args: string list) =
+            let rec go (state : ParseState_ParentRecordChildPos) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -2082,15 +2119,15 @@ module ParentRecordChildPosArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange(rest |> Seq.map (fun x -> System.Uri x))
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Uri x))
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecordChildPos.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_ParentRecordChildPos.AwaitingValue arg)
@@ -2151,12 +2188,18 @@ module ParentRecordChildPosArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { AndAnother = arg_2
-                  Child = { Thing1 = arg_0; Thing2 = arg_1 } }
+                {
+                    AndAnother = arg_2
+                    Child =
+                        {
+                            Thing1 = arg_0
+                            Thing2 = arg_1
+                        }
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : ParentRecordChildPos =
+        static member parse (args : string list) : ParentRecordChildPos =
             ParentRecordChildPos.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -2171,66 +2214,68 @@ module ParentRecordSelfPosArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type ParentRecordSelfPos with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : ParentRecordSelfPos =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecordSelfPos =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
-                  (sprintf "%s  string%s%s" (sprintf "--%s" "thing2") "" "")
-                  (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") " (positional args) (can be repeated)" "") ]
+                [
+                    (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "thing2") "" "")
+                    (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") " (positional args) (can be repeated)" "")
+                ]
                 |> String.concat "\n"
 
-            let arg_2: bool ResizeArray = ResizeArray()
-            let mutable arg_0: int option = None
-            let mutable arg_1: string option = None
+            let arg_2 : bool ResizeArray = ResizeArray ()
+            let mutable arg_0 : int option = None
+            let mutable arg_1 : string option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_1 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "thing2")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_1 <- value |> (fun x -> x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "thing1")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
                 then
                     value |> (fun x -> System.Boolean.Parse x) |> arg_2.Add
                     () |> Ok
@@ -2238,9 +2283,9 @@ module ParentRecordSelfPosArgParse =
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool = false
+            let setFlagValue (key : string) : bool = false
 
-            let rec go (state: ParseState_ParentRecordSelfPos) (args: string list) =
+            let rec go (state : ParseState_ParentRecordSelfPos) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -2253,15 +2298,15 @@ module ParentRecordSelfPosArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_2.AddRange(rest |> Seq.map (fun x -> System.Boolean.Parse x))
+                | "--" :: rest -> arg_2.AddRange (rest |> Seq.map (fun x -> System.Boolean.Parse x))
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecordSelfPos.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_ParentRecordSelfPos.AwaitingValue arg)
@@ -2322,12 +2367,18 @@ module ParentRecordSelfPosArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { AndAnother = arg_2
-                  Child = { Thing1 = arg_0; Thing2 = arg_1 } }
+                {
+                    AndAnother = arg_2
+                    Child =
+                        {
+                            Thing1 = arg_0
+                            Thing2 = arg_1
+                        }
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : ParentRecordSelfPos =
+        static member parse (args : string list) : ParentRecordSelfPos =
             ParentRecordSelfPos.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -2342,34 +2393,36 @@ module ChoicePositionalsArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type ChoicePositionals with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : ChoicePositionals =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ChoicePositionals =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  string%s%s" (sprintf "--%s" "args") " (positional args) (can be repeated)" "") ]
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "args") " (positional args) (can be repeated)" "")
+                ]
                 |> String.concat "\n"
 
-            let arg_0: Choice<string, string> ResizeArray = ResizeArray()
+            let arg_0 : Choice<string, string> ResizeArray = ResizeArray ()
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "args", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "args", System.StringComparison.OrdinalIgnoreCase) then
                     value |> (fun x -> x) |> Choice1Of2 |> arg_0.Add
                     () |> Ok
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool = false
+            let setFlagValue (key : string) : bool = false
 
-            let rec go (state: ParseState_ChoicePositionals) (args: string list) =
+            let rec go (state : ParseState_ChoicePositionals) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -2382,15 +2435,15 @@ module ChoicePositionalsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_0.AddRange(rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
+                | "--" :: rest -> arg_0.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ChoicePositionals.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_ChoicePositionals.AwaitingValue arg)
@@ -2433,11 +2486,13 @@ module ChoicePositionalsArgParse =
             let arg_0 = arg_0 |> Seq.toList
 
             if 0 = ArgParser_errors.Count then
-                { Args = arg_0 }
+                {
+                    Args = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : ChoicePositionals =
+        static member parse (args : string list) : ChoicePositionals =
             ChoicePositionals.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -2452,52 +2507,54 @@ module ContainsBoolEnvVarArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type ContainsBoolEnvVar with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : ContainsBoolEnvVar =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ContainsBoolEnvVar =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf
-                      "%s  bool%s%s"
-                      (sprintf "--%s" "bool-var")
-                      ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
-                      "") ]
+                [
+                    (sprintf
+                        "%s  bool%s%s"
+                        (sprintf "--%s" "bool-var")
+                        ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
+                        "")
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: bool option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : bool option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "bool-var", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "bool-var", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "bool-var")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
-                if System.String.Equals(key, sprintf "--%s" "bool-var", System.StringComparison.OrdinalIgnoreCase) then
+            let setFlagValue (key : string) : bool =
+                if System.String.Equals (key, sprintf "--%s" "bool-var", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "bool-var")
@@ -2510,7 +2567,7 @@ module ContainsBoolEnvVarArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_ContainsBoolEnvVar) (args: string list) =
+            let rec go (state : ParseState_ContainsBoolEnvVar) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -2523,15 +2580,15 @@ module ContainsBoolEnvVarArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ContainsBoolEnvVar.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_ContainsBoolEnvVar.AwaitingValue arg)
@@ -2596,9 +2653,9 @@ module ContainsBoolEnvVarArgParse =
 
                         Unchecked.defaultof<_>
                     | x ->
-                        if System.String.Equals(x, "1", System.StringComparison.OrdinalIgnoreCase) then
+                        if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
                             true
-                        else if System.String.Equals(x, "0", System.StringComparison.OrdinalIgnoreCase) then
+                        else if System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase) then
                             false
                         else
                             x |> (fun x -> System.Boolean.Parse x)
@@ -2606,11 +2663,13 @@ module ContainsBoolEnvVarArgParse =
                 | Some x -> Choice1Of2 x
 
             if 0 = ArgParser_errors.Count then
-                { BoolVar = arg_0 }
+                {
+                    BoolVar = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : ContainsBoolEnvVar =
+        static member parse (args : string list) : ContainsBoolEnvVar =
             ContainsBoolEnvVar.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -2625,36 +2684,36 @@ module WithFlagDuArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type WithFlagDu with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : WithFlagDu =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : WithFlagDu =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
                 [ (sprintf "%s  bool%s%s" (sprintf "--%s" "dry-run") "" "") ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: DryRunMode option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : DryRunMode option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "dry-run")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <-
@@ -2663,18 +2722,19 @@ module WithFlagDuArgParse =
                                     if System.Boolean.Parse x = Consts.FALSE then
                                         DryRunMode.Wet
                                     else
-                                        DryRunMode.Dry)
+                                        DryRunMode.Dry
+                                )
                                 |> Some
 
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
-                if System.String.Equals(key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+            let setFlagValue (key : string) : bool =
+                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
@@ -2693,7 +2753,7 @@ module WithFlagDuArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_WithFlagDu) (args: string list) =
+            let rec go (state : ParseState_WithFlagDu) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -2706,15 +2766,15 @@ module WithFlagDuArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_WithFlagDu.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_WithFlagDu.AwaitingValue arg)
@@ -2776,11 +2836,13 @@ module WithFlagDuArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { DryRun = arg_0 }
+                {
+                    DryRun = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : WithFlagDu =
+        static member parse (args : string list) : WithFlagDu =
             WithFlagDu.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -2795,40 +2857,42 @@ module ContainsFlagEnvVarArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type ContainsFlagEnvVar with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : ContainsFlagEnvVar =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ContainsFlagEnvVar =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf
-                      "%s  bool%s%s"
-                      (sprintf "--%s" "dry-run")
-                      ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
-                      "") ]
+                [
+                    (sprintf
+                        "%s  bool%s%s"
+                        (sprintf "--%s" "dry-run")
+                        ("CONSUMEPLUGIN_THINGS" |> sprintf " (default value populated from env var %s)")
+                        "")
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: DryRunMode option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : DryRunMode option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "dry-run")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <-
@@ -2837,18 +2901,19 @@ module ContainsFlagEnvVarArgParse =
                                     if System.Boolean.Parse x = Consts.FALSE then
                                         DryRunMode.Wet
                                     else
-                                        DryRunMode.Dry)
+                                        DryRunMode.Dry
+                                )
                                 |> Some
 
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
-                if System.String.Equals(key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+            let setFlagValue (key : string) : bool =
+                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
@@ -2867,7 +2932,7 @@ module ContainsFlagEnvVarArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_ContainsFlagEnvVar) (args: string list) =
+            let rec go (state : ParseState_ContainsFlagEnvVar) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -2880,15 +2945,15 @@ module ContainsFlagEnvVarArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ContainsFlagEnvVar.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_ContainsFlagEnvVar.AwaitingValue arg)
@@ -2953,12 +3018,12 @@ module ContainsFlagEnvVarArgParse =
 
                         Unchecked.defaultof<_>
                     | x ->
-                        if System.String.Equals(x, "1", System.StringComparison.OrdinalIgnoreCase) then
+                        if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
                             if true = Consts.FALSE then
                                 DryRunMode.Wet
                             else
                                 DryRunMode.Dry
-                        else if System.String.Equals(x, "0", System.StringComparison.OrdinalIgnoreCase) then
+                        else if System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase) then
                             if false = Consts.FALSE then
                                 DryRunMode.Wet
                             else
@@ -2969,16 +3034,19 @@ module ContainsFlagEnvVarArgParse =
                                 if System.Boolean.Parse x = Consts.FALSE then
                                     DryRunMode.Wet
                                 else
-                                    DryRunMode.Dry)
+                                    DryRunMode.Dry
+                            )
                     |> Choice2Of2
                 | Some x -> Choice1Of2 x
 
             if 0 = ArgParser_errors.Count then
-                { DryRun = arg_0 }
+                {
+                    DryRun = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : ContainsFlagEnvVar =
+        static member parse (args : string list) : ContainsFlagEnvVar =
             ContainsFlagEnvVar.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -2993,44 +3061,50 @@ module ContainsFlagDefaultValueArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type ContainsFlagDefaultValue with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : ContainsFlagDefaultValue =
-            let ArgParser_errors = ResizeArray()
+        static member parse'
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : ContainsFlagDefaultValue
+            =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf
-                      "%s  bool%s%s"
-                      (sprintf "--%s" "dry-run")
-                      (match ContainsFlagDefaultValue.DefaultDryRun() with
-                       | DryRunMode.Wet -> if Consts.FALSE = true then "true" else "false"
-                       | DryRunMode.Dry -> if true = true then "true" else "false"
-                       |> (fun x -> x.ToString())
-                       |> sprintf " (default value: %s)")
-                      "") ]
+                [
+                    (sprintf
+                        "%s  bool%s%s"
+                        (sprintf "--%s" "dry-run")
+                        (match ContainsFlagDefaultValue.DefaultDryRun () with
+                         | DryRunMode.Wet -> if Consts.FALSE = true then "true" else "false"
+                         | DryRunMode.Dry -> if true = true then "true" else "false"
+                         |> (fun x -> x.ToString ())
+                         |> sprintf " (default value: %s)")
+                        "")
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: DryRunMode option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : DryRunMode option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "dry-run")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <-
@@ -3039,18 +3113,19 @@ module ContainsFlagDefaultValueArgParse =
                                     if System.Boolean.Parse x = Consts.FALSE then
                                         DryRunMode.Wet
                                     else
-                                        DryRunMode.Dry)
+                                        DryRunMode.Dry
+                                )
                                 |> Some
 
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
-                if System.String.Equals(key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+            let setFlagValue (key : string) : bool =
+                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
@@ -3069,7 +3144,7 @@ module ContainsFlagDefaultValueArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_ContainsFlagDefaultValue) (args: string list) =
+            let rec go (state : ParseState_ContainsFlagDefaultValue) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3082,15 +3157,15 @@ module ContainsFlagDefaultValueArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ContainsFlagDefaultValue.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_ContainsFlagDefaultValue.AwaitingValue arg)
@@ -3144,15 +3219,17 @@ module ContainsFlagDefaultValueArgParse =
 
             let arg_0 =
                 match arg_0 with
-                | None -> ContainsFlagDefaultValue.DefaultDryRun() |> Choice2Of2
+                | None -> ContainsFlagDefaultValue.DefaultDryRun () |> Choice2Of2
                 | Some x -> Choice1Of2 x
 
             if 0 = ArgParser_errors.Count then
-                { DryRun = arg_0 }
+                {
+                    DryRun = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : ContainsFlagDefaultValue =
+        static member parse (args : string list) : ContainsFlagDefaultValue =
             ContainsFlagDefaultValue.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -3167,29 +3244,31 @@ module ManyLongFormsArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type ManyLongForms with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : ManyLongForms =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ManyLongForms =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  string%s%s" (sprintf "--%s / --%s" "do-something-else" "anotherarg") "" "")
-                  (sprintf "%s  bool%s%s" (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off") "" "") ]
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s / --%s" "do-something-else" "anotherarg") "" "")
+                    (sprintf "%s  bool%s%s" (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off") "" "")
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: string option = None
-            let mutable arg_1: bool option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
+            let mutable arg_1 : bool option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "dont-turn-it-off",
                         System.StringComparison.OrdinalIgnoreCase
@@ -3200,57 +3279,57 @@ module ManyLongFormsArgParse =
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_1 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "turn-it-on", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "turn-it-on", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_1 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_1 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "anotherarg", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "anotherarg", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s" "do-something-else" "anotherarg")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "do-something-else",
                         System.StringComparison.OrdinalIgnoreCase
@@ -3261,24 +3340,24 @@ module ManyLongFormsArgParse =
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s" "do-something-else" "anotherarg")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
+            let setFlagValue (key : string) : bool =
                 if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "dont-turn-it-off",
                         System.StringComparison.OrdinalIgnoreCase
@@ -3296,7 +3375,7 @@ module ManyLongFormsArgParse =
                         arg_1 <- true |> Some
                         true
                 else if
-                    System.String.Equals(key, sprintf "--%s" "turn-it-on", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "turn-it-on", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_1 with
                     | Some x ->
@@ -3312,7 +3391,7 @@ module ManyLongFormsArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_ManyLongForms) (args: string list) =
+            let rec go (state : ParseState_ManyLongForms) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3325,15 +3404,15 @@ module ManyLongFormsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ManyLongForms.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_ManyLongForms.AwaitingValue arg)
@@ -3408,11 +3487,14 @@ module ManyLongFormsArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { DoTheThing = arg_0; SomeFlag = arg_1 }
+                {
+                    DoTheThing = arg_0
+                    SomeFlag = arg_1
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : ManyLongForms =
+        static member parse (args : string list) : ManyLongForms =
             ManyLongForms.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -3427,45 +3509,55 @@ module FlagsIntoPositionalArgsArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgs with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : FlagsIntoPositionalArgs =
-            let ArgParser_errors = ResizeArray()
+        static member parse'
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : FlagsIntoPositionalArgs
+            =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
-                  (sprintf "%s  string%s%s" (sprintf "--%s" "grab-everything") " (positional args) (can be repeated)" "") ]
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
+                    (sprintf
+                        "%s  string%s%s"
+                        (sprintf "--%s" "grab-everything")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
                 |> String.concat "\n"
 
-            let arg_1: string ResizeArray = ResizeArray()
-            let mutable arg_0: string option = None
+            let arg_1 : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "a")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "grab-everything",
                         System.StringComparison.OrdinalIgnoreCase
@@ -3477,9 +3569,9 @@ module FlagsIntoPositionalArgsArgParse =
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool = false
+            let setFlagValue (key : string) : bool = false
 
-            let rec go (state: ParseState_FlagsIntoPositionalArgs) (args: string list) =
+            let rec go (state : ParseState_FlagsIntoPositionalArgs) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3492,15 +3584,15 @@ module FlagsIntoPositionalArgsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange(rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgs.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_FlagsIntoPositionalArgs.AwaitingValue arg)
@@ -3559,11 +3651,14 @@ module FlagsIntoPositionalArgsArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { A = arg_0; GrabEverything = arg_1 }
+                {
+                    A = arg_0
+                    GrabEverything = arg_1
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : FlagsIntoPositionalArgs =
+        static member parse (args : string list) : FlagsIntoPositionalArgs =
             FlagsIntoPositionalArgs.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -3578,48 +3673,55 @@ module FlagsIntoPositionalArgsChoiceArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgsChoice with
 
         static member parse'
-            (getEnvironmentVariable: string -> string)
-            (args: string list)
-            : FlagsIntoPositionalArgsChoice =
-            let ArgParser_errors = ResizeArray()
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : FlagsIntoPositionalArgsChoice
+            =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
-                  (sprintf "%s  string%s%s" (sprintf "--%s" "grab-everything") " (positional args) (can be repeated)" "") ]
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
+                    (sprintf
+                        "%s  string%s%s"
+                        (sprintf "--%s" "grab-everything")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
                 |> String.concat "\n"
 
-            let arg_1: Choice<string, string> ResizeArray = ResizeArray()
-            let mutable arg_0: string option = None
+            let arg_1 : Choice<string, string> ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "a")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "grab-everything",
                         System.StringComparison.OrdinalIgnoreCase
@@ -3631,9 +3733,9 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool = false
+            let setFlagValue (key : string) : bool = false
 
-            let rec go (state: ParseState_FlagsIntoPositionalArgsChoice) (args: string list) =
+            let rec go (state : ParseState_FlagsIntoPositionalArgsChoice) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3646,15 +3748,15 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange(rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue arg)
@@ -3713,11 +3815,14 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { A = arg_0; GrabEverything = arg_1 }
+                {
+                    A = arg_0
+                    GrabEverything = arg_1
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : FlagsIntoPositionalArgsChoice =
+        static member parse (args : string list) : FlagsIntoPositionalArgsChoice =
             FlagsIntoPositionalArgsChoice.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -3732,48 +3837,55 @@ module FlagsIntoPositionalArgsIntArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgsInt with
 
         static member parse'
-            (getEnvironmentVariable: string -> string)
-            (args: string list)
-            : FlagsIntoPositionalArgsInt =
-            let ArgParser_errors = ResizeArray()
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : FlagsIntoPositionalArgsInt
+            =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
-                  (sprintf "%s  int32%s%s" (sprintf "--%s" "grab-everything") " (positional args) (can be repeated)" "") ]
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
+                    (sprintf
+                        "%s  int32%s%s"
+                        (sprintf "--%s" "grab-everything")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
                 |> String.concat "\n"
 
-            let arg_1: int ResizeArray = ResizeArray()
-            let mutable arg_0: string option = None
+            let arg_1 : int ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "a")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "grab-everything",
                         System.StringComparison.OrdinalIgnoreCase
@@ -3785,9 +3897,9 @@ module FlagsIntoPositionalArgsIntArgParse =
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool = false
+            let setFlagValue (key : string) : bool = false
 
-            let rec go (state: ParseState_FlagsIntoPositionalArgsInt) (args: string list) =
+            let rec go (state : ParseState_FlagsIntoPositionalArgsInt) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3800,15 +3912,15 @@ module FlagsIntoPositionalArgsIntArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange(rest |> Seq.map (fun x -> System.Int32.Parse x))
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgsInt.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_FlagsIntoPositionalArgsInt.AwaitingValue arg)
@@ -3867,11 +3979,14 @@ module FlagsIntoPositionalArgsIntArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { A = arg_0; GrabEverything = arg_1 }
+                {
+                    A = arg_0
+                    GrabEverything = arg_1
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : FlagsIntoPositionalArgsInt =
+        static member parse (args : string list) : FlagsIntoPositionalArgsInt =
             FlagsIntoPositionalArgsInt.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -3886,48 +4001,55 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgsIntChoice with
 
         static member parse'
-            (getEnvironmentVariable: string -> string)
-            (args: string list)
-            : FlagsIntoPositionalArgsIntChoice =
-            let ArgParser_errors = ResizeArray()
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : FlagsIntoPositionalArgsIntChoice
+            =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
-                  (sprintf "%s  int32%s%s" (sprintf "--%s" "grab-everything") " (positional args) (can be repeated)" "") ]
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
+                    (sprintf
+                        "%s  int32%s%s"
+                        (sprintf "--%s" "grab-everything")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
                 |> String.concat "\n"
 
-            let arg_1: Choice<int, int> ResizeArray = ResizeArray()
-            let mutable arg_0: string option = None
+            let arg_1 : Choice<int, int> ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "a")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "grab-everything",
                         System.StringComparison.OrdinalIgnoreCase
@@ -3939,9 +4061,9 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool = false
+            let setFlagValue (key : string) : bool = false
 
-            let rec go (state: ParseState_FlagsIntoPositionalArgsIntChoice) (args: string list) =
+            let rec go (state : ParseState_FlagsIntoPositionalArgsIntChoice) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3954,17 +4076,15 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest ->
-                    arg_1
-                        .AddRange(rest |> Seq.map (fun x -> System.Int32.Parse x) |> Seq.map Choice2Of2)
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue arg)
@@ -4023,11 +4143,14 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { A = arg_0; GrabEverything = arg_1 }
+                {
+                    A = arg_0
+                    GrabEverything = arg_1
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : FlagsIntoPositionalArgsIntChoice =
+        static member parse (args : string list) : FlagsIntoPositionalArgsIntChoice =
             FlagsIntoPositionalArgsIntChoice.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
@@ -4042,49 +4165,55 @@ module FlagsIntoPositionalArgs'ArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgs' with
 
-        static member parse' (getEnvironmentVariable: string -> string) (args: string list) : FlagsIntoPositionalArgs' =
-            let ArgParser_errors = ResizeArray()
+        static member parse'
+            (getEnvironmentVariable : string -> string)
+            (args : string list)
+            : FlagsIntoPositionalArgs'
+            =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
-                  (sprintf
-                      "%s  string%s%s"
-                      (sprintf "--%s" "dont-grab-everything")
-                      " (positional args) (can be repeated)"
-                      "") ]
+                [
+                    (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
+                    (sprintf
+                        "%s  string%s%s"
+                        (sprintf "--%s" "dont-grab-everything")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
                 |> String.concat "\n"
 
-            let arg_1: string ResizeArray = ResizeArray()
-            let mutable arg_0: string option = None
+            let arg_1 : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : string option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "a")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "dont-grab-everything",
                         System.StringComparison.OrdinalIgnoreCase
@@ -4096,9 +4225,9 @@ module FlagsIntoPositionalArgs'ArgParse =
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool = false
+            let setFlagValue (key : string) : bool = false
 
-            let rec go (state: ParseState_FlagsIntoPositionalArgs') (args: string list) =
+            let rec go (state : ParseState_FlagsIntoPositionalArgs') (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4111,15 +4240,15 @@ module FlagsIntoPositionalArgs'ArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange(rest |> Seq.map (fun x -> x))
+                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgs'.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_FlagsIntoPositionalArgs'.AwaitingValue arg)
@@ -4178,11 +4307,12 @@ module FlagsIntoPositionalArgs'ArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { A = arg_0
-                  DontGrabEverything = arg_1 }
+                {
+                    A = arg_0
+                    DontGrabEverything = arg_1
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : FlagsIntoPositionalArgs' =
+        static member parse (args : string list) : FlagsIntoPositionalArgs' =
             FlagsIntoPositionalArgs'.parse' System.Environment.GetEnvironmentVariable args
-

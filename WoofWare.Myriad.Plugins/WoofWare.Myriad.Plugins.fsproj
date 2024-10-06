@@ -19,6 +19,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="WoofWare.Whippet.Fantomas" Version="0.2.1" />
+    <!-- the lowest version allowed by Myriad.Core -->
     <PackageReference Update="FSharp.Core" Version="6.0.1" PrivateAssets="all"/>
   </ItemGroup>
 
@@ -53,7 +55,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\WoofWare.Whippet\WoofWare.Whippet.Core\WoofWare.Whippet.Core.fsproj" />
-    <ProjectReference Include="..\..\WoofWare.Whippet\WoofWare.Whippet.Fantomas\WoofWare.Whippet.Fantomas.fsproj" />
     <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj"/>
     <!-- NuGet is such a clown package manager! Get the DLLs into the Nupkg artefact, I have no idea why this is needed,
          but without this line, we don't get any dependency at all packaged into the resulting artefact. -->

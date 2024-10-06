@@ -178,7 +178,7 @@ module internal CataGenerator =
                 [
                     SynBinding.basicTuple
                         (allArtificialTyparNames
-                         |> List.map (fun t ->
+                         |> List.map (fun (t : Ident) ->
                              SynPat.namedI (Ident.create (t.idText + "Stack") |> Ident.lowerFirstLetter)
                          ))
                         (SynExpr.applyFunction
@@ -1229,6 +1229,7 @@ type CreateCatamorphismGenerator () =
             let modules =
                 namespaceAndTypes
                 |> List.map (fun (ns, taggedType, unions, records) ->
+                    failwithf "%+A" unions
                     CataGenerator.createModule opens ns taggedType unions records
                 )
 

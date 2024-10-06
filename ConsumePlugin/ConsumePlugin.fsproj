@@ -79,7 +79,7 @@
     <PackageReference Include="RestEase" Version="1.6.4"/>
     <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj" />
     <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj" PrivateAssets="all" WhippetPlugin="true" />
-    <PackageReference Include="WoofWare.Whippet" Version="0.1.4-gef8a4dcdbe" PrivateAssets="all" />
+    <PackageReference Include="WoofWare.Whippet" Version="0.1.6-gc23a25b8e0" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

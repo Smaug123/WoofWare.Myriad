@@ -4,8 +4,8 @@ open System
 open System.IO
 open System.Net.Http
 open Fantomas.FCS.Syntax
-open WoofWare.Whippet.Core
 open WoofWare.Whippet.Fantomas
+open WoofWare.Whippet.Core
 
 type internal HttpClientGeneratorOutputSpec =
     {

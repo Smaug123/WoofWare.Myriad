@@ -10,6 +10,7 @@ open Fantomas.FCS.Xml
 open WoofWare.Whippet.Core
 open WoofWare.Whippet.Fantomas
 open Fantomas.FCS.Text.Range
+open WoofWare.Whippet.Fantomas
 
 type internal SwaggerClientConfig =
     {

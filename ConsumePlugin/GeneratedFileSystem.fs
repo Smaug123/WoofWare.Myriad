@@ -6,52 +6,52 @@ open WoofWare.Myriad.Plugins
 /// Description of how to combine cases during a fold
 type GiftCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem> =
     /// How to operate on the Book case
-    abstract Book: title: string -> price: decimal -> 'Gift
+    abstract Book : title : string -> price : decimal -> 'Gift
     /// How to operate on the Chocolate case
-    abstract Chocolate: chocType: 'ChocolateType -> price: decimal -> 'Gift
+    abstract Chocolate : chocType : 'ChocolateType -> price : decimal -> 'Gift
     /// How to operate on the Wrapped case
-    abstract Wrapped: 'Gift -> 'WrappingPaperStyle -> 'Gift
+    abstract Wrapped : 'Gift -> 'WrappingPaperStyle -> 'Gift
     /// How to operate on the Boxed case
-    abstract Boxed: 'Gift -> 'Gift
+    abstract Boxed : 'Gift -> 'Gift
     /// How to operate on the WithACard case
-    abstract WithACard: 'Gift -> message: string -> 'Gift
+    abstract WithACard : 'Gift -> message : string -> 'Gift
 
 /// Description of how to combine cases during a fold
 type WrappingPaperStyleCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem> =
     /// How to operate on the HappyBirthday case
-    abstract HappyBirthday: 'WrappingPaperStyle
+    abstract HappyBirthday : 'WrappingPaperStyle
     /// How to operate on the HappyHolidays case
-    abstract HappyHolidays: 'WrappingPaperStyle
+    abstract HappyHolidays : 'WrappingPaperStyle
     /// How to operate on the SolidColor case
-    abstract SolidColor: 'WrappingPaperStyle
+    abstract SolidColor : 'WrappingPaperStyle
 
 /// Description of how to combine cases during a fold
 type ChocolateTypeCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem> =
     /// How to operate on the Dark case
-    abstract Dark: 'ChocolateType
+    abstract Dark : 'ChocolateType
     /// How to operate on the Milk case
-    abstract Milk: 'ChocolateType
+    abstract Milk : 'ChocolateType
     /// How to operate on the SeventyPercent case
-    abstract SeventyPercent: 'ChocolateType
+    abstract SeventyPercent : 'ChocolateType
 
 /// Description of how to combine cases during a fold
 type FileSystemItemCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem> =
     /// How to operate on the Directory case
-    abstract Directory: name: string -> dirSize: int -> contents: 'FileSystemItem list -> 'FileSystemItem
+    abstract Directory : name : string -> dirSize : int -> contents : 'FileSystemItem list -> 'FileSystemItem
     /// How to operate on the File case
-    abstract File: name: string -> fileSize: int -> 'FileSystemItem
+    abstract File : name : string -> fileSize : int -> 'FileSystemItem
 
 /// Specifies how to perform a fold (catamorphism) over the type FileSystemItem and its friends.
 type FileSystemCata<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem> =
     {
         /// How to perform a fold (catamorphism) over the type Gift
-        Gift: GiftCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>
+        Gift : GiftCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>
         /// How to perform a fold (catamorphism) over the type WrappingPaperStyle
-        WrappingPaperStyle: WrappingPaperStyleCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>
+        WrappingPaperStyle : WrappingPaperStyleCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>
         /// How to perform a fold (catamorphism) over the type ChocolateType
-        ChocolateType: ChocolateTypeCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>
+        ChocolateType : ChocolateTypeCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>
         /// How to perform a fold (catamorphism) over the type FileSystemItem
-        FileSystemItem: FileSystemItemCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>
+        FileSystemItem : FileSystemItemCataCase<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>
     }
 
 /// Methods to perform a catamorphism over the type FileSystemItem
@@ -63,42 +63,48 @@ module FileSystemItemCata =
         | Process__WrappingPaperStyle of WrappingPaperStyle
         | Process__ChocolateType of ChocolateType
         | Process__FileSystemItem of FileSystemItem
-        | Gift_Chocolate of price: decimal
+        | Gift_Chocolate of price : decimal
         | Gift_Wrapped
         | Gift_Boxed
-        | Gift_WithACard of message: string
-        | FileSystemItem_Directory of name: string * dirSize: int * contents: int
+        | Gift_WithACard of message : string
+        | FileSystemItem_Directory of name : string * dirSize : int * contents : int
 
     let private loop
-        (cata: FileSystemCata<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>)
-        (instructions: ResizeArray<Instruction>)
+        (cata : FileSystemCata<'Gift, 'WrappingPaperStyle, 'ChocolateType, 'FileSystemItem>)
+        (instructions : ResizeArray<Instruction>)
         =
-        let fileSystemItemStack = ResizeArray<'FileSystemItem>()
-        let chocolateTypeStack = ResizeArray<'ChocolateType>()
-        let wrappingPaperStyleStack = ResizeArray<'WrappingPaperStyle>()
-        let giftStack = ResizeArray<'Gift>()
+        let fileSystemItemStack = ResizeArray<'FileSystemItem> ()
+        let chocolateTypeStack = ResizeArray<'ChocolateType> ()
+        let wrappingPaperStyleStack = ResizeArray<'WrappingPaperStyle> ()
+        let giftStack = ResizeArray<'Gift> ()
 
         while instructions.Count > 0 do
             let currentInstruction = instructions.[instructions.Count - 1]
-            instructions.RemoveAt(instructions.Count - 1)
+            instructions.RemoveAt (instructions.Count - 1)
 
             match currentInstruction with
             | Instruction.Process__Gift x ->
                 match x with
-                | Gift.Book({ title = title; price = price }) -> cata.Gift.Book title price |> giftStack.Add
-                | Gift.Chocolate({ chocType = chocType; price = price }) ->
-                    instructions.Add(Instruction.Gift_Chocolate(price))
-                    instructions.Add(Instruction.Process__ChocolateType chocType)
-                | Gift.Wrapped(arg0_0, arg1_0) ->
+                | Gift.Book ({
+                                 title = title
+                                 price = price
+                             }) -> cata.Gift.Book title price |> giftStack.Add
+                | Gift.Chocolate ({
+                                      chocType = chocType
+                                      price = price
+                                  }) ->
+                    instructions.Add (Instruction.Gift_Chocolate (price))
+                    instructions.Add (Instruction.Process__ChocolateType chocType)
+                | Gift.Wrapped (arg0_0, arg1_0) ->
                     instructions.Add Instruction.Gift_Wrapped
-                    instructions.Add(Instruction.Process__Gift arg0_0)
-                    instructions.Add(Instruction.Process__WrappingPaperStyle arg1_0)
-                | Gift.Boxed(arg0_0) ->
+                    instructions.Add (Instruction.Process__Gift arg0_0)
+                    instructions.Add (Instruction.Process__WrappingPaperStyle arg1_0)
+                | Gift.Boxed (arg0_0) ->
                     instructions.Add Instruction.Gift_Boxed
-                    instructions.Add(Instruction.Process__Gift arg0_0)
-                | Gift.WithACard(arg0_0, message) ->
-                    instructions.Add(Instruction.Gift_WithACard(message))
-                    instructions.Add(Instruction.Process__Gift arg0_0)
+                    instructions.Add (Instruction.Process__Gift arg0_0)
+                | Gift.WithACard (arg0_0, message) ->
+                    instructions.Add (Instruction.Gift_WithACard (message))
+                    instructions.Add (Instruction.Process__Gift arg0_0)
             | Instruction.Process__WrappingPaperStyle x ->
                 match x with
                 | WrappingPaperStyle.HappyBirthday ->
@@ -113,34 +119,38 @@ module FileSystemItemCata =
                 | ChocolateType.SeventyPercent -> cata.ChocolateType.SeventyPercent |> chocolateTypeStack.Add
             | Instruction.Process__FileSystemItem x ->
                 match x with
-                | FileSystemItem.Directory({ Name = name
-                                             DirSize = dirSize
-                                             Contents = contents }) ->
-                    instructions.Add(Instruction.FileSystemItem_Directory(name, dirSize, (List.length contents)))
+                | FileSystemItem.Directory ({
+                                                Name = name
+                                                DirSize = dirSize
+                                                Contents = contents
+                                            }) ->
+                    instructions.Add (Instruction.FileSystemItem_Directory (name, dirSize, (List.length contents)))
 
                     for elt in contents do
-                        instructions.Add(Instruction.Process__FileSystemItem elt)
-                | FileSystemItem.File({ Name = name; FileSize = fileSize }) ->
-                    cata.FileSystemItem.File name fileSize |> fileSystemItemStack.Add
+                        instructions.Add (Instruction.Process__FileSystemItem elt)
+                | FileSystemItem.File ({
+                                           Name = name
+                                           FileSize = fileSize
+                                       }) -> cata.FileSystemItem.File name fileSize |> fileSystemItemStack.Add
             | Instruction.Gift_Chocolate price ->
                 let chocType = chocolateTypeStack.[chocolateTypeStack.Count - 1]
-                chocolateTypeStack.RemoveAt(chocolateTypeStack.Count - 1)
+                chocolateTypeStack.RemoveAt (chocolateTypeStack.Count - 1)
                 cata.Gift.Chocolate chocType price |> giftStack.Add
             | Instruction.Gift_Wrapped ->
                 let arg0_0 = giftStack.[giftStack.Count - 1]
-                giftStack.RemoveAt(giftStack.Count - 1)
+                giftStack.RemoveAt (giftStack.Count - 1)
                 let arg1_0 = wrappingPaperStyleStack.[wrappingPaperStyleStack.Count - 1]
-                wrappingPaperStyleStack.RemoveAt(wrappingPaperStyleStack.Count - 1)
+                wrappingPaperStyleStack.RemoveAt (wrappingPaperStyleStack.Count - 1)
                 cata.Gift.Wrapped arg0_0 arg1_0 |> giftStack.Add
             | Instruction.Gift_Boxed ->
                 let arg0_0 = giftStack.[giftStack.Count - 1]
-                giftStack.RemoveAt(giftStack.Count - 1)
+                giftStack.RemoveAt (giftStack.Count - 1)
                 cata.Gift.Boxed arg0_0 |> giftStack.Add
             | Instruction.Gift_WithACard message ->
                 let arg0_0 = giftStack.[giftStack.Count - 1]
-                giftStack.RemoveAt(giftStack.Count - 1)
+                giftStack.RemoveAt (giftStack.Count - 1)
                 cata.Gift.WithACard arg0_0 message |> giftStack.Add
-            | Instruction.FileSystemItem_Directory(name, dirSize, contents) ->
+            | Instruction.FileSystemItem_Directory (name, dirSize, contents) ->
                 let contents_len = contents
 
                 let contents =
@@ -150,18 +160,19 @@ module FileSystemItemCata =
                     }
                     |> Seq.toList
 
-                fileSystemItemStack.RemoveRange(fileSystemItemStack.Count - contents_len, contents_len)
+                fileSystemItemStack.RemoveRange (fileSystemItemStack.Count - contents_len, contents_len)
                 cata.FileSystemItem.Directory name dirSize contents |> fileSystemItemStack.Add
 
         giftStack, wrappingPaperStyleStack, chocolateTypeStack, fileSystemItemStack
 
     /// Execute the catamorphism.
     let runGift
-        (cata: FileSystemCata<'GiftRet, 'WrappingPaperStyleRet, 'ChocolateTypeRet, 'FileSystemItemRet>)
-        (x: Gift)
-        : 'GiftRet =
-        let instructions = ResizeArray()
-        instructions.Add(Instruction.Process__Gift x)
+        (cata : FileSystemCata<'GiftRet, 'WrappingPaperStyleRet, 'ChocolateTypeRet, 'FileSystemItemRet>)
+        (x : Gift)
+        : 'GiftRet
+        =
+        let instructions = ResizeArray ()
+        instructions.Add (Instruction.Process__Gift x)
 
         let giftRetStack, wrappingPaperStyleRetStack, chocolateTypeRetStack, fileSystemItemRetStack =
             loop cata instructions
@@ -170,11 +181,12 @@ module FileSystemItemCata =
 
     /// Execute the catamorphism.
     let runWrappingPaperStyle
-        (cata: FileSystemCata<'GiftRet, 'WrappingPaperStyleRet, 'ChocolateTypeRet, 'FileSystemItemRet>)
-        (x: WrappingPaperStyle)
-        : 'WrappingPaperStyleRet =
-        let instructions = ResizeArray()
-        instructions.Add(Instruction.Process__WrappingPaperStyle x)
+        (cata : FileSystemCata<'GiftRet, 'WrappingPaperStyleRet, 'ChocolateTypeRet, 'FileSystemItemRet>)
+        (x : WrappingPaperStyle)
+        : 'WrappingPaperStyleRet
+        =
+        let instructions = ResizeArray ()
+        instructions.Add (Instruction.Process__WrappingPaperStyle x)
 
         let giftRetStack, wrappingPaperStyleRetStack, chocolateTypeRetStack, fileSystemItemRetStack =
             loop cata instructions
@@ -183,11 +195,12 @@ module FileSystemItemCata =
 
     /// Execute the catamorphism.
     let runChocolateType
-        (cata: FileSystemCata<'GiftRet, 'WrappingPaperStyleRet, 'ChocolateTypeRet, 'FileSystemItemRet>)
-        (x: ChocolateType)
-        : 'ChocolateTypeRet =
-        let instructions = ResizeArray()
-        instructions.Add(Instruction.Process__ChocolateType x)
+        (cata : FileSystemCata<'GiftRet, 'WrappingPaperStyleRet, 'ChocolateTypeRet, 'FileSystemItemRet>)
+        (x : ChocolateType)
+        : 'ChocolateTypeRet
+        =
+        let instructions = ResizeArray ()
+        instructions.Add (Instruction.Process__ChocolateType x)
 
         let giftRetStack, wrappingPaperStyleRetStack, chocolateTypeRetStack, fileSystemItemRetStack =
             loop cata instructions
@@ -196,14 +209,14 @@ module FileSystemItemCata =
 
     /// Execute the catamorphism.
     let runFileSystemItem
-        (cata: FileSystemCata<'GiftRet, 'WrappingPaperStyleRet, 'ChocolateTypeRet, 'FileSystemItemRet>)
-        (x: FileSystemItem)
-        : 'FileSystemItemRet =
-        let instructions = ResizeArray()
-        instructions.Add(Instruction.Process__FileSystemItem x)
+        (cata : FileSystemCata<'GiftRet, 'WrappingPaperStyleRet, 'ChocolateTypeRet, 'FileSystemItemRet>)
+        (x : FileSystemItem)
+        : 'FileSystemItemRet
+        =
+        let instructions = ResizeArray ()
+        instructions.Add (Instruction.Process__FileSystemItem x)
 
         let giftRetStack, wrappingPaperStyleRetStack, chocolateTypeRetStack, fileSystemItemRetStack =
             loop cata instructions
 
         Seq.exactlyOne fileSystemItemRetStack
-

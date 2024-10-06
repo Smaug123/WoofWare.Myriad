@@ -5,6 +5,7 @@ open System.Text
 open Fantomas.FCS.Syntax
 open WoofWare.Whippet.Fantomas
 open Fantomas.FCS.Xml
+open WoofWare.Whippet.Fantomas
 
 [<RequireQualifiedAccess>]
 module internal RemoveOptionsGenerator =
