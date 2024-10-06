@@ -6,11 +6,6 @@
     <OtherFlags>--reflectionfree $(OtherFlags)</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
-    <MyriadSdkGenerator Include="$(MSBuildThisFileDirectory)..\WoofWare.Myriad.Plugins\bin\$(Configuration)\net6.0\WoofWare.Myriad.Plugins.dll"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="myriad.toml"/>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="RecordFile.fs"/>
     <Compile Include="GeneratedRecord.fs">
@@ -18,76 +13,73 @@
     </Compile>
     <Compile Include="JsonRecord.fs"/>
     <Compile Include="GeneratedJson.fs">
-      <MyriadFile>JsonRecord.fs</MyriadFile>
+      <WhippetFile>JsonRecord.fs</WhippetFile>
     </Compile>
     <Compile Include="PureGymDto.fs"/>
     <Compile Include="GeneratedPureGymDto.fs">
-      <MyriadFile>PureGymDto.fs</MyriadFile>
+      <WhippetFile>PureGymDto.fs</WhippetFile>
     </Compile>
     <Compile Include="RestApiExample.fs"/>
     <Compile Include="GeneratedRestClient.fs">
-      <MyriadFile>RestApiExample.fs</MyriadFile>
+      <WhippetFile>RestApiExample.fs</WhippetFile>
     </Compile>
     <Compile Include="MockExample.fs"/>
     <Compile Include="GeneratedMock.fs">
-      <MyriadFile>MockExample.fs</MyriadFile>
+      <WhippetFile>MockExample.fs</WhippetFile>
     </Compile>
     <Compile Include="MockExampleNoAttributes.fs" />
     <Compile Include="GeneratedMockNoAttributes.fs">
-      <MyriadFile>MockExampleNoAttributes.fs</MyriadFile>
-      <MyriadParams>
-        <IPublicTypeNoAttr>GenerateMock</IPublicTypeNoAttr>
-        <IPublicTypeInternalFalseNoAttr>GenerateMock(false)</IPublicTypeInternalFalseNoAttr>
-        <InternalTypeNoAttr>GenerateMock</InternalTypeNoAttr>
-        <PrivateTypeNoAttr>GenerateMock</PrivateTypeNoAttr>
-        <PrivateTypeInternalFalseNoAttr>GenerateMock(false)</PrivateTypeInternalFalseNoAttr>
-        <VeryPublicTypeNoAttr>GenerateMock</VeryPublicTypeNoAttr>
-        <CurriedNoAttr>GenerateMock</CurriedNoAttr>
-        <TypeWithInterfaceNoAttr>GenerateMock</TypeWithInterfaceNoAttr>
-      </MyriadParams>
+      <WhippetFile>MockExampleNoAttributes.fs</WhippetFile>
+      <WhippetParamIPublicTypeNoAttr>GenerateMock</WhippetParamIPublicTypeNoAttr>
+      <WhippetParamIPublicTypeNoAttr>GenerateMock</WhippetParamIPublicTypeNoAttr>
+      <WhippetParamIPublicTypeInternalFalseNoAttr>GenerateMock(false)</WhippetParamIPublicTypeInternalFalseNoAttr>
+      <WhippetParamInternalTypeNoAttr>GenerateMock</WhippetParamInternalTypeNoAttr>
+      <WhippetParamPrivateTypeNoAttr>GenerateMock</WhippetParamPrivateTypeNoAttr>
+      <WhippetParamPrivateTypeInternalFalseNoAttr>GenerateMock(false)</WhippetParamPrivateTypeInternalFalseNoAttr>
+      <WhippetParamVeryPublicTypeNoAttr>GenerateMock</WhippetParamVeryPublicTypeNoAttr>
+      <WhippetParamCurriedNoAttr>GenerateMock</WhippetParamCurriedNoAttr>
+      <WhippetParamTypeWithInterfaceNoAttr>GenerateMock</WhippetParamTypeWithInterfaceNoAttr>
     </Compile>
     <Compile Include="Vault.fs" />
     <Compile Include="GeneratedVault.fs">
-      <MyriadFile>Vault.fs</MyriadFile>
+      <WhippetFile>Vault.fs</WhippetFile>
     </Compile>
     <Compile Include="SerializationAndDeserialization.fs" />
     <Compile Include="GeneratedSerde.fs">
-      <MyriadFile>SerializationAndDeserialization.fs</MyriadFile>
+      <WhippetFile>SerializationAndDeserialization.fs</WhippetFile>
     </Compile>
     <Compile Include="Catamorphism.fs" />
     <Compile Include="GeneratedCatamorphism.fs">
-      <MyriadFile>Catamorphism.fs</MyriadFile>
+      <WhippetFile>Catamorphism.fs</WhippetFile>
     </Compile>
     <Compile Include="FSharpForFunAndProfitCata.fs" />
     <Compile Include="GeneratedFileSystem.fs">
-      <MyriadFile>FSharpForFunAndProfitCata.fs</MyriadFile>
+      <WhippetFile>FSharpForFunAndProfitCata.fs</WhippetFile>
     </Compile>
     <Compile Include="List.fs" />
     <Compile Include="ListCata.fs">
-      <MyriadFile>List.fs</MyriadFile>
+      <WhippetFile>List.fs</WhippetFile>
     </Compile>
     <Compile Include="Args.fs" />
     <Compile Include="GeneratedArgs.fs">
-      <MyriadFile>Args.fs</MyriadFile>
+      <WhippetFile>Args.fs</WhippetFile>
     </Compile>
     <None Include="swagger-gitea.json" />
     <Compile Include="GeneratedSwaggerGitea.fs">
-      <MyriadFile>swagger-gitea.json</MyriadFile>
-      <MyriadParams>
-        <GenerateMockInternal>true</GenerateMockInternal>
-        <ClassName>Gitea</ClassName>
-      </MyriadParams>
+      <WhippetFile>swagger-gitea.json</WhippetFile>
+      <WhippetParamGenerateMockInternal>true</WhippetParamGenerateMockInternal>
+      <WhippetParamClassName>Gitea</WhippetParamClassName>
     </Compile>
     <Compile Include="Generated2SwaggerGitea.fs">
-      <MyriadFile>GeneratedSwaggerGitea.fs</MyriadFile>
+      <WhippetFile>GeneratedSwaggerGitea.fs</WhippetFile>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="RestEase" Version="1.6.4"/>
     <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj" />
-    <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj" PrivateAssets="all" />
-    <PackageReference Include="Myriad.Sdk" Version="0.8.3" PrivateAssets="all" />
+    <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj" PrivateAssets="all" WhippetPlugin="true" />
+    <PackageReference Include="WoofWare.Whippet" Version="0.1.4-gef8a4dcdbe" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

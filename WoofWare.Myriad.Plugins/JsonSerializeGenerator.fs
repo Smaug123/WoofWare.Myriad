@@ -3,6 +3,8 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Text
 open Fantomas.FCS.Syntax
+open WoofWare.Whippet.Core
+open WoofWare.Whippet.Fantomas
 
 type internal JsonSerializeOutputSpec =
     {
@@ -147,7 +149,7 @@ module internal JsonSerializeGenerator =
             |> SynExpr.createLambda "field"
             |> fun e -> e, false
         | JsonNode -> SynExpr.createIdent "id", true
-        | Unit ->
+        | UnitType ->
             SynExpr.createLambda
                 "value"
                 (SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]
@@ -508,32 +510,32 @@ module internal JsonSerializeGenerator =
         ]
         |> SynModuleOrNamespace.createNamespace namespaceId
 
-open Myriad.Core
-
-/// Myriad generator that provides a method (possibly an extension method) for a record type,
+/// Whippet generator that provides a method (possibly an extension method) for a record type,
 /// containing a JSON serialization function.
-[<MyriadGenerator("json-serialize")>]
+[<WhippetGenerator>]
 type JsonSerializeGenerator () =
 
-    interface IMyriadGenerator with
-        member _.ValidInputExtensions = [ ".fs" ]
+    interface IGenerateRawFromRaw with
+        member _.GenerateRawFromRaw (context : RawSourceGenerationArgs) =
+            if not (context.FilePath.EndsWith (".fs", StringComparison.Ordinal)) then
+                null
+            else
 
-        member _.Generate (context : GeneratorContext) =
             let targetedTypes =
-                MyriadParamParser.render context.AdditionalParameters
-                |> Map.map (fun _ v -> v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+                context.Parameters
+                |> Seq.map (fun (KeyValue (k, v)) -> k, v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+                |> Map.ofSeq
 
-            let ast, _ =
-                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+            let ast = Ast.parse (Encoding.UTF8.GetString context.FileContents)
 
             let relevantTypes =
-                Ast.extractTypeDefn ast
+                Ast.getTypes ast
                 |> List.map (fun (name, defns) ->
                     defns
                     |> List.choose (fun defn ->
-                        if Ast.isRecord defn then Some defn
-                        elif Ast.isDu defn then Some defn
-                        elif AstHelper.isEnum defn then Some defn
+                        if SynTypeDefn.isRecord defn then Some defn
+                        elif SynTypeDefn.isDu defn then Some defn
+                        elif SynTypeDefn.isEnum defn then Some defn
                         else None
                     )
                     |> fun defns -> name, defns
@@ -597,4 +599,4 @@ type JsonSerializeGenerator () =
                     |> List.map (fun (ty, spec) -> JsonSerializeGenerator.createModule ns opens spec ty)
                 )
 
-            Output.Ast modules
+            Ast.render modules |> Option.toObj

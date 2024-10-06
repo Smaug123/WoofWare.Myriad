@@ -1,8 +1,11 @@
 namespace WoofWare.Myriad.Plugins
 
+open System
 open System.IO
 open System.Net.Http
 open Fantomas.FCS.Syntax
+open WoofWare.Whippet.Core
+open WoofWare.Whippet.Fantomas
 
 type internal HttpClientGeneratorOutputSpec =
     {
@@ -643,7 +646,7 @@ module internal HttpClientGenerator =
                     yield jsonNode
                 | String -> yield responseString
                 | Stream -> yield responseStream
-                | Unit ->
+                | UnitType ->
                     // What we're returning doesn't depend on the content, so don't bother!
                     ()
                 | _ ->
@@ -978,24 +981,24 @@ module internal HttpClientGenerator =
         ]
         |> SynModuleOrNamespace.createNamespace ns
 
-open Myriad.Core
-
-/// Myriad generator that provides an HTTP client for an interface type using RestEase annotations.
-[<MyriadGenerator("http-client")>]
+/// Whippet generator that provides an HTTP client for an interface type using RestEase annotations.
+[<WhippetGenerator>]
 type HttpClientGenerator () =
 
-    interface IMyriadGenerator with
-        member _.ValidInputExtensions = [ ".fs" ]
+    interface IGenerateRawFromRaw with
+        member _.GenerateRawFromRaw (context : RawSourceGenerationArgs) =
+            if not (context.FilePath.EndsWith (".fs", StringComparison.Ordinal)) then
+                null
+            else
 
-        member _.Generate (context : GeneratorContext) =
             let targetedTypes =
-                MyriadParamParser.render context.AdditionalParameters
-                |> Map.map (fun _ v -> v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+                context.Parameters
+                |> Seq.map (fun (KeyValue (k, v)) -> k, v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+                |> Map.ofSeq
 
-            let ast, _ =
-                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+            let ast = Ast.parse (System.Text.Encoding.UTF8.GetString context.FileContents)
 
-            let types = Ast.extractTypeDefn ast
+            let types = Ast.getTypes ast
 
             let opens = AstHelper.extractOpens ast
 
@@ -1051,4 +1054,4 @@ type HttpClientGenerator () =
                 namespaceAndTypes
                 |> List.collect (fun (ns, types) -> types |> List.map (HttpClientGenerator.createModule opens ns))
 
-            Output.Ast modules
+            Ast.render modules |> Option.toObj

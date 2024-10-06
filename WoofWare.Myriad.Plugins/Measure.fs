@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
+open WoofWare.Whippet.Fantomas
 open Fantomas.FCS.Syntax
 
 [<RequireQualifiedAccess>]

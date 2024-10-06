@@ -15,12 +15,10 @@
     <WarnOn>FS3559</WarnOn>
     <PackageId>WoofWare.Myriad.Plugins</PackageId>
     <PackageIcon>logo.png</PackageIcon>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="Fantomas.Core" Version="6.1.1" />-->
-    <PackageReference Include="Myriad.Core" Version="0.8.3" />
-    <!-- the lowest version allowed by Myriad.Core -->
     <PackageReference Update="FSharp.Core" Version="6.0.1" PrivateAssets="all"/>
   </ItemGroup>
 
@@ -28,38 +26,10 @@
     <Compile Include="List.fs"/>
     <Compile Include="Text.fs" />
     <Compile Include="Teq.fs" />
-    <Compile Include="Primitives.fs" />
-    <Compile Include="SynExpr\SynAttributes.fs" />
-    <Compile Include="SynExpr\SynConst.fs" />
-    <Compile Include="SynExpr\SynArgInfo.fs" />
-    <Compile Include="SynExpr\SynValInfo.fs" />
-    <Compile Include="SynExpr\PreXmlDoc.fs" />
-    <Compile Include="SynExpr\Ident.fs" />
-    <Compile Include="SynExpr\SynSimplePat.fs" />
-    <Compile Include="SynExpr\SynSimplePats.fs" />
-    <Compile Include="SynExpr\SynIdent.fs" />
-    <Compile Include="SynExpr\SynLongIdent.fs" />
-    <Compile Include="SynExpr\SynExprLetOrUseTrivia.fs" />
-    <Compile Include="SynExpr\SynArgPats.fs" />
-    <Compile Include="SynExpr\SynPat.fs" />
-    <Compile Include="SynExpr\SynBinding.fs" />
-    <Compile Include="SynExpr\SynType.fs" />
-    <Compile Include="SynExpr\SynMatchClause.fs" />
-    <Compile Include="SynExpr\CompExpr.fs" />
-    <Compile Include="SynExpr\SynExpr.fs" />
-    <Compile Include="SynExpr\SynField.fs" />
-    <Compile Include="SynExpr\SynUnionCase.fs" />
-    <Compile Include="SynExpr\SynTypeDefnRepr.fs" />
-    <Compile Include="SynExpr\SynTypeDefn.fs" />
-    <Compile Include="SynExpr\SynComponentInfo.fs" />
-    <Compile Include="SynExpr\SynMemberDefn.fs" />
-    <Compile Include="SynExpr\SynAttribute.fs" />
-    <Compile Include="SynExpr\SynModuleDecl.fs" />
-    <Compile Include="SynExpr\SynModuleOrNamespace.fs" />
     <Compile Include="Measure.fs" />
     <Compile Include="AstHelper.fs" />
+    <Compile Include="Parameters.fs" />
     <Compile Include="RemoveOptionsGenerator.fs"/>
-    <Compile Include="MyriadParamParser.fs" />
     <Compile Include="InterfaceMockGenerator.fs"/>
     <Compile Include="JsonSerializeGenerator.fs"/>
     <Compile Include="JsonParseGenerator.fs"/>
@@ -83,6 +53,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\WoofWare.Whippet\WoofWare.Whippet.Core\WoofWare.Whippet.Core.fsproj" />
+    <ProjectReference Include="..\..\WoofWare.Whippet\WoofWare.Whippet.Fantomas\WoofWare.Whippet.Fantomas.fsproj" />
     <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj"/>
     <!-- NuGet is such a clown package manager! Get the DLLs into the Nupkg artefact, I have no idea why this is needed,
          but without this line, we don't get any dependency at all packaged into the resulting artefact. -->

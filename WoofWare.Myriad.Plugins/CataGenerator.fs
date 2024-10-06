@@ -1,13 +1,15 @@
 namespace WoofWare.Myriad.Plugins
 
+open System
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
+open WoofWare.Whippet.Core
+open WoofWare.Whippet.Fantomas
 
 [<RequireQualifiedAccess>]
 module internal CataGenerator =
     open Fantomas.FCS.Text.Range
-    open Myriad.Core.Ast
 
     /// The user-provided DU contains cases, each of which contains fields.
     /// We have a hard-coded set of things we know how to deal with as field contents.
@@ -174,20 +176,14 @@ module internal CataGenerator =
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "exactlyOne" ])
             |> SynExpr.createLet
                 [
-                    SynBinding.Let (
-                        valData = SynValData.SynValData (None, SynValInfo.empty, None),
-                        pattern =
-                            SynPat.tupleNoParen (
-                                allArtificialTyparNames
-                                |> List.map (fun (t : Ident) ->
-                                    SynPat.namedI (Ident.create (t.idText + "Stack") |> Ident.lowerFirstLetter)
-                                )
-                            ),
-                        expr =
-                            SynExpr.applyFunction
-                                (SynExpr.applyFunction (SynExpr.createIdent "loop") (SynExpr.createIdent "cata"))
-                                (SynExpr.createIdent "instructions")
-                    )
+                    SynBinding.basicTuple
+                        (allArtificialTyparNames
+                         |> List.map (fun t ->
+                             SynPat.namedI (Ident.create (t.idText + "Stack") |> Ident.lowerFirstLetter)
+                         ))
+                        (SynExpr.applyFunction
+                            (SynExpr.applyFunction (SynExpr.createIdent "loop") (SynExpr.createIdent "cata"))
+                            (SynExpr.createIdent "instructions"))
                 ]
         ]
         |> SynExpr.sequential
@@ -1180,20 +1176,19 @@ module internal CataGenerator =
         ]
         |> SynModuleOrNamespace.createNamespace ns
 
-open Myriad.Core
-
 /// Myriad generator that provides a catamorphism for an algebraic data type.
-[<MyriadGenerator("create-catamorphism")>]
+[<WhippetGenerator>]
 type CreateCatamorphismGenerator () =
 
-    interface IMyriadGenerator with
-        member _.ValidInputExtensions = [ ".fs" ]
+    interface IGenerateRawFromRaw with
+        member _.GenerateRawFromRaw (context : RawSourceGenerationArgs) =
+            if not (context.FilePath.EndsWith (".fs", StringComparison.Ordinal)) then
+                null
+            else
 
-        member _.Generate (context : GeneratorContext) =
-            let ast, _ =
-                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+            let ast = Ast.parse (System.Text.Encoding.UTF8.GetString context.FileContents)
 
-            let types = Ast.extractTypeDefn ast
+            let types = Ast.getTypes ast
 
             let opens = AstHelper.extractOpens ast
 
@@ -1237,4 +1232,4 @@ type CreateCatamorphismGenerator () =
                     CataGenerator.createModule opens ns taggedType unions records
                 )
 
-            Output.Ast modules
+            Ast.render modules |> Option.toObj

@@ -3,6 +3,8 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Text
 open Fantomas.FCS.Syntax
+open WoofWare.Whippet.Core
+open WoofWare.Whippet.Fantomas
 open Fantomas.FCS.Text.Range
 
 type internal ArgParserOutputSpec =
@@ -1743,23 +1745,19 @@ module internal ArgParserGenerator =
         ]
         |> SynModuleOrNamespace.createNamespace ns
 
-open Myriad.Core
-
 /// Myriad generator that provides a catamorphism for an algebraic data type.
-[<MyriadGenerator("arg-parser")>]
+[<WhippetGenerator>]
 type ArgParserGenerator () =
 
-    interface IMyriadGenerator with
-        member _.ValidInputExtensions = [ ".fs" ]
+    interface IGenerateRawFromRaw with
+        member _.GenerateRawFromRaw (context : RawSourceGenerationArgs) =
+            if not (context.FilePath.EndsWith (".fs", StringComparison.Ordinal)) then
+                null
+            else
 
-        member _.Generate (context : GeneratorContext) =
-            let ast, _ =
-                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+            let ast = Ast.parse (Encoding.UTF8.GetString context.FileContents)
 
-            let types =
-                Ast.extractTypeDefn ast
-                |> List.groupBy (fst >> List.map _.idText >> String.concat ".")
-                |> List.map (fun (_, v) -> fst (List.head v), List.collect snd v)
+            let types = Ast.getTypes ast
 
             let opens = AstHelper.extractOpens ast
 
@@ -1817,4 +1815,4 @@ type ArgParserGenerator () =
                     ArgParserGenerator.createModule opens ns taggedType unions records
                 )
 
-            Output.Ast modules
+            Ast.render modules |> Option.toObj
