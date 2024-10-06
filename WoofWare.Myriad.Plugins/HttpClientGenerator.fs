@@ -996,7 +996,7 @@ type HttpClientGenerator () =
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
-            let types = Ast.extractTypeDefn ast
+            let types = Ast.getTypes ast
 
             let opens = AstHelper.extractOpens ast
 

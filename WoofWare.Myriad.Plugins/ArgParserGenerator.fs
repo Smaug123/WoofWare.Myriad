@@ -1758,10 +1758,7 @@ type ArgParserGenerator () =
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
-            let types =
-                Ast.extractTypeDefn ast
-                |> List.groupBy (fst >> List.map _.idText >> String.concat ".")
-                |> List.map (fun (_, v) -> fst (List.head v), List.collect snd v)
+            let types = Ast.getTypes ast
 
             let opens = AstHelper.extractOpens ast
 

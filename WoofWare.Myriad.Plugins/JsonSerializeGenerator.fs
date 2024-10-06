@@ -528,13 +528,13 @@ type JsonSerializeGenerator () =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
             let relevantTypes =
-                Ast.extractTypeDefn ast
+                Ast.getTypes ast
                 |> List.map (fun (name, defns) ->
                     defns
                     |> List.choose (fun defn ->
-                        if Ast.isRecord defn then Some defn
-                        elif Ast.isDu defn then Some defn
-                        elif AstHelper.isEnum defn then Some defn
+                        if SynTypeDefn.isRecord defn then Some defn
+                        elif SynTypeDefn.isDu defn then Some defn
+                        elif SynTypeDefn.isEnum defn then Some defn
                         else None
                     )
                     |> fun defns -> name, defns
