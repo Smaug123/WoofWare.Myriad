@@ -3,6 +3,7 @@ namespace WoofWare.Myriad.Plugins
 open System.IO
 open System.Net.Http
 open Fantomas.FCS.Syntax
+open WoofWare.Whippet.Fantomas
 
 type internal HttpClientGeneratorOutputSpec =
     {
@@ -643,7 +644,7 @@ module internal HttpClientGenerator =
                     yield jsonNode
                 | String -> yield responseString
                 | Stream -> yield responseStream
-                | Unit ->
+                | UnitType ->
                     // What we're returning doesn't depend on the content, so don't bother!
                     ()
                 | _ ->

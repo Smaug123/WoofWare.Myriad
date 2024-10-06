@@ -3,6 +3,7 @@ namespace WoofWare.Myriad.Plugins
 open System
 open System.Text
 open Fantomas.FCS.Syntax
+open WoofWare.Whippet.Fantomas
 
 type internal JsonSerializeOutputSpec =
     {
@@ -147,7 +148,7 @@ module internal JsonSerializeGenerator =
             |> SynExpr.createLambda "field"
             |> fun e -> e, false
         | JsonNode -> SynExpr.createIdent "id", true
-        | Unit ->
+        | UnitType ->
             SynExpr.createLambda
                 "value"
                 (SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonObject" ]

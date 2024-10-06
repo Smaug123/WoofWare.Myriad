@@ -3,6 +3,7 @@ namespace WoofWare.Myriad.Plugins
 open System
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Xml
+open WoofWare.Whippet.Fantomas
 
 type internal GenerateMockOutputSpec =
     {
