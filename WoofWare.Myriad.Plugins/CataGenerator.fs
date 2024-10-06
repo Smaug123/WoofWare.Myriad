@@ -1176,6 +1176,29 @@ module internal CataGenerator =
         ]
         |> SynModuleOrNamespace.createNamespace ns
 
+    /// This function comes from Myriad, and is therefore derived from an Apache 2.0-licenced work.
+    /// https://github.com/MoiraeSoftware/myriad/blob/3c9818faabf9d508c10c28d5ecd26e66fafb48a1/src/Myriad.Core/Ast.fs#L160
+    /// A copy of the Apache 2.0 licence is at ApacheLicence.txt.
+    let groupedTypeDefns (ast : ParsedInput) : (LongIdent * SynTypeDefn list) list =
+        let rec extractTypes (moduleDecls : SynModuleDecl list) (ns : LongIdent) =
+            [
+                for moduleDecl in moduleDecls do
+                    match moduleDecl with
+                    | SynModuleDecl.Types (types, _) -> yield (ns, types)
+                    | SynModuleDecl.NestedModule (SynComponentInfo (_, _, _, longId, _, _, _, _), _, decls, _, _, _) ->
+                        let combined = longId |> List.append ns
+                        yield! (extractTypes decls combined)
+                    | _ -> ()
+            ]
+
+        [
+            match ast with
+            | ParsedInput.ImplFile (ParsedImplFileInput (_, _, _, _, _, modules, _, _, _)) ->
+                for SynModuleOrNamespace (namespaceId, _, _, moduleDecls, _, _, _, _, _) in modules do
+                    yield! extractTypes moduleDecls namespaceId
+            | _ -> ()
+        ]
+
 /// Myriad generator that provides a catamorphism for an algebraic data type.
 [<WhippetGenerator>]
 type CreateCatamorphismGenerator () =
@@ -1188,7 +1211,7 @@ type CreateCatamorphismGenerator () =
 
             let ast = Ast.parse (System.Text.Encoding.UTF8.GetString context.FileContents)
 
-            let types = Ast.getTypes ast
+            let types = CataGenerator.groupedTypeDefns ast
 
             let opens = AstHelper.extractOpens ast
 
@@ -1229,7 +1252,6 @@ type CreateCatamorphismGenerator () =
             let modules =
                 namespaceAndTypes
                 |> List.map (fun (ns, taggedType, unions, records) ->
-                    failwithf "%+A" unions
                     CataGenerator.createModule opens ns taggedType unions records
                 )
 

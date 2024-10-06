@@ -19,6 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="TypeEquality" Version="0.3.0" />
     <PackageReference Include="WoofWare.Whippet.Fantomas" Version="0.2.1" />
     <!-- the lowest version allowed by Myriad.Core -->
     <PackageReference Update="FSharp.Core" Version="6.0.1" PrivateAssets="all"/>
@@ -27,7 +28,6 @@
   <ItemGroup>
     <Compile Include="List.fs"/>
     <Compile Include="Text.fs" />
-    <Compile Include="Teq.fs" />
     <Compile Include="Measure.fs" />
     <Compile Include="AstHelper.fs" />
     <Compile Include="Parameters.fs" />
@@ -40,7 +40,7 @@
     <Compile Include="ArgParserGenerator.fs" />
     <Compile Include="Swagger.fs" />
     <Compile Include="SwaggerClientGenerator.fs" />
-    <None Include="TeqLicence.txt" />
+    <None Include="ApacheLicence.txt" />
     <EmbeddedResource Include="version.json"/>
     <EmbeddedResource Include="SurfaceBaseline.txt"/>
     <None Include="..\README.md">
