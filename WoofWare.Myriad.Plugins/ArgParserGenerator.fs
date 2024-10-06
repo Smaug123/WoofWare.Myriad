@@ -4,6 +4,7 @@ open System
 open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
+open WoofWare.Whippet.Fantomas
 
 type internal ArgParserOutputSpec =
     {

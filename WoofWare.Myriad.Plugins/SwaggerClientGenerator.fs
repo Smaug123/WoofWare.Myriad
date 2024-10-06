@@ -6,6 +6,7 @@ open System.Threading
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Xml
 open Fantomas.FCS.Text.Range
+open WoofWare.Whippet.Fantomas
 
 type internal SwaggerClientConfig =
     {
