@@ -1,11 +1,9 @@
 namespace WoofWare.Myriad.Plugins
 
 open System
-open System.Text
 open Fantomas.FCS.Syntax
 open WoofWare.Whippet.Fantomas
 open Fantomas.FCS.Xml
-open WoofWare.Whippet.Fantomas
 
 [<RequireQualifiedAccess>]
 module internal RemoveOptionsGenerator =
@@ -149,7 +147,7 @@ type RemoveOptionsGenerator () =
                 null
             else
 
-            let ast = Ast.parse (Encoding.UTF8.GetString args.FileContents)
+            let ast = Ast.parse (System.Text.Encoding.UTF8.GetString args.FileContents)
 
             let records = Ast.getRecords ast
 
@@ -173,6 +171,10 @@ type RemoveOptionsGenerator () =
                     )
                     |> List.map (fun ty -> ns, ty)
                 )
+
+            let modules =
+                namespaceAndRecords
+                |> List.map (fun (ns, record) -> RemoveOptionsGenerator.createRecordModule ns record)
 
             if namespaceAndRecords.IsEmpty then
                 null
