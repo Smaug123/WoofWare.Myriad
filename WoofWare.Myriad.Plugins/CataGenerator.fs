@@ -3,11 +3,11 @@ namespace WoofWare.Myriad.Plugins
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
 open Fantomas.FCS.Xml
+open WoofWare.Whippet.Fantomas
 
 [<RequireQualifiedAccess>]
 module internal CataGenerator =
     open Fantomas.FCS.Text.Range
-    open Myriad.Core.Ast
 
     /// The user-provided DU contains cases, each of which contains fields.
     /// We have a hard-coded set of things we know how to deal with as field contents.
@@ -174,20 +174,14 @@ module internal CataGenerator =
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "exactlyOne" ])
             |> SynExpr.createLet
                 [
-                    SynBinding.Let (
-                        valData = SynValData.SynValData (None, SynValInfo.empty, None),
-                        pattern =
-                            SynPat.tupleNoParen (
-                                allArtificialTyparNames
-                                |> List.map (fun (t : Ident) ->
-                                    SynPat.namedI (Ident.create (t.idText + "Stack") |> Ident.lowerFirstLetter)
-                                )
-                            ),
-                        expr =
-                            SynExpr.applyFunction
-                                (SynExpr.applyFunction (SynExpr.createIdent "loop") (SynExpr.createIdent "cata"))
-                                (SynExpr.createIdent "instructions")
-                    )
+                    SynBinding.basicTuple
+                        (allArtificialTyparNames
+                         |> List.map (fun (t : Ident) ->
+                             SynPat.namedI (Ident.create (t.idText + "Stack") |> Ident.lowerFirstLetter)
+                         ))
+                        (SynExpr.applyFunction
+                            (SynExpr.applyFunction (SynExpr.createIdent "loop") (SynExpr.createIdent "cata"))
+                            (SynExpr.createIdent "instructions"))
                 ]
         ]
         |> SynExpr.sequential

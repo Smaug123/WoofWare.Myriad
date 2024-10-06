@@ -1,6 +1,7 @@
 namespace WoofWare.Myriad.Plugins
 
 open Fantomas.FCS.Syntax
+open WoofWare.Whippet.Fantomas
 
 [<RequireQualifiedAccess>]
 module internal Measure =
@@ -20,5 +21,4 @@ module internal Measure =
         | l ->
             let l = String.concat "." l
             failwith $"unrecognised type for measure: %s{l}"
-
         |> SynExpr.createLongIdent

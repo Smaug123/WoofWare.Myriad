@@ -2,6 +2,7 @@ namespace WoofWare.Myriad.Plugins
 
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Xml
+open WoofWare.Whippet.Fantomas
 
 [<RequireQualifiedAccess>]
 module internal RemoveOptionsGenerator =

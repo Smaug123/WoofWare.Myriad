@@ -4,6 +4,7 @@ open System
 open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
+open WoofWare.Whippet.Fantomas
 
 type internal JsonParseOutputSpec =
     {
@@ -280,7 +281,7 @@ module internal JsonParseGenerator =
             parseNumberType options propertyName node primType
             |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure primType)
         | JsonNode -> node
-        | Unit -> SynExpr.CreateConst ()
+        | UnitType -> SynExpr.CreateConst ()
         | _ ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =
