@@ -19,7 +19,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Myriad.Core" Version="0.8.3" />
     <PackageReference Include="TypeEquality" Version="0.3.0" />
     <PackageReference Include="WoofWare.Whippet.Fantomas" Version="0.2.1" />
     <!-- the lowest version allowed by Myriad.Core -->
@@ -33,7 +32,6 @@
     <Compile Include="AstHelper.fs" />
     <Compile Include="Parameters.fs" />
     <Compile Include="RemoveOptionsGenerator.fs"/>
-    <Compile Include="MyriadParamParser.fs" />
     <Compile Include="InterfaceMockGenerator.fs"/>
     <Compile Include="JsonSerializeGenerator.fs"/>
     <Compile Include="JsonParseGenerator.fs"/>
@@ -56,6 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\WoofWare.Whippet\WoofWare.Whippet.Core\WoofWare.Whippet.Core.fsproj" />
     <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj"/>
     <!-- NuGet is such a clown package manager! Get the DLLs into the Nupkg artefact, I have no idea why this is needed,
          but without this line, we don't get any dependency at all packaged into the resulting artefact. -->
