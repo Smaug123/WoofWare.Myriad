@@ -15,6 +15,7 @@
     <WarnOn>FS3559</WarnOn>
     <PackageId>WoofWare.Myriad.Plugins</PackageId>
     <PackageIcon>logo.png</PackageIcon>
+    <NoWarn>NU5118</NoWarn>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
@@ -59,7 +60,7 @@
     <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj"/>
     <!-- NuGet is such a clown package manager! Get the DLLs into the Nupkg artefact, I have no idea why this is needed,
          but without this line, we don't get any dependency at all packaged into the resulting artefact. -->
-    <None Include="$(OutputPath)\WoofWare.Myriad.Plugins.Attributes.dll" Pack="true" PackagePath="lib\$(TargetFramework)"/>
+    <None Include="$(OutputPath)\*.dll" Pack="true" PackagePath="lib\$(TargetFramework)"/>
   </ItemGroup>
 
 </Project>
