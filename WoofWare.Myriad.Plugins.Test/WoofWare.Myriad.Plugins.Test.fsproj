@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ApiSurface" Version="4.1.5"/>
+    <PackageReference Include="ApiSurface" Version="4.1.6"/>
     <PackageReference Include="FsCheck" Version="2.16.6"/>
     <PackageReference Include="FsUnit" Version="6.0.1"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
