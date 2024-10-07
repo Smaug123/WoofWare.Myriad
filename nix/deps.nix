@@ -3,8 +3,8 @@
 {fetchNuGet}: [
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.1.5";
-    hash = "sha256-Kbt18XLk1gvZfzGca885HaXZB119APay85KzI546PYM=";
+    version = "4.1.6";
+    hash = "sha256-9AphYmU9vkf5yA4uo1FXICUwlzCj4D3GdSn3RJvCNR0=";
   })
   (fetchNuGet {
     pname = "fantomas";
@@ -193,23 +193,23 @@
   })
   (fetchNuGet {
     pname = "NuGet.Common";
-    version = "6.11.0";
-    hash = "sha256-eb7G07RyZv4AQT6ItRqdBuUf9e9BXcQygsy5RNEXfNE=";
+    version = "6.11.1";
+    hash = "sha256-UyZtDyTuymC+sKSX+ripOI6MmJZn11loVapVs4uzaGo=";
   })
   (fetchNuGet {
     pname = "NuGet.Configuration";
-    version = "6.11.0";
-    hash = "sha256-2SNZkX64SB15glzQx3k+vI7btr8Yqg4CayaaaK1B0AQ=";
+    version = "6.11.1";
+    hash = "sha256-JH2UCpjYg8pkqxQ4j4BrWiTKhGzgfn55NMr32wf6+FQ=";
   })
   (fetchNuGet {
     pname = "NuGet.Frameworks";
-    version = "6.11.0";
-    hash = "sha256-8DC7V2IlCjiMDQ9yWbl7QQHia6OpBrbWh5rL0qa0Opw=";
+    version = "6.11.1";
+    hash = "sha256-p25Oa7wJjwF+2puIhBkZZkKSuk4jGq7xikYSCdfp9Vc=";
   })
   (fetchNuGet {
     pname = "NuGet.Packaging";
-    version = "6.11.0";
-    hash = "sha256-LVLvxcB6SMdayxAsrc5bCuLLt25fqPr6KfYcYoWWIQk=";
+    version = "6.11.1";
+    hash = "sha256-1yY3p5hQwbUgYCyHnBcuGWiiIib1ppPYt2ntxwXSJW0=";
   })
   (fetchNuGet {
     pname = "NuGet.Protocol";
@@ -218,8 +218,8 @@
   })
   (fetchNuGet {
     pname = "NuGet.Versioning";
-    version = "6.11.0";
-    hash = "sha256-03edgWvbqUtbzpBBTIxTwsSRoj1T2muGVL+vTuIHXag=";
+    version = "6.11.1";
+    hash = "sha256-fl8lyChMjV7Sp8keAP7CdXZh7ARN/mU39T3gG74jDWY=";
   })
   (fetchNuGet {
     pname = "NUnit";
