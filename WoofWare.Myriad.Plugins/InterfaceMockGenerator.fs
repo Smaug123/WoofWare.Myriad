@@ -3,6 +3,7 @@ namespace WoofWare.Myriad.Plugins
 open System
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Xml
+open WoofWare.Whippet.Core
 open WoofWare.Whippet.Fantomas
 
 type internal GenerateMockOutputSpec =
@@ -218,7 +219,7 @@ module internal InterfaceMockGenerator =
                 Attributes = []
             }
 
-        let typeDecl = AstHelper.defineRecordType record
+        let typeDecl = RecordType.ToAst record
 
         SynModuleDecl.Types ([ typeDecl ], range0)
 
@@ -273,23 +274,23 @@ module internal InterfaceMockGenerator =
         [ yield! opens |> List.map SynModuleDecl.openAny ; yield typeDecl ]
         |> SynModuleOrNamespace.createNamespace namespaceId
 
-open Myriad.Core
-
 /// Myriad generator that creates a record which implements the given interface,
 /// but with every field mocked out.
-[<MyriadGenerator("interface-mock")>]
+[<WhippetGenerator>]
 type InterfaceMockGenerator () =
 
-    interface IMyriadGenerator with
-        member _.ValidInputExtensions = [ ".fs" ]
+    interface IGenerateRawFromRaw with
+        member _.GenerateRawFromRaw (context : RawSourceGenerationArgs) =
+            if not (context.FilePath.EndsWith (".fs", StringComparison.Ordinal)) then
+                null
+            else
 
-        member _.Generate (context : GeneratorContext) =
             let targetedTypes =
-                MyriadParamParser.render context.AdditionalParameters
-                |> Map.map (fun _ v -> v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+                context.Parameters
+                |> Seq.map (fun (KeyValue (k, v)) -> k, v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+                |> Map.ofSeq
 
-            let ast, _ =
-                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+            let ast = Ast.parse (System.Text.Encoding.UTF8.GetString context.FileContents)
 
             let types = Ast.getTypes ast
 
@@ -349,4 +350,4 @@ type InterfaceMockGenerator () =
                     records |> List.map (InterfaceMockGenerator.createRecord ns opens)
                 )
 
-            Output.Ast modules
+            Ast.render modules |> Option.toObj

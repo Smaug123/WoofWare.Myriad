@@ -1,10 +1,14 @@
 namespace WoofWare.Myriad.Plugins
 
+open System
 open System.Collections.Generic
 open System.IO
+open System.Text
 open System.Threading
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Xml
+open WoofWare.Whippet.Core
+open WoofWare.Whippet.Fantomas
 open Fantomas.FCS.Text.Range
 open WoofWare.Whippet.Fantomas
 
@@ -511,17 +515,17 @@ module internal SwaggerClientGenerator =
         |> SynModuleDecl.createTypes
         |> List.singleton
 
-open Myriad.Core
-
-/// Myriad generator that stamps out an interface and class to access a Swagger-specified API.
-[<MyriadGenerator("swagger-client")>]
+/// Whippet generator that stamps out an interface and class to access a Swagger-specified API.
+[<WhippetGenerator>]
 type SwaggerClientGenerator () =
 
-    interface IMyriadGenerator with
-        member _.ValidInputExtensions = [ ".json" ]
+    interface IGenerateRawFromRaw with
+        member _.GenerateRawFromRaw (context : RawSourceGenerationArgs) =
+            if not (context.FilePath.EndsWith (".json", StringComparison.Ordinal)) then
+                null
+            else
 
-        member _.Generate (context : GeneratorContext) =
-            let contents = File.ReadAllText context.InputFilename |> Swagger.parse
+            let contents = Encoding.UTF8.GetString context.FileContents |> Swagger.parse
 
             let scheme =
                 let preferred = Scheme "https"
@@ -673,16 +677,13 @@ type SwaggerClientGenerator () =
                 |> Seq.toList
 
             let config =
-                let pars = MyriadParamParser.render context.AdditionalParameters
-
                 let pars =
-                    pars
-                    |> Map.toSeq
-                    |> Seq.map (fun (k, v) -> k.ToUpperInvariant (), v)
+                    context.Parameters
+                    |> Seq.map (fun (KeyValue (k, v)) -> k.ToUpperInvariant (), v)
                     |> Map.ofSeq
 
                 if pars.IsEmpty then
-                    failwith "No parameters given. You must supply the <ClassName /> parameter in <MyriadParams />."
+                    failwith "No parameters given. You must supply the <WhippetParamClassName /> parameter."
 
                 let createMock =
                     match Map.tryFind "GENERATEMOCKVISIBILITY" pars with
@@ -697,7 +698,7 @@ type SwaggerClientGenerator () =
 
                 let className =
                     match Map.tryFind "CLASSNAME" pars with
-                    | None -> failwith "You must supply the <ClassName /> parameter in <MyriadParams />."
+                    | None -> failwith "You must supply the <WhippetParamClassName /> parameter."
                     | Some v -> v
 
                 {
@@ -722,4 +723,5 @@ type SwaggerClientGenerator () =
             ]
             |> SynModuleOrNamespace.createNamespace [ Ident.create config.ClassName ]
             |> List.singleton
-            |> Output.Ast
+            |> Ast.render
+            |> Option.toObj
