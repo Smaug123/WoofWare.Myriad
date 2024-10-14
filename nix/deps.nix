@@ -333,7 +333,7 @@
   })
   (fetchNuGet {
     pname = "WoofWare.Whippet.Fantomas";
-    version = "0.2.1";
-    hash = "sha256-38LPop5tQ14oqzi0dSzBp2m53fugIMyWed67xnZmJqk=";
+    version = "0.3.1";
+    hash = "sha256-i5oiqcrxzM90Ocuq5MIu2Ha5lV0aYu5nCvuwmFqp6NA=";
   })
 ]
