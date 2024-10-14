@@ -3,8 +3,8 @@
 {fetchNuGet}: [
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.1.6";
-    hash = "sha256-9AphYmU9vkf5yA4uo1FXICUwlzCj4D3GdSn3RJvCNR0=";
+    version = "4.1.7";
+    hash = "sha256-UZA0KP6yQlTCowmkQ+gPJLpz6gmF1bCdVtmaflhrMNs=";
   })
   (fetchNuGet {
     pname = "fantomas";
@@ -213,8 +213,8 @@
   })
   (fetchNuGet {
     pname = "NuGet.Protocol";
-    version = "6.11.0";
-    hash = "sha256-3vdB/8IiJ2LMHhFXLWOzf0H59Ow/zcoq6W4uCHbihCQ=";
+    version = "6.11.1";
+    hash = "sha256-/zFvBV83Q5oMNu68BjmrHtZMAxf/YkDJV8HSsl5GjsY=";
   })
   (fetchNuGet {
     pname = "NuGet.Versioning";
