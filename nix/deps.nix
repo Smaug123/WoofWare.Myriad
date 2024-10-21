@@ -3,8 +3,8 @@
 {fetchNuGet}: [
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.1.7";
-    hash = "sha256-UZA0KP6yQlTCowmkQ+gPJLpz6gmF1bCdVtmaflhrMNs=";
+    version = "4.1.8";
+    hash = "sha256-iU5v4SW2lNTMYN4uVj++nxbojgDsTCSQsowqGl75wXc=";
   })
   (fetchNuGet {
     pname = "fantomas";
@@ -173,8 +173,8 @@
   })
   (fetchNuGet {
     pname = "Nerdbank.GitVersioning";
-    version = "3.6.143";
-    hash = "sha256-OhOtMzP+2obDIR+npR7SsoXo0KrmcsL+VCE8Z3t5gzQ=";
+    version = "3.6.146";
+    hash = "sha256-6lpjiwxVrwjNUhPQ6C7LzazKdBQlAbmyEQk/qxrmr8Y=";
   })
   (fetchNuGet {
     pname = "NETStandard.Library";
