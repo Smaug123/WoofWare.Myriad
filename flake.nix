@@ -26,7 +26,7 @@
             pname = name;
             version = version;
             hash = hash;
-            installPhase = ''mkdir -p $out/bin && cp -r tools/net6.0/any/* $out/bin'';
+            installPhase = ''mkdir -p $out/bin && cp -r tools/net*/any/* $out/bin'';
           };
           installPhase = let
             dll =
