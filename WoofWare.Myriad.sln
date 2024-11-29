@@ -10,6 +10,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Myriad.Plugins.Att
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Myriad.Plugins.Attributes.Test", "WoofWare.Myriad.Plugins.Attributes\Test\WoofWare.Myriad.Plugins.Attributes.Test.fsproj", "{26DC0C94-85F2-45B4-8FA1-1B27201F7AFB}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WoofWare.Whippet.Core", "..\WoofWare.Whippet\WoofWare.Whippet.Core\WoofWare.Whippet.Core.fsproj", "{0831FDF4-9BCB-4595-8432-E90111AB98A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{26DC0C94-85F2-45B4-8FA1-1B27201F7AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26DC0C94-85F2-45B4-8FA1-1B27201F7AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26DC0C94-85F2-45B4-8FA1-1B27201F7AFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0831FDF4-9BCB-4595-8432-E90111AB98A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0831FDF4-9BCB-4595-8432-E90111AB98A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0831FDF4-9BCB-4595-8432-E90111AB98A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0831FDF4-9BCB-4595-8432-E90111AB98A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
