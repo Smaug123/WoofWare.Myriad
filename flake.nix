@@ -33,13 +33,15 @@
               if isNull dllOverride
               then name
               else dllOverride;
-          in ''
-            runHook preInstall
-            mkdir -p "$out/lib"
-            cp -r ./bin/* "$out/lib"
-            makeWrapper "${dotnet-runtime}/bin/dotnet" "$out/bin/${name}" --add-flags "$out/lib/${dll}.dll" --set DOTNET_ROOT "${dotnet-runtime}"
-            runHook postInstall
-          '';
+          in
+            # fsharp-analyzers requires the .NET SDK at runtime, so we use that instead of dotnet-runtime.
+            ''
+              runHook preInstall
+              mkdir -p "$out/lib"
+              cp -r ./bin/* "$out/lib"
+              makeWrapper "${dotnet-sdk}/bin/dotnet" "$out/bin/${name}" --add-flags "$out/lib/${dll}.dll"
+              runHook postInstall
+            '';
         };
     in {
       packages = {
