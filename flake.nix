@@ -14,8 +14,8 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
       pname = "WoofWare.Myriad.Plugins";
-      dotnet-sdk = pkgs.dotnet-sdk_8;
-      dotnet-runtime = pkgs.dotnetCorePackages.runtime_8_0;
+      dotnet-sdk = pkgs.dotnetCorePackages.sdk_9_0;
+      dotnet-runtime = pkgs.dotnetCorePackages.runtime_9_0;
       version = "0.1";
       dotnetTool = dllOverride: toolName: toolVersion: hash:
         pkgs.stdenvNoCC.mkDerivation rec {
@@ -33,13 +33,15 @@
               if isNull dllOverride
               then name
               else dllOverride;
-          in ''
-            runHook preInstall
-            mkdir -p "$out/lib"
-            cp -r ./bin/* "$out/lib"
-            makeWrapper "${dotnet-runtime}/bin/dotnet" "$out/bin/${name}" --add-flags "$out/lib/${dll}.dll"
-            runHook postInstall
-          '';
+          in
+            # fsharp-analyzers requires the .NET SDK at runtime, so we use that instead of dotnet-runtime.
+            ''
+              runHook preInstall
+              mkdir -p "$out/lib"
+              cp -r ./bin/* "$out/lib"
+              makeWrapper "${dotnet-sdk}/bin/dotnet" "$out/bin/${name}" --set DOTNET_HOST_PATH "${dotnet-sdk}/bin/dotnet" --add-flags "$out/lib/${dll}.dll"
+              runHook postInstall
+            '';
         };
     in {
       packages = {
