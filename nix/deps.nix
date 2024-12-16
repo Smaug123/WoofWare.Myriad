@@ -3,8 +3,8 @@
 {fetchNuGet}: [
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.1.12";
-    hash = "sha256-imrohpb9OqYzH17RBK6esXZx0ySivIM20yOqu24wLTU=";
+    version = "4.1.14";
+    hash = "sha256-Ly7XqGeqseQqu+EcBISzVySZvBQ28rj7JUke1qN7Yw8=";
   })
   (fetchNuGet {
     pname = "fantomas";
@@ -193,8 +193,8 @@
   })
   (fetchNuGet {
     pname = "Nerdbank.GitVersioning";
-    version = "3.6.146";
-    hash = "sha256-6lpjiwxVrwjNUhPQ6C7LzazKdBQlAbmyEQk/qxrmr8Y=";
+    version = "3.7.112";
+    hash = "sha256-vrItlaH5MpBHa4MI1cQgI11NAe4W3XsxR9DizFE7fus=";
   })
   (fetchNuGet {
     pname = "NETStandard.Library";
@@ -248,8 +248,8 @@
   })
   (fetchNuGet {
     pname = "NUnit";
-    version = "4.2.2";
-    hash = "sha256-+0OS67ITalmG9arYCgQF/+YbmPRnB3pIIykew0kvoCc=";
+    version = "4.3.0";
+    hash = "sha256-dL8+6yL7nwgQKZR3wo2hAOUt3d2EFN10GJH1LzY89I8=";
   })
   (fetchNuGet {
     pname = "NUnit3TestAdapter";
