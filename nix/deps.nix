@@ -3,8 +3,8 @@
 {fetchNuGet}: [
   (fetchNuGet {
     pname = "ApiSurface";
-    version = "4.1.14";
-    hash = "sha256-Ly7XqGeqseQqu+EcBISzVySZvBQ28rj7JUke1qN7Yw8=";
+    version = "4.1.15";
+    hash = "sha256-E0J62c/viqvVBvBA5lBPG90BgPCrA6+cS/h4MZjKz+k=";
   })
   (fetchNuGet {
     pname = "fantomas";
@@ -248,8 +248,8 @@
   })
   (fetchNuGet {
     pname = "NUnit";
-    version = "4.3.0";
-    hash = "sha256-dL8+6yL7nwgQKZR3wo2hAOUt3d2EFN10GJH1LzY89I8=";
+    version = "4.3.1";
+    hash = "sha256-7XWgjdgEll4gDLa4p9LpizH+bJzFMIvkQ/olpAXJvCE=";
   })
   (fetchNuGet {
     pname = "NUnit3TestAdapter";
