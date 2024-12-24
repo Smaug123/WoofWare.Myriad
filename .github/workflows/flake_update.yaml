@@ -21,13 +21,13 @@ jobs:
       - name: Update Nix flake
         run: 'nix flake update'
 
-      - name: Build passthru
-        run: 'nix build ".#default.passthru.fetch-deps"'
+      - name: Build fetch-deps
+        run: 'nix build ".#default.fetch-deps"'
 
-      - name: Run passthru
+      - name: Run fetch-deps
         run: |
             set -o pipefail
-            ./result nix/deps.nix
+            ./result nix/deps.json
 
       - name: Format
         run: 'nix develop --command alejandra .'
