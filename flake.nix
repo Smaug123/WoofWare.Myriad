@@ -54,7 +54,7 @@
           projectFile = "./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj";
           testProjectFile = "./WoofWare.Myriad.Plugins.Test/WoofWare.Myriad.Plugins.Test.fsproj";
           disabledTests = ["WoofWare.Myriad.Plugins.Test.TestSurface.CheckVersionAgainstRemote"];
-          nugetDeps = ./nix/deps.nix; # `nix build .#default.passthru.fetch-deps && ./result nix/deps.nix`
+          nugetDeps = ./nix/deps.json; # `nix build .#default.fetch-deps && ./result nix/deps.json`
           doCheck = true;
         };
       };
