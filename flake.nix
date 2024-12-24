@@ -44,9 +44,11 @@
             '';
         };
     in {
-      packages = {
-        fantomas = dotnetTool null "fantomas" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fantomas.version (builtins.head (builtins.filter (elem: elem.pname == "fantomas") ((import ./nix/deps.nix) {fetchNuGet = x: x;}))).hash;
-        fsharp-analyzers = dotnetTool "FSharp.Analyzers.Cli" "fsharp-analyzers" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fsharp-analyzers.version (builtins.head (builtins.filter (elem: elem.pname == "fsharp-analyzers") ((import ./nix/deps.nix) {fetchNuGet = x: x;}))).hash;
+      packages = let
+        deps = builtins.fromJSON (builtins.readFile ./nix/deps.json);
+      in {
+        fantomas = dotnetTool null "fantomas" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fantomas.version (builtins.head (builtins.filter (elem: elem.pname == "fantomas") deps)).hash;
+        fsharp-analyzers = dotnetTool "FSharp.Analyzers.Cli" "fsharp-analyzers" (builtins.fromJSON (builtins.readFile ./.config/dotnet-tools.json)).tools.fsharp-analyzers.version (builtins.head (builtins.filter (elem: elem.pname == "fsharp-analyzers") deps)).hash;
         default = pkgs.buildDotnetModule {
           inherit pname version dotnet-sdk dotnet-runtime;
           name = "WoofWare.Myriad.Plugins";
@@ -54,7 +56,7 @@
           projectFile = "./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj";
           testProjectFile = "./WoofWare.Myriad.Plugins.Test/WoofWare.Myriad.Plugins.Test.fsproj";
           disabledTests = ["WoofWare.Myriad.Plugins.Test.TestSurface.CheckVersionAgainstRemote"];
-          nugetDeps = ./nix/deps.nix; # `nix build .#default.passthru.fetch-deps && ./result nix/deps.nix`
+          nugetDeps = ./nix/deps.json; # `nix build .#default.fetch-deps && ./result nix/deps.json`
           doCheck = true;
         };
       };
