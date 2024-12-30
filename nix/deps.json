@@ -246,8 +246,8 @@
   },
   {
     "pname": "NUnit",
-    "version": "4.3.1",
-    "hash": "sha256-7XWgjdgEll4gDLa4p9LpizH+bJzFMIvkQ/olpAXJvCE="
+    "version": "4.3.2",
+    "hash": "sha256-0RWe8uFoxYp6qhPlDDEghOMcKJgyw2ybvEoAqBLebeE="
   },
   {
     "pname": "NUnit3TestAdapter",
