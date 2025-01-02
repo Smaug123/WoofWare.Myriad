@@ -2,8 +2,8 @@ namespace WoofWare.Myriad.Plugins
 
 open System
 open Fantomas.FCS.Syntax
-open Fantomas.FCS.Xml
 open WoofWare.Whippet.Fantomas
+open Fantomas.FCS.Xml
 
 [<RequireQualifiedAccess>]
 module internal RemoveOptionsGenerator =
@@ -133,19 +133,21 @@ module internal RemoveOptionsGenerator =
         |> List.singleton
         |> SynModuleOrNamespace.createNamespace namespaceId
 
-open Myriad.Core
+open WoofWare.Whippet.Core
 
 /// Myriad generator that stamps out a record with option types stripped
 /// from the fields at the top level.
-[<MyriadGenerator("remove-options")>]
+[<WhippetGenerator>]
 type RemoveOptionsGenerator () =
 
-    interface IMyriadGenerator with
-        member _.ValidInputExtensions = [ ".fs" ]
+    interface IGenerateRawFromRaw with
 
-        member _.Generate (context : GeneratorContext) =
-            let ast, _ =
-                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+        member _.GenerateRawFromRaw (args : RawSourceGenerationArgs) : string =
+            if not (args.FilePath.EndsWith (".fs", StringComparison.OrdinalIgnoreCase)) then
+                null
+            else
+
+            let ast = Ast.parse (System.Text.Encoding.UTF8.GetString args.FileContents)
 
             let records = Ast.getRecords ast
 
@@ -174,4 +176,11 @@ type RemoveOptionsGenerator () =
                 namespaceAndRecords
                 |> List.map (fun (ns, record) -> RemoveOptionsGenerator.createRecordModule ns record)
 
-            Output.Ast modules
+            if namespaceAndRecords.IsEmpty then
+                null
+            else
+
+            namespaceAndRecords
+            |> List.map (fun (ns, ty) -> RemoveOptionsGenerator.createRecordModule ns ty)
+            |> Ast.render
+            |> Option.toObj

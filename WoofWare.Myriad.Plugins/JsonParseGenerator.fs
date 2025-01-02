@@ -4,6 +4,7 @@ open System
 open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.SyntaxTrivia
+open WoofWare.Whippet.Core
 open WoofWare.Whippet.Fantomas
 
 type internal JsonParseOutputSpec =
@@ -692,23 +693,23 @@ module internal JsonParseGenerator =
         |> List.singleton
         |> SynModuleOrNamespace.createNamespace namespaceId
 
-open Myriad.Core
-
-/// Myriad generator that provides a method (possibly an extension method) for a record type,
+/// Whippet generator that provides a method (possibly an extension method) for a record type,
 /// containing a JSON parse function.
-[<MyriadGenerator("json-parse")>]
+[<WhippetGenerator>]
 type JsonParseGenerator () =
 
-    interface IMyriadGenerator with
-        member _.ValidInputExtensions = [ ".fs" ]
+    interface IGenerateRawFromRaw with
+        member _.GenerateRawFromRaw (context : RawSourceGenerationArgs) =
+            if not (context.FilePath.EndsWith (".fs", StringComparison.Ordinal)) then
+                null
+            else
 
-        member _.Generate (context : GeneratorContext) =
             let targetedTypes =
-                MyriadParamParser.render context.AdditionalParameters
-                |> Map.map (fun _ v -> v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+                context.Parameters
+                |> Seq.map (fun (KeyValue (k, v)) -> k, v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+                |> Map.ofSeq
 
-            let ast, _ =
-                Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
+            let ast = Ast.parse (Encoding.UTF8.GetString context.FileContents)
 
             let relevantTypes =
                 Ast.getTypes ast
@@ -778,4 +779,4 @@ type JsonParseGenerator () =
                     types |> List.map (fun (ty, spec) -> JsonParseGenerator.createModule ns spec ty)
                 )
 
-            Output.Ast modules
+            Ast.render modules |> Option.toObj
