@@ -198,27 +198,40 @@ jobs:
         # Verify that there is exactly one nupkg in the artifact that would be NuGet published
         run: if [[ $(find packed-attribute -maxdepth 1 -name 'WoofWare.Myriad.Plugins.Attributes.*.nupkg' -printf c | wc -c) -ne "1" ]]; then exit 1; fi
 
-  github-release-plugin-dry-run:
-    needs: [nuget-pack]
+  github-release-dry-run:
+    strategy:
+      matrix:
+        artifact:
+        - nuget-package-plugin
+        - nuget-package-attribute
     runs-on: ubuntu-latest
+    needs: [nuget-pack]
     steps:
       - uses: actions/checkout@v4
-      - name: Download NuGet artifact (plugin)
+      - name: Download NuGet artifact
         uses: actions/download-artifact@v4
         with:
-          name: nuget-package-plugin
-      - name: Download NuGet artifact (attribute)
-        uses: actions/download-artifact@v4
-        with:
-          name: nuget-package-attribute
-      - name: Tag and release plugin
+          name: ${{ matrix.artifact }}
+      - name: Compute package path
+        id: compute-path
+        run: |
+          find . -maxdepth 1 -type f -name 'WoofWare.Myriad.*.nupkg' -exec sh -c 'echo "output=$(basename "$1")" >> $GITHUB_OUTPUT' shell {} \;
+      - name: Compute tag name
+        id: compute-tag
         env:
-          DRY_RUN: 1
-          GITHUB_TOKEN: mock-token
-        run: sh .github/workflows/tag.sh
+          NUPKG_PATH: ${{ steps.compute-path.outputs.output }}
+        run: echo "output=$(basename "$NUPKG_PATH" .nupkg)" >> $GITHUB_OUTPUT
+      - name: Tag and release
+        uses: G-Research/common-actions/github-release@19d7281a0f9f83e13c78f99a610dbc80fc59ba3b
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          target-commitish: ${{ github.sha }}
+          tag: ${{ steps.compute-tag.outputs.output }}
+          binary-contents: ${{ steps.compute-path.outputs.output }}
+          dry-run: true
 
   all-required-checks-complete:
-    needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack, github-release-plugin-dry-run]
+    needs: [check-dotnet-format, check-nix-format, check-accurate-generations, build, build-nix, linkcheck, flake-check, analyzers, nuget-pack, expected-pack, github-release-dry-run]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
@@ -330,7 +343,12 @@ jobs:
           nupkg-dir: packed/
           dotnet: ${{ steps.dotnet-identify.outputs.dotnet }}
 
-  github-release-plugin:
+  github-release:
+    strategy:
+      matrix:
+        artifact:
+        - nuget-package-attribute
+        - nuget-package-plugin
     runs-on: ubuntu-latest
     if: ${{ !github.event.repository.fork && github.ref == 'refs/heads/main' }}
     needs: [all-required-checks-complete]
@@ -339,15 +357,23 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Download NuGet artifact (plugin)
+      - name: Download NuGet artifact
         uses: actions/download-artifact@v4
         with:
-          name: nuget-package-plugin
-      - name: Download NuGet artifact (attribute)
-        uses: actions/download-artifact@v4
-        with:
-          name: nuget-package-attribute
-      - name: Tag and release plugin
+          name: ${{ matrix.artifact }}
+      - name: Compute package path
+        id: compute-path
+        run: |
+          find . -maxdepth 1 -type f -name 'WoofWare.Myriad.*.nupkg' -exec sh -c 'echo "output=$(basename "$1")" >> $GITHUB_OUTPUT' shell {} \;
+      - name: Compute tag name
+        id: compute-tag
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sh .github/workflows/tag.sh
+          NUPKG_PATH: ${{ steps.compute-path.outputs.output }}
+        run: echo "output=$(basename "$NUPKG_PATH" .nupkg)" >> $GITHUB_OUTPUT
+      - name: Tag and release
+        uses: G-Research/common-actions/github-release@19d7281a0f9f83e13c78f99a610dbc80fc59ba3b
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          target-commitish: ${{ github.sha }}
+          tag: ${{ steps.compute-tag.outputs.output }}
+          binary-contents: ${{ steps.compute-path.outputs.output }}
