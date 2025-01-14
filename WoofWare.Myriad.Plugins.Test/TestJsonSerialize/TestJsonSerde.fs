@@ -3,7 +3,7 @@ namespace WoofWare.Myriad.Plugins.Test
 open System
 open System.Collections.Generic
 open System.Text.Json.Nodes
-open FsCheck.Random
+open FsCheck.FSharp
 open Microsoft.FSharp.Reflection
 open NUnit.Framework
 open FsCheck
@@ -15,21 +15,21 @@ module TestJsonSerde =
 
     let uriGen : Gen<Uri> =
         gen {
-            let! suffix = Arb.generate<int>
+            let! suffix = ArbMap.generate<int> ArbMap.defaults
             return Uri $"https://example.com/%i{suffix}"
         }
 
     let rec innerGen (count : int) : Gen<InnerTypeWithBoth> =
         gen {
-            let! guid = Arb.generate<Guid>
-            let! mapKeys = Gen.listOf Arb.generate<NonNull<string>>
+            let! guid = ArbMap.generate<Guid> ArbMap.defaults
+            let! mapKeys = Gen.listOf (ArbMap.generate<NonNull<string>> ArbMap.defaults)
             let mapKeys = mapKeys |> List.map _.Get |> List.distinct
             let! mapValues = Gen.listOfLength mapKeys.Length uriGen
             let map = List.zip mapKeys mapValues |> Map.ofList
 
             let! concreteDictKeys =
                 if count > 0 then
-                    Gen.listOf Arb.generate<NonNull<string>>
+                    Gen.listOf (ArbMap.generate<NonNull<string>> ArbMap.defaults)
                 else
                     Gen.constant []
 
@@ -50,13 +50,16 @@ module TestJsonSerde =
                 |> List.map KeyValuePair
                 |> Dictionary
 
-            let! readOnlyDictKeys = Gen.listOf Arb.generate<NonNull<string>>
+            let! readOnlyDictKeys = Gen.listOf (ArbMap.generate<NonNull<string>> ArbMap.defaults)
             let readOnlyDictKeys = readOnlyDictKeys |> List.map _.Get |> List.distinct
-            let! readOnlyDictValues = Gen.listOfLength readOnlyDictKeys.Length (Gen.listOf Arb.generate<char>)
+
+            let! readOnlyDictValues =
+                Gen.listOfLength readOnlyDictKeys.Length (Gen.listOf (ArbMap.generate<char> ArbMap.defaults))
+
             let readOnlyDict = List.zip readOnlyDictKeys readOnlyDictValues |> readOnlyDict
 
             let! dictKeys = Gen.listOf uriGen
-            let! dictValues = Gen.listOfLength dictKeys.Length Arb.generate<bool>
+            let! dictValues = Gen.listOfLength dictKeys.Length (ArbMap.generate<bool> ArbMap.defaults)
             let dict = List.zip dictKeys dictValues |> dict
 
             return
@@ -71,28 +74,38 @@ module TestJsonSerde =
 
     let outerGen : Gen<JsonRecordTypeWithBoth> =
         gen {
-            let! a = Arb.generate<int>
-            let! b = Arb.generate<NonNull<string>>
-            let! c = Gen.listOf Arb.generate<int>
+            let! a = ArbMap.generate<int> ArbMap.defaults
+            let! b = ArbMap.generate<NonNull<string>> ArbMap.defaults
+            let! c = Gen.listOf (ArbMap.generate<int> ArbMap.defaults)
             let! depth = Gen.choose (0, 2)
             let! d = innerGen depth
-            let! e = Gen.arrayOf Arb.generate<NonNull<string>>
-            let! arr = Gen.arrayOf Arb.generate<int>
-            let! byte = Arb.generate
-            let! sbyte = Arb.generate
-            let! i = Arb.generate
-            let! i32 = Arb.generate
-            let! i64 = Arb.generate
-            let! u = Arb.generate
-            let! u32 = Arb.generate
-            let! u64 = Arb.generate
-            let! f = Arb.generate |> Gen.filter (fun s -> Double.IsFinite (s / 1.0<measure>))
-            let! f32 = Arb.generate |> Gen.filter (fun s -> Single.IsFinite (s / 1.0f<measure>))
-            let! single = Arb.generate |> Gen.filter (fun s -> Single.IsFinite (s / 1.0f<measure>))
-            let! intMeasureOption = Arb.generate
-            let! intMeasureNullable = Arb.generate
+            let! e = Gen.arrayOf (ArbMap.generate<NonNull<string>> ArbMap.defaults)
+            let! arr = Gen.arrayOf (ArbMap.generate<int> ArbMap.defaults)
+            let! byte = ArbMap.generate ArbMap.defaults
+            let! sbyte = ArbMap.generate ArbMap.defaults
+            let! i = ArbMap.generate ArbMap.defaults
+            let! i32 = ArbMap.generate ArbMap.defaults
+            let! i64 = ArbMap.generate ArbMap.defaults
+            let! u = ArbMap.generate ArbMap.defaults
+            let! u32 = ArbMap.generate ArbMap.defaults
+            let! u64 = ArbMap.generate ArbMap.defaults
+
+            let! f =
+                ArbMap.generate ArbMap.defaults
+                |> Gen.filter (fun s -> Double.IsFinite (s / 1.0<measure>))
+
+            let! f32 =
+                ArbMap.generate ArbMap.defaults
+                |> Gen.filter (fun s -> Single.IsFinite (s / 1.0f<measure>))
+
+            let! single =
+                ArbMap.generate ArbMap.defaults
+                |> Gen.filter (fun s -> Single.IsFinite (s / 1.0f<measure>))
+
+            let! intMeasureOption = ArbMap.generate ArbMap.defaults
+            let! intMeasureNullable = ArbMap.generate ArbMap.defaults
             let! someEnum = Gen.choose (0, 1)
-            let! timestamp = Arb.generate
+            let! timestamp = ArbMap.generate ArbMap.defaults
 
             return
                 {
@@ -270,10 +283,10 @@ module TestJsonSerde =
             match case with
             | 0 -> return FirstDu.EmptyCase
             | 1 ->
-                let! s = Arb.generate<NonNull<string>>
+                let! s = ArbMap.generate<NonNull<string>> ArbMap.defaults
                 return FirstDu.Case1 s.Get
             | 2 ->
-                let! i = Arb.generate<int>
+                let! i = ArbMap.generate<int> ArbMap.defaults
                 let! record = outerGen
                 return FirstDu.Case2 (record, i)
             | _ -> return failwith $"unexpected: %i{case}"
@@ -293,7 +306,6 @@ module TestJsonSerde =
 
     [<Test>]
     let ``DU generator covers all cases`` () =
-        let rand = Random ()
         let cases = FSharpType.GetUnionCases typeof<FirstDu>
         let counts = Array.zeroCreate<int> cases.Length
 
@@ -301,11 +313,13 @@ module TestJsonSerde =
 
         let mutable i = 0
 
-        while i < 10_000 && Array.exists (fun i -> i = 0) counts do
-            let du = Gen.eval 10 (StdGen.StdGen (rand.Next (), rand.Next ())) duGen
+        let property (du : FirstDu) =
             let tag = decompose du
             counts.[tag] <- counts.[tag] + 1
             i <- i + 1
+            true
+
+        Check.One (Config.Quick, Prop.forAll (Arb.fromGen duGen) property)
 
         for i in counts do
             i |> shouldBeGreaterThan 0

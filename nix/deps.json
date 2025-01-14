@@ -1,8 +1,8 @@
 [
   {
     "pname": "ApiSurface",
-    "version": "4.1.15",
-    "hash": "sha256-E0J62c/viqvVBvBA5lBPG90BgPCrA6+cS/h4MZjKz+k="
+    "version": "4.1.16",
+    "hash": "sha256-3F+dY2nZMFukUjIGrvB/h3ZsZYdLJ9jvQKRxX33qk2E="
   },
   {
     "pname": "fantomas",
@@ -21,18 +21,13 @@
   },
   {
     "pname": "FsCheck",
-    "version": "2.16.6",
-    "hash": "sha256-1hR2SaJTkqBzU3D955MvLNVzkQHkx0Z/QzOXZfzk2Zw="
+    "version": "3.0.0",
+    "hash": "sha256-/5FqiNeTVFairRtInS0cjQ3uGlqVfVJG2FsKIo8mdZ4="
   },
   {
     "pname": "fsharp-analyzers",
     "version": "0.28.0",
     "hash": "sha256-BqGk9MzHHA3oRPNfWuANcM1YELsdhzWI+kLF4mUDUx8="
-  },
-  {
-    "pname": "FSharp.Core",
-    "version": "4.2.3",
-    "hash": "sha256-yMGMrMUY+4Lwnh9JIbD2/3FBGIFcSK7leGURWaSQsLQ="
   },
   {
     "pname": "FSharp.Core",
@@ -191,8 +186,8 @@
   },
   {
     "pname": "Nerdbank.GitVersioning",
-    "version": "3.7.112",
-    "hash": "sha256-vrItlaH5MpBHa4MI1cQgI11NAe4W3XsxR9DizFE7fus="
+    "version": "3.7.115",
+    "hash": "sha256-sqn+i7vvBgBUtm7j82mH+SpApgI2hsmL5DYfLm1Z7gw="
   },
   {
     "pname": "NETStandard.Library",
