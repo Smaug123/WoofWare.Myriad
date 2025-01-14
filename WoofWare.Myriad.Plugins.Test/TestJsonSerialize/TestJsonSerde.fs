@@ -319,7 +319,7 @@ module TestJsonSerde =
             i <- i + 1
             true
 
-        Check.One (Config.Quick, property)
+        Check.One (Config.Quick, Prop.forAll (Arb.fromGen duGen) property)
 
         for i in counts do
             i |> shouldBeGreaterThan 0
