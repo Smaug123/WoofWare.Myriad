@@ -160,8 +160,7 @@ module PureGymApi =
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
                             System.Uri (
-                                "v1/gyms/{gym}"
-                                    .Replace ("{gym}", gym.ToString () |> System.Uri.EscapeDataString),
+                                "v1/gyms/{gym}".Replace ("{gym}", gym.ToString () |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
