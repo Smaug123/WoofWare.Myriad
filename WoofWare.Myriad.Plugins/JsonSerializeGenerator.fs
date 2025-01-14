@@ -180,8 +180,7 @@ module internal JsonSerializeGenerator =
         let propertyNameAttr =
             attrs
             |> List.tryFind (fun attr ->
-                (SynLongIdent.toString attr.TypeName)
-                    .EndsWith ("JsonPropertyName", StringComparison.Ordinal)
+                (SynLongIdent.toString attr.TypeName).EndsWith ("JsonPropertyName", StringComparison.Ordinal)
             )
 
         match propertyNameAttr with
@@ -198,8 +197,7 @@ module internal JsonSerializeGenerator =
     let getIsJsonExtension (attrs : SynAttribute list) : bool =
         attrs
         |> List.tryFind (fun attr ->
-            (SynLongIdent.toString attr.TypeName)
-                .EndsWith ("JsonExtensionData", StringComparison.Ordinal)
+            (SynLongIdent.toString attr.TypeName).EndsWith ("JsonExtensionData", StringComparison.Ordinal)
         )
         |> Option.isSome
 
