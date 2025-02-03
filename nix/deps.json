@@ -21,8 +21,8 @@
   },
   {
     "pname": "FsCheck",
-    "version": "3.0.1",
-    "hash": "sha256-r/2wF9h74QTBr08iObWoiuF0HUG77tm/1FPG154KJ+M="
+    "version": "3.1.0",
+    "hash": "sha256-u0Ha94EjClJ8evNSHu8d6+Dx9qYM3kV3sl1PEq9gF8s="
   },
   {
     "pname": "fsharp-analyzers",
