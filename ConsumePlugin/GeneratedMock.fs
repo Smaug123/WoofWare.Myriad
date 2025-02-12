@@ -216,6 +216,8 @@ type internal TypeWithPropertiesMock =
     {
         /// Implementation of IDisposable.Dispose
         Dispose : unit -> unit
+        Prop1 : unit -> int
+        Prop2 : unit -> unit Async
         Mem1 : string option -> string[] Async
     }
 
@@ -223,11 +225,15 @@ type internal TypeWithPropertiesMock =
     static member Empty : TypeWithPropertiesMock =
         {
             Dispose = (fun () -> ())
+            Prop1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Prop1"))
+            Prop2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Prop2"))
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
         }
 
     interface TypeWithProperties with
         member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+        member this.Prop1 = this.Prop1 ()
+        member this.Prop2 = this.Prop2 ()
 
     interface System.IDisposable with
         member this.Dispose () : unit = this.Dispose ()
