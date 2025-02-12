@@ -34,3 +34,16 @@ module TestMockGenerator =
         mock.Mem1 3 'a' |> shouldEqual "aaa"
         mock.Mem2 (3, "hi") 'a' |> shouldEqual "hiahiahi"
         mock.Mem3 (3, "hi") 'a' |> shouldEqual "hiahiahi"
+
+    [<Test>]
+    let ``Example of use: properties`` () =
+        let mock : TypeWithProperties =
+            { TypeWithPropertiesMock.Empty with
+                Mem1 = fun i -> async { return Option.toArray i }
+                Prop1 = fun () -> 44
+            }
+            :> _
+
+        mock.Mem1 (Some "hi") |> Async.RunSynchronously |> shouldEqual [| "hi" |]
+
+        mock.Prop1 |> shouldEqual 44
