@@ -206,3 +206,28 @@ type internal TypeWithInterfaceMock =
 
     interface System.IDisposable with
         member this.Dispose () : unit = this.Dispose ()
+namespace SomeNamespace
+
+open System
+open WoofWare.Myriad.Plugins
+
+/// Mock record type for an interface
+type internal TypeWithPropertiesMock =
+    {
+        /// Implementation of IDisposable.Dispose
+        Dispose : unit -> unit
+        Mem1 : string option -> string[] Async
+    }
+
+    /// An implementation where every method throws.
+    static member Empty : TypeWithPropertiesMock =
+        {
+            Dispose = (fun () -> ())
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+        }
+
+    interface TypeWithProperties with
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+
+    interface System.IDisposable with
+        member this.Dispose () : unit = this.Dispose ()

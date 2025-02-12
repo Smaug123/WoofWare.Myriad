@@ -48,3 +48,10 @@ type TypeWithInterface =
     inherit IDisposable
     abstract Mem1 : string option -> string[] Async
     abstract Mem2 : unit -> string[] Async
+
+[<GenerateMock>]
+type TypeWithProperties =
+    inherit IDisposable
+    abstract Mem1 : string option -> string[] Async
+    abstract Prop1 : int
+    abstract Prop2 : unit Async
