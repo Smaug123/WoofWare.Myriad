@@ -5,11 +5,6 @@
     "hash": "sha256-3F+dY2nZMFukUjIGrvB/h3ZsZYdLJ9jvQKRxX33qk2E="
   },
   {
-    "pname": "fantomas",
-    "version": "7.0.0",
-    "hash": "sha256-v4bXmvjZOYxl5RSIHuqVfDzBQdRz5SrmzZtD6SeEYTY="
-  },
-  {
     "pname": "Fantomas.Core",
     "version": "6.1.1",
     "hash": "sha256-FcTLHQFvKkQY/kV08jhhy/St/+FmXpp3epp/R3zUXMA="
@@ -25,24 +20,9 @@
     "hash": "sha256-u0Ha94EjClJ8evNSHu8d6+Dx9qYM3kV3sl1PEq9gF8s="
   },
   {
-    "pname": "fsharp-analyzers",
-    "version": "0.29.0",
-    "hash": "sha256-e4G7/5DwwSZYvVE9yy+g8n1easPLC6/fDszioIsT7Dw="
-  },
-  {
     "pname": "FSharp.Core",
     "version": "4.3.4",
     "hash": "sha256-styyo+6mJy+yxE0NZG/b1hxkAjPOnJfMgd9zWzCJ5uk="
-  },
-  {
-    "pname": "FSharp.Core",
-    "version": "4.5.0",
-    "hash": "sha256-7+B+8rsm/dMKvNBty8z5qB+kOxMwUzExy0F04xM88sk="
-  },
-  {
-    "pname": "FSharp.Core",
-    "version": "5.0.2",
-    "hash": "sha256-YOoosLEiszPsOOaNAkWhFGU04JJKDOFVoA/ggrZMN10="
   },
   {
     "pname": "FSharp.Core",
@@ -51,8 +31,8 @@
   },
   {
     "pname": "FSharp.Core",
-    "version": "9.0.101",
-    "hash": "sha256-bR4PHanvKrzD43qFQxmOmmhhpz+ZmKZMPlgGnlRNcp4="
+    "version": "9.0.201",
+    "hash": "sha256-38Y0QFg/knogSJtxDVpVXKo5n4zAo8zaffeT6tbhahk="
   },
   {
     "pname": "FsUnit",
@@ -268,11 +248,6 @@
     "pname": "NuGet.Versioning",
     "version": "6.12.1",
     "hash": "sha256-f/ejCuzCAwKs4N4Ec6yf2RovrhBT0nj0hRDP+03/Iy4="
-  },
-  {
-    "pname": "NUnit",
-    "version": "4.0.1",
-    "hash": "sha256-jd1CD5nHVXkpvBNpVDJcJyfTggCHLyDBySVSvtrA8Uk="
   },
   {
     "pname": "NUnit",
