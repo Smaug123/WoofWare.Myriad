@@ -8,8 +8,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>embedded</DebugType>
     <WarnOn>FS3388,FS3559</WarnOn>
-    <!-- https://github.com/dotnet/Nerdbank.GitVersioning/issues/1173 -->
-    <NoWarn>FS0203</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.7.115" PrivateAssets="all"/>
