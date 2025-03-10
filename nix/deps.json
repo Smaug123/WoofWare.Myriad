@@ -26,8 +26,8 @@
   },
   {
     "pname": "fsharp-analyzers",
-    "version": "0.29.0",
-    "hash": "sha256-e4G7/5DwwSZYvVE9yy+g8n1easPLC6/fDszioIsT7Dw="
+    "version": "0.29.1",
+    "hash": "sha256-wfZbODwGDcPINaMy/uOLPN9aztDfJg5JXy0t+bGyy1k="
   },
   {
     "pname": "FSharp.Core",
