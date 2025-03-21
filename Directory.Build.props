@@ -10,7 +10,7 @@
     <WarnOn>FS3388,FS3559</WarnOn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.7.115" PrivateAssets="all"/>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.8.38-alpha" PrivateAssets="all"/>
     <SourceLinkGitHubHost Include="github.com" ContentUrl="https://raw.githubusercontent.com"/>
   </ItemGroup>
   <PropertyGroup Condition="'$(GITHUB_ACTION)' != ''">
