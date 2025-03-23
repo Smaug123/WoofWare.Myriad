@@ -36,23 +36,13 @@
   },
   {
     "pname": "FSharp.Core",
-    "version": "4.5.0",
-    "hash": "sha256-7+B+8rsm/dMKvNBty8z5qB+kOxMwUzExy0F04xM88sk="
-  },
-  {
-    "pname": "FSharp.Core",
-    "version": "5.0.2",
-    "hash": "sha256-YOoosLEiszPsOOaNAkWhFGU04JJKDOFVoA/ggrZMN10="
-  },
-  {
-    "pname": "FSharp.Core",
     "version": "6.0.1",
     "hash": "sha256-Ehsgt3nCJijpaVuJguC1TPVEKSkJd6PSc07D2ZQSemI="
   },
   {
     "pname": "FSharp.Core",
-    "version": "9.0.101",
-    "hash": "sha256-bR4PHanvKrzD43qFQxmOmmhhpz+ZmKZMPlgGnlRNcp4="
+    "version": "9.0.201",
+    "hash": "sha256-38Y0QFg/knogSJtxDVpVXKo5n4zAo8zaffeT6tbhahk="
   },
   {
     "pname": "FsUnit",
@@ -268,11 +258,6 @@
     "pname": "NuGet.Versioning",
     "version": "6.13.1",
     "hash": "sha256-NymrrcVZUoc78elPHYIoBFG2NpdIEZYEeqk6FTdvZug="
-  },
-  {
-    "pname": "NUnit",
-    "version": "4.0.1",
-    "hash": "sha256-jd1CD5nHVXkpvBNpVDJcJyfTggCHLyDBySVSvtrA8Uk="
   },
   {
     "pname": "NUnit",
