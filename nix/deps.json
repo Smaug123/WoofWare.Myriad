@@ -1,8 +1,8 @@
 [
   {
     "pname": "ApiSurface",
-    "version": "4.1.17",
-    "hash": "sha256-ZYIW++7vXYV/7TTNUkV36QDN6yJbHymsKcxTUscTnvA="
+    "version": "4.1.20",
+    "hash": "sha256-koWgO9FC9ax+Ij56ug8kxeyknl0yhLqnNLOUdxtqqo4="
   },
   {
     "pname": "fantomas",
@@ -231,33 +231,33 @@
   },
   {
     "pname": "NuGet.Common",
-    "version": "6.13.1",
-    "hash": "sha256-uDSZzCzMETKJE2pYAh9n110YrLPVs83+cxcyNCv9V/o="
+    "version": "6.13.2",
+    "hash": "sha256-ASLa/Jigg5Eop0ZrXPl98RW2rxnJRC7pbbxhuV74hFw="
   },
   {
     "pname": "NuGet.Configuration",
-    "version": "6.13.1",
-    "hash": "sha256-fjit3Qhqu+egLgxvJRD6zQ6U2H+OxsLoy7HYcbXJgBY="
+    "version": "6.13.2",
+    "hash": "sha256-z8VW1YdRDanyyRTDYRvRkSv/XPR3c/hMM1y8cNNjx0Y="
   },
   {
     "pname": "NuGet.Frameworks",
-    "version": "6.13.1",
-    "hash": "sha256-upL6cboghOYed6acdlVljMa9nCSExYoBgQlD5QcJ+ek="
+    "version": "6.13.2",
+    "hash": "sha256-caDyc+WgYOo43AUTjtbP0MyvYDb6JweEKDdIul61Cac="
   },
   {
     "pname": "NuGet.Packaging",
-    "version": "6.13.1",
-    "hash": "sha256-khq+grMovEsO95wAhCHmauL60LB83NkWnDY5zcImXT4="
+    "version": "6.13.2",
+    "hash": "sha256-lhO+SFwIYZ4aPHxIGm5ubkkE2a5Ve2xgtroRbNh7hpw="
   },
   {
     "pname": "NuGet.Protocol",
-    "version": "6.13.1",
-    "hash": "sha256-0zqowx5iNMMzTSF0HO2Zzc1qqyCB/nEhNHFH8Z0jxzc="
+    "version": "6.13.2",
+    "hash": "sha256-5lnAHHZjy7A4vgv65AeBAs64mSNpuoUjxW3HnrMpuzY="
   },
   {
     "pname": "NuGet.Versioning",
-    "version": "6.13.1",
-    "hash": "sha256-NymrrcVZUoc78elPHYIoBFG2NpdIEZYEeqk6FTdvZug="
+    "version": "6.13.2",
+    "hash": "sha256-gmpyBpKnt+GHqgx/2uFKp+J2csbxEAy1E7WdVT117sw="
   },
   {
     "pname": "NUnit",
@@ -381,7 +381,7 @@
   },
   {
     "pname": "WoofWare.Whippet.Fantomas",
-    "version": "0.3.1",
-    "hash": "sha256-i5oiqcrxzM90Ocuq5MIu2Ha5lV0aYu5nCvuwmFqp6NA="
+    "version": "0.3.2",
+    "hash": "sha256-dhzp/ASz1dlROJAfLYRKOCRlmjLBoS00KYeWEkSVtMA="
   }
 ]
