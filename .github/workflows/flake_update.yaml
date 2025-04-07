@@ -34,7 +34,7 @@ jobs:
 
       - name: Create token
         id: generate-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2
         with:
           # https://github.com/actions/create-github-app-token/issues/136
           app-id: ${{ secrets.APP_ID }}
