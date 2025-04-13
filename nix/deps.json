@@ -41,8 +41,8 @@
   },
   {
     "pname": "FSharp.Core",
-    "version": "9.0.201",
-    "hash": "sha256-38Y0QFg/knogSJtxDVpVXKo5n4zAo8zaffeT6tbhahk="
+    "version": "9.0.202",
+    "hash": "sha256-64Gub0qemmCoMa1tDus6TeTuB1+5sHfE6KD2j4o84mA="
   },
   {
     "pname": "FsUnit",
