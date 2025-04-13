@@ -96,6 +96,244 @@ module internal ShibaGenerator =
             | Union unionType -> unionType.Name
             | Record recordType -> recordType.Name
 
+    let private identifyAsFlag (flagDus : FlagDu list) (ty : SynType) : FlagDu option =
+        match ty with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
+            flagDus
+            |> List.tryPick (fun du ->
+                let duName = du.Name.idText
+                let ident = List.last(ident).idText
+                if duName = ident then Some du else None
+            )
+        | _ -> None
+
+    type private ParseFunctionSpec<'choice> =
+        /// A leaf node, e.g. `--foo=3`. Call the `parseFn` to turn the input `"3"` into the `typeAfterParse` (here, `int`).
+        /// `Accumulation` represents essentially how many times this leaf is expected to be called.
+        | Leaf of parseFn : SynExpr * acc : Accumulation<'choice> * typeAfterParse : SynType
+        /// An opaque node we didn't recognise: e.g. `Foo : SomeType`.
+        /// We're probably going to stamp out an "in-progress" type for this node.
+        /// (Either that, or it's just a type we don't recognise, and then compilation will fail.)
+        | UserDefined
+        /// An optional opaque node we didn't recognise: e.g. `Foo : SomeType option`.
+        /// We're probably going to stamp out an "in-progress" type for this node.
+        /// (Either that, or it's just a type we don't recognise, and then compilation will fail.)
+        | OptionOfUserDefined
+
+    /// Builds a function or lambda of one string argument, which returns a `ty` (as modified by the `Accumulation`;
+    /// for example, maybe it returns a `ty option` or a `ty list`).
+    /// The resulting SynType, if you get one, is the type of the *element* being parsed; so if the Accumulation is List, the SynType
+    /// is the list element.
+    let rec private createParseFunction<'choice>
+        (choice : ArgumentDefaultSpec option -> 'choice)
+        (flagDus : FlagDu list)
+        (fieldName : Ident)
+        (attrs : SynAttribute list)
+        (ty : SynType)
+        : ParseFunctionSpec<'choice>
+        =
+        match ty with
+        | String ->
+            ParseFunctionSpec.Leaf (
+                SynExpr.createLambda "x" (SynExpr.createIdent "x"),
+                Accumulation.Required,
+                SynType.string
+            )
+        | PrimitiveType pt ->
+            ParseFunctionSpec.Leaf (
+                SynExpr.createLambda
+                    "x"
+                    (SynExpr.applyFunction
+                        (SynExpr.createLongIdent' (pt @ [ Ident.create "Parse" ]))
+                        (SynExpr.createIdent "x")),
+                Accumulation.Required,
+                ty
+            )
+        | Uri ->
+            ParseFunctionSpec.Leaf (
+                SynExpr.createLambda
+                    "x"
+                    (SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Uri" ]) (SynExpr.createIdent "x")),
+                Accumulation.Required,
+                ty
+            )
+        | TimeSpan ->
+            let parseExact =
+                attrs
+                |> List.tryPick (fun attr ->
+                    match attr.TypeName with
+                    | SynLongIdent.SynLongIdent (idents, _, _) ->
+                        match idents |> List.map (fun i -> i.idText) |> List.tryLast with
+                        | Some "ParseExactAttribute"
+                        | Some "ParseExact" -> Some attr.ArgExpr
+                        | _ -> None
+                )
+
+            let culture =
+                attrs
+                |> List.tryPick (fun attr ->
+                    match attr.TypeName with
+                    | SynLongIdent.SynLongIdent (idents, _, _) ->
+                        match idents |> List.map (fun i -> i.idText) |> List.tryLast with
+                        | Some "InvariantCultureAttribute"
+                        | Some "InvariantCulture" -> Some ()
+                        | _ -> None
+                )
+
+            let parser =
+                match parseExact, culture with
+                | None, None ->
+                    SynExpr.createIdent "x"
+                    |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "TimeSpan" ; "Parse" ])
+                | Some format, None ->
+                    [
+                        SynExpr.createIdent "x"
+                        format
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "CurrentCulture" ]
+                    ]
+                    |> SynExpr.tuple
+                    |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "TimeSpan" ; "ParseExact" ])
+                | None, Some () ->
+                    [
+                        SynExpr.createIdent "x"
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture" ]
+                    ]
+                    |> SynExpr.tuple
+                    |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "TimeSpan" ; "Parse" ])
+                | Some format, Some () ->
+                    [
+                        SynExpr.createIdent "x"
+                        format
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture" ]
+                    ]
+                    |> SynExpr.tuple
+                    |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "TimeSpan" ; "ParseExact" ])
+                |> SynExpr.createLambda "x"
+
+            ParseFunctionSpec.Leaf (parser, Accumulation.Required, ty)
+        | FileInfo ->
+            ParseFunctionSpec.Leaf (
+                SynExpr.createLambda
+                    "x"
+                    (SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "System" ; "IO" ; "FileInfo" ])
+                        (SynExpr.createIdent "x")),
+                Accumulation.Required,
+                ty
+            )
+        | DirectoryInfo ->
+            ParseFunctionSpec.Leaf (
+                SynExpr.createLambda
+                    "x"
+                    (SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "System" ; "IO" ; "DirectoryInfo" ])
+                        (SynExpr.createIdent "x")),
+                Accumulation.Required,
+                ty
+            )
+        | OptionType eltTy ->
+            match createParseFunction choice flagDus fieldName attrs eltTy with
+            | ParseFunctionSpec.Leaf (parseElt, acc, childTy) ->
+                match acc with
+                | Accumulation.Optional ->
+                    failwith
+                        $"ArgParser does not support optionals containing options at field %s{fieldName.idText}: %O{ty}"
+                | Accumulation.Choice _ ->
+                    failwith
+                        $"ArgParser does not support optionals containing choices at field %s{fieldName.idText}: %O{ty}"
+                | Accumulation.List _ ->
+                    failwith $"ArgParser does not support optional lists at field %s{fieldName.idText}: %O{ty}"
+                | Accumulation.Required -> ParseFunctionSpec.Leaf (parseElt, Accumulation.Optional, childTy)
+            | ParseFunctionSpec.UserDefined -> ParseFunctionSpec.OptionOfUserDefined
+            | ParseFunctionSpec.OptionOfUserDefined ->
+                failwith $"ArgParser does not support lists of options at field %s{fieldName.idText}"
+        | ChoiceType elts ->
+            match elts with
+            | [ elt1 ; elt2 ] ->
+                if not (SynType.provablyEqual elt1 elt2) then
+                    failwith
+                        $"ArgParser was unable to prove types %O{elt1} and %O{elt2} to be equal in a Choice. We require them to be equal."
+
+                match createParseFunction choice flagDus fieldName attrs elt1 with
+                | ParseFunctionSpec.Leaf (parseElt, acc, childTy) ->
+                    match acc with
+                    | Accumulation.Optional ->
+                        failwith
+                            $"ArgParser does not support choices containing options at field %s{fieldName.idText}: %O{ty}"
+                    | Accumulation.List _ ->
+                        failwith
+                            $"ArgParser does not support choices containing lists at field %s{fieldName.idText}: %O{ty}"
+                    | Accumulation.Choice _ ->
+                        failwith
+                            $"ArgParser does not support choices containing choices at field %s{fieldName.idText}: %O{ty}"
+                    | Accumulation.Required ->
+
+                    let relevantAttrs =
+                        attrs
+                        |> List.choose (fun attr ->
+                            let (SynLongIdent.SynLongIdent (name, _, _)) = attr.TypeName
+
+                            match name |> List.map _.idText with
+                            | [ "ArgumentDefaultFunction" ]
+                            | [ "ArgumentDefaultFunctionAttribute" ]
+                            | [ "Plugins" ; "ArgumentDefaultFunction" ]
+                            | [ "Plugins" ; "ArgumentDefaultFunctionAttribute" ]
+                            | [ "Myriad" ; "Plugins" ; "ArgumentDefaultFunction" ]
+                            | [ "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ]
+                            | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunction" ]
+                            | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ] ->
+                                ArgumentDefaultSpec.FunctionCall (Ident.create ("Default" + fieldName.idText))
+                                |> Some
+                            | [ "ArgumentDefaultEnvironmentVariable" ]
+                            | [ "ArgumentDefaultEnvironmentVariableAttribute" ]
+                            | [ "Plugins" ; "ArgumentDefaultEnvironmentVariable" ]
+                            | [ "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ]
+                            | [ "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariable" ]
+                            | [ "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ]
+                            | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariable" ]
+                            | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ] ->
+
+                                ArgumentDefaultSpec.EnvironmentVariable attr.ArgExpr |> Some
+                            | _ -> None
+                        )
+
+                    let relevantAttr =
+                        match relevantAttrs with
+                        | [] -> None
+                        | [ x ] -> Some x
+                        | _ ->
+                            failwith
+                                $"Expected Choice to be annotated with at most one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: %s{fieldName.idText}"
+
+                    ParseFunctionSpec.Leaf (parseElt, Accumulation.Choice (choice relevantAttr), childTy)
+                | _ ->
+                    failwith
+                        $"Choices are only allowed to contain leaves; at %s{fieldName.idText}, got type %s{SynType.toHumanReadableString elt1}"
+            | elts ->
+                let elts = elts |> List.map string<SynType> |> String.concat ", "
+
+                failwith
+                    $"ArgParser requires Choice to be of the form Choice<'a, 'a>; that is, two arguments, both the same. For field %s{fieldName.idText}, got: %s{elts}"
+        | ListType eltTy ->
+            match createParseFunction choice flagDus fieldName attrs eltTy with
+            | ParseFunctionSpec.Leaf (parseElt, acc, childTy) ->
+                ParseFunctionSpec.Leaf (parseElt, Accumulation.List acc, childTy)
+            | _ ->
+                failwith
+                    $"Lists are only allowed to contain leaves; at %s{fieldName.idText}, got type %s{SynType.toHumanReadableString eltTy}"
+        | ty ->
+            match identifyAsFlag flagDus ty with
+            | None -> ParseFunctionSpec.UserDefined
+            | Some flagDu ->
+                // Parse as a bool, and then do the `if-then` dance.
+                let parser =
+                    SynExpr.createIdent "x"
+                    |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Boolean" ; "Parse" ])
+                    |> FlagDu.FromBoolean flagDu
+                    |> SynExpr.createLambda "x"
+
+                ParseFunctionSpec.Leaf (parser, Accumulation.Required, ty)
+
     /// Some types don't have in-progress equivalents (e.g. a no-data DU, which is "basically primitive");
     /// hence the `option`.
     let createInProgressRecognisedType
@@ -104,6 +342,7 @@ module internal ShibaGenerator =
         (ty : RecognisedType)
         : RecordType option
         =
+        /// Get the "in-progress type" corresponding to the type with this name.
         let getInProgressTypeName (ty : LongIdent) : SynType =
             // TODO: this is super jank
             let ident = List.last ty
@@ -198,7 +437,9 @@ module internal ShibaGenerator =
                         [
                             SynPat.annotateType (SynType.list SynType.string) (SynPat.named "positionals")
                         ]
-                    |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ union.Name ])
+                    |> SynBinding.withReturnAnnotation (
+                        SynType.app "Result" [ SynType.createLongIdent [ union.Name ] ; SynType.list SynType.string ]
+                    )
                     |> SynMemberDefn.memberImplementation
                     |> List.singleton
                     |> Some
@@ -260,13 +501,151 @@ module internal ShibaGenerator =
                         else
                             l
                 Members =
-                    SynExpr.CreateConst "TODO: now construct the object"
+                    // for each field `FieldName` in order, we've made a variable `arg%i`
+                    // which has done the optionality check
+                    let instantiation =
+                        record.Fields
+                        |> List.mapi (fun i (SynField.SynField (idOpt = ident)) ->
+                            match ident with
+                            | None ->
+                                failwith
+                                    $"expected field in record %s{record.Name.idText} to have a name, but it did not"
+                            | Some ident -> SynLongIdent.create [ ident ], SynExpr.createIdent $"arg%i{i}"
+                        )
+                        |> AstHelper.instantiateRecord
+                        |> SynExpr.applyFunction (SynExpr.createIdent "Ok")
+
+                    let defaultOf =
+                        SynExpr.typeApp [ SynType.anon ] (SynExpr.createLongIdent [ "Unchecked" ; "defaultof" ])
+
+                    let assignVariables =
+                        record.Fields
+                        |> List.mapi (fun i f -> (i, f))
+                        |> List.collect (fun
+                                             (i, SynField.SynField (attributes = attrs ; fieldType = ty ; idOpt = ident)) ->
+                            match ident with
+                            | None ->
+                                failwith
+                                    $"expected field in record %s{record.Name.idText} to have a name, but it did not"
+                            | Some ident ->
+                            // TODO: jank conditional
+                            if
+                                attrs
+                                |> SynAttributes.toAttrs
+                                |> List.exists (fun x ->
+                                    List.last(x.TypeName.LongIdent).idText.StartsWith "PositionalArgs"
+                                )
+                            then
+                                // Positional args carried in from external argument
+                                [
+                                    SynBinding.basic
+                                        [ Ident.create $"arg%i{i}" ]
+                                        []
+                                        (SynExpr.createIdent "positionals")
+                                    |> SynBinding.withReturnAnnotation ty
+                                    // prevent further usages of positional args
+                                    SynBinding.basic [ Ident.create "positionals" ] [] (SynExpr.CreateConst ())
+                                ]
+                            else
+                                let extract =
+                                    match ty with
+                                    | ChoiceType [ _ ; _ ] ->
+                                        [
+                                            SynMatchClause.create
+                                                (SynPat.identWithArgs
+                                                    [ Ident.create "Some" ]
+                                                    (SynArgPats.create [ SynPat.named "result" ]))
+                                                (SynExpr.applyFunction
+                                                    (SynExpr.createIdent "Choice1Of2")
+                                                    (SynExpr.createIdent "result"))
+                                            SynMatchClause.create
+                                                (SynPat.identWithArgs [ Ident.create "None" ] (SynArgPats.create []))
+                                                (SynExpr.CreateConst "TODO"
+                                                 |> SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2"))
+                                        ]
+                                        |> SynExpr.createMatch (
+                                            SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                        )
+                                    | ListType _ -> SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                    | PrimitiveType _ ->
+                                        [
+                                            SynMatchClause.create
+                                                (SynPat.identWithArgs
+                                                    [ Ident.create "Some" ]
+                                                    (SynArgPats.create [ SynPat.named "result" ]))
+                                                (SynExpr.createIdent "result")
+                                            SynMatchClause.create
+                                                (SynPat.identWithArgs [ Ident.create "None" ] (SynArgPats.create []))
+                                                (SynExpr.sequential
+                                                    [
+                                                        SynExpr.callMethodArg
+                                                            "Add"
+                                                            (SynExpr.CreateConst
+                                                                $"no value provided for %s{ident.idText}")
+                                                            (SynExpr.createIdent "errors")
+                                                        defaultOf
+                                                    ])
+                                        ]
+                                        |> SynExpr.createMatch (
+                                            SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                        )
+                                    | OptionType _ -> SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                    | SynType.LongIdent (SynLongIdent.SynLongIdent _) ->
+                                        // TODO: need to know if it has positionals
+                                        [
+                                            SynMatchClause.create
+                                                (SynPat.identWithArgs
+                                                    [ Ident.create "Ok" ]
+                                                    (SynArgPats.create [ SynPat.named "result" ]))
+                                                (SynExpr.createIdent "result")
+                                            SynMatchClause.create
+                                                (SynPat.identWithArgs
+                                                    [ Ident.create "Error" ]
+                                                    (SynArgPats.create [ SynPat.named "err" ]))
+                                                (SynExpr.sequential
+                                                    [
+                                                        SynExpr.callMethodArg
+                                                            "AddRange"
+                                                            (SynExpr.createIdent "errors")
+                                                            (SynExpr.createIdent "err")
+                                                        defaultOf
+                                                    ])
+                                        ]
+                                        |> SynExpr.createMatch (
+                                            SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                        )
+                                    | ty -> failwith $"TODO: got type {ty} which we don't know how to handle"
+
+                                extract
+                                |> SynBinding.basic [ Ident.create $"arg%i{i}" ] []
+                                |> SynBinding.withReturnAnnotation ty
+                                |> List.singleton
+                        )
+
+                    SynExpr.ifThenElse
+                        (SynExpr.equals (SynExpr.dotGet "Count" (SynExpr.createIdent "errors")) (SynExpr.CreateConst 0))
+                        (SynExpr.createIdent "errors"
+                         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
+                         |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+                        instantiation
+                    |> SynExpr.createLet assignVariables
+                    |> SynExpr.createLet
+                        [
+                            SynBinding.basic
+                                [ Ident.create "errors" ]
+                                []
+                                (SynExpr.applyFunction
+                                    (SynExpr.typeApp [ SynType.string ] (SynExpr.createIdent "ResizeArray"))
+                                    (SynExpr.CreateConst ()))
+                        ]
                     |> SynBinding.basic
                         [ Ident.create "this" ; Ident.create "Assemble" ]
                         [
                             SynPat.annotateType (SynType.list SynType.string) (SynPat.named "positionals")
                         ]
-                    |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ record.Name ])
+                    |> SynBinding.withReturnAnnotation (
+                        SynType.app "Result" [ SynType.createLongIdent [ record.Name ] ; SynType.list SynType.string ]
+                    )
                     |> SynMemberDefn.memberImplementation
                     |> List.singleton
                     |> Some

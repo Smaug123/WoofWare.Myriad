@@ -26,7 +26,42 @@ module private ArgParseHelpers_ConsumePlugin =
             Rest : string list
         }
 
-        member this.Assemble (positionals : string list) : BasicNoPositionals = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<BasicNoPositionals, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : int =
+                match this.Foo with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Foo"
+                    Unchecked.defaultof<_>
+
+            let arg1 : string =
+                match this.Bar with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Bar"
+                    Unchecked.defaultof<_>
+
+            let arg2 : bool =
+                match this.Baz with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Baz"
+                    Unchecked.defaultof<_>
+
+            let arg3 : int list = this.Rest
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Foo = arg0
+                        Bar = arg1
+                        Baz = arg2
+                        Rest = arg3
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed Basic.
     type private Basic_InProgress =
@@ -36,7 +71,43 @@ module private ArgParseHelpers_ConsumePlugin =
             Baz : System.Boolean option
         }
 
-        member this.Assemble (positionals : string list) : Basic = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<Basic, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : int =
+                match this.Foo with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Foo"
+                    Unchecked.defaultof<_>
+
+            let arg1 : string =
+                match this.Bar with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Bar"
+                    Unchecked.defaultof<_>
+
+            let arg2 : bool =
+                match this.Baz with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Baz"
+                    Unchecked.defaultof<_>
+
+            let arg3 : string list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Foo = arg0
+                        Bar = arg1
+                        Baz = arg2
+                        Rest = arg3
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed BasicWithIntPositionals.
     type private BasicWithIntPositionals_InProgress =
@@ -46,7 +117,43 @@ module private ArgParseHelpers_ConsumePlugin =
             Baz : System.Boolean option
         }
 
-        member this.Assemble (positionals : string list) : BasicWithIntPositionals = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<BasicWithIntPositionals, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : int =
+                match this.Foo with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Foo"
+                    Unchecked.defaultof<_>
+
+            let arg1 : string =
+                match this.Bar with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Bar"
+                    Unchecked.defaultof<_>
+
+            let arg2 : bool =
+                match this.Baz with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Baz"
+                    Unchecked.defaultof<_>
+
+            let arg3 : int list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Foo = arg0
+                        Bar = arg1
+                        Baz = arg2
+                        Rest = arg3
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed LoadsOfTypes.
     type private LoadsOfTypes_InProgress =
@@ -63,7 +170,81 @@ module private ArgParseHelpers_ConsumePlugin =
             YetAnotherOptionalThing : string option
         }
 
-        member this.Assemble (positionals : string list) : LoadsOfTypes = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<LoadsOfTypes, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : int =
+                match this.Foo with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Foo"
+                    Unchecked.defaultof<_>
+
+            let arg1 : string =
+                match this.Bar with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Bar"
+                    Unchecked.defaultof<_>
+
+            let arg2 : bool =
+                match this.Baz with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Baz"
+                    Unchecked.defaultof<_>
+
+            let arg3 : FileInfo =
+                match this.SomeFile with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg4 : DirectoryInfo =
+                match this.SomeDirectory with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg5 : DirectoryInfo list = this.SomeList
+            let arg6 : int option = this.OptionalThingWithNoDefault
+            let arg7 : int list = positionals
+            let positionals = ()
+
+            let arg8 : Choice<bool, bool> =
+                match this.OptionalThing with
+                | Some result -> Choice1Of2 result
+                | None -> Choice2Of2 "TODO"
+
+            let arg9 : Choice<int, int> =
+                match this.AnotherOptionalThing with
+                | Some result -> Choice1Of2 result
+                | None -> Choice2Of2 "TODO"
+
+            let arg10 : Choice<string, string> =
+                match this.YetAnotherOptionalThing with
+                | Some result -> Choice1Of2 result
+                | None -> Choice2Of2 "TODO"
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Foo = arg0
+                        Bar = arg1
+                        Baz = arg2
+                        SomeFile = arg3
+                        SomeDirectory = arg4
+                        SomeList = arg5
+                        OptionalThingWithNoDefault = arg6
+                        Positionals = arg7
+                        OptionalThing = arg8
+                        AnotherOptionalThing = arg9
+                        YetAnotherOptionalThing = arg10
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed LoadsOfTypesNoPositionals.
     type private LoadsOfTypesNoPositionals_InProgress =
@@ -80,7 +261,78 @@ module private ArgParseHelpers_ConsumePlugin =
             YetAnotherOptionalThing : string option
         }
 
-        member this.Assemble (positionals : string list) : LoadsOfTypesNoPositionals = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<LoadsOfTypesNoPositionals, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : int =
+                match this.Foo with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Foo"
+                    Unchecked.defaultof<_>
+
+            let arg1 : string =
+                match this.Bar with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Bar"
+                    Unchecked.defaultof<_>
+
+            let arg2 : bool =
+                match this.Baz with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Baz"
+                    Unchecked.defaultof<_>
+
+            let arg3 : FileInfo =
+                match this.SomeFile with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg4 : DirectoryInfo =
+                match this.SomeDirectory with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg5 : DirectoryInfo list = this.SomeList
+            let arg6 : int option = this.OptionalThingWithNoDefault
+
+            let arg7 : Choice<bool, bool> =
+                match this.OptionalThing with
+                | Some result -> Choice1Of2 result
+                | None -> Choice2Of2 "TODO"
+
+            let arg8 : Choice<int, int> =
+                match this.AnotherOptionalThing with
+                | Some result -> Choice1Of2 result
+                | None -> Choice2Of2 "TODO"
+
+            let arg9 : Choice<string, string> =
+                match this.YetAnotherOptionalThing with
+                | Some result -> Choice1Of2 result
+                | None -> Choice2Of2 "TODO"
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Foo = arg0
+                        Bar = arg1
+                        Baz = arg2
+                        SomeFile = arg3
+                        SomeDirectory = arg4
+                        SomeList = arg5
+                        OptionalThingWithNoDefault = arg6
+                        OptionalThing = arg7
+                        AnotherOptionalThing = arg8
+                        YetAnotherOptionalThing = arg9
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed DatesAndTimes.
     type private DatesAndTimes_InProgress =
@@ -91,7 +343,47 @@ module private ArgParseHelpers_ConsumePlugin =
             InvariantExact : TimeSpan option
         }
 
-        member this.Assemble (positionals : string list) : DatesAndTimes = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<DatesAndTimes, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : TimeSpan =
+                match this.Plain with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg1 : TimeSpan =
+                match this.Invariant with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg2 : TimeSpan =
+                match this.Exact with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg3 : TimeSpan =
+                match this.InvariantExact with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Plain = arg0
+                        Invariant = arg1
+                        Exact = arg2
+                        InvariantExact = arg3
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ChildRecord.
     type private ChildRecord_InProgress =
@@ -100,7 +392,31 @@ module private ArgParseHelpers_ConsumePlugin =
             Thing2 : System.String option
         }
 
-        member this.Assemble (positionals : string list) : ChildRecord = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ChildRecord, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : int =
+                match this.Thing1 with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Thing1"
+                    Unchecked.defaultof<_>
+
+            let arg1 : string =
+                match this.Thing2 with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Thing2"
+                    Unchecked.defaultof<_>
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Thing1 = arg0
+                        Thing2 = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ParentRecord.
     type private ParentRecord_InProgress =
@@ -109,7 +425,31 @@ module private ArgParseHelpers_ConsumePlugin =
             AndAnother : System.Boolean option
         }
 
-        member this.Assemble (positionals : string list) : ParentRecord = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ParentRecord, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : ChildRecord =
+                match this.Child with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg1 : bool =
+                match this.AndAnother with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for AndAnother"
+                    Unchecked.defaultof<_>
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Child = arg0
+                        AndAnother = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ChildRecordWithPositional.
     type private ChildRecordWithPositional_InProgress =
@@ -117,7 +457,27 @@ module private ArgParseHelpers_ConsumePlugin =
             Thing1 : System.Int32 option
         }
 
-        member this.Assemble (positionals : string list) : ChildRecordWithPositional = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ChildRecordWithPositional, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : int =
+                match this.Thing1 with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Thing1"
+                    Unchecked.defaultof<_>
+
+            let arg1 : Uri list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Thing1 = arg0
+                        Thing2 = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ParentRecordChildPos.
     type private ParentRecordChildPos_InProgress =
@@ -126,7 +486,31 @@ module private ArgParseHelpers_ConsumePlugin =
             AndAnother : System.Boolean option
         }
 
-        member this.Assemble (positionals : string list) : ParentRecordChildPos = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ParentRecordChildPos, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : ChildRecordWithPositional =
+                match this.Child with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg1 : bool =
+                match this.AndAnother with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for AndAnother"
+                    Unchecked.defaultof<_>
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Child = arg0
+                        AndAnother = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ParentRecordSelfPos.
     type private ParentRecordSelfPos_InProgress =
@@ -134,7 +518,27 @@ module private ArgParseHelpers_ConsumePlugin =
             Child : ChildRecord_InProgress
         }
 
-        member this.Assemble (positionals : string list) : ParentRecordSelfPos = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ParentRecordSelfPos, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : ChildRecord =
+                match this.Child with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            let arg1 : bool list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Child = arg0
+                        AndAnother = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ChoicePositionals.
     type private ChoicePositionals_InProgress =
@@ -142,7 +546,18 @@ module private ArgParseHelpers_ConsumePlugin =
             _Dummy : unit
         }
 
-        member this.Assemble (positionals : string list) : ChoicePositionals = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ChoicePositionals, string list> =
+            let errors = ResizeArray<string> ()
+            let arg0 : Choice<string, string> list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        Args = arg0
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ContainsBoolEnvVar.
     type private ContainsBoolEnvVar_InProgress =
@@ -150,7 +565,21 @@ module private ArgParseHelpers_ConsumePlugin =
             BoolVar : bool option
         }
 
-        member this.Assemble (positionals : string list) : ContainsBoolEnvVar = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ContainsBoolEnvVar, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : Choice<bool, bool> =
+                match this.BoolVar with
+                | Some result -> Choice1Of2 result
+                | None -> Choice2Of2 "TODO"
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        BoolVar = arg0
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed WithFlagDu.
     type private WithFlagDu_InProgress =
@@ -158,7 +587,23 @@ module private ArgParseHelpers_ConsumePlugin =
             DryRun : DryRunMode option
         }
 
-        member this.Assemble (positionals : string list) : WithFlagDu = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<WithFlagDu, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : DryRunMode =
+                match this.DryRun with
+                | Ok result -> result
+                | Error err ->
+                    err.AddRange errors
+                    Unchecked.defaultof<_>
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        DryRun = arg0
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ContainsFlagEnvVar.
     type private ContainsFlagEnvVar_InProgress =
@@ -166,7 +611,21 @@ module private ArgParseHelpers_ConsumePlugin =
             DryRun : DryRunMode option
         }
 
-        member this.Assemble (positionals : string list) : ContainsFlagEnvVar = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ContainsFlagEnvVar, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : Choice<DryRunMode, DryRunMode> =
+                match this.DryRun with
+                | Some result -> Choice1Of2 result
+                | None -> Choice2Of2 "TODO"
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        DryRun = arg0
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ContainsFlagDefaultValue.
     type private ContainsFlagDefaultValue_InProgress =
@@ -174,7 +633,21 @@ module private ArgParseHelpers_ConsumePlugin =
             DryRun : DryRunMode option
         }
 
-        member this.Assemble (positionals : string list) : ContainsFlagDefaultValue = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ContainsFlagDefaultValue, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : Choice<DryRunMode, DryRunMode> =
+                match this.DryRun with
+                | Some result -> Choice1Of2 result
+                | None -> Choice2Of2 "TODO"
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        DryRun = arg0
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed ManyLongForms.
     type private ManyLongForms_InProgress =
@@ -183,7 +656,31 @@ module private ArgParseHelpers_ConsumePlugin =
             SomeFlag : System.Boolean option
         }
 
-        member this.Assemble (positionals : string list) : ManyLongForms = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<ManyLongForms, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : string =
+                match this.DoTheThing with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for DoTheThing"
+                    Unchecked.defaultof<_>
+
+            let arg1 : bool =
+                match this.SomeFlag with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for SomeFlag"
+                    Unchecked.defaultof<_>
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        DoTheThing = arg0
+                        SomeFlag = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed FlagsIntoPositionalArgs.
     type private FlagsIntoPositionalArgs_InProgress =
@@ -191,7 +688,27 @@ module private ArgParseHelpers_ConsumePlugin =
             A : System.String option
         }
 
-        member this.Assemble (positionals : string list) : FlagsIntoPositionalArgs = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgs, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : string =
+                match this.A with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for A"
+                    Unchecked.defaultof<_>
+
+            let arg1 : string list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        A = arg0
+                        GrabEverything = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed FlagsIntoPositionalArgsChoice.
     type private FlagsIntoPositionalArgsChoice_InProgress =
@@ -199,8 +716,27 @@ module private ArgParseHelpers_ConsumePlugin =
             A : System.String option
         }
 
-        member this.Assemble (positionals : string list) : FlagsIntoPositionalArgsChoice =
-            "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgsChoice, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : string =
+                match this.A with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for A"
+                    Unchecked.defaultof<_>
+
+            let arg1 : Choice<string, string> list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        A = arg0
+                        GrabEverything = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed FlagsIntoPositionalArgsInt.
     type private FlagsIntoPositionalArgsInt_InProgress =
@@ -208,7 +744,27 @@ module private ArgParseHelpers_ConsumePlugin =
             A : System.String option
         }
 
-        member this.Assemble (positionals : string list) : FlagsIntoPositionalArgsInt = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgsInt, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : string =
+                match this.A with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for A"
+                    Unchecked.defaultof<_>
+
+            let arg1 : int list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        A = arg0
+                        GrabEverything = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed FlagsIntoPositionalArgsIntChoice.
     type private FlagsIntoPositionalArgsIntChoice_InProgress =
@@ -216,8 +772,27 @@ module private ArgParseHelpers_ConsumePlugin =
             A : System.String option
         }
 
-        member this.Assemble (positionals : string list) : FlagsIntoPositionalArgsIntChoice =
-            "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgsIntChoice, string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : string =
+                match this.A with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for A"
+                    Unchecked.defaultof<_>
+
+            let arg1 : Choice<int, int> list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        A = arg0
+                        GrabEverything = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 
     /// A partially-parsed FlagsIntoPositionalArgs'.
     type private FlagsIntoPositionalArgs'_InProgress =
@@ -225,7 +800,27 @@ module private ArgParseHelpers_ConsumePlugin =
             A : System.String option
         }
 
-        member this.Assemble (positionals : string list) : FlagsIntoPositionalArgs' = "TODO: now construct the object"
+        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgs', string list> =
+            let errors = ResizeArray<string> ()
+
+            let arg0 : string =
+                match this.A with
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for A"
+                    Unchecked.defaultof<_>
+
+            let arg1 : string list = positionals
+            let positionals = ()
+
+            if errors.Count = 0 then
+                Ok
+                    {
+                        A = arg0
+                        DontGrabEverything = arg1
+                    }
+            else
+                errors |> Seq.toList |> Error
 namespace ConsumePlugin
 
 open System
