@@ -22,7 +22,7 @@
   <ItemGroup>
     <PackageReference Include="Myriad.Core" Version="0.8.3" />
     <PackageReference Include="TypeEquality" Version="0.3.0" />
-    <PackageReference Include="WoofWare.Whippet.Fantomas" Version="0.3.2" />
+    <PackageReference Include="WoofWare.Whippet.Fantomas" Version="0.4.1" />
     <!-- the lowest version allowed by Myriad.Core -->
     <PackageReference Update="FSharp.Core" Version="6.0.1" PrivateAssets="all"/>
   </ItemGroup>

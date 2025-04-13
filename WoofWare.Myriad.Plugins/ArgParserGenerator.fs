@@ -673,7 +673,7 @@ module internal ArgParserGenerator =
                 args
                 |> Map.toList
                 |> List.map (fun (ident, expr) -> SynLongIdent.create [ Ident.create ident ], expr)
-                |> AstHelper.instantiateRecord
+                |> SynExpr.createRecord None
             )
 
         tree, counter

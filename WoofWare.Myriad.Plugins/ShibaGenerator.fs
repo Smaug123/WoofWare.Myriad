@@ -512,7 +512,7 @@ module internal ShibaGenerator =
                                     $"expected field in record %s{record.Name.idText} to have a name, but it did not"
                             | Some ident -> SynLongIdent.create [ ident ], SynExpr.createIdent $"arg%i{i}"
                         )
-                        |> AstHelper.instantiateRecord
+                        |> SynExpr.createRecord None
                         |> SynExpr.applyFunction (SynExpr.createIdent "Ok")
 
                     let defaultOf =

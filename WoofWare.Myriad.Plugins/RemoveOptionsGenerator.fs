@@ -97,7 +97,7 @@ module internal RemoveOptionsGenerator =
 
                 SynLongIdent.createI fieldData.Ident, body
             )
-            |> AstHelper.instantiateRecord
+            |> SynExpr.createRecord None
 
         SynBinding.basic
             [ functionName ]
