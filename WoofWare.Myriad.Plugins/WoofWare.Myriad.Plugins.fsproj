@@ -40,7 +40,8 @@
     <Compile Include="JsonParseGenerator.fs"/>
     <Compile Include="HttpClientGenerator.fs"/>
     <Compile Include="CataGenerator.fs" />
-    <Compile Include="ArgParserGenerator.fs" />
+    <None Include="ArgParserGenerator.fs" />
+    <Compile Include="ShibaGenerator.fs" />
     <Compile Include="Swagger.fs" />
     <Compile Include="SwaggerClientGenerator.fs" />
     <None Include="ApacheLicence.txt" />
