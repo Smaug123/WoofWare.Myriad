@@ -1,10 +1,12 @@
 namespace WoofWare.Myriad.Plugins
 
 open System
+open System.Collections.Generic
 open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
 open TypeEquality
+open WoofWare.Myriad.Plugins
 open WoofWare.Whippet.Fantomas
 
 type internal ArgParserOutputSpec =
@@ -31,19 +33,19 @@ type internal FlagDu =
 
 /// The default value of an argument which admits default values can be pulled from different sources.
 /// This defines which source a particular default value comes from.
-type private ArgumentDefaultSpec =
+type internal ArgumentDefaultSpec =
     /// From parsing the environment variable with the given name (e.g. "WOOFWARE_DISABLE_FOO" or whatever).
     | EnvironmentVariable of name : SynExpr
     /// From calling the static member `{typeWeParseInto}.Default{name}()`
     /// For example, if `type MyArgs = { Thing : Choice<int, int> }`, then
     /// we would use `MyArgs.DefaultThing () : int`.
-    ///
     | FunctionCall of name : Ident
 
-type private Accumulation<'choice> =
+type internal Accumulation<'choice> =
     | Required
     | Optional
     | Choice of 'choice
+    | ChoicePositional of attrContents : SynExpr option
     | List of Accumulation<'choice>
 
 type private ParseFunction<'acc> =
@@ -85,8 +87,7 @@ type private ParseFunction<'acc> =
 
 
 module internal ShibaGenerator =
-    open SynTypePatterns
-
+    //let log (s : string) = System.IO.File.AppendAllText ("/tmp/myriad.log", s + "\n")
     type RecognisedType =
         | Union of UnionType
         | Record of RecordType
@@ -107,14 +108,40 @@ module internal ShibaGenerator =
             )
         | _ -> None
 
+    /// Convert e.g. "Foo" into "--foo".
+    let argify (ident : Ident) : string =
+        let result = StringBuilder ()
+
+        for c in ident.idText do
+            if Char.IsUpper c then
+                result.Append('-').Append (Char.ToLowerInvariant c) |> ignore<StringBuilder>
+            else
+                result.Append c |> ignore<StringBuilder>
+
+        result.ToString().TrimStart '-'
+
+    type LeafData<'choice> =
+        {
+            /// Call this function to turn the input into the `TypeAfterParse`.
+            /// For example, `--foo=3` would have TypeAfterParse of `int`, and
+            /// `ParseFn` would be a function `string -> int`.
+            ParseFn : SynExpr
+            /// The type of this field, as it will appear in the final user's record.
+            TypeAfterParse : SynType
+            /// Essentially, how many times this leaf is expected to appear.
+            Acc : Accumulation<'choice>
+            /// `None` if not positional. `Some None` if positional and the PositionalArgs attribute had no contents.
+            /// `Some Some` if the PositionalArgs attribute had an argument.
+            Positional : SynExpr option option
+        }
+
     type private ParseFunctionSpec<'choice> =
-        /// A leaf node, e.g. `--foo=3`. Call the `parseFn` to turn the input `"3"` into the `typeAfterParse` (here, `int`).
-        /// `Accumulation` represents essentially how many times this leaf is expected to be called.
-        | Leaf of parseFn : SynExpr * acc : Accumulation<'choice> * typeAfterParse : SynType
+        /// A leaf node, e.g. `--foo=3`.
+        | Leaf of LeafData<'choice>
         /// An opaque node we didn't recognise: e.g. `Foo : SomeType`.
         /// We're probably going to stamp out an "in-progress" type for this node.
         /// (Either that, or it's just a type we don't recognise, and then compilation will fail.)
-        | UserDefined
+        | UserDefined of isRecord : bool * typeName : Ident
         /// An optional opaque node we didn't recognise: e.g. `Foo : SomeType option`.
         /// We're probably going to stamp out an "in-progress" type for this node.
         /// (Either that, or it's just a type we don't recognise, and then compilation will fail.)
@@ -127,36 +154,58 @@ module internal ShibaGenerator =
     let rec private createParseFunction<'choice>
         (choice : ArgumentDefaultSpec option -> 'choice)
         (flagDus : FlagDu list)
+        (userDefinedRecordTypesWithParser : IEnumerable<string>)
+        (userDefinedUnionTypesWithParser : IEnumerable<string>)
         (fieldName : Ident)
         (attrs : SynAttribute list)
         (ty : SynType)
         : ParseFunctionSpec<'choice>
         =
+        let positional =
+            attrs
+            |> List.tryPick (fun a ->
+                match (List.last a.TypeName.LongIdent).idText with
+                | "PositionalArgsAttribute"
+                | "PositionalArgs" ->
+                    match a.ArgExpr with
+                    | SynExpr.Const (SynConst.Unit, _) -> Some None
+                    | a -> Some (Some a)
+                | _ -> None
+            )
+
         match ty with
         | String ->
-            ParseFunctionSpec.Leaf (
-                SynExpr.createLambda "x" (SynExpr.createIdent "x"),
-                Accumulation.Required,
-                SynType.string
-            )
+            {
+                ParseFn = SynExpr.createLambda "x" (SynExpr.createIdent "x")
+                Acc = Accumulation.Required
+                TypeAfterParse = SynType.string
+                Positional = positional
+            }
+            |> ParseFunctionSpec.Leaf
         | PrimitiveType pt ->
-            ParseFunctionSpec.Leaf (
-                SynExpr.createLambda
-                    "x"
-                    (SynExpr.applyFunction
-                        (SynExpr.createLongIdent' (pt @ [ Ident.create "Parse" ]))
-                        (SynExpr.createIdent "x")),
-                Accumulation.Required,
-                ty
-            )
+            {
+                ParseFn =
+                    SynExpr.createLambda
+                        "x"
+                        (SynExpr.applyFunction
+                            (SynExpr.createLongIdent' (pt @ [ Ident.create "Parse" ]))
+                            (SynExpr.createIdent "x"))
+                Acc = Accumulation.Required
+                TypeAfterParse = ty
+                Positional = positional
+            }
+            |> ParseFunctionSpec.Leaf
         | Uri ->
-            ParseFunctionSpec.Leaf (
-                SynExpr.createLambda
-                    "x"
-                    (SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Uri" ]) (SynExpr.createIdent "x")),
-                Accumulation.Required,
-                ty
-            )
+            {
+                ParseFn =
+                    SynExpr.createLambda
+                        "x"
+                        (SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Uri" ]) (SynExpr.createIdent "x"))
+                Acc = Accumulation.Required
+                TypeAfterParse = ty
+                Positional = positional
+            }
+            |> ParseFunctionSpec.Leaf
         | TimeSpan ->
             let parseExact =
                 attrs
@@ -210,41 +259,67 @@ module internal ShibaGenerator =
                     |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "TimeSpan" ; "ParseExact" ])
                 |> SynExpr.createLambda "x"
 
-            ParseFunctionSpec.Leaf (parser, Accumulation.Required, ty)
+            {
+                ParseFn = parser
+                Acc = Accumulation.Required
+                TypeAfterParse = ty
+                Positional = positional
+            }
+            |> ParseFunctionSpec.Leaf
         | FileInfo ->
-            ParseFunctionSpec.Leaf (
-                SynExpr.createLambda
-                    "x"
-                    (SynExpr.applyFunction
-                        (SynExpr.createLongIdent [ "System" ; "IO" ; "FileInfo" ])
-                        (SynExpr.createIdent "x")),
-                Accumulation.Required,
-                ty
-            )
+            {
+                ParseFn =
+                    SynExpr.createLambda
+                        "x"
+                        (SynExpr.applyFunction
+                            (SynExpr.createLongIdent [ "System" ; "IO" ; "FileInfo" ])
+                            (SynExpr.createIdent "x"))
+                Acc = Accumulation.Required
+                TypeAfterParse = ty
+                Positional = positional
+            }
+            |> ParseFunctionSpec.Leaf
         | DirectoryInfo ->
-            ParseFunctionSpec.Leaf (
-                SynExpr.createLambda
-                    "x"
-                    (SynExpr.applyFunction
-                        (SynExpr.createLongIdent [ "System" ; "IO" ; "DirectoryInfo" ])
-                        (SynExpr.createIdent "x")),
-                Accumulation.Required,
-                ty
-            )
+            {
+                ParseFn =
+                    SynExpr.createLambda
+                        "x"
+                        (SynExpr.applyFunction
+                            (SynExpr.createLongIdent [ "System" ; "IO" ; "DirectoryInfo" ])
+                            (SynExpr.createIdent "x"))
+                Acc = Accumulation.Required
+                TypeAfterParse = ty
+                Positional = positional
+            }
+            |> ParseFunctionSpec.Leaf
         | OptionType eltTy ->
-            match createParseFunction choice flagDus fieldName attrs eltTy with
-            | ParseFunctionSpec.Leaf (parseElt, acc, childTy) ->
-                match acc with
+            match
+                createParseFunction
+                    choice
+                    flagDus
+                    userDefinedRecordTypesWithParser
+                    userDefinedUnionTypesWithParser
+                    fieldName
+                    attrs
+                    eltTy
+            with
+            | ParseFunctionSpec.Leaf data ->
+                match data.Acc with
                 | Accumulation.Optional ->
                     failwith
                         $"ArgParser does not support optionals containing options at field %s{fieldName.idText}: %O{ty}"
+                | Accumulation.ChoicePositional _
                 | Accumulation.Choice _ ->
                     failwith
                         $"ArgParser does not support optionals containing choices at field %s{fieldName.idText}: %O{ty}"
                 | Accumulation.List _ ->
                     failwith $"ArgParser does not support optional lists at field %s{fieldName.idText}: %O{ty}"
-                | Accumulation.Required -> ParseFunctionSpec.Leaf (parseElt, Accumulation.Optional, childTy)
-            | ParseFunctionSpec.UserDefined -> ParseFunctionSpec.OptionOfUserDefined
+                | Accumulation.Required ->
+                    ParseFunctionSpec.Leaf
+                        { data with
+                            Acc = Accumulation.Optional
+                        }
+            | ParseFunctionSpec.UserDefined _ -> ParseFunctionSpec.OptionOfUserDefined
             | ParseFunctionSpec.OptionOfUserDefined ->
                 failwith $"ArgParser does not support lists of options at field %s{fieldName.idText}"
         | ChoiceType elts ->
@@ -254,15 +329,25 @@ module internal ShibaGenerator =
                     failwith
                         $"ArgParser was unable to prove types %O{elt1} and %O{elt2} to be equal in a Choice. We require them to be equal."
 
-                match createParseFunction choice flagDus fieldName attrs elt1 with
-                | ParseFunctionSpec.Leaf (parseElt, acc, childTy) ->
-                    match acc with
+                match
+                    createParseFunction
+                        choice
+                        flagDus
+                        userDefinedRecordTypesWithParser
+                        userDefinedUnionTypesWithParser
+                        fieldName
+                        attrs
+                        elt1
+                with
+                | ParseFunctionSpec.Leaf data ->
+                    match data.Acc with
                     | Accumulation.Optional ->
                         failwith
                             $"ArgParser does not support choices containing options at field %s{fieldName.idText}: %O{ty}"
                     | Accumulation.List _ ->
                         failwith
                             $"ArgParser does not support choices containing lists at field %s{fieldName.idText}: %O{ty}"
+                    | Accumulation.ChoicePositional _
                     | Accumulation.Choice _ ->
                         failwith
                             $"ArgParser does not support choices containing choices at field %s{fieldName.idText}: %O{ty}"
@@ -305,7 +390,17 @@ module internal ShibaGenerator =
                             failwith
                                 $"Expected Choice to be annotated with at most one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: %s{fieldName.idText}"
 
-                    ParseFunctionSpec.Leaf (parseElt, Accumulation.Choice (choice relevantAttr), childTy)
+                    match positional with
+                    | Some positional ->
+                        ParseFunctionSpec.Leaf
+                            { data with
+                                Acc = Accumulation.ChoicePositional positional
+                            }
+                    | None ->
+                        ParseFunctionSpec.Leaf
+                            { data with
+                                Acc = Accumulation.Choice (choice relevantAttr)
+                            }
                 | _ ->
                     failwith
                         $"Choices are only allowed to contain leaves; at %s{fieldName.idText}, got type %s{SynType.toHumanReadableString elt1}"
@@ -315,15 +410,41 @@ module internal ShibaGenerator =
                 failwith
                     $"ArgParser requires Choice to be of the form Choice<'a, 'a>; that is, two arguments, both the same. For field %s{fieldName.idText}, got: %s{elts}"
         | ListType eltTy ->
-            match createParseFunction choice flagDus fieldName attrs eltTy with
-            | ParseFunctionSpec.Leaf (parseElt, acc, childTy) ->
-                ParseFunctionSpec.Leaf (parseElt, Accumulation.List acc, childTy)
+            match
+                createParseFunction
+                    choice
+                    flagDus
+                    userDefinedRecordTypesWithParser
+                    userDefinedUnionTypesWithParser
+                    fieldName
+                    attrs
+                    eltTy
+            with
+            | ParseFunctionSpec.Leaf data ->
+                ParseFunctionSpec.Leaf
+                    { data with
+                        Acc = Accumulation.List data.Acc
+                    }
             | _ ->
                 failwith
                     $"Lists are only allowed to contain leaves; at %s{fieldName.idText}, got type %s{SynType.toHumanReadableString eltTy}"
         | ty ->
             match identifyAsFlag flagDus ty with
-            | None -> ParseFunctionSpec.UserDefined
+            | None ->
+                match ty with
+                | SynType.LongIdent (SynLongIdent.SynLongIdent (id = id)) ->
+                    let typeName = List.last id
+
+                    if Seq.contains typeName.idText userDefinedRecordTypesWithParser then
+                        ParseFunctionSpec.UserDefined (true, typeName)
+                    elif Seq.contains (List.last id).idText userDefinedUnionTypesWithParser then
+                        ParseFunctionSpec.UserDefined (false, typeName)
+                    else
+                        failwith
+                            $"we did not recognise the type %s{SynType.toHumanReadableString ty} as something we could build a parser for"
+                | _ ->
+                    failwith
+                        $"we did not recognise the type %s{SynType.toHumanReadableString ty} as something we could build a parser for"
             | Some flagDu ->
                 // Parse as a bool, and then do the `if-then` dance.
                 let parser =
@@ -332,12 +453,473 @@ module internal ShibaGenerator =
                     |> FlagDu.FromBoolean flagDu
                     |> SynExpr.createLambda "x"
 
-                ParseFunctionSpec.Leaf (parser, Accumulation.Required, ty)
+                {
+                    ParseFn = parser
+                    Acc = Accumulation.Required
+                    TypeAfterParse = ty
+                    Positional = positional
+                }
+                |> ParseFunctionSpec.Leaf
+
+    type internal DatalessUnion =
+        {
+            Cases : (string * SynAttribute list) list
+        }
+
+    type internal ParsedRecordStructure<'choice> =
+        {
+            Original : RecordType
+            /// Map of field name to parser for that field
+            LeafNodes : Map<string, LeafData<'choice>>
+            Records : Map<string, ParsedRecordStructure<'choice>>
+            Unions : Map<string, ParsedUnionStructure<'choice>>
+        }
+
+    and internal ParsedUnionStructure<'choice> =
+        {
+            Original : UnionType
+            Cases : Map<string, ParsedRecordStructure<'choice>>
+        }
+
+    /// Build the "in-progress record" which is basically "the input record, but with all fields mutable and optional".
+    let private inProgressRecordType (record : ParsedRecordStructure<'choice>) : RecordType =
+        let leafFields =
+            record.LeafNodes
+            |> Map.toSeq
+            |> Seq.map (fun (ident, data) -> failwith "TODO")
+            |> Seq.toList
+
+        let unionFields =
+            record.Unions
+            |> Map.toSeq
+            |> Seq.map (fun (ident, data) -> failwith "TODO")
+            |> Seq.toList
+
+        let recordFields =
+            record.Records
+            |> Map.toSeq
+            |> Seq.map (fun (ident, data) -> failwith "TODO")
+            |> Seq.toList
+
+        let fields =
+            leafFields @ unionFields @ recordFields
+            |> fun l ->
+                if l.IsEmpty then
+                    {
+                        Attrs = []
+                        Ident = Some (Ident.create "_Dummy")
+                        Type = SynType.unit
+                    }
+                    |> SynField.make
+                    |> List.singleton
+                else
+                    l |> List.map (SynField.withMutability true)
+
+        let members =
+            // for each field `FieldName` in order, we've made a variable `arg%i`
+            // which has done the optionality check
+            let instantiation =
+                record.Original.Fields
+                |> List.mapi (fun i (SynField.SynField (idOpt = ident)) ->
+                    match ident with
+                    | None ->
+                        failwith
+                            $"expected field in record %s{record.Original.Name.idText} to have a name, but it did not"
+                    | Some ident -> SynLongIdent.create [ ident ], SynExpr.createIdent $"arg%i{i}"
+                )
+                |> SynExpr.createRecord None
+                |> SynExpr.applyFunction (SynExpr.createIdent "Ok")
+
+            let defaultOf =
+                SynExpr.typeApp [ SynType.anon ] (SynExpr.createLongIdent [ "Unchecked" ; "defaultof" ])
+
+            let assignVariables =
+                record.Original.Fields
+                |> List.mapi (fun i f -> (i, f))
+                |> List.collect (fun (i, SynField.SynField (attributes = attrs ; fieldType = ty ; idOpt = ident)) ->
+                    match ident with
+                    | None ->
+                        failwith
+                            $"expected field in record %s{record.Original.Name.idText} to have a name, but it did not"
+                    | Some ident ->
+
+                    let valueForThisVar =
+                        match record.Records |> Map.tryFind ident.idText with
+                        | Some subRecord ->
+                            // This was a record; defer to its parser.
+                            // TODO: need to know if it has positionals
+                            [
+                                SynMatchClause.create
+                                    (SynPat.identWithArgs
+                                        [ Ident.create "Ok" ]
+                                        (SynArgPats.create [ SynPat.named "result" ]))
+                                    (SynExpr.createIdent "result")
+                                SynMatchClause.create
+                                    (SynPat.identWithArgs
+                                        [ Ident.create "Error" ]
+                                        (SynArgPats.create [ SynPat.named "err" ]))
+                                    (SynExpr.sequential
+                                        [
+                                            SynExpr.callMethodArg
+                                                "AddRange"
+                                                (SynExpr.createIdent "errors")
+                                                (SynExpr.createIdent "err")
+                                            defaultOf
+                                        ])
+                            ]
+                            |> SynExpr.createMatch (SynExpr.dotGet ident.idText (SynExpr.createIdent "this"))
+                        | None ->
+
+                        match record.Unions |> Map.tryFind ident.idText with
+                        | Some union ->
+                            // This was a union; defer to its parser.
+                            failwith "TODO"
+                        | None ->
+
+                        match record.LeafNodes |> Map.tryFind ident.idText with
+                        | Some leaf ->
+                            match leaf.Positional with
+                            | Some pos ->
+                                // Positional args carried in from external argument.
+                                // TODO: register whether they came before or after separator
+                                SynExpr.createIdent "positionals"
+                            | None ->
+
+                            let extract =
+                                match leaf.TypeAfterParse with
+                                | ChoiceType [ _ ; _ ] ->
+                                    [
+                                        SynMatchClause.create
+                                            (SynPat.identWithArgs
+                                                [ Ident.create "Some" ]
+                                                (SynArgPats.create [ SynPat.named "result" ]))
+                                            (SynExpr.applyFunction
+                                                (SynExpr.createIdent "Choice1Of2")
+                                                (SynExpr.createIdent "result"))
+                                        SynMatchClause.create
+                                            (SynPat.identWithArgs [ Ident.create "None" ] (SynArgPats.create []))
+                                            (SynExpr.CreateConst "TODO"
+                                             |> SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2"))
+                                    ]
+                                    |> SynExpr.createMatch (SynExpr.dotGet ident.idText (SynExpr.createIdent "this"))
+                                | ListType _ -> SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                | PrimitiveType _ ->
+                                    [
+                                        SynMatchClause.create
+                                            (SynPat.identWithArgs
+                                                [ Ident.create "Some" ]
+                                                (SynArgPats.create [ SynPat.named "result" ]))
+                                            (SynExpr.createIdent "result")
+                                        SynMatchClause.create
+                                            (SynPat.identWithArgs [ Ident.create "None" ] (SynArgPats.create []))
+                                            (SynExpr.sequential
+                                                [
+                                                    SynExpr.callMethodArg
+                                                        "Add"
+                                                        (SynExpr.CreateConst $"no value provided for %s{ident.idText}")
+                                                        (SynExpr.createIdent "errors")
+                                                    defaultOf
+                                                ])
+                                    ]
+                                    |> SynExpr.createMatch (SynExpr.dotGet ident.idText (SynExpr.createIdent "this"))
+                                | OptionType _ -> SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                | ty -> failwith $"Could not convert type %s{SynType.toHumanReadableString ty}"
+
+                            extract
+                        | None ->
+                            failwith
+                                $"somehow we never classified the field %s{ident.idText} of %s{record.Original.Name.idText}"
+
+                    valueForThisVar
+                    |> SynBinding.basic [ Ident.create $"arg%i{i}" ] []
+                    |> SynBinding.withReturnAnnotation ty
+                    |> List.singleton
+                )
+
+            SynExpr.ifThenElse
+                (SynExpr.equals (SynExpr.dotGet "Count" (SynExpr.createIdent "errors")) (SynExpr.CreateConst 0))
+                (SynExpr.createIdent "errors"
+                 |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
+                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+                instantiation
+            |> SynExpr.createLet assignVariables
+            |> SynExpr.createLet
+                [
+                    SynBinding.basic
+                        [ Ident.create "errors" ]
+                        []
+                        (SynExpr.applyFunction
+                            (SynExpr.typeApp [ SynType.string ] (SynExpr.createIdent "ResizeArray"))
+                            (SynExpr.CreateConst ()))
+                ]
+            |> SynBinding.basic
+                [ Ident.create "this" ; Ident.create "Assemble" ]
+                [
+                    SynPat.annotateType (SynType.list SynType.string) (SynPat.named "positionals")
+                ]
+            |> SynBinding.withReturnAnnotation (
+                SynType.app
+                    "Result"
+                    [
+                        SynType.createLongIdent [ record.Original.Name ]
+                        SynType.list SynType.string
+                    ]
+            )
+
+        {
+            Name = record.Original.Name.idText + "_InProgress" |> Ident.create
+            Fields = fields
+            Members = members |> SynMemberDefn.memberImplementation |> List.singleton |> Some
+            XmlDoc = PreXmlDoc.create $"A partially-parsed %s{record.Original.Name.idText}." |> Some
+            Generics =
+                match record.Original.Generics with
+                | None -> None
+                | Some _ ->
+                    failwith $"Record type %s{record.Original.Name.idText} had generics, which we don't support."
+            TypeAccessibility = Some (SynAccess.Private range0)
+            ImplAccessibility = None
+            Attributes = []
+        }
+
+    type internal AllInfo =
+        {
+            /// Map of identifier to parser
+            RecordParsers : IReadOnlyDictionary<string, ParsedRecordStructure<ArgumentDefaultSpec>>
+            /// Map of identifier to parser
+            UnionParsers : IReadOnlyDictionary<string, ParsedUnionStructure<ArgumentDefaultSpec>>
+            /// Map of identifier to DU information
+            FlagDus : Map<string, FlagDu>
+            /// Map of identifier to DU information
+            DatalessUnions : Map<string, DatalessUnion>
+        }
+
+    /// Returns None if we haven't yet obtained parse structures for the dependencies of this record.
+    let private parseRecord
+        (knownRecordParserTypes : IReadOnlyDictionary<string, ParsedRecordStructure<ArgumentDefaultSpec>>)
+        (knownUnionParserTypes : IReadOnlyDictionary<string, ParsedUnionStructure<ArgumentDefaultSpec>>)
+        (flagDus : FlagDu list)
+        (rt : RecordType)
+        : ParsedRecordStructure<ArgumentDefaultSpec> option
+        =
+        let getChoice (spec : ArgumentDefaultSpec option) : ArgumentDefaultSpec =
+            match spec with
+            | None ->
+                failwith
+                    $"Non-positional Choice args must have an `[<ArgumentDefault*>]` attribute on them, in record {rt.Name.idText}."
+            | Some spec -> spec
+
+        let aggregated =
+            (Some ([], [], []), rt.Fields)
+            ||> List.fold (fun aggr (SynField.SynField (idOpt = ident ; attributes = attrs ; fieldType = ty)) ->
+                match aggr with
+                | None -> None
+                | Some (leaf, records, unions) ->
+
+                match ident with
+                | None ->
+                    failwith
+                        $"expected all fields on record type %s{rt.Name.idText} to have a name, but at least one did not"
+                | Some ident ->
+
+                let spec =
+                    createParseFunction
+                        getChoice
+                        flagDus
+                        knownRecordParserTypes.Keys
+                        knownUnionParserTypes.Keys
+                        ident
+                        (SynAttributes.toAttrs attrs)
+                        ty
+
+                match spec with
+                | Leaf data -> ((ident.idText, data) :: leaf, records, unions) |> Some
+                | UserDefined (isRecord, typeName) ->
+                    if isRecord then
+                        match knownRecordParserTypes.TryGetValue typeName.idText with
+                        | false, _ -> None
+                        | true, v -> (leaf, (ident.idText, v) :: records, unions) |> Some
+                    else
+                        match knownUnionParserTypes.TryGetValue typeName.idText with
+                        | false, _ -> None
+                        | true, v -> (leaf, records, (ident.idText, v) :: unions) |> Some
+                | OptionOfUserDefined -> failwith "todo"
+            )
+
+        match aggregated with
+        | None -> None
+        | Some (leaf, records, unions) ->
+            {
+                Original = rt
+                LeafNodes = leaf |> Map.ofList
+                Records = records |> Map.ofList
+                Unions = unions |> Map.ofList
+            }
+            |> Some
+
+    /// Returns None if we haven't yet obtained parse structures for the dependencies of this union.
+    /// This function already knows that it's a parser: that is, every case has exactly one field.
+    /// It doesn't necessarily know that those fields can be parsed as records.
+    let private parseUnion
+        (knownRecordTypes : IReadOnlyDictionary<string, ParsedRecordStructure<ArgumentDefaultSpec>>)
+        (ut : UnionType)
+        : ParsedUnionStructure<ArgumentDefaultSpec> option
+        =
+        ut.Cases
+        |> List.map (fun case ->
+            let field =
+                match case.Fields with
+                | [ x ] -> x
+                | [] ->
+                    failwith
+                        $"Logic error: expected case %s{case.Name.idText} to have exactly one field, but it had none"
+                | _ ->
+                    failwith
+                        $"Logic error: expected case %s{case.Name.idText} to have exactly one field, but it had more than one"
+
+            match field.Type with
+            | SynType.LongIdent (SynLongIdent.SynLongIdent (id = id)) ->
+                match knownRecordTypes.TryGetValue (List.last id).idText with
+                | false, _ -> None
+                | true, v -> Some (case.Name.idText, v)
+            | _ ->
+                failwith
+                    "ArgParser generator requires discriminated union cases to each contain exactly one field which is a record type, to hold their data."
+        )
+        |> List.allSome
+        |> Option.map Map.ofList
+        |> Option.map (fun x ->
+            {
+                Original = ut
+                Cases = x
+            }
+        )
+
+    let internal parseStructureWithinNs (unions : UnionType list) (records : RecordType list) : AllInfo =
+        let flagDus, datalessUnions, parserUnions =
+            (([], [], []), unions)
+            ||> List.fold (fun (flagDus, datalessUnions, unions) union ->
+                match union.Cases |> List.tryFind (fun case -> not case.Fields.IsEmpty) with
+                | Some dataCarryingCase ->
+                    match union.Cases |> List.tryFind (fun case -> case.Fields.Length <> 1) with
+                    | Some badCase ->
+                        failwith
+                            $"Unions must either be dataless or every field must have exactly one member. Type %s{union.Name.idText} has case %s{dataCarryingCase.Name.idText} with data, but case %s{badCase.Name.idText} doesn't have exactly one field."
+                    | None ->
+                        // OK, all cases have exactly one field.
+                        flagDus, datalessUnions, union :: unions
+                | None ->
+
+                let datalessUnionBranch () =
+                    let datalessUnion =
+                        {
+                            DatalessUnion.Cases =
+                                union.Cases |> List.map (fun case -> case.Name.idText, case.Attributes)
+                        }
+
+                    flagDus, (union.Name.idText, datalessUnion) :: datalessUnions, unions
+
+                // dataless or flag
+                match union.Cases with
+                | [ c1 ; c2 ] ->
+                    let c1Attr =
+                        c1.Attributes
+                        |> List.tryPick (fun attr ->
+                            match attr.TypeName with
+                            | SynLongIdent.SynLongIdent (id, _, _) ->
+                                match id |> List.last |> _.idText with
+                                | "ArgumentFlagAttribute"
+                                | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
+                                | _ -> None
+                        )
+
+                    let c2Attr =
+                        c2.Attributes
+                        |> List.tryPick (fun attr ->
+                            match attr.TypeName with
+                            | SynLongIdent.SynLongIdent (id, _, _) ->
+                                match id |> List.last |> _.idText with
+                                | "ArgumentFlagAttribute"
+                                | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
+                                | _ -> None
+                        )
+
+                    match c1Attr, c2Attr with
+                    | Some _, None
+                    | None, Some _ ->
+                        failwith
+                            "[<ArgumentFlag>] must be placed on both cases of a two-case discriminated union, with opposite argument values on each case."
+                    | None, None ->
+                        // actually a dataless union
+                        datalessUnionBranch ()
+                    | Some c1Attr, Some c2Attr ->
+
+                    // Sanity check where possible
+                    match c1Attr, c2Attr with
+                    | SynExpr.Const (SynConst.Bool b1, _), SynExpr.Const (SynConst.Bool b2, _) ->
+                        if b1 = b2 then
+                            failwith
+                                "[<ArgumentFlag>] must have opposite argument values on each case in a two-case discriminated union."
+                    | _, _ -> ()
+
+                    match c1.Fields, c2.Fields with
+                    | [], [] ->
+                        let flagDu =
+                            {
+                                Name = union.Name
+                                Case1Name = c1.Name
+                                Case1Arg = c1Attr
+                                Case2Name = c2.Name
+                                Case2Arg = c2Attr
+                            }
+
+                        (union.Name.idText, flagDu) :: flagDus, datalessUnions, unions
+                    | _, _ ->
+                        failwith "[<ArgumentFlag>] may only be placed on discriminated union members with no data."
+                | _ -> datalessUnionBranch ()
+            )
+
+        let allKnownUnionTypes = Dictionary ()
+        let allKnownRecordTypes = Dictionary ()
+
+        let mutable keepLooping = true
+
+        while keepLooping do
+            keepLooping <- false
+            let mutable madeAChange = false
+
+            for record in records do
+                if not (allKnownRecordTypes.ContainsKey record.Name.idText) then
+                    match parseRecord allKnownRecordTypes allKnownUnionTypes (flagDus |> List.map snd) record with
+                    | None -> keepLooping <- true
+                    | Some v ->
+                        allKnownRecordTypes.Add (record.Name.idText, v)
+                        madeAChange <- true
+
+            for union in parserUnions do
+                match parseUnion allKnownRecordTypes union with
+                | None -> keepLooping <- true
+                | Some v ->
+                    allKnownUnionTypes.Add (union.Name.idText, v)
+                    madeAChange <- true
+
+            if not madeAChange then
+                let knownRecords = allKnownRecordTypes.Keys |> String.concat ","
+                let knownUnions = allKnownUnionTypes.Keys |> String.concat ","
+
+                failwith
+                    $"Cyclic dependency detected which we can't break. Known records:\n%s{knownRecords}\nKnown unions:\n%s{knownUnions}"
+
+        {
+            RecordParsers = allKnownRecordTypes
+            UnionParsers = allKnownUnionTypes
+            FlagDus = Map.ofList flagDus
+            DatalessUnions = Map.ofList datalessUnions
+        }
 
     /// Some types don't have in-progress equivalents (e.g. a no-data DU, which is "basically primitive");
     /// hence the `option`.
     let createInProgressRecognisedType
-        (flagDuNames : string list)
+        (flagDuNames : string ICollection)
         (allKnownTypeIdents : string list)
         (ty : RecognisedType)
         : RecordType option
@@ -347,7 +929,7 @@ module internal ShibaGenerator =
             // TODO: this is super jank
             let ident = List.last ty
 
-            if List.contains ident.idText flagDuNames then
+            if flagDuNames.Contains ident.idText then
                 // Flag DUs have no in-progress form as such
                 SynType.createLongIdent ty |> SynType.option
             elif List.contains ident.idText allKnownTypeIdents then
@@ -467,7 +1049,7 @@ module internal ShibaGenerator =
                                     }
                             ]
                         else
-                            l
+                            l |> List.map (SynField.withMutability true)
                 Generics =
                     match union.Generics with
                     | None -> None
@@ -490,16 +1072,15 @@ module internal ShibaGenerator =
                     )
                     |> fun l ->
                         if l.IsEmpty then
-                            [
-                                SynField.make
-                                    {
-                                        Attrs = []
-                                        Ident = Some (Ident.create "_Dummy")
-                                        Type = SynType.unit
-                                    }
-                            ]
+                            {
+                                Attrs = []
+                                Ident = Some (Ident.create "_Dummy")
+                                Type = SynType.unit
+                            }
+                            |> SynField.make
+                            |> List.singleton
                         else
-                            l
+                            l |> List.map (SynField.withMutability true)
                 Members =
                     // for each field `FieldName` in order, we've made a variable `arg%i`
                     // which has done the optionality check
@@ -660,71 +1241,7 @@ module internal ShibaGenerator =
             }
             |> Some
 
-    let createHelpersModule
-        (opens : SynOpenDeclTarget list)
-        (ns : LongIdent)
-        (allUnionTypes : UnionType list)
-        (allRecordTypes : RecordType list)
-        : SynModuleDecl
-        =
-        let flagDus =
-            allUnionTypes
-            |> List.choose (fun ty ->
-                match ty.Cases with
-                | [ c1 ; c2 ] ->
-                    let c1Attr =
-                        c1.Attributes
-                        |> List.tryPick (fun attr ->
-                            match attr.TypeName with
-                            | SynLongIdent.SynLongIdent (id, _, _) ->
-                                match id |> List.last |> _.idText with
-                                | "ArgumentFlagAttribute"
-                                | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
-                                | _ -> None
-                        )
-
-                    let c2Attr =
-                        c2.Attributes
-                        |> List.tryPick (fun attr ->
-                            match attr.TypeName with
-                            | SynLongIdent.SynLongIdent (id, _, _) ->
-                                match id |> List.last |> _.idText with
-                                | "ArgumentFlagAttribute"
-                                | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
-                                | _ -> None
-                        )
-
-                    match c1Attr, c2Attr with
-                    | Some _, None
-                    | None, Some _ ->
-                        failwith
-                            "[<ArgumentFlag>] must be placed on both cases of a two-case discriminated union, with opposite argument values on each case."
-                    | None, None -> None
-                    | Some c1Attr, Some c2Attr ->
-
-                    // Sanity check where possible
-                    match c1Attr, c2Attr with
-                    | SynExpr.Const (SynConst.Bool b1, _), SynExpr.Const (SynConst.Bool b2, _) ->
-                        if b1 = b2 then
-                            failwith
-                                "[<ArgumentFlag>] must have opposite argument values on each case in a two-case discriminated union."
-                    | _, _ -> ()
-
-                    match c1.Fields, c2.Fields with
-                    | [], [] ->
-                        {
-                            Name = ty.Name
-                            Case1Name = c1.Name
-                            Case1Arg = c1Attr
-                            Case2Name = c2.Name
-                            Case2Arg = c2Attr
-                        }
-                        |> Some
-                    | _, _ ->
-                        failwith "[<ArgumentFlag>] may only be placed on discriminated union members with no data."
-                | _ -> None
-            )
-
+    let createHelpersModule (opens : SynOpenDeclTarget list) (ns : LongIdent) (info : AllInfo) : SynModuleDecl =
         let modName =
             let ns = ns |> List.map _.idText |> String.concat "_"
             Ident.create $"ArgParseHelpers_%s{ns}"
@@ -734,28 +1251,17 @@ module internal ShibaGenerator =
             |> SynComponentInfo.withAccessibility (SynAccess.Private range0)
             |> SynComponentInfo.withDocString (PreXmlDoc.create $"Helper types for arg parsing")
 
-        let allKnownTypeIdents =
-            let uts = allUnionTypes |> List.map _.Name.idText
-            let rts = allRecordTypes |> List.map _.Name.idText
-            uts @ rts
-
-        let flagDuNames = flagDus |> List.map _.Name.idText
+        let flagDuNames = info.FlagDus.Keys
 
         let reducedRecordTypes =
-            allRecordTypes
-            |> List.choose (fun rt ->
-                // TODO: just split these into different functions and get rid of RecognisedType
-                createInProgressRecognisedType flagDuNames allKnownTypeIdents (RecognisedType.Record rt)
-                |> Option.map RecordType.ToAst
-            )
+            info.RecordParsers
+            |> Seq.map (fun (KeyValue (_, record)) -> inProgressRecordType record |> RecordType.ToAst)
+            |> Seq.toList
 
         let reducedUnionTypes =
-            allUnionTypes
-            |> List.choose (fun ut ->
-                // TODO: just split these into different functions and get rid of RecognisedType
-                createInProgressRecognisedType flagDuNames allKnownTypeIdents (RecognisedType.Union ut)
-                |> Option.map RecordType.ToAst
-            )
+            info.UnionParsers
+            |> Seq.map (fun (KeyValue (_, union)) -> failwith "TODO")
+            |> Seq.toList
 
         let taggedMod =
             [
@@ -904,12 +1410,17 @@ open Myriad.Core
 
 /// Myriad generator that provides a catamorphism for an algebraic data type.
 [<MyriadGenerator("arg-parser")>]
-type ArgParserGenerator () =
+type ShibaGenerator () =
 
     interface IMyriadGenerator with
         member _.ValidInputExtensions = [ ".fs" ]
 
         member _.Generate (context : GeneratorContext) =
+            // try
+            //     System.IO.File.Delete "/tmp/myriad.log"
+            // with
+            // | _ -> ()
+
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
@@ -961,7 +1472,7 @@ type ArgParserGenerator () =
 
                         if not others.IsEmpty then
                             failwith
-                                $"Error: all types recursively defined together with an ArgParserGenerator type must be discriminated unions or records. %+A{others}"
+                                $"Error: all types recursively defined together with a ShibaGenerator type must be discriminated unions or records. %+A{others}"
 
                         (ns, taggedType, unions, records)
                     )
@@ -982,18 +1493,15 @@ type ArgParserGenerator () =
                         )
                 )
 
-            let helpersMod =
+            let structuresWithinNs =
                 unionsAndRecordsByNs
-                |> Map.toSeq
-                |> Seq.map (fun (ns, (unions, records)) ->
-                    let unions = unions |> List.distinctBy (fun u -> u.Name.idText)
-                    let records = records |> List.distinctBy (fun r -> r.Name.idText)
+                |> Map.map (fun _ (us, rs) -> ShibaGenerator.parseStructureWithinNs us rs)
 
-                    ShibaGenerator.createHelpersModule
-                        opens
-                        (ns.Split '.' |> Seq.map Ident.create |> List.ofSeq)
-                        unions
-                        records
+            let helpersMod =
+                structuresWithinNs
+                |> Map.toSeq
+                |> Seq.map (fun (ns, info) ->
+                    ShibaGenerator.createHelpersModule opens (ns.Split '.' |> Seq.map Ident.create |> List.ofSeq) info
                 )
                 |> Seq.toList
                 |> fun l -> [ yield! l ]

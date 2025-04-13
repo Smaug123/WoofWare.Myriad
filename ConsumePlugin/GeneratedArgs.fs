@@ -20,10 +20,10 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed BasicNoPositionals.
     type private BasicNoPositionals_InProgress =
         {
-            Foo : System.Int32 option
-            Bar : System.String option
-            Baz : System.Boolean option
-            Rest : string list
+            mutable Foo : System.Int32 option
+            mutable Bar : System.String option
+            mutable Baz : System.Boolean option
+            mutable Rest : string list
         }
 
         member this.Assemble (positionals : string list) : Result<BasicNoPositionals, string list> =
@@ -66,9 +66,9 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed Basic.
     type private Basic_InProgress =
         {
-            Foo : System.Int32 option
-            Bar : System.String option
-            Baz : System.Boolean option
+            mutable Foo : System.Int32 option
+            mutable Bar : System.String option
+            mutable Baz : System.Boolean option
         }
 
         member this.Assemble (positionals : string list) : Result<Basic, string list> =
@@ -112,9 +112,9 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed BasicWithIntPositionals.
     type private BasicWithIntPositionals_InProgress =
         {
-            Foo : System.Int32 option
-            Bar : System.String option
-            Baz : System.Boolean option
+            mutable Foo : System.Int32 option
+            mutable Bar : System.String option
+            mutable Baz : System.Boolean option
         }
 
         member this.Assemble (positionals : string list) : Result<BasicWithIntPositionals, string list> =
@@ -158,16 +158,16 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed LoadsOfTypes.
     type private LoadsOfTypes_InProgress =
         {
-            Foo : System.Int32 option
-            Bar : System.String option
-            Baz : System.Boolean option
-            SomeFile : FileInfo option
-            SomeDirectory : DirectoryInfo option
-            SomeList : string list
-            OptionalThingWithNoDefault : int option
-            OptionalThing : bool option
-            AnotherOptionalThing : int option
-            YetAnotherOptionalThing : string option
+            mutable Foo : System.Int32 option
+            mutable Bar : System.String option
+            mutable Baz : System.Boolean option
+            mutable SomeFile : FileInfo option
+            mutable SomeDirectory : DirectoryInfo option
+            mutable SomeList : string list
+            mutable OptionalThingWithNoDefault : int option
+            mutable OptionalThing : bool option
+            mutable AnotherOptionalThing : int option
+            mutable YetAnotherOptionalThing : string option
         }
 
         member this.Assemble (positionals : string list) : Result<LoadsOfTypes, string list> =
@@ -249,16 +249,16 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed LoadsOfTypesNoPositionals.
     type private LoadsOfTypesNoPositionals_InProgress =
         {
-            Foo : System.Int32 option
-            Bar : System.String option
-            Baz : System.Boolean option
-            SomeFile : FileInfo option
-            SomeDirectory : DirectoryInfo option
-            SomeList : string list
-            OptionalThingWithNoDefault : int option
-            OptionalThing : bool option
-            AnotherOptionalThing : int option
-            YetAnotherOptionalThing : string option
+            mutable Foo : System.Int32 option
+            mutable Bar : System.String option
+            mutable Baz : System.Boolean option
+            mutable SomeFile : FileInfo option
+            mutable SomeDirectory : DirectoryInfo option
+            mutable SomeList : string list
+            mutable OptionalThingWithNoDefault : int option
+            mutable OptionalThing : bool option
+            mutable AnotherOptionalThing : int option
+            mutable YetAnotherOptionalThing : string option
         }
 
         member this.Assemble (positionals : string list) : Result<LoadsOfTypesNoPositionals, string list> =
@@ -337,10 +337,10 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed DatesAndTimes.
     type private DatesAndTimes_InProgress =
         {
-            Plain : TimeSpan option
-            Invariant : TimeSpan option
-            Exact : TimeSpan option
-            InvariantExact : TimeSpan option
+            mutable Plain : TimeSpan option
+            mutable Invariant : TimeSpan option
+            mutable Exact : TimeSpan option
+            mutable InvariantExact : TimeSpan option
         }
 
         member this.Assemble (positionals : string list) : Result<DatesAndTimes, string list> =
@@ -388,8 +388,8 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ChildRecord.
     type private ChildRecord_InProgress =
         {
-            Thing1 : System.Int32 option
-            Thing2 : System.String option
+            mutable Thing1 : System.Int32 option
+            mutable Thing2 : System.String option
         }
 
         member this.Assemble (positionals : string list) : Result<ChildRecord, string list> =
@@ -421,8 +421,8 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ParentRecord.
     type private ParentRecord_InProgress =
         {
-            Child : ChildRecord_InProgress
-            AndAnother : System.Boolean option
+            mutable Child : ChildRecord_InProgress
+            mutable AndAnother : System.Boolean option
         }
 
         member this.Assemble (positionals : string list) : Result<ParentRecord, string list> =
@@ -454,7 +454,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ChildRecordWithPositional.
     type private ChildRecordWithPositional_InProgress =
         {
-            Thing1 : System.Int32 option
+            mutable Thing1 : System.Int32 option
         }
 
         member this.Assemble (positionals : string list) : Result<ChildRecordWithPositional, string list> =
@@ -482,8 +482,8 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ParentRecordChildPos.
     type private ParentRecordChildPos_InProgress =
         {
-            Child : ChildRecordWithPositional_InProgress
-            AndAnother : System.Boolean option
+            mutable Child : ChildRecordWithPositional_InProgress
+            mutable AndAnother : System.Boolean option
         }
 
         member this.Assemble (positionals : string list) : Result<ParentRecordChildPos, string list> =
@@ -515,7 +515,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ParentRecordSelfPos.
     type private ParentRecordSelfPos_InProgress =
         {
-            Child : ChildRecord_InProgress
+            mutable Child : ChildRecord_InProgress
         }
 
         member this.Assemble (positionals : string list) : Result<ParentRecordSelfPos, string list> =
@@ -562,7 +562,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ContainsBoolEnvVar.
     type private ContainsBoolEnvVar_InProgress =
         {
-            BoolVar : bool option
+            mutable BoolVar : bool option
         }
 
         member this.Assemble (positionals : string list) : Result<ContainsBoolEnvVar, string list> =
@@ -584,7 +584,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed WithFlagDu.
     type private WithFlagDu_InProgress =
         {
-            DryRun : DryRunMode option
+            mutable DryRun : DryRunMode option
         }
 
         member this.Assemble (positionals : string list) : Result<WithFlagDu, string list> =
@@ -608,7 +608,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ContainsFlagEnvVar.
     type private ContainsFlagEnvVar_InProgress =
         {
-            DryRun : DryRunMode option
+            mutable DryRun : DryRunMode option
         }
 
         member this.Assemble (positionals : string list) : Result<ContainsFlagEnvVar, string list> =
@@ -630,7 +630,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ContainsFlagDefaultValue.
     type private ContainsFlagDefaultValue_InProgress =
         {
-            DryRun : DryRunMode option
+            mutable DryRun : DryRunMode option
         }
 
         member this.Assemble (positionals : string list) : Result<ContainsFlagDefaultValue, string list> =
@@ -652,8 +652,8 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ManyLongForms.
     type private ManyLongForms_InProgress =
         {
-            DoTheThing : System.String option
-            SomeFlag : System.Boolean option
+            mutable DoTheThing : System.String option
+            mutable SomeFlag : System.Boolean option
         }
 
         member this.Assemble (positionals : string list) : Result<ManyLongForms, string list> =
@@ -685,7 +685,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgs.
     type private FlagsIntoPositionalArgs_InProgress =
         {
-            A : System.String option
+            mutable A : System.String option
         }
 
         member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgs, string list> =
@@ -713,7 +713,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgsChoice.
     type private FlagsIntoPositionalArgsChoice_InProgress =
         {
-            A : System.String option
+            mutable A : System.String option
         }
 
         member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgsChoice, string list> =
@@ -741,7 +741,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgsInt.
     type private FlagsIntoPositionalArgsInt_InProgress =
         {
-            A : System.String option
+            mutable A : System.String option
         }
 
         member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgsInt, string list> =
@@ -769,7 +769,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgsIntChoice.
     type private FlagsIntoPositionalArgsIntChoice_InProgress =
         {
-            A : System.String option
+            mutable A : System.String option
         }
 
         member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgsIntChoice, string list> =
@@ -797,7 +797,7 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgs'.
     type private FlagsIntoPositionalArgs'_InProgress =
         {
-            A : System.String option
+            mutable A : System.String option
         }
 
         member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgs', string list> =

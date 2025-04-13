@@ -7,82 +7,6 @@ open Fantomas.FCS.Text.Range
 open TypeEquality
 open WoofWare.Whippet.Fantomas
 
-type internal ArgParserOutputSpec =
-    {
-        ExtensionMethods : bool
-    }
-
-type internal FlagDu =
-    {
-        Name : Ident
-        Case1Name : Ident
-        Case2Name : Ident
-        /// Hopefully this is simply the const bool True or False, but it might e.g. be a literal
-        Case1Arg : SynExpr
-        /// Hopefully this is simply the const bool True or False, but it might e.g. be a literal
-        Case2Arg : SynExpr
-    }
-
-    static member FromBoolean (flagDu : FlagDu) (value : SynExpr) =
-        SynExpr.ifThenElse
-            (SynExpr.equals value flagDu.Case1Arg)
-            (SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case2Name ])
-            (SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case1Name ])
-
-/// The default value of an argument which admits default values can be pulled from different sources.
-/// This defines which source a particular default value comes from.
-type private ArgumentDefaultSpec =
-    /// From parsing the environment variable with the given name (e.g. "WOOFWARE_DISABLE_FOO" or whatever).
-    | EnvironmentVariable of name : SynExpr
-    /// From calling the static member `{typeWeParseInto}.Default{name}()`
-    /// For example, if `type MyArgs = { Thing : Choice<int, int> }`, then
-    /// we would use `MyArgs.DefaultThing () : int`.
-    ///
-    | FunctionCall of name : Ident
-
-type private Accumulation<'choice> =
-    | Required
-    | Optional
-    | Choice of 'choice
-    | List of Accumulation<'choice>
-
-type private ParseFunction<'acc> =
-    {
-        FieldName : Ident
-        TargetVariable : Ident
-        /// Any of the forms in this set are acceptable, but make sure they all start with a dash, or we might
-        /// get confused with positional args or something! I haven't thought that hard about this.
-        /// In the default case, this is `Const("arg-name")` for the `ArgName : blah` field; note that we have
-        /// omitted the initial `--` that will be required at runtime.
-        ArgForm : SynExpr list
-        /// If this is a boolean-like field (e.g. a bool or a flag DU), the help text should look a bit different:
-        /// we should lie to the user about the value of the cases there.
-        /// Similarly, if we're reading from an environment variable with the laxer parsing rules of accepting e.g.
-        /// "0" instead of "false", we need to know if we're reading a bool.
-        /// In that case, `boolCases` is Some, and contains the construction of the flag (or boolean, in which case
-        /// you get no data).
-        BoolCases : Choice<FlagDu, unit> option
-        Help : SynExpr option
-        /// A function string -> %TargetType%, where TargetVariable is probably a `%TargetType% option`.
-        /// (Depending on `Accumulation`, we'll remove the `option` at the end of the parse, asserting that the
-        /// argument was supplied.)
-        /// This is allowed to throw if it fails to parse.
-        Parser : SynExpr
-        /// If `Accumulation` is `List`, then this is the type of the list *element*; analogously for optionals
-        /// and choices and so on.
-        TargetType : SynType
-        Accumulation : 'acc
-    }
-
-    /// A SynExpr of type `string` which we can display to the user at generated-program runtime to display all
-    /// the ways they can refer to this arg.
-    member arg.HumanReadableArgForm : SynExpr =
-        let formatString = List.replicate arg.ArgForm.Length "--%s" |> String.concat " / "
-
-        (SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst formatString), arg.ArgForm)
-        ||> List.fold SynExpr.applyFunction
-        |> SynExpr.paren
-
 [<RequireQualifiedAccess>]
 type private ChoicePositional =
     | Normal of includeFlagLike : SynExpr option
@@ -114,14 +38,14 @@ type private ParseTree<'hasPositional> =
     /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each `Ident` in
     /// the branch (e.g. each record field name),
     /// and composes them into a `SynExpr` (e.g. the record-typed object).
-    | Branch of
+    | DescendRecord of
         fields : (Ident * ParseTree<HasNoPositional>) list *
         assemble : (Map<string, SynExpr> -> SynExpr) *
         Teq<'hasPositional, HasNoPositional>
     /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each `Ident` in
     /// the branch (e.g. each record field name),
     /// and composes them into a `SynExpr` (e.g. the record-typed object).
-    | BranchPos of
+    | DescendRecordPos of
         posField : Ident *
         fields : ParseTree<HasPositional> *
         (Ident * ParseTree<HasNoPositional>) list *
@@ -183,63 +107,6 @@ module private ParseTree =
                 |> sub.Apply
 
         go None ([], None) subs
-
-    let rec accumulatorsNonPos (tree : ParseTree<HasNoPositional>) : ParseFunctionNonPositional list =
-        match tree with
-        | ParseTree.PositionalLeaf (_, teq) -> exFalso teq
-        | ParseTree.BranchPos (_, _, _, _, teq) -> exFalso teq
-        | ParseTree.NonPositionalLeaf (pf, _) -> [ pf ]
-        | ParseTree.Branch (trees, _, _) -> trees |> List.collect (snd >> accumulatorsNonPos)
-
-    /// Returns the positional arg separately.
-    let rec accumulatorsPos
-        (tree : ParseTree<HasPositional>)
-        : ParseFunctionNonPositional list * ParseFunctionPositional
-        =
-        match tree with
-        | ParseTree.PositionalLeaf (pf, _) -> [], pf
-        | ParseTree.NonPositionalLeaf (_, teq) -> exFalso' teq
-        | ParseTree.Branch (_, _, teq) -> exFalso' teq
-        | ParseTree.BranchPos (_, tree, trees, _, _) ->
-            let nonPos = trees |> List.collect (snd >> accumulatorsNonPos)
-
-            let nonPos2, pos = accumulatorsPos tree
-            nonPos @ nonPos2, pos
-
-    /// Collect all the ParseFunctions which are necessary to define variables, throwing away
-    /// all information relevant to composing the resulting variables into records.
-    /// Returns the list of non-positional parsers, and any positional parser that exists.
-    let accumulators<'a> (tree : ParseTree<'a>) : ParseFunctionNonPositional list * ParseFunctionPositional option =
-        // Sad duplication of some code here, but it was the easiest way to make it type-safe :(
-        match tree with
-        | ParseTree.PositionalLeaf (pf, _) -> [], Some pf
-        | ParseTree.NonPositionalLeaf (pf, _) -> [ pf ], None
-        | ParseTree.Branch (trees, _, _) -> trees |> List.collect (snd >> accumulatorsNonPos) |> (fun i -> i, None)
-        | ParseTree.BranchPos (_, tree, trees, _, _) ->
-            let nonPos = trees |> List.collect (snd >> accumulatorsNonPos)
-
-            let nonPos2, pos = accumulatorsPos tree
-            nonPos @ nonPos2, Some pos
-
-        |> fun (nonPos, pos) ->
-            let duplicateArgs =
-                // This is best-effort. We can't necessarily detect all SynExprs here, but usually it'll be strings.
-                Option.toList (pos |> Option.map _.ArgForm) @ (nonPos |> List.map _.ArgForm)
-                |> Seq.concat
-                |> Seq.choose (fun expr ->
-                    match expr |> SynExpr.stripOptionalParen with
-                    | SynExpr.Const (SynConst.String (s, _, _), _) -> Some s
-                    | _ -> None
-                )
-                |> List.ofSeq
-                |> List.groupBy id
-                |> List.choose (fun (key, v) -> if v.Length > 1 then Some key else None)
-
-            match duplicateArgs with
-            | [] -> nonPos, pos
-            | dups ->
-                let dups = dups |> String.concat " "
-                failwith $"Duplicate args detected! %s{dups}"
 
     /// Build the return value.
     let rec instantiate<'a> (tree : ParseTree<'a>) : SynExpr =
