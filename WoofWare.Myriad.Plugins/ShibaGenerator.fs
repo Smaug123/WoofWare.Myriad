@@ -482,11 +482,28 @@ module internal ShibaGenerator =
         }
 
     /// Build the "in-progress record" which is basically "the input record, but with all fields mutable and optional".
-    let private inProgressRecordType (record : ParsedRecordStructure<'choice>) : RecordType =
+    let private inProgressRecordType (record : ParsedRecordStructure<ArgumentDefaultSpec>) : RecordType =
         let leafFields =
             record.LeafNodes
             |> Map.toSeq
-            |> Seq.map (fun (ident, data) -> failwith "TODO")
+            |> Seq.map (fun (ident, data) ->
+                match data.Acc with
+                | Accumulation.Choice choice -> SynType.option data.TypeAfterParse
+                | Accumulation.ChoicePositional choice -> failwith "TODO"
+                | Accumulation.List acc ->
+                    SynType.app' (SynType.createLongIdent' [ "ResizeArray" ]) [ data.TypeAfterParse ]
+                | Accumulation.Optional -> SynType.option data.TypeAfterParse
+                | Accumulation.Required -> SynType.option data.TypeAfterParse
+
+                |> fun ty ->
+                    {
+                        Attrs = []
+                        Type = ty
+                        Ident = Some (Ident.create ident)
+                    }
+                |> SynField.make
+                |> SynField.withMutability true
+            )
             |> Seq.toList
 
         let unionFields =
@@ -498,7 +515,14 @@ module internal ShibaGenerator =
         let recordFields =
             record.Records
             |> Map.toSeq
-            |> Seq.map (fun (ident, data) -> failwith "TODO")
+            |> Seq.map (fun (ident, data) ->
+                {
+                    Attrs = []
+                    Ident = Ident.create ident |> Some
+                    Type = SynType.createLongIdent [ Ident.create $"%s{data.Original.Name.idText}_InProgress" ]
+                }
+                |> SynField.make
+            )
             |> Seq.toList
 
         let fields =
@@ -547,6 +571,11 @@ module internal ShibaGenerator =
                         match record.Records |> Map.tryFind ident.idText with
                         | Some subRecord ->
                             // This was a record; defer to its parser.
+                            let subAssembleCall =
+                                SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                |> SynExpr.callMethodArg "Assemble" (SynExpr.createIdent "getEnvironmentVariable")
+                                |> SynExpr.applyTo (SynExpr.createIdent "positionals")
+
                             // TODO: need to know if it has positionals
                             [
                                 SynMatchClause.create
@@ -562,12 +591,12 @@ module internal ShibaGenerator =
                                         [
                                             SynExpr.callMethodArg
                                                 "AddRange"
-                                                (SynExpr.createIdent "errors")
                                                 (SynExpr.createIdent "err")
+                                                (SynExpr.createIdent "errors")
                                             defaultOf
                                         ])
                             ]
-                            |> SynExpr.createMatch (SynExpr.dotGet ident.idText (SynExpr.createIdent "this"))
+                            |> SynExpr.createMatch subAssembleCall
                         | None ->
 
                         match record.Unions |> Map.tryFind ident.idText with
@@ -582,12 +611,82 @@ module internal ShibaGenerator =
                             | Some pos ->
                                 // Positional args carried in from external argument.
                                 // TODO: register whether they came before or after separator
-                                SynExpr.createIdent "positionals"
+                                match leaf.Acc with
+                                | List acc ->
+                                    match acc with
+                                    | Accumulation.List _ ->
+                                        failwith "unexpected: positional args should not be a list of lists"
+                                    | Accumulation.Required ->
+                                        SynExpr.createIdent "positionals"
+                                        |> SynExpr.pipeThroughFunction (
+                                            SynExpr.applyFunction
+                                                (SynExpr.createLongIdent [ "List" ; "map" ])
+                                                (SynExpr.createLambda
+                                                    "x"
+                                                    (SynExpr.createMatch
+                                                        (SynExpr.createIdent "x")
+                                                        [
+                                                            SynMatchClause.create
+                                                                (SynPat.identWithArgs
+                                                                    [ Ident.create "Choice1Of2" ]
+                                                                    (SynArgPats.createNamed [ "x" ]))
+                                                                (SynExpr.createIdent "x")
+                                                            SynMatchClause.create
+                                                                (SynPat.identWithArgs
+                                                                    [ Ident.create "Choice2Of2" ]
+                                                                    (SynArgPats.createNamed [ "x" ]))
+                                                                (SynExpr.createIdent "x")
+                                                        ]))
+                                        )
+                                        |> SynExpr.pipeThroughFunction (
+                                            SynExpr.applyFunction
+                                                (SynExpr.createLongIdent [ "List" ; "map" ])
+                                                leaf.ParseFn
+                                        )
+                                    | Accumulation.Optional ->
+                                        failwith "unexpected: positional args should not be a list of options"
+                                    | Accumulation.Choice _ ->
+                                        failwith
+                                            "internal error: positional args, if Choicey, should be a ChoicePositional"
+                                    | Accumulation.ChoicePositional attrContents ->
+                                        SynExpr.createIdent "positionals"
+                                        |> SynExpr.pipeThroughFunction (
+                                            SynExpr.applyFunction
+                                                (SynExpr.createLongIdent [ "List" ; "map" ])
+                                                (SynExpr.createLambda
+                                                    "x"
+                                                    (SynExpr.createMatch
+                                                        (SynExpr.createIdent "x")
+                                                        [
+                                                            SynMatchClause.create
+                                                                (SynPat.identWithArgs
+                                                                    [ Ident.create "Choice1Of2" ]
+                                                                    (SynArgPats.createNamed [ "x" ]))
+                                                                (SynExpr.applyFunction
+                                                                    leaf.ParseFn
+                                                                    (SynExpr.createIdent "x")
+                                                                 |> SynExpr.pipeThroughFunction (
+                                                                     SynExpr.createIdent "Choice1Of2"
+                                                                 ))
+                                                            SynMatchClause.create
+                                                                (SynPat.identWithArgs
+                                                                    [ Ident.create "Choice2Of2" ]
+                                                                    (SynArgPats.createNamed [ "x" ]))
+                                                                (SynExpr.applyFunction
+                                                                    leaf.ParseFn
+                                                                    (SynExpr.createIdent "x")
+                                                                 |> SynExpr.pipeThroughFunction (
+                                                                     SynExpr.createIdent "Choice2Of2"
+                                                                 ))
+                                                        ]))
+                                        )
+                                | _ -> failwith "unexpected: positional arguments should be a list"
                             | None ->
 
                             let extract =
-                                match leaf.TypeAfterParse with
-                                | ChoiceType [ _ ; _ ] ->
+                                match leaf.Acc with
+                                | Accumulation.ChoicePositional choice -> failwith "TODO"
+                                | Accumulation.Choice choice ->
                                     [
                                         SynMatchClause.create
                                             (SynPat.identWithArgs
@@ -598,12 +697,28 @@ module internal ShibaGenerator =
                                                 (SynExpr.createIdent "result"))
                                         SynMatchClause.create
                                             (SynPat.identWithArgs [ Ident.create "None" ] (SynArgPats.create []))
-                                            (SynExpr.CreateConst "TODO"
+                                            (match choice with
+                                             | ArgumentDefaultSpec.EnvironmentVariable var ->
+                                                 var
+                                                 |> SynExpr.pipeThroughFunction (
+                                                     SynExpr.createIdent "getEnvironmentVariable"
+                                                 )
+                                                 |> SynExpr.pipeThroughFunction leaf.ParseFn
+                                             | ArgumentDefaultSpec.FunctionCall name ->
+                                                 SynExpr.callMethod
+                                                     name.idText
+                                                     (SynExpr.createIdent' record.Original.Name)
+                                             |> SynExpr.paren
                                              |> SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2"))
                                     ]
                                     |> SynExpr.createMatch (SynExpr.dotGet ident.idText (SynExpr.createIdent "this"))
-                                | ListType _ -> SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
-                                | PrimitiveType _ ->
+                                | Accumulation.List acc ->
+                                    // TODO: use the acc here too?!
+                                    SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
+                                | Accumulation.Optional -> SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
+                                | Accumulation.Required ->
+                                    // fall back to assuming it's basically primitive
                                     [
                                         SynMatchClause.create
                                             (SynPat.identWithArgs
@@ -622,8 +737,6 @@ module internal ShibaGenerator =
                                                 ])
                                     ]
                                     |> SynExpr.createMatch (SynExpr.dotGet ident.idText (SynExpr.createIdent "this"))
-                                | OptionType _ -> SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
-                                | ty -> failwith $"Could not convert type %s{SynType.toHumanReadableString ty}"
 
                             extract
                         | None ->
@@ -655,7 +768,12 @@ module internal ShibaGenerator =
             |> SynBinding.basic
                 [ Ident.create "this" ; Ident.create "Assemble" ]
                 [
-                    SynPat.annotateType (SynType.list SynType.string) (SynPat.named "positionals")
+                    SynPat.annotateType
+                        (SynType.funFromDomain SynType.string SynType.string)
+                        (SynPat.named "getEnvironmentVariable")
+                    SynPat.annotateType
+                        (SynType.list (SynType.app "Choice" [ SynType.string ; SynType.string ]))
+                        (SynPat.named "positionals")
                 ]
             |> SynBinding.withReturnAnnotation (
                 SynType.app
@@ -915,331 +1033,6 @@ module internal ShibaGenerator =
             FlagDus = Map.ofList flagDus
             DatalessUnions = Map.ofList datalessUnions
         }
-
-    /// Some types don't have in-progress equivalents (e.g. a no-data DU, which is "basically primitive");
-    /// hence the `option`.
-    let createInProgressRecognisedType
-        (flagDuNames : string ICollection)
-        (allKnownTypeIdents : string list)
-        (ty : RecognisedType)
-        : RecordType option
-        =
-        /// Get the "in-progress type" corresponding to the type with this name.
-        let getInProgressTypeName (ty : LongIdent) : SynType =
-            // TODO: this is super jank
-            let ident = List.last ty
-
-            if flagDuNames.Contains ident.idText then
-                // Flag DUs have no in-progress form as such
-                SynType.createLongIdent ty |> SynType.option
-            elif List.contains ident.idText allKnownTypeIdents then
-                SynType.createLongIdent [ ident.idText + "_InProgress" |> Ident.create ]
-            else
-                // TODO: this is just nonsense, probably
-                SynType.createLongIdent ty |> SynType.option
-
-        let makeType (attrs : SynAttribute list) (ty : SynType) (id : Ident) : SynField option =
-            match ty with
-            | ChoiceType [ left ; right ] ->
-                if not (SynType.provablyEqual left right) then
-                    failwith
-                        $"ArgParser was unable to prove types %O{left} and %O{right} to be equal in a Choice. We require them to be equal."
-
-                {
-                    Attrs = []
-                    Ident = Some id
-                    Type = SynType.option left
-                }
-                |> SynField.make
-                |> Some
-            | ChoiceType _ ->
-                failwith
-                    $"Only `Choice`s with exactly two args are supported, and they must have the same type on each side (field name: %s{id.idText})"
-            | ListType contents ->
-                // TODO: jank conditional
-                if
-                    attrs
-                    |> List.exists (fun x -> List.last(x.TypeName.LongIdent).idText.StartsWith "PositionalArgs")
-                then
-                    // Omit positional args, they are treated in the Finalise
-                    None
-                else
-
-                {
-                    Attrs = []
-                    Ident = Some id
-                    Type =
-                        // Parser will take strings later, when finalising
-                        SynType.list SynType.string
-                }
-                |> SynField.make
-                |> Some
-            | PrimitiveType ty ->
-                {
-                    Attrs = []
-                    Ident = Some id
-                    Type = SynType.option (SynType.createLongIdent ty)
-                }
-                |> SynField.make
-                |> Some
-            | OptionType ty ->
-                {
-                    Attrs = []
-                    Ident = Some id
-                    Type =
-                        // an `option` is its own in-progress
-                        SynType.option ty
-                }
-                |> SynField.make
-                |> Some
-            | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
-                // Assume this is in-progress
-                {
-                    Attrs = []
-                    Ident = Some id
-                    Type = getInProgressTypeName ident
-                }
-                |> SynField.make
-                |> Some
-            | ty -> failwith $"TODO: %O{ty}"
-
-        match ty with
-        | RecognisedType.Union union ->
-            if union.Cases |> List.forall (fun case -> case.Fields.IsEmpty) then
-                None
-            else
-
-            {
-                Name = union.Name.idText + "_InProgress" |> Ident.create
-                XmlDoc = PreXmlDoc.create $"A partially-parsed %s{union.Name.idText}." |> Some
-                Members =
-                    SynExpr.CreateConst "TODO: now construct the object"
-                    |> SynBinding.basic
-                        [ Ident.create "this" ; Ident.create "Assemble" ]
-                        [
-                            SynPat.annotateType (SynType.list SynType.string) (SynPat.named "positionals")
-                        ]
-                    |> SynBinding.withReturnAnnotation (
-                        SynType.app "Result" [ SynType.createLongIdent [ union.Name ] ; SynType.list SynType.string ]
-                    )
-                    |> SynMemberDefn.memberImplementation
-                    |> List.singleton
-                    |> Some
-                Fields =
-                    union.Cases
-                    |> List.mapi (fun i data -> i, data)
-                    |> List.choose (fun (caseNum, case) ->
-                        match case.Fields with
-                        | [] ->
-                            failwith
-                                $"Union type %s{union.Name.idText} has case %s{case.Name.idText} with no data; we require all cases to have exactly one field, or else all cases to be empty."
-                        | [ x ] -> makeType x.Attrs x.Type (Ident.create $"Case_%i{caseNum}")
-                        | _ ->
-                            failwith
-                                $"Union type %s{union.Name.idText} has case %s{case.Name.idText} with multiple fields; we require all cases to have exactly one field, or else all cases to be empty. Define a record type to hold the contents."
-                    )
-                    |> fun l ->
-                        if l.IsEmpty then
-                            [
-                                SynField.make
-                                    {
-                                        Attrs = []
-                                        Ident = Some (Ident.create "_Dummy")
-                                        Type = SynType.unit
-                                    }
-                            ]
-                        else
-                            l |> List.map (SynField.withMutability true)
-                Generics =
-                    match union.Generics with
-                    | None -> None
-                    | Some _ -> failwith $"Union type %s{union.Name.idText} had generics, which we don't support."
-                TypeAccessibility = Some (SynAccess.Private range0)
-                ImplAccessibility = None
-                Attributes = []
-            }
-            |> Some
-        | RecognisedType.Record record ->
-            {
-                Name = record.Name.idText + "_InProgress" |> Ident.create
-                Fields =
-                    record.Fields
-                    |> List.choose (fun (SynField.SynField (attrs, _, id, ty, _, _, _, _, _)) ->
-                        match id with
-                        | None ->
-                            failwith $"expected field in record %s{record.Name.idText} to have a name, but it did not"
-                        | Some id -> makeType (SynAttributes.toAttrs attrs) ty id
-                    )
-                    |> fun l ->
-                        if l.IsEmpty then
-                            {
-                                Attrs = []
-                                Ident = Some (Ident.create "_Dummy")
-                                Type = SynType.unit
-                            }
-                            |> SynField.make
-                            |> List.singleton
-                        else
-                            l |> List.map (SynField.withMutability true)
-                Members =
-                    // for each field `FieldName` in order, we've made a variable `arg%i`
-                    // which has done the optionality check
-                    let instantiation =
-                        record.Fields
-                        |> List.mapi (fun i (SynField.SynField (idOpt = ident)) ->
-                            match ident with
-                            | None ->
-                                failwith
-                                    $"expected field in record %s{record.Name.idText} to have a name, but it did not"
-                            | Some ident -> SynLongIdent.create [ ident ], SynExpr.createIdent $"arg%i{i}"
-                        )
-                        |> SynExpr.createRecord None
-                        |> SynExpr.applyFunction (SynExpr.createIdent "Ok")
-
-                    let defaultOf =
-                        SynExpr.typeApp [ SynType.anon ] (SynExpr.createLongIdent [ "Unchecked" ; "defaultof" ])
-
-                    let assignVariables =
-                        record.Fields
-                        |> List.mapi (fun i f -> (i, f))
-                        |> List.collect (fun
-                                             (i, SynField.SynField (attributes = attrs ; fieldType = ty ; idOpt = ident)) ->
-                            match ident with
-                            | None ->
-                                failwith
-                                    $"expected field in record %s{record.Name.idText} to have a name, but it did not"
-                            | Some ident ->
-                            // TODO: jank conditional
-                            if
-                                attrs
-                                |> SynAttributes.toAttrs
-                                |> List.exists (fun x ->
-                                    List.last(x.TypeName.LongIdent).idText.StartsWith "PositionalArgs"
-                                )
-                            then
-                                // Positional args carried in from external argument
-                                [
-                                    SynBinding.basic
-                                        [ Ident.create $"arg%i{i}" ]
-                                        []
-                                        (SynExpr.createIdent "positionals")
-                                    |> SynBinding.withReturnAnnotation ty
-                                    // prevent further usages of positional args
-                                    SynBinding.basic [ Ident.create "positionals" ] [] (SynExpr.CreateConst ())
-                                ]
-                            else
-                                let extract =
-                                    match ty with
-                                    | ChoiceType [ _ ; _ ] ->
-                                        [
-                                            SynMatchClause.create
-                                                (SynPat.identWithArgs
-                                                    [ Ident.create "Some" ]
-                                                    (SynArgPats.create [ SynPat.named "result" ]))
-                                                (SynExpr.applyFunction
-                                                    (SynExpr.createIdent "Choice1Of2")
-                                                    (SynExpr.createIdent "result"))
-                                            SynMatchClause.create
-                                                (SynPat.identWithArgs [ Ident.create "None" ] (SynArgPats.create []))
-                                                (SynExpr.CreateConst "TODO"
-                                                 |> SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2"))
-                                        ]
-                                        |> SynExpr.createMatch (
-                                            SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
-                                        )
-                                    | ListType _ -> SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
-                                    | PrimitiveType _ ->
-                                        [
-                                            SynMatchClause.create
-                                                (SynPat.identWithArgs
-                                                    [ Ident.create "Some" ]
-                                                    (SynArgPats.create [ SynPat.named "result" ]))
-                                                (SynExpr.createIdent "result")
-                                            SynMatchClause.create
-                                                (SynPat.identWithArgs [ Ident.create "None" ] (SynArgPats.create []))
-                                                (SynExpr.sequential
-                                                    [
-                                                        SynExpr.callMethodArg
-                                                            "Add"
-                                                            (SynExpr.CreateConst
-                                                                $"no value provided for %s{ident.idText}")
-                                                            (SynExpr.createIdent "errors")
-                                                        defaultOf
-                                                    ])
-                                        ]
-                                        |> SynExpr.createMatch (
-                                            SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
-                                        )
-                                    | OptionType _ -> SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
-                                    | SynType.LongIdent (SynLongIdent.SynLongIdent _) ->
-                                        // TODO: need to know if it has positionals
-                                        [
-                                            SynMatchClause.create
-                                                (SynPat.identWithArgs
-                                                    [ Ident.create "Ok" ]
-                                                    (SynArgPats.create [ SynPat.named "result" ]))
-                                                (SynExpr.createIdent "result")
-                                            SynMatchClause.create
-                                                (SynPat.identWithArgs
-                                                    [ Ident.create "Error" ]
-                                                    (SynArgPats.create [ SynPat.named "err" ]))
-                                                (SynExpr.sequential
-                                                    [
-                                                        SynExpr.callMethodArg
-                                                            "AddRange"
-                                                            (SynExpr.createIdent "errors")
-                                                            (SynExpr.createIdent "err")
-                                                        defaultOf
-                                                    ])
-                                        ]
-                                        |> SynExpr.createMatch (
-                                            SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
-                                        )
-                                    | ty -> failwith $"TODO: got type {ty} which we don't know how to handle"
-
-                                extract
-                                |> SynBinding.basic [ Ident.create $"arg%i{i}" ] []
-                                |> SynBinding.withReturnAnnotation ty
-                                |> List.singleton
-                        )
-
-                    SynExpr.ifThenElse
-                        (SynExpr.equals (SynExpr.dotGet "Count" (SynExpr.createIdent "errors")) (SynExpr.CreateConst 0))
-                        (SynExpr.createIdent "errors"
-                         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
-                         |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
-                        instantiation
-                    |> SynExpr.createLet assignVariables
-                    |> SynExpr.createLet
-                        [
-                            SynBinding.basic
-                                [ Ident.create "errors" ]
-                                []
-                                (SynExpr.applyFunction
-                                    (SynExpr.typeApp [ SynType.string ] (SynExpr.createIdent "ResizeArray"))
-                                    (SynExpr.CreateConst ()))
-                        ]
-                    |> SynBinding.basic
-                        [ Ident.create "this" ; Ident.create "Assemble" ]
-                        [
-                            SynPat.annotateType (SynType.list SynType.string) (SynPat.named "positionals")
-                        ]
-                    |> SynBinding.withReturnAnnotation (
-                        SynType.app "Result" [ SynType.createLongIdent [ record.Name ] ; SynType.list SynType.string ]
-                    )
-                    |> SynMemberDefn.memberImplementation
-                    |> List.singleton
-                    |> Some
-                XmlDoc = PreXmlDoc.create $"A partially-parsed %s{record.Name.idText}." |> Some
-                Generics =
-                    match record.Generics with
-                    | None -> None
-                    | Some _ -> failwith $"Record type %s{record.Name.idText} had generics, which we don't support."
-                TypeAccessibility = Some (SynAccess.Private range0)
-                ImplAccessibility = None
-                Attributes = []
-            }
-            |> Some
 
     let createHelpersModule (opens : SynOpenDeclTarget list) (ns : LongIdent) (info : AllInfo) : SynModuleDecl =
         let modName =

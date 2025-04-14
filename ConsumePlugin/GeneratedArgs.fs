@@ -20,13 +20,17 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed BasicNoPositionals.
     type private BasicNoPositionals_InProgress =
         {
-            mutable Foo : System.Int32 option
-            mutable Bar : System.String option
-            mutable Baz : System.Boolean option
-            mutable Rest : string list
+            mutable Bar : string option
+            mutable Baz : bool option
+            mutable Foo : int option
+            mutable Rest : ResizeArray<int>
         }
 
-        member this.Assemble (positionals : string list) : Result<BasicNoPositionals, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<BasicNoPositionals, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : int =
@@ -50,7 +54,7 @@ module private ArgParseHelpers_ConsumePlugin =
                     errors.Add "no value provided for Baz"
                     Unchecked.defaultof<_>
 
-            let arg3 : int list = this.Rest
+            let arg3 : int list = this.Rest |> Seq.toList
 
             if errors.Count = 0 then
                 Ok
@@ -66,12 +70,17 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed Basic.
     type private Basic_InProgress =
         {
-            mutable Foo : System.Int32 option
-            mutable Bar : System.String option
-            mutable Baz : System.Boolean option
+            mutable Bar : string option
+            mutable Baz : bool option
+            mutable Foo : int option
+            mutable Rest : ResizeArray<string>
         }
 
-        member this.Assemble (positionals : string list) : Result<Basic, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<Basic, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : int =
@@ -95,8 +104,14 @@ module private ArgParseHelpers_ConsumePlugin =
                     errors.Add "no value provided for Baz"
                     Unchecked.defaultof<_>
 
-            let arg3 : string list = positionals
-            let positionals = ()
+            let arg3 : string list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> x
+                    | Choice2Of2 x -> x
+                )
+                |> List.map (fun x -> x)
 
             if errors.Count = 0 then
                 Ok
@@ -112,12 +127,17 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed BasicWithIntPositionals.
     type private BasicWithIntPositionals_InProgress =
         {
-            mutable Foo : System.Int32 option
-            mutable Bar : System.String option
-            mutable Baz : System.Boolean option
+            mutable Bar : string option
+            mutable Baz : bool option
+            mutable Foo : int option
+            mutable Rest : ResizeArray<int>
         }
 
-        member this.Assemble (positionals : string list) : Result<BasicWithIntPositionals, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<BasicWithIntPositionals, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : int =
@@ -141,8 +161,14 @@ module private ArgParseHelpers_ConsumePlugin =
                     errors.Add "no value provided for Baz"
                     Unchecked.defaultof<_>
 
-            let arg3 : int list = positionals
-            let positionals = ()
+            let arg3 : int list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> x
+                    | Choice2Of2 x -> x
+                )
+                |> List.map (fun x -> System.Int32.Parse x)
 
             if errors.Count = 0 then
                 Ok
@@ -158,19 +184,24 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed LoadsOfTypes.
     type private LoadsOfTypes_InProgress =
         {
-            mutable Foo : System.Int32 option
-            mutable Bar : System.String option
-            mutable Baz : System.Boolean option
-            mutable SomeFile : FileInfo option
-            mutable SomeDirectory : DirectoryInfo option
-            mutable SomeList : string list
-            mutable OptionalThingWithNoDefault : int option
-            mutable OptionalThing : bool option
             mutable AnotherOptionalThing : int option
+            mutable Bar : string option
+            mutable Baz : bool option
+            mutable Foo : int option
+            mutable OptionalThing : bool option
+            mutable OptionalThingWithNoDefault : int option
+            mutable Positionals : ResizeArray<int>
+            mutable SomeDirectory : DirectoryInfo option
+            mutable SomeFile : FileInfo option
+            mutable SomeList : ResizeArray<DirectoryInfo>
             mutable YetAnotherOptionalThing : string option
         }
 
-        member this.Assemble (positionals : string list) : Result<LoadsOfTypes, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<LoadsOfTypes, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : int =
@@ -196,37 +227,44 @@ module private ArgParseHelpers_ConsumePlugin =
 
             let arg3 : FileInfo =
                 match this.SomeFile with
-                | Ok result -> result
-                | Error err ->
-                    err.AddRange errors
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for SomeFile"
                     Unchecked.defaultof<_>
 
             let arg4 : DirectoryInfo =
                 match this.SomeDirectory with
-                | Ok result -> result
-                | Error err ->
-                    err.AddRange errors
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for SomeDirectory"
                     Unchecked.defaultof<_>
 
-            let arg5 : DirectoryInfo list = this.SomeList
+            let arg5 : DirectoryInfo list = this.SomeList |> Seq.toList
             let arg6 : int option = this.OptionalThingWithNoDefault
-            let arg7 : int list = positionals
-            let positionals = ()
+
+            let arg7 : int list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> x
+                    | Choice2Of2 x -> x
+                )
+                |> List.map (fun x -> System.Int32.Parse x)
 
             let arg8 : Choice<bool, bool> =
                 match this.OptionalThing with
                 | Some result -> Choice1Of2 result
-                | None -> Choice2Of2 "TODO"
+                | None -> Choice2Of2 (LoadsOfTypes.DefaultOptionalThing ())
 
             let arg9 : Choice<int, int> =
                 match this.AnotherOptionalThing with
                 | Some result -> Choice1Of2 result
-                | None -> Choice2Of2 "TODO"
+                | None -> Choice2Of2 (LoadsOfTypes.DefaultAnotherOptionalThing ())
 
             let arg10 : Choice<string, string> =
                 match this.YetAnotherOptionalThing with
                 | Some result -> Choice1Of2 result
-                | None -> Choice2Of2 "TODO"
+                | None -> Choice2Of2 ("CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable |> (fun x -> x))
 
             if errors.Count = 0 then
                 Ok
@@ -249,19 +287,23 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed LoadsOfTypesNoPositionals.
     type private LoadsOfTypesNoPositionals_InProgress =
         {
-            mutable Foo : System.Int32 option
-            mutable Bar : System.String option
-            mutable Baz : System.Boolean option
-            mutable SomeFile : FileInfo option
-            mutable SomeDirectory : DirectoryInfo option
-            mutable SomeList : string list
-            mutable OptionalThingWithNoDefault : int option
-            mutable OptionalThing : bool option
             mutable AnotherOptionalThing : int option
+            mutable Bar : string option
+            mutable Baz : bool option
+            mutable Foo : int option
+            mutable OptionalThing : bool option
+            mutable OptionalThingWithNoDefault : int option
+            mutable SomeDirectory : DirectoryInfo option
+            mutable SomeFile : FileInfo option
+            mutable SomeList : ResizeArray<DirectoryInfo>
             mutable YetAnotherOptionalThing : string option
         }
 
-        member this.Assemble (positionals : string list) : Result<LoadsOfTypesNoPositionals, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<LoadsOfTypesNoPositionals, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : int =
@@ -287,35 +329,35 @@ module private ArgParseHelpers_ConsumePlugin =
 
             let arg3 : FileInfo =
                 match this.SomeFile with
-                | Ok result -> result
-                | Error err ->
-                    err.AddRange errors
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for SomeFile"
                     Unchecked.defaultof<_>
 
             let arg4 : DirectoryInfo =
                 match this.SomeDirectory with
-                | Ok result -> result
-                | Error err ->
-                    err.AddRange errors
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for SomeDirectory"
                     Unchecked.defaultof<_>
 
-            let arg5 : DirectoryInfo list = this.SomeList
+            let arg5 : DirectoryInfo list = this.SomeList |> Seq.toList
             let arg6 : int option = this.OptionalThingWithNoDefault
 
             let arg7 : Choice<bool, bool> =
                 match this.OptionalThing with
                 | Some result -> Choice1Of2 result
-                | None -> Choice2Of2 "TODO"
+                | None -> Choice2Of2 (LoadsOfTypesNoPositionals.DefaultOptionalThing ())
 
             let arg8 : Choice<int, int> =
                 match this.AnotherOptionalThing with
                 | Some result -> Choice1Of2 result
-                | None -> Choice2Of2 "TODO"
+                | None -> Choice2Of2 (LoadsOfTypesNoPositionals.DefaultAnotherOptionalThing ())
 
             let arg9 : Choice<string, string> =
                 match this.YetAnotherOptionalThing with
                 | Some result -> Choice1Of2 result
-                | None -> Choice2Of2 "TODO"
+                | None -> Choice2Of2 ("CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable |> (fun x -> x))
 
             if errors.Count = 0 then
                 Ok
@@ -337,41 +379,45 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed DatesAndTimes.
     type private DatesAndTimes_InProgress =
         {
-            mutable Plain : TimeSpan option
-            mutable Invariant : TimeSpan option
             mutable Exact : TimeSpan option
+            mutable Invariant : TimeSpan option
             mutable InvariantExact : TimeSpan option
+            mutable Plain : TimeSpan option
         }
 
-        member this.Assemble (positionals : string list) : Result<DatesAndTimes, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<DatesAndTimes, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : TimeSpan =
                 match this.Plain with
-                | Ok result -> result
-                | Error err ->
-                    err.AddRange errors
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Plain"
                     Unchecked.defaultof<_>
 
             let arg1 : TimeSpan =
                 match this.Invariant with
-                | Ok result -> result
-                | Error err ->
-                    err.AddRange errors
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Invariant"
                     Unchecked.defaultof<_>
 
             let arg2 : TimeSpan =
                 match this.Exact with
-                | Ok result -> result
-                | Error err ->
-                    err.AddRange errors
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for Exact"
                     Unchecked.defaultof<_>
 
             let arg3 : TimeSpan =
                 match this.InvariantExact with
-                | Ok result -> result
-                | Error err ->
-                    err.AddRange errors
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for InvariantExact"
                     Unchecked.defaultof<_>
 
             if errors.Count = 0 then
@@ -388,11 +434,15 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ChildRecord.
     type private ChildRecord_InProgress =
         {
-            mutable Thing1 : System.Int32 option
-            mutable Thing2 : System.String option
+            mutable Thing1 : int option
+            mutable Thing2 : string option
         }
 
-        member this.Assemble (positionals : string list) : Result<ChildRecord, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ChildRecord, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : int =
@@ -421,18 +471,22 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ParentRecord.
     type private ParentRecord_InProgress =
         {
+            mutable AndAnother : bool option
             mutable Child : ChildRecord_InProgress
-            mutable AndAnother : System.Boolean option
         }
 
-        member this.Assemble (positionals : string list) : Result<ParentRecord, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ParentRecord, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : ChildRecord =
-                match this.Child with
+                match this.Child.Assemble getEnvironmentVariable positionals with
                 | Ok result -> result
                 | Error err ->
-                    err.AddRange errors
+                    errors.AddRange err
                     Unchecked.defaultof<_>
 
             let arg1 : bool =
@@ -454,10 +508,15 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ChildRecordWithPositional.
     type private ChildRecordWithPositional_InProgress =
         {
-            mutable Thing1 : System.Int32 option
+            mutable Thing1 : int option
+            mutable Thing2 : ResizeArray<Uri>
         }
 
-        member this.Assemble (positionals : string list) : Result<ChildRecordWithPositional, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ChildRecordWithPositional, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : int =
@@ -467,8 +526,14 @@ module private ArgParseHelpers_ConsumePlugin =
                     errors.Add "no value provided for Thing1"
                     Unchecked.defaultof<_>
 
-            let arg1 : Uri list = positionals
-            let positionals = ()
+            let arg1 : Uri list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> x
+                    | Choice2Of2 x -> x
+                )
+                |> List.map (fun x -> System.Uri x)
 
             if errors.Count = 0 then
                 Ok
@@ -482,18 +547,22 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ParentRecordChildPos.
     type private ParentRecordChildPos_InProgress =
         {
+            mutable AndAnother : bool option
             mutable Child : ChildRecordWithPositional_InProgress
-            mutable AndAnother : System.Boolean option
         }
 
-        member this.Assemble (positionals : string list) : Result<ParentRecordChildPos, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ParentRecordChildPos, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : ChildRecordWithPositional =
-                match this.Child with
+                match this.Child.Assemble getEnvironmentVariable positionals with
                 | Ok result -> result
                 | Error err ->
-                    err.AddRange errors
+                    errors.AddRange err
                     Unchecked.defaultof<_>
 
             let arg1 : bool =
@@ -515,21 +584,32 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ParentRecordSelfPos.
     type private ParentRecordSelfPos_InProgress =
         {
+            mutable AndAnother : ResizeArray<bool>
             mutable Child : ChildRecord_InProgress
         }
 
-        member this.Assemble (positionals : string list) : Result<ParentRecordSelfPos, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ParentRecordSelfPos, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : ChildRecord =
-                match this.Child with
+                match this.Child.Assemble getEnvironmentVariable positionals with
                 | Ok result -> result
                 | Error err ->
-                    err.AddRange errors
+                    errors.AddRange err
                     Unchecked.defaultof<_>
 
-            let arg1 : bool list = positionals
-            let positionals = ()
+            let arg1 : bool list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> x
+                    | Choice2Of2 x -> x
+                )
+                |> List.map (fun x -> System.Boolean.Parse x)
 
             if errors.Count = 0 then
                 Ok
@@ -543,13 +623,23 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ChoicePositionals.
     type private ChoicePositionals_InProgress =
         {
-            _Dummy : unit
+            mutable Args : ResizeArray<string>
         }
 
-        member this.Assemble (positionals : string list) : Result<ChoicePositionals, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ChoicePositionals, string list>
+            =
             let errors = ResizeArray<string> ()
-            let arg0 : Choice<string, string> list = positionals
-            let positionals = ()
+
+            let arg0 : Choice<string, string> list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> (fun x -> x) x |> Choice1Of2
+                    | Choice2Of2 x -> (fun x -> x) x |> Choice2Of2
+                )
 
             if errors.Count = 0 then
                 Ok
@@ -565,13 +655,22 @@ module private ArgParseHelpers_ConsumePlugin =
             mutable BoolVar : bool option
         }
 
-        member this.Assemble (positionals : string list) : Result<ContainsBoolEnvVar, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ContainsBoolEnvVar, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : Choice<bool, bool> =
                 match this.BoolVar with
                 | Some result -> Choice1Of2 result
-                | None -> Choice2Of2 "TODO"
+                | None ->
+                    Choice2Of2 (
+                        "CONSUMEPLUGIN_THINGS"
+                        |> getEnvironmentVariable
+                        |> (fun x -> System.Boolean.Parse x)
+                    )
 
             if errors.Count = 0 then
                 Ok
@@ -587,14 +686,18 @@ module private ArgParseHelpers_ConsumePlugin =
             mutable DryRun : DryRunMode option
         }
 
-        member this.Assemble (positionals : string list) : Result<WithFlagDu, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<WithFlagDu, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : DryRunMode =
                 match this.DryRun with
-                | Ok result -> result
-                | Error err ->
-                    err.AddRange errors
+                | Some result -> result
+                | None ->
+                    errors.Add "no value provided for DryRun"
                     Unchecked.defaultof<_>
 
             if errors.Count = 0 then
@@ -611,13 +714,27 @@ module private ArgParseHelpers_ConsumePlugin =
             mutable DryRun : DryRunMode option
         }
 
-        member this.Assemble (positionals : string list) : Result<ContainsFlagEnvVar, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ContainsFlagEnvVar, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : Choice<DryRunMode, DryRunMode> =
                 match this.DryRun with
                 | Some result -> Choice1Of2 result
-                | None -> Choice2Of2 "TODO"
+                | None ->
+                    Choice2Of2 (
+                        "CONSUMEPLUGIN_THINGS"
+                        |> getEnvironmentVariable
+                        |> (fun x ->
+                            if System.Boolean.Parse x = Consts.FALSE then
+                                DryRunMode.Wet
+                            else
+                                DryRunMode.Dry
+                        )
+                    )
 
             if errors.Count = 0 then
                 Ok
@@ -633,13 +750,17 @@ module private ArgParseHelpers_ConsumePlugin =
             mutable DryRun : DryRunMode option
         }
 
-        member this.Assemble (positionals : string list) : Result<ContainsFlagDefaultValue, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ContainsFlagDefaultValue, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : Choice<DryRunMode, DryRunMode> =
                 match this.DryRun with
                 | Some result -> Choice1Of2 result
-                | None -> Choice2Of2 "TODO"
+                | None -> Choice2Of2 (ContainsFlagDefaultValue.DefaultDryRun ())
 
             if errors.Count = 0 then
                 Ok
@@ -652,11 +773,15 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ManyLongForms.
     type private ManyLongForms_InProgress =
         {
-            mutable DoTheThing : System.String option
-            mutable SomeFlag : System.Boolean option
+            mutable DoTheThing : string option
+            mutable SomeFlag : bool option
         }
 
-        member this.Assemble (positionals : string list) : Result<ManyLongForms, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<ManyLongForms, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : string =
@@ -685,10 +810,15 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgs.
     type private FlagsIntoPositionalArgs_InProgress =
         {
-            mutable A : System.String option
+            mutable A : string option
+            mutable GrabEverything : ResizeArray<string>
         }
 
-        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgs, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<FlagsIntoPositionalArgs, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : string =
@@ -698,8 +828,14 @@ module private ArgParseHelpers_ConsumePlugin =
                     errors.Add "no value provided for A"
                     Unchecked.defaultof<_>
 
-            let arg1 : string list = positionals
-            let positionals = ()
+            let arg1 : string list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> x
+                    | Choice2Of2 x -> x
+                )
+                |> List.map (fun x -> x)
 
             if errors.Count = 0 then
                 Ok
@@ -713,10 +849,15 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgsChoice.
     type private FlagsIntoPositionalArgsChoice_InProgress =
         {
-            mutable A : System.String option
+            mutable A : string option
+            mutable GrabEverything : ResizeArray<string>
         }
 
-        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgsChoice, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<FlagsIntoPositionalArgsChoice, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : string =
@@ -726,8 +867,13 @@ module private ArgParseHelpers_ConsumePlugin =
                     errors.Add "no value provided for A"
                     Unchecked.defaultof<_>
 
-            let arg1 : Choice<string, string> list = positionals
-            let positionals = ()
+            let arg1 : Choice<string, string> list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> (fun x -> x) x |> Choice1Of2
+                    | Choice2Of2 x -> (fun x -> x) x |> Choice2Of2
+                )
 
             if errors.Count = 0 then
                 Ok
@@ -741,10 +887,15 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgsInt.
     type private FlagsIntoPositionalArgsInt_InProgress =
         {
-            mutable A : System.String option
+            mutable A : string option
+            mutable GrabEverything : ResizeArray<int>
         }
 
-        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgsInt, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<FlagsIntoPositionalArgsInt, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : string =
@@ -754,8 +905,14 @@ module private ArgParseHelpers_ConsumePlugin =
                     errors.Add "no value provided for A"
                     Unchecked.defaultof<_>
 
-            let arg1 : int list = positionals
-            let positionals = ()
+            let arg1 : int list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> x
+                    | Choice2Of2 x -> x
+                )
+                |> List.map (fun x -> System.Int32.Parse x)
 
             if errors.Count = 0 then
                 Ok
@@ -769,10 +926,15 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgsIntChoice.
     type private FlagsIntoPositionalArgsIntChoice_InProgress =
         {
-            mutable A : System.String option
+            mutable A : string option
+            mutable GrabEverything : ResizeArray<int>
         }
 
-        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgsIntChoice, string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<FlagsIntoPositionalArgsIntChoice, string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : string =
@@ -782,8 +944,13 @@ module private ArgParseHelpers_ConsumePlugin =
                     errors.Add "no value provided for A"
                     Unchecked.defaultof<_>
 
-            let arg1 : Choice<int, int> list = positionals
-            let positionals = ()
+            let arg1 : Choice<int, int> list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> (fun x -> System.Int32.Parse x) x |> Choice1Of2
+                    | Choice2Of2 x -> (fun x -> System.Int32.Parse x) x |> Choice2Of2
+                )
 
             if errors.Count = 0 then
                 Ok
@@ -797,10 +964,15 @@ module private ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed FlagsIntoPositionalArgs'.
     type private FlagsIntoPositionalArgs'_InProgress =
         {
-            mutable A : System.String option
+            mutable A : string option
+            mutable DontGrabEverything : ResizeArray<string>
         }
 
-        member this.Assemble (positionals : string list) : Result<FlagsIntoPositionalArgs', string list> =
+        member this.Assemble
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<FlagsIntoPositionalArgs', string list>
+            =
             let errors = ResizeArray<string> ()
 
             let arg0 : string =
@@ -810,8 +982,14 @@ module private ArgParseHelpers_ConsumePlugin =
                     errors.Add "no value provided for A"
                     Unchecked.defaultof<_>
 
-            let arg1 : string list = positionals
-            let positionals = ()
+            let arg1 : string list =
+                positionals
+                |> List.map (fun x ->
+                    match x with
+                    | Choice1Of2 x -> x
+                    | Choice2Of2 x -> x
+                )
+                |> List.map (fun x -> x)
 
             if errors.Count = 0 then
                 Ok
