@@ -468,6 +468,7 @@ module internal ShibaGenerator =
 
     type internal ParsedRecordStructure<'choice> =
         {
+            NameOfInProgressType : Ident
             Original : RecordType
             /// Map of field name to parser for that field
             LeafNodes : Map<string, LeafData<'choice>>
@@ -487,22 +488,22 @@ module internal ShibaGenerator =
             record.LeafNodes
             |> Map.toSeq
             |> Seq.map (fun (ident, data) ->
-                match data.Acc with
-                | Accumulation.Choice choice -> SynType.option data.TypeAfterParse
-                | Accumulation.ChoicePositional choice -> failwith "TODO"
-                | Accumulation.List acc ->
-                    SynType.app' (SynType.createLongIdent' [ "ResizeArray" ]) [ data.TypeAfterParse ]
-                | Accumulation.Optional -> SynType.option data.TypeAfterParse
-                | Accumulation.Required -> SynType.option data.TypeAfterParse
+                let ty, mutability =
+                    match data.Acc with
+                    | Accumulation.Choice _ -> SynType.option data.TypeAfterParse, true
+                    | Accumulation.ChoicePositional _ -> failwith "TODO"
+                    | Accumulation.List acc ->
+                        SynType.app' (SynType.createLongIdent' [ "ResizeArray" ]) [ data.TypeAfterParse ], false
+                    | Accumulation.Optional -> SynType.option data.TypeAfterParse, true
+                    | Accumulation.Required -> SynType.option data.TypeAfterParse, true
 
-                |> fun ty ->
-                    {
-                        Attrs = []
-                        Type = ty
-                        Ident = Some (Ident.create ident)
-                    }
+                {
+                    Attrs = []
+                    Type = ty
+                    Ident = Some (Ident.create ident)
+                }
                 |> SynField.make
-                |> SynField.withMutability true
+                |> SynField.withMutability mutability
             )
             |> Seq.toList
 
@@ -519,7 +520,7 @@ module internal ShibaGenerator =
                 {
                     Attrs = []
                     Ident = Ident.create ident |> Some
-                    Type = SynType.createLongIdent [ Ident.create $"%s{data.Original.Name.idText}_InProgress" ]
+                    Type = SynType.createLongIdent [ data.NameOfInProgressType ]
                 }
                 |> SynField.make
             )
@@ -539,7 +540,7 @@ module internal ShibaGenerator =
                 else
                     l |> List.map (SynField.withMutability true)
 
-        let members =
+        let assembleMethod =
             // for each field `FieldName` in order, we've made a variable `arg%i`
             // which has done the optionality check
             let instantiation =
@@ -783,18 +784,44 @@ module internal ShibaGenerator =
                         SynType.list SynType.string
                     ]
             )
+            |> SynMemberDefn.memberImplementation
+
+        let emptyConstructor =
+            [
+                for KeyValue (nodeName, leaf) in record.LeafNodes do
+                    let rhs =
+                        match leaf.Acc with
+                        | Accumulation.Required
+                        | Accumulation.Optional
+                        | Accumulation.Choice _ -> SynExpr.createIdent "None"
+                        | Accumulation.ChoicePositional _ -> failwith "todo"
+                        | Accumulation.List acc ->
+                            SynExpr.applyFunction (SynExpr.createIdent "ResizeArray") (SynExpr.CreateConst ())
+
+                    yield SynLongIdent.create [ Ident.create nodeName ], rhs
+                for KeyValue (nodeName, subRecord) in record.Records do
+                    yield
+                        SynLongIdent.create [ Ident.create nodeName ],
+                        SynExpr.callMethod "_Empty" (SynExpr.createIdent' subRecord.NameOfInProgressType)
+                for KeyValue (nodeName, subUnion) in record.Unions do
+                    yield SynLongIdent.create [ Ident.create nodeName ], failwith "TODO"
+            ]
+            |> SynExpr.createRecord None
+            |> SynBinding.basic [ Ident.create "_Empty" ] [ SynPat.unit ]
+            |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ record.NameOfInProgressType ])
+            |> SynMemberDefn.staticMember
 
         {
-            Name = record.Original.Name.idText + "_InProgress" |> Ident.create
+            Name = record.NameOfInProgressType
             Fields = fields
-            Members = members |> SynMemberDefn.memberImplementation |> List.singleton |> Some
+            Members = [ assembleMethod ; emptyConstructor ] |> Some
             XmlDoc = PreXmlDoc.create $"A partially-parsed %s{record.Original.Name.idText}." |> Some
             Generics =
                 match record.Original.Generics with
                 | None -> None
                 | Some _ ->
                     failwith $"Record type %s{record.Original.Name.idText} had generics, which we don't support."
-            TypeAccessibility = Some (SynAccess.Private range0)
+            TypeAccessibility = Some (SynAccess.Internal range0)
             ImplAccessibility = None
             Attributes = []
         }
@@ -867,6 +894,7 @@ module internal ShibaGenerator =
         | None -> None
         | Some (leaf, records, unions) ->
             {
+                NameOfInProgressType = rt.Name.idText + "_InProgress" |> Ident.create
                 Original = rt
                 LeafNodes = leaf |> Map.ofList
                 Records = records |> Map.ofList
@@ -1034,14 +1062,16 @@ module internal ShibaGenerator =
             DatalessUnions = Map.ofList datalessUnions
         }
 
+    let helperModuleName (namespaceName : LongIdent) : Ident =
+        let ns = namespaceName |> List.map _.idText |> String.concat "_"
+        Ident.create $"ArgParseHelpers_%s{ns}"
+
     let createHelpersModule (opens : SynOpenDeclTarget list) (ns : LongIdent) (info : AllInfo) : SynModuleDecl =
-        let modName =
-            let ns = ns |> List.map _.idText |> String.concat "_"
-            Ident.create $"ArgParseHelpers_%s{ns}"
+        let modName = helperModuleName ns
 
         let modInfo =
             SynComponentInfo.create modName
-            |> SynComponentInfo.withAccessibility (SynAccess.Private range0)
+            |> SynComponentInfo.withAccessibility (SynAccess.Internal range0)
             |> SynComponentInfo.withDocString (PreXmlDoc.create $"Helper types for arg parsing")
 
         let flagDuNames = info.FlagDus.Keys
@@ -1073,8 +1103,8 @@ module internal ShibaGenerator =
         (opens : SynOpenDeclTarget list)
         (ns : LongIdent)
         ((taggedType : SynTypeDefn, spec : ArgParserOutputSpec))
-        (allUnionTypes : UnionType list)
-        (allRecordTypes : RecordType list)
+        (helperModName : LongIdent)
+        (structures : AllInfo)
         : SynModuleOrNamespace
         =
         let taggedType =
@@ -1086,6 +1116,8 @@ module internal ShibaGenerator =
                                        _,
                                        _) -> RecordType.OfRecord sci smd access fields
             | _ -> failwith "[<ArgParser>] currently only supports being placed on records."
+
+        let taggedTypeInfo = structures.RecordParsers.[taggedType.Name.idText]
 
         let modAttrs, modName =
             if spec.ExtensionMethods then
@@ -1131,7 +1163,7 @@ module internal ShibaGenerator =
             |> SynTypeDefnRepr.union
             |> SynTypeDefn.create (
                 SynComponentInfo.create parseStateIdent
-                |> SynComponentInfo.setAccessibility (Some (SynAccess.Private range0))
+                |> SynComponentInfo.setAccessibility (Some (SynAccess.Internal range0))
             )
             |> List.singleton
             |> SynModuleDecl.createTypes
@@ -1144,6 +1176,17 @@ module internal ShibaGenerator =
             let parsePrime =
                 SynExpr.CreateConst "todo"
                 |> SynExpr.applyFunction (SynExpr.createIdent "failwith")
+                |> SynExpr.createLet
+                    [
+                        SynBinding.basic
+                            [ Ident.create "inProgress" ]
+                            []
+                            (SynExpr.applyFunction
+                                (SynExpr.createLongIdent' (
+                                    helperModName @ [ taggedTypeInfo.NameOfInProgressType ; Ident.create "_Empty" ]
+                                ))
+                                (SynExpr.CreateConst ()))
+                    ]
                 |> SynBinding.basic
                     [ Ident.create "parse'" ]
                     [
@@ -1290,6 +1333,8 @@ type ShibaGenerator () =
                 unionsAndRecordsByNs
                 |> Map.map (fun _ (us, rs) -> ShibaGenerator.parseStructureWithinNs us rs)
 
+            let helperModNamespaceName = Ident.create "ArgParserHelpers"
+
             let helpersMod =
                 structuresWithinNs
                 |> Map.toSeq
@@ -1298,12 +1343,21 @@ type ShibaGenerator () =
                 )
                 |> Seq.toList
                 |> fun l -> [ yield! l ]
-                |> SynModuleOrNamespace.createNamespace [ Ident.create "ArgParserHelpers" ]
+                |> SynModuleOrNamespace.createNamespace [ helperModNamespaceName ]
 
             let modules =
                 namespaceAndTypes
-                |> List.map (fun (ns, taggedType, unions, records) ->
-                    ShibaGenerator.createModule opens ns taggedType unions records
+                |> List.map (fun (ns, taggedType, _, _) ->
+                    let opens =
+                        SynOpenDeclTarget.ModuleOrNamespace (SynLongIdent.create [ helperModNamespaceName ], range0)
+                        :: opens
+
+                    ShibaGenerator.createModule
+                        opens
+                        ns
+                        taggedType
+                        [ ShibaGenerator.helperModuleName ns ]
+                        structuresWithinNs.[ns |> List.map _.idText |> String.concat "."]
                 )
 
             Output.Ast (helpersMod :: modules)

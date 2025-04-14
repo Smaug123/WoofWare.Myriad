@@ -11,14 +11,14 @@
 namespace ArgParserHelpers
 
 /// Helper types for arg parsing
-module private ArgParseHelpers_ConsumePlugin =
+module internal ArgParseHelpers_ConsumePlugin =
     open System
     open System.IO
     open WoofWare.Myriad.Plugins
     open ConsumePlugin
 
     /// A partially-parsed BasicNoPositionals.
-    type private BasicNoPositionals_InProgress =
+    type internal BasicNoPositionals_InProgress =
         {
             mutable Bar : string option
             mutable Baz : bool option
@@ -67,8 +67,16 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : BasicNoPositionals_InProgress =
+            {
+                Bar = None
+                Baz = None
+                Foo = None
+                Rest = ResizeArray ()
+            }
+
     /// A partially-parsed Basic.
-    type private Basic_InProgress =
+    type internal Basic_InProgress =
         {
             mutable Bar : string option
             mutable Baz : bool option
@@ -124,8 +132,16 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : Basic_InProgress =
+            {
+                Bar = None
+                Baz = None
+                Foo = None
+                Rest = ResizeArray ()
+            }
+
     /// A partially-parsed BasicWithIntPositionals.
-    type private BasicWithIntPositionals_InProgress =
+    type internal BasicWithIntPositionals_InProgress =
         {
             mutable Bar : string option
             mutable Baz : bool option
@@ -181,8 +197,16 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : BasicWithIntPositionals_InProgress =
+            {
+                Bar = None
+                Baz = None
+                Foo = None
+                Rest = ResizeArray ()
+            }
+
     /// A partially-parsed LoadsOfTypes.
-    type private LoadsOfTypes_InProgress =
+    type internal LoadsOfTypes_InProgress =
         {
             mutable AnotherOptionalThing : int option
             mutable Bar : string option
@@ -284,8 +308,23 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : LoadsOfTypes_InProgress =
+            {
+                AnotherOptionalThing = None
+                Bar = None
+                Baz = None
+                Foo = None
+                OptionalThing = None
+                OptionalThingWithNoDefault = None
+                Positionals = ResizeArray ()
+                SomeDirectory = None
+                SomeFile = None
+                SomeList = ResizeArray ()
+                YetAnotherOptionalThing = None
+            }
+
     /// A partially-parsed LoadsOfTypesNoPositionals.
-    type private LoadsOfTypesNoPositionals_InProgress =
+    type internal LoadsOfTypesNoPositionals_InProgress =
         {
             mutable AnotherOptionalThing : int option
             mutable Bar : string option
@@ -376,8 +415,22 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : LoadsOfTypesNoPositionals_InProgress =
+            {
+                AnotherOptionalThing = None
+                Bar = None
+                Baz = None
+                Foo = None
+                OptionalThing = None
+                OptionalThingWithNoDefault = None
+                SomeDirectory = None
+                SomeFile = None
+                SomeList = ResizeArray ()
+                YetAnotherOptionalThing = None
+            }
+
     /// A partially-parsed DatesAndTimes.
-    type private DatesAndTimes_InProgress =
+    type internal DatesAndTimes_InProgress =
         {
             mutable Exact : TimeSpan option
             mutable Invariant : TimeSpan option
@@ -431,8 +484,16 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : DatesAndTimes_InProgress =
+            {
+                Exact = None
+                Invariant = None
+                InvariantExact = None
+                Plain = None
+            }
+
     /// A partially-parsed ChildRecord.
-    type private ChildRecord_InProgress =
+    type internal ChildRecord_InProgress =
         {
             mutable Thing1 : int option
             mutable Thing2 : string option
@@ -468,8 +529,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ChildRecord_InProgress =
+            {
+                Thing1 = None
+                Thing2 = None
+            }
+
     /// A partially-parsed ParentRecord.
-    type private ParentRecord_InProgress =
+    type internal ParentRecord_InProgress =
         {
             mutable AndAnother : bool option
             mutable Child : ChildRecord_InProgress
@@ -505,8 +572,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ParentRecord_InProgress =
+            {
+                AndAnother = None
+                Child = ChildRecord_InProgress._Empty ()
+            }
+
     /// A partially-parsed ChildRecordWithPositional.
-    type private ChildRecordWithPositional_InProgress =
+    type internal ChildRecordWithPositional_InProgress =
         {
             mutable Thing1 : int option
             mutable Thing2 : ResizeArray<Uri>
@@ -544,8 +617,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ChildRecordWithPositional_InProgress =
+            {
+                Thing1 = None
+                Thing2 = ResizeArray ()
+            }
+
     /// A partially-parsed ParentRecordChildPos.
-    type private ParentRecordChildPos_InProgress =
+    type internal ParentRecordChildPos_InProgress =
         {
             mutable AndAnother : bool option
             mutable Child : ChildRecordWithPositional_InProgress
@@ -581,8 +660,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ParentRecordChildPos_InProgress =
+            {
+                AndAnother = None
+                Child = ChildRecordWithPositional_InProgress._Empty ()
+            }
+
     /// A partially-parsed ParentRecordSelfPos.
-    type private ParentRecordSelfPos_InProgress =
+    type internal ParentRecordSelfPos_InProgress =
         {
             mutable AndAnother : ResizeArray<bool>
             mutable Child : ChildRecord_InProgress
@@ -620,8 +705,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ParentRecordSelfPos_InProgress =
+            {
+                AndAnother = ResizeArray ()
+                Child = ChildRecord_InProgress._Empty ()
+            }
+
     /// A partially-parsed ChoicePositionals.
-    type private ChoicePositionals_InProgress =
+    type internal ChoicePositionals_InProgress =
         {
             mutable Args : ResizeArray<string>
         }
@@ -649,8 +740,13 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ChoicePositionals_InProgress =
+            {
+                Args = ResizeArray ()
+            }
+
     /// A partially-parsed ContainsBoolEnvVar.
-    type private ContainsBoolEnvVar_InProgress =
+    type internal ContainsBoolEnvVar_InProgress =
         {
             mutable BoolVar : bool option
         }
@@ -680,8 +776,13 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ContainsBoolEnvVar_InProgress =
+            {
+                BoolVar = None
+            }
+
     /// A partially-parsed WithFlagDu.
-    type private WithFlagDu_InProgress =
+    type internal WithFlagDu_InProgress =
         {
             mutable DryRun : DryRunMode option
         }
@@ -708,8 +809,13 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : WithFlagDu_InProgress =
+            {
+                DryRun = None
+            }
+
     /// A partially-parsed ContainsFlagEnvVar.
-    type private ContainsFlagEnvVar_InProgress =
+    type internal ContainsFlagEnvVar_InProgress =
         {
             mutable DryRun : DryRunMode option
         }
@@ -744,8 +850,13 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ContainsFlagEnvVar_InProgress =
+            {
+                DryRun = None
+            }
+
     /// A partially-parsed ContainsFlagDefaultValue.
-    type private ContainsFlagDefaultValue_InProgress =
+    type internal ContainsFlagDefaultValue_InProgress =
         {
             mutable DryRun : DryRunMode option
         }
@@ -770,8 +881,13 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ContainsFlagDefaultValue_InProgress =
+            {
+                DryRun = None
+            }
+
     /// A partially-parsed ManyLongForms.
-    type private ManyLongForms_InProgress =
+    type internal ManyLongForms_InProgress =
         {
             mutable DoTheThing : string option
             mutable SomeFlag : bool option
@@ -807,8 +923,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : ManyLongForms_InProgress =
+            {
+                DoTheThing = None
+                SomeFlag = None
+            }
+
     /// A partially-parsed FlagsIntoPositionalArgs.
-    type private FlagsIntoPositionalArgs_InProgress =
+    type internal FlagsIntoPositionalArgs_InProgress =
         {
             mutable A : string option
             mutable GrabEverything : ResizeArray<string>
@@ -846,8 +968,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : FlagsIntoPositionalArgs_InProgress =
+            {
+                A = None
+                GrabEverything = ResizeArray ()
+            }
+
     /// A partially-parsed FlagsIntoPositionalArgsChoice.
-    type private FlagsIntoPositionalArgsChoice_InProgress =
+    type internal FlagsIntoPositionalArgsChoice_InProgress =
         {
             mutable A : string option
             mutable GrabEverything : ResizeArray<string>
@@ -884,8 +1012,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : FlagsIntoPositionalArgsChoice_InProgress =
+            {
+                A = None
+                GrabEverything = ResizeArray ()
+            }
+
     /// A partially-parsed FlagsIntoPositionalArgsInt.
-    type private FlagsIntoPositionalArgsInt_InProgress =
+    type internal FlagsIntoPositionalArgsInt_InProgress =
         {
             mutable A : string option
             mutable GrabEverything : ResizeArray<int>
@@ -923,8 +1057,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : FlagsIntoPositionalArgsInt_InProgress =
+            {
+                A = None
+                GrabEverything = ResizeArray ()
+            }
+
     /// A partially-parsed FlagsIntoPositionalArgsIntChoice.
-    type private FlagsIntoPositionalArgsIntChoice_InProgress =
+    type internal FlagsIntoPositionalArgsIntChoice_InProgress =
         {
             mutable A : string option
             mutable GrabEverything : ResizeArray<int>
@@ -961,8 +1101,14 @@ module private ArgParseHelpers_ConsumePlugin =
             else
                 errors |> Seq.toList |> Error
 
+        static member _Empty () : FlagsIntoPositionalArgsIntChoice_InProgress =
+            {
+                A = None
+                GrabEverything = ResizeArray ()
+            }
+
     /// A partially-parsed FlagsIntoPositionalArgs'.
-    type private FlagsIntoPositionalArgs'_InProgress =
+    type internal FlagsIntoPositionalArgs'_InProgress =
         {
             mutable A : string option
             mutable DontGrabEverything : ResizeArray<string>
@@ -999,8 +1145,15 @@ module private ArgParseHelpers_ConsumePlugin =
                     }
             else
                 errors |> Seq.toList |> Error
+
+        static member _Empty () : FlagsIntoPositionalArgs'_InProgress =
+            {
+                A = None
+                DontGrabEverything = ResizeArray ()
+            }
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1008,7 +1161,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type FlagsIntoPositionalArgs'
 [<AutoOpen>]
 module FlagsIntoPositionalArgs'ArgParse =
-    type private ParseState_FlagsIntoPositionalArgs' =
+    type internal ParseState_FlagsIntoPositionalArgs' =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1022,12 +1175,16 @@ module FlagsIntoPositionalArgs'ArgParse =
             (args : string list)
             : FlagsIntoPositionalArgs'
             =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgs'_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : FlagsIntoPositionalArgs' =
             FlagsIntoPositionalArgs'.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1035,7 +1192,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type FlagsIntoPositionalArgsIntChoice
 [<AutoOpen>]
 module FlagsIntoPositionalArgsIntChoiceArgParse =
-    type private ParseState_FlagsIntoPositionalArgsIntChoice =
+    type internal ParseState_FlagsIntoPositionalArgsIntChoice =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1049,12 +1206,16 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
             (args : string list)
             : FlagsIntoPositionalArgsIntChoice
             =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgsIntChoice_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : FlagsIntoPositionalArgsIntChoice =
             FlagsIntoPositionalArgsIntChoice.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1062,7 +1223,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type FlagsIntoPositionalArgsInt
 [<AutoOpen>]
 module FlagsIntoPositionalArgsIntArgParse =
-    type private ParseState_FlagsIntoPositionalArgsInt =
+    type internal ParseState_FlagsIntoPositionalArgsInt =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1076,12 +1237,16 @@ module FlagsIntoPositionalArgsIntArgParse =
             (args : string list)
             : FlagsIntoPositionalArgsInt
             =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgsInt_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : FlagsIntoPositionalArgsInt =
             FlagsIntoPositionalArgsInt.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1089,7 +1254,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type FlagsIntoPositionalArgsChoice
 [<AutoOpen>]
 module FlagsIntoPositionalArgsChoiceArgParse =
-    type private ParseState_FlagsIntoPositionalArgsChoice =
+    type internal ParseState_FlagsIntoPositionalArgsChoice =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1103,12 +1268,16 @@ module FlagsIntoPositionalArgsChoiceArgParse =
             (args : string list)
             : FlagsIntoPositionalArgsChoice
             =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgsChoice_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : FlagsIntoPositionalArgsChoice =
             FlagsIntoPositionalArgsChoice.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1116,7 +1285,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type FlagsIntoPositionalArgs
 [<AutoOpen>]
 module FlagsIntoPositionalArgsArgParse =
-    type private ParseState_FlagsIntoPositionalArgs =
+    type internal ParseState_FlagsIntoPositionalArgs =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1130,12 +1299,16 @@ module FlagsIntoPositionalArgsArgParse =
             (args : string list)
             : FlagsIntoPositionalArgs
             =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgs_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : FlagsIntoPositionalArgs =
             FlagsIntoPositionalArgs.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1143,7 +1316,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ManyLongForms
 [<AutoOpen>]
 module ManyLongFormsArgParse =
-    type private ParseState_ManyLongForms =
+    type internal ParseState_ManyLongForms =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1153,12 +1326,14 @@ module ManyLongFormsArgParse =
     type ManyLongForms with
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ManyLongForms =
+            let inProgress = ArgParseHelpers_ConsumePlugin.ManyLongForms_InProgress._Empty ()
             failwith "todo"
 
         static member parse (args : string list) : ManyLongForms =
             ManyLongForms.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1166,7 +1341,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ContainsFlagDefaultValue
 [<AutoOpen>]
 module ContainsFlagDefaultValueArgParse =
-    type private ParseState_ContainsFlagDefaultValue =
+    type internal ParseState_ContainsFlagDefaultValue =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1180,12 +1355,16 @@ module ContainsFlagDefaultValueArgParse =
             (args : string list)
             : ContainsFlagDefaultValue
             =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.ContainsFlagDefaultValue_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : ContainsFlagDefaultValue =
             ContainsFlagDefaultValue.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1193,7 +1372,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ContainsFlagEnvVar
 [<AutoOpen>]
 module ContainsFlagEnvVarArgParse =
-    type private ParseState_ContainsFlagEnvVar =
+    type internal ParseState_ContainsFlagEnvVar =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1203,12 +1382,16 @@ module ContainsFlagEnvVarArgParse =
     type ContainsFlagEnvVar with
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ContainsFlagEnvVar =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.ContainsFlagEnvVar_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : ContainsFlagEnvVar =
             ContainsFlagEnvVar.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1216,7 +1399,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type WithFlagDu
 [<AutoOpen>]
 module WithFlagDuArgParse =
-    type private ParseState_WithFlagDu =
+    type internal ParseState_WithFlagDu =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1226,12 +1409,14 @@ module WithFlagDuArgParse =
     type WithFlagDu with
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : WithFlagDu =
+            let inProgress = ArgParseHelpers_ConsumePlugin.WithFlagDu_InProgress._Empty ()
             failwith "todo"
 
         static member parse (args : string list) : WithFlagDu =
             WithFlagDu.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1239,7 +1424,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ContainsBoolEnvVar
 [<AutoOpen>]
 module ContainsBoolEnvVarArgParse =
-    type private ParseState_ContainsBoolEnvVar =
+    type internal ParseState_ContainsBoolEnvVar =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1249,12 +1434,16 @@ module ContainsBoolEnvVarArgParse =
     type ContainsBoolEnvVar with
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ContainsBoolEnvVar =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.ContainsBoolEnvVar_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : ContainsBoolEnvVar =
             ContainsBoolEnvVar.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1262,7 +1451,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ChoicePositionals
 [<AutoOpen>]
 module ChoicePositionalsArgParse =
-    type private ParseState_ChoicePositionals =
+    type internal ParseState_ChoicePositionals =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1272,12 +1461,16 @@ module ChoicePositionalsArgParse =
     type ChoicePositionals with
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ChoicePositionals =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.ChoicePositionals_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : ChoicePositionals =
             ChoicePositionals.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1285,7 +1478,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ParentRecordSelfPos
 [<AutoOpen>]
 module ParentRecordSelfPosArgParse =
-    type private ParseState_ParentRecordSelfPos =
+    type internal ParseState_ParentRecordSelfPos =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1295,12 +1488,16 @@ module ParentRecordSelfPosArgParse =
     type ParentRecordSelfPos with
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecordSelfPos =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.ParentRecordSelfPos_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : ParentRecordSelfPos =
             ParentRecordSelfPos.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1308,7 +1505,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ParentRecordChildPos
 [<AutoOpen>]
 module ParentRecordChildPosArgParse =
-    type private ParseState_ParentRecordChildPos =
+    type internal ParseState_ParentRecordChildPos =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1318,12 +1515,16 @@ module ParentRecordChildPosArgParse =
     type ParentRecordChildPos with
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecordChildPos =
+            let inProgress =
+                ArgParseHelpers_ConsumePlugin.ParentRecordChildPos_InProgress._Empty ()
+
             failwith "todo"
 
         static member parse (args : string list) : ParentRecordChildPos =
             ParentRecordChildPos.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1331,7 +1532,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ParentRecord
 [<AutoOpen>]
 module ParentRecordArgParse =
-    type private ParseState_ParentRecord =
+    type internal ParseState_ParentRecord =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1341,12 +1542,14 @@ module ParentRecordArgParse =
     type ParentRecord with
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecord =
+            let inProgress = ArgParseHelpers_ConsumePlugin.ParentRecord_InProgress._Empty ()
             failwith "todo"
 
         static member parse (args : string list) : ParentRecord =
             ParentRecord.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1354,7 +1557,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type DatesAndTimes
 [<AutoOpen>]
 module DatesAndTimesArgParse =
-    type private ParseState_DatesAndTimes =
+    type internal ParseState_DatesAndTimes =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
@@ -1364,12 +1567,14 @@ module DatesAndTimesArgParse =
     type DatesAndTimes with
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : DatesAndTimes =
+            let inProgress = ArgParseHelpers_ConsumePlugin.DatesAndTimes_InProgress._Empty ()
             failwith "todo"
 
         static member parse (args : string list) : DatesAndTimes =
             DatesAndTimes.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1377,19 +1582,23 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type LoadsOfTypesNoPositionals
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LoadsOfTypesNoPositionals =
-    type private ParseState_LoadsOfTypesNoPositionals =
+    type internal ParseState_LoadsOfTypesNoPositionals =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypesNoPositionals =
+        let inProgress =
+            ArgParseHelpers_ConsumePlugin.LoadsOfTypesNoPositionals_InProgress._Empty ()
+
         failwith "todo"
 
     let parse (args : string list) : LoadsOfTypesNoPositionals =
         parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1397,18 +1606,21 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type LoadsOfTypes
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LoadsOfTypes =
-    type private ParseState_LoadsOfTypes =
+    type internal ParseState_LoadsOfTypes =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypes = failwith "todo"
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypes =
+        let inProgress = ArgParseHelpers_ConsumePlugin.LoadsOfTypes_InProgress._Empty ()
+        failwith "todo"
 
     let parse (args : string list) : LoadsOfTypes =
         parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1416,19 +1628,23 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type BasicWithIntPositionals
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module BasicWithIntPositionals =
-    type private ParseState_BasicWithIntPositionals =
+    type internal ParseState_BasicWithIntPositionals =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : BasicWithIntPositionals =
+        let inProgress =
+            ArgParseHelpers_ConsumePlugin.BasicWithIntPositionals_InProgress._Empty ()
+
         failwith "todo"
 
     let parse (args : string list) : BasicWithIntPositionals =
         parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1436,18 +1652,21 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type Basic
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Basic =
-    type private ParseState_Basic =
+    type internal ParseState_Basic =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable : string -> string) (args : string list) : Basic = failwith "todo"
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : Basic =
+        let inProgress = ArgParseHelpers_ConsumePlugin.Basic_InProgress._Empty ()
+        failwith "todo"
 
     let parse (args : string list) : Basic =
         parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
+open ArgParserHelpers
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -1455,13 +1674,17 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type BasicNoPositionals
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module BasicNoPositionals =
-    type private ParseState_BasicNoPositionals =
+    type internal ParseState_BasicNoPositionals =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable : string -> string) (args : string list) : BasicNoPositionals = failwith "todo"
+    let parse' (getEnvironmentVariable : string -> string) (args : string list) : BasicNoPositionals =
+        let inProgress =
+            ArgParseHelpers_ConsumePlugin.BasicNoPositionals_InProgress._Empty ()
+
+        failwith "todo"
 
     let parse (args : string list) : BasicNoPositionals =
         parse' System.Environment.GetEnvironmentVariable args
