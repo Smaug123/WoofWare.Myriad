@@ -26,6 +26,11 @@ type ArgParserAttribute (isExtensionMethod : bool) =
 /// an argument which looks like a flag but which we don't recognise.)
 /// We will still interpret `--help` as requesting help, unless it comes after
 /// a standalone `--` separator.
+///
+/// If the type of the PositionalArgs field is `Choice<'a, 'a>`, then we will
+/// tell you whether each arg came before or after a standalone `--` separator.
+/// For example, `MyApp foo bar -- baz` with PositionalArgs of `Choice<string, string>`
+/// would yield `Choice1Of2 foo, Choice1Of2 bar, Choice2Of2 baz`.
 type PositionalArgsAttribute (includeFlagLike : bool) =
     inherit Attribute ()
 
