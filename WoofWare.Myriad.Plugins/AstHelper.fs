@@ -36,13 +36,6 @@ module internal AstHelper =
         | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Enum _, _) -> true
         | _ -> false
 
-    let instantiateRecord (fields : (SynLongIdent * SynExpr) list) : SynExpr =
-        let fields =
-            fields
-            |> List.map (fun (rfn, synExpr) -> SynExprRecordField ((rfn, true), Some range0, Some synExpr, None))
-
-        SynExpr.Record (None, None, fields, range0)
-
     let defineRecordType (record : RecordType) : SynTypeDefn =
         let name =
             SynComponentInfo.create record.Name
