@@ -21,8 +21,8 @@
   },
   {
     "pname": "FsCheck",
-    "version": "3.1.0",
-    "hash": "sha256-u0Ha94EjClJ8evNSHu8d6+Dx9qYM3kV3sl1PEq9gF8s="
+    "version": "3.2.0",
+    "hash": "sha256-ksZ4vLgWwyQOzFuK2BczdtDtWWYmedG7UBAg4pYuI8g="
   },
   {
     "pname": "fsharp-analyzers",
@@ -381,7 +381,7 @@
   },
   {
     "pname": "WoofWare.Whippet.Fantomas",
-    "version": "0.3.2",
-    "hash": "sha256-dhzp/ASz1dlROJAfLYRKOCRlmjLBoS00KYeWEkSVtMA="
+    "version": "0.5.1",
+    "hash": "sha256-59CwnOZQAq5ZJoUkd87OiP8KUwx8xYDLMimMMTlKeZA="
   }
 ]
