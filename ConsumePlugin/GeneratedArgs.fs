@@ -1178,7 +1178,12 @@ module FlagsIntoPositionalArgs'ArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgs'_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : FlagsIntoPositionalArgs' =
             FlagsIntoPositionalArgs'.parse' System.Environment.GetEnvironmentVariable args
@@ -1209,7 +1214,12 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgsIntChoice_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : FlagsIntoPositionalArgsIntChoice =
             FlagsIntoPositionalArgsIntChoice.parse' System.Environment.GetEnvironmentVariable args
@@ -1240,7 +1250,12 @@ module FlagsIntoPositionalArgsIntArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgsInt_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : FlagsIntoPositionalArgsInt =
             FlagsIntoPositionalArgsInt.parse' System.Environment.GetEnvironmentVariable args
@@ -1271,7 +1286,12 @@ module FlagsIntoPositionalArgsChoiceArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgsChoice_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : FlagsIntoPositionalArgsChoice =
             FlagsIntoPositionalArgsChoice.parse' System.Environment.GetEnvironmentVariable args
@@ -1302,7 +1322,12 @@ module FlagsIntoPositionalArgsArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgs_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : FlagsIntoPositionalArgs =
             FlagsIntoPositionalArgs.parse' System.Environment.GetEnvironmentVariable args
@@ -1327,7 +1352,12 @@ module ManyLongFormsArgParse =
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ManyLongForms =
             let inProgress = ArgParseHelpers_ConsumePlugin.ManyLongForms_InProgress._Empty ()
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : ManyLongForms =
             ManyLongForms.parse' System.Environment.GetEnvironmentVariable args
@@ -1358,7 +1388,12 @@ module ContainsFlagDefaultValueArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ContainsFlagDefaultValue_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : ContainsFlagDefaultValue =
             ContainsFlagDefaultValue.parse' System.Environment.GetEnvironmentVariable args
@@ -1385,7 +1420,12 @@ module ContainsFlagEnvVarArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ContainsFlagEnvVar_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : ContainsFlagEnvVar =
             ContainsFlagEnvVar.parse' System.Environment.GetEnvironmentVariable args
@@ -1410,7 +1450,12 @@ module WithFlagDuArgParse =
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : WithFlagDu =
             let inProgress = ArgParseHelpers_ConsumePlugin.WithFlagDu_InProgress._Empty ()
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : WithFlagDu =
             WithFlagDu.parse' System.Environment.GetEnvironmentVariable args
@@ -1437,7 +1482,12 @@ module ContainsBoolEnvVarArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ContainsBoolEnvVar_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : ContainsBoolEnvVar =
             ContainsBoolEnvVar.parse' System.Environment.GetEnvironmentVariable args
@@ -1464,7 +1514,12 @@ module ChoicePositionalsArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ChoicePositionals_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : ChoicePositionals =
             ChoicePositionals.parse' System.Environment.GetEnvironmentVariable args
@@ -1491,7 +1546,12 @@ module ParentRecordSelfPosArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ParentRecordSelfPos_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : ParentRecordSelfPos =
             ParentRecordSelfPos.parse' System.Environment.GetEnvironmentVariable args
@@ -1518,7 +1578,12 @@ module ParentRecordChildPosArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ParentRecordChildPos_InProgress._Empty ()
 
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : ParentRecordChildPos =
             ParentRecordChildPos.parse' System.Environment.GetEnvironmentVariable args
@@ -1543,7 +1608,12 @@ module ParentRecordArgParse =
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecord =
             let inProgress = ArgParseHelpers_ConsumePlugin.ParentRecord_InProgress._Empty ()
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : ParentRecord =
             ParentRecord.parse' System.Environment.GetEnvironmentVariable args
@@ -1568,7 +1638,12 @@ module DatesAndTimesArgParse =
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : DatesAndTimes =
             let inProgress = ArgParseHelpers_ConsumePlugin.DatesAndTimes_InProgress._Empty ()
-            failwith "todo"
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
         static member parse (args : string list) : DatesAndTimes =
             DatesAndTimes.parse' System.Environment.GetEnvironmentVariable args
@@ -1592,7 +1667,12 @@ module LoadsOfTypesNoPositionals =
         let inProgress =
             ArgParseHelpers_ConsumePlugin.LoadsOfTypesNoPositionals_InProgress._Empty ()
 
-        failwith "todo"
+        let positionals : ResizeArray<string> = ResizeArray ()
+        let parseAttempt = failwith "TODO"
+
+        match parseAttempt with
+        | Ok result -> result
+        | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
     let parse (args : string list) : LoadsOfTypesNoPositionals =
         parse' System.Environment.GetEnvironmentVariable args
@@ -1614,7 +1694,12 @@ module LoadsOfTypes =
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypes =
         let inProgress = ArgParseHelpers_ConsumePlugin.LoadsOfTypes_InProgress._Empty ()
-        failwith "todo"
+        let positionals : ResizeArray<string> = ResizeArray ()
+        let parseAttempt = failwith "TODO"
+
+        match parseAttempt with
+        | Ok result -> result
+        | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
     let parse (args : string list) : LoadsOfTypes =
         parse' System.Environment.GetEnvironmentVariable args
@@ -1638,7 +1723,12 @@ module BasicWithIntPositionals =
         let inProgress =
             ArgParseHelpers_ConsumePlugin.BasicWithIntPositionals_InProgress._Empty ()
 
-        failwith "todo"
+        let positionals : ResizeArray<string> = ResizeArray ()
+        let parseAttempt = failwith "TODO"
+
+        match parseAttempt with
+        | Ok result -> result
+        | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
     let parse (args : string list) : BasicWithIntPositionals =
         parse' System.Environment.GetEnvironmentVariable args
@@ -1660,7 +1750,12 @@ module Basic =
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : Basic =
         let inProgress = ArgParseHelpers_ConsumePlugin.Basic_InProgress._Empty ()
-        failwith "todo"
+        let positionals : ResizeArray<string> = ResizeArray ()
+        let parseAttempt = failwith "TODO"
+
+        match parseAttempt with
+        | Ok result -> result
+        | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
     let parse (args : string list) : Basic =
         parse' System.Environment.GetEnvironmentVariable args
@@ -1684,7 +1779,12 @@ module BasicNoPositionals =
         let inProgress =
             ArgParseHelpers_ConsumePlugin.BasicNoPositionals_InProgress._Empty ()
 
-        failwith "todo"
+        let positionals : ResizeArray<string> = ResizeArray ()
+        let parseAttempt = failwith "TODO"
+
+        match parseAttempt with
+        | Ok result -> result
+        | Error e -> e |> String.concat System.Environment.NewLine |> failwith
 
     let parse (args : string list) : BasicNoPositionals =
         parse' System.Environment.GetEnvironmentVariable args

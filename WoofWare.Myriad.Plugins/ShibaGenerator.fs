@@ -5,7 +5,6 @@ open System.Collections.Generic
 open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
-open TypeEquality
 open WoofWare.Myriad.Plugins
 open WoofWare.Whippet.Fantomas
 
@@ -1173,9 +1172,30 @@ module internal ShibaGenerator =
                 SynPat.named "args"
                 |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
 
+            let raiseErrors =
+                SynExpr.createIdent "e"
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "String" ; "concat" ])
+                        (SynExpr.createLongIdent [ "System" ; "Environment" ; "NewLine" ])
+                )
+                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "failwith")
+
             let parsePrime =
-                SynExpr.CreateConst "todo"
-                |> SynExpr.applyFunction (SynExpr.createIdent "failwith")
+                [
+                    SynMatchClause.create
+                        (SynPat.nameWithArgs "Ok" [ SynPat.named "result" ])
+                        (SynExpr.createIdent "result")
+                    SynMatchClause.create (SynPat.nameWithArgs "Error" [ SynPat.named "e" ]) raiseErrors
+                ]
+                |> SynExpr.createMatch (SynExpr.createIdent "parseAttempt")
+                |> SynExpr.createLet
+                    [
+                        SynBinding.basic
+                            [ Ident.create "parseAttempt" ]
+                            []
+                            (SynExpr.applyFunction (SynExpr.createIdent "failwith") (SynExpr.CreateConst "TODO"))
+                    ]
                 |> SynExpr.createLet
                     [
                         SynBinding.basic
@@ -1186,6 +1206,12 @@ module internal ShibaGenerator =
                                     helperModName @ [ taggedTypeInfo.NameOfInProgressType ; Ident.create "_Empty" ]
                                 ))
                                 (SynExpr.CreateConst ()))
+
+                        SynBinding.basic
+                            [ Ident.create "positionals" ]
+                            []
+                            (SynExpr.applyFunction (SynExpr.createIdent "ResizeArray") (SynExpr.CreateConst ()))
+                        |> SynBinding.withReturnAnnotation (SynType.app "ResizeArray" [ SynType.string ])
                     ]
                 |> SynBinding.basic
                     [ Ident.create "parse'" ]
