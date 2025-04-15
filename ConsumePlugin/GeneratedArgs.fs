@@ -26,12 +26,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Rest : ResizeArray<int>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<BasicNoPositionals, string list>
+            : Result<BasicNoPositionals * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : int =
                 match this.Foo with
@@ -57,13 +59,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             let arg3 : int list = this.Rest |> Seq.toList
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Foo = arg0
-                        Bar = arg1
-                        Baz = arg2
-                        Rest = arg3
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Foo = arg0
+                            Bar = arg1
+                            Baz = arg2
+                            Rest = arg3
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -75,6 +85,72 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Rest = ResizeArray ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
+                value |> (fun x -> System.Int32.Parse x) |> this.Rest.Add
+                () |> Ok
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Foo with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Bar with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Bar <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed Basic.
     type internal Basic_InProgress =
         {
@@ -84,12 +160,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Rest : ResizeArray<string>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<Basic, string list>
+            : Result<Basic * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : int =
                 match this.Foo with
@@ -122,13 +200,21 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> List.map (fun x -> x)
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Foo = arg0
-                        Bar = arg1
-                        Baz = arg2
-                        Rest = arg3
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Foo = arg0
+                            Bar = arg1
+                            Baz = arg2
+                            Rest = arg3
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -140,6 +226,72 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Rest = ResizeArray ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
+                value |> (fun x -> x) |> this.Rest.Add
+                () |> Ok
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Foo with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Bar with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Bar <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed BasicWithIntPositionals.
     type internal BasicWithIntPositionals_InProgress =
         {
@@ -149,12 +301,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Rest : ResizeArray<int>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<BasicWithIntPositionals, string list>
+            : Result<BasicWithIntPositionals * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : int =
                 match this.Foo with
@@ -187,13 +341,21 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> List.map (fun x -> System.Int32.Parse x)
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Foo = arg0
-                        Bar = arg1
-                        Baz = arg2
-                        Rest = arg3
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Foo = arg0
+                            Bar = arg1
+                            Baz = arg2
+                            Rest = arg3
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -204,6 +366,72 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Foo = None
                 Rest = ResizeArray ()
             }
+
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
+                value |> (fun x -> System.Int32.Parse x) |> this.Rest.Add
+                () |> Ok
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Foo with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Bar with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Bar <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
 
     /// A partially-parsed LoadsOfTypes.
     type internal LoadsOfTypes_InProgress =
@@ -221,12 +449,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable YetAnotherOptionalThing : string option
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<LoadsOfTypes, string list>
+            : Result<LoadsOfTypes * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : int =
                 match this.Foo with
@@ -291,20 +521,28 @@ module internal ArgParseHelpers_ConsumePlugin =
                 | None -> Choice2Of2 ("CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable |> (fun x -> x))
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Foo = arg0
-                        Bar = arg1
-                        Baz = arg2
-                        SomeFile = arg3
-                        SomeDirectory = arg4
-                        SomeList = arg5
-                        OptionalThingWithNoDefault = arg6
-                        Positionals = arg7
-                        OptionalThing = arg8
-                        AnotherOptionalThing = arg9
-                        YetAnotherOptionalThing = arg10
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Foo = arg0
+                            Bar = arg1
+                            Baz = arg2
+                            SomeFile = arg3
+                            SomeDirectory = arg4
+                            SomeList = arg5
+                            OptionalThingWithNoDefault = arg6
+                            Positionals = arg7
+                            OptionalThing = arg8
+                            AnotherOptionalThing = arg9
+                            YetAnotherOptionalThing = arg10
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -323,6 +561,205 @@ module internal ArgParseHelpers_ConsumePlugin =
                 YetAnotherOptionalThing = None
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if
+                System.String.Equals (
+                    key,
+                    sprintf "--%s" "yet-another-optional-thing",
+                    System.StringComparison.OrdinalIgnoreCase
+                )
+            then
+                match this.YetAnotherOptionalThing with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "yet-another-optional-thing")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
+            then
+                value |> (fun x -> System.IO.DirectoryInfo x) |> this.SomeList.Add
+                () |> Ok
+            else if
+                System.String.Equals (key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.SomeFile with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "some-file")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.SomeFile <- value |> (fun x -> System.IO.FileInfo x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "some-directory", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.SomeDirectory with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "some-directory")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.SomeDirectory <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "positionals", System.StringComparison.OrdinalIgnoreCase)
+            then
+                value |> (fun x -> System.Int32.Parse x) |> this.Positionals.Add
+                () |> Ok
+            else if
+                System.String.Equals (
+                    key,
+                    sprintf "--%s" "optional-thing-with-no-default",
+                    System.StringComparison.OrdinalIgnoreCase
+                )
+            then
+                match this.OptionalThingWithNoDefault with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "optional-thing-with-no-default")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.OptionalThingWithNoDefault <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.OptionalThing with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "optional-thing")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Foo with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Bar with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Bar <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (
+                    key,
+                    sprintf "--%s" "another-optional-thing",
+                    System.StringComparison.OrdinalIgnoreCase
+                )
+            then
+                match this.AnotherOptionalThing with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "another-optional-thing")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed LoadsOfTypesNoPositionals.
     type internal LoadsOfTypesNoPositionals_InProgress =
         {
@@ -338,12 +775,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable YetAnotherOptionalThing : string option
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<LoadsOfTypesNoPositionals, string list>
+            : Result<LoadsOfTypesNoPositionals * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : int =
                 match this.Foo with
@@ -399,19 +838,27 @@ module internal ArgParseHelpers_ConsumePlugin =
                 | None -> Choice2Of2 ("CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable |> (fun x -> x))
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Foo = arg0
-                        Bar = arg1
-                        Baz = arg2
-                        SomeFile = arg3
-                        SomeDirectory = arg4
-                        SomeList = arg5
-                        OptionalThingWithNoDefault = arg6
-                        OptionalThing = arg7
-                        AnotherOptionalThing = arg8
-                        YetAnotherOptionalThing = arg9
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Foo = arg0
+                            Bar = arg1
+                            Baz = arg2
+                            SomeFile = arg3
+                            SomeDirectory = arg4
+                            SomeList = arg5
+                            OptionalThingWithNoDefault = arg6
+                            OptionalThing = arg7
+                            AnotherOptionalThing = arg8
+                            YetAnotherOptionalThing = arg9
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -429,6 +876,200 @@ module internal ArgParseHelpers_ConsumePlugin =
                 YetAnotherOptionalThing = None
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if
+                System.String.Equals (
+                    key,
+                    sprintf "--%s" "yet-another-optional-thing",
+                    System.StringComparison.OrdinalIgnoreCase
+                )
+            then
+                match this.YetAnotherOptionalThing with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "yet-another-optional-thing")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.YetAnotherOptionalThing <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
+            then
+                value |> (fun x -> System.IO.DirectoryInfo x) |> this.SomeList.Add
+                () |> Ok
+            else if
+                System.String.Equals (key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.SomeFile with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "some-file")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.SomeFile <- value |> (fun x -> System.IO.FileInfo x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "some-directory", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.SomeDirectory with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "some-directory")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.SomeDirectory <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (
+                    key,
+                    sprintf "--%s" "optional-thing-with-no-default",
+                    System.StringComparison.OrdinalIgnoreCase
+                )
+            then
+                match this.OptionalThingWithNoDefault with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "optional-thing-with-no-default")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.OptionalThingWithNoDefault <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.OptionalThing with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "optional-thing")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.OptionalThing <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Foo with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "foo")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Foo <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "baz")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Baz <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Bar with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bar")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Bar <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (
+                    key,
+                    sprintf "--%s" "another-optional-thing",
+                    System.StringComparison.OrdinalIgnoreCase
+                )
+            then
+                match this.AnotherOptionalThing with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "another-optional-thing")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.AnotherOptionalThing <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed DatesAndTimes.
     type internal DatesAndTimes_InProgress =
         {
@@ -438,12 +1079,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Plain : TimeSpan option
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<DatesAndTimes, string list>
+            : Result<DatesAndTimes * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : TimeSpan =
                 match this.Plain with
@@ -474,13 +1117,21 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Plain = arg0
-                        Invariant = arg1
-                        Exact = arg2
-                        InvariantExact = arg3
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Plain = arg0
+                            Invariant = arg1
+                            Exact = arg2
+                            InvariantExact = arg3
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -492,6 +1143,114 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Plain = None
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "plain", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Plain with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "plain")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Plain <- value |> (fun x -> System.TimeSpan.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "invariant-exact", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.InvariantExact with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "invariant-exact")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.InvariantExact <-
+                            value
+                            |> (fun x ->
+                                System.TimeSpan.ParseExact (
+                                    x,
+                                    @"hh\:mm\:ss",
+                                    System.Globalization.CultureInfo.InvariantCulture
+                                )
+                            )
+                            |> Some
+
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "invariant", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.Invariant with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "invariant")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Invariant <-
+                            value
+                            |> (fun x -> System.TimeSpan.Parse (x, System.Globalization.CultureInfo.InvariantCulture))
+                            |> Some
+
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "exact", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Exact with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "exact")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Exact <-
+                            value
+                            |> (fun x ->
+                                System.TimeSpan.ParseExact (
+                                    x,
+                                    @"hh\:mm\:ss",
+                                    System.Globalization.CultureInfo.CurrentCulture
+                                )
+                            )
+                            |> Some
+
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed ChildRecord.
     type internal ChildRecord_InProgress =
         {
@@ -499,12 +1258,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Thing2 : string option
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ChildRecord, string list>
+            : Result<ChildRecord * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : int =
                 match this.Thing1 with
@@ -521,11 +1282,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Thing1 = arg0
-                        Thing2 = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Thing1 = arg0
+                            Thing2 = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -535,6 +1304,52 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Thing2 = None
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Thing2 with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "thing2")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Thing2 <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Thing1 with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "thing1")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Thing1 <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed ParentRecord.
     type internal ParentRecord_InProgress =
         {
@@ -542,16 +1357,23 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Child : ChildRecord_InProgress
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ParentRecord, string list>
+            : Result<ParentRecord * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : ChildRecord =
                 match this.Child.Assemble getEnvironmentVariable positionals with
-                | Ok result -> result
+                | Ok (result, consumedPositional) ->
+                    match consumedPositional with
+                    | None -> ()
+                    | Some positionalConsumer -> positionalConsumers.Add positionalConsumer
+
+                    result
                 | Error err ->
                     errors.AddRange err
                     Unchecked.defaultof<_>
@@ -564,11 +1386,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Child = arg0
-                        AndAnother = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Child = arg0
+                            AndAnother = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -578,6 +1408,35 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Child = ChildRecord_InProgress._Empty ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase) then
+                match this.AndAnother with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "and-another")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.AndAnother <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed ChildRecordWithPositional.
     type internal ChildRecordWithPositional_InProgress =
         {
@@ -585,12 +1444,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Thing2 : ResizeArray<Uri>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ChildRecordWithPositional, string list>
+            : Result<ChildRecordWithPositional * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : int =
                 match this.Thing1 with
@@ -609,11 +1470,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> List.map (fun x -> System.Uri x)
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Thing1 = arg0
-                        Thing2 = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Thing1 = arg0
+                            Thing2 = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -623,6 +1492,38 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Thing2 = ResizeArray ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase) then
+                value |> (fun x -> System.Uri x) |> this.Thing2.Add
+                () |> Ok
+            else if System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Thing1 with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "thing1")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.Thing1 <- value |> (fun x -> System.Int32.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed ParentRecordChildPos.
     type internal ParentRecordChildPos_InProgress =
         {
@@ -630,16 +1531,23 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Child : ChildRecordWithPositional_InProgress
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ParentRecordChildPos, string list>
+            : Result<ParentRecordChildPos * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : ChildRecordWithPositional =
                 match this.Child.Assemble getEnvironmentVariable positionals with
-                | Ok result -> result
+                | Ok (result, consumedPositional) ->
+                    match consumedPositional with
+                    | None -> ()
+                    | Some positionalConsumer -> positionalConsumers.Add positionalConsumer
+
+                    result
                 | Error err ->
                     errors.AddRange err
                     Unchecked.defaultof<_>
@@ -652,11 +1560,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Child = arg0
-                        AndAnother = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Child = arg0
+                            AndAnother = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -666,6 +1582,35 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Child = ChildRecordWithPositional_InProgress._Empty ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase) then
+                match this.AndAnother with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "and-another")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.AndAnother <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed ParentRecordSelfPos.
     type internal ParentRecordSelfPos_InProgress =
         {
@@ -673,16 +1618,23 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Child : ChildRecord_InProgress
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ParentRecordSelfPos, string list>
+            : Result<ParentRecordSelfPos * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : ChildRecord =
                 match this.Child.Assemble getEnvironmentVariable positionals with
-                | Ok result -> result
+                | Ok (result, consumedPositional) ->
+                    match consumedPositional with
+                    | None -> ()
+                    | Some positionalConsumer -> positionalConsumers.Add positionalConsumer
+
+                    result
                 | Error err ->
                     errors.AddRange err
                     Unchecked.defaultof<_>
@@ -697,11 +1649,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> List.map (fun x -> System.Boolean.Parse x)
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Child = arg0
-                        AndAnother = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Child = arg0
+                            AndAnother = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -711,18 +1671,35 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Child = ChildRecord_InProgress._Empty ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase) then
+                value |> (fun x -> System.Boolean.Parse x) |> this.AndAnother.Add
+                () |> Ok
+            else
+                Error None
+
     /// A partially-parsed ChoicePositionals.
     type internal ChoicePositionals_InProgress =
         {
             mutable Args : ResizeArray<string>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ChoicePositionals, string list>
+            : Result<ChoicePositionals * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : Choice<string, string> list =
                 positionals
@@ -733,10 +1710,18 @@ module internal ArgParseHelpers_ConsumePlugin =
                 )
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        Args = arg0
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            Args = arg0
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -745,18 +1730,35 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Args = ResizeArray ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "args", System.StringComparison.OrdinalIgnoreCase) then
+                value |> (fun x -> x) |> this.Args.Add
+                () |> Ok
+            else
+                Error None
+
     /// A partially-parsed ContainsBoolEnvVar.
     type internal ContainsBoolEnvVar_InProgress =
         {
             mutable BoolVar : bool option
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ContainsBoolEnvVar, string list>
+            : Result<ContainsBoolEnvVar * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : Choice<bool, bool> =
                 match this.BoolVar with
@@ -769,10 +1771,18 @@ module internal ArgParseHelpers_ConsumePlugin =
                     )
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        BoolVar = arg0
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            BoolVar = arg0
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -781,18 +1791,49 @@ module internal ArgParseHelpers_ConsumePlugin =
                 BoolVar = None
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "bool-var", System.StringComparison.OrdinalIgnoreCase) then
+                match this.BoolVar with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "bool-var")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.BoolVar <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed WithFlagDu.
     type internal WithFlagDu_InProgress =
         {
             mutable DryRun : DryRunMode option
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<WithFlagDu, string list>
+            : Result<WithFlagDu * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : DryRunMode =
                 match this.DryRun with
@@ -802,10 +1843,18 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        DryRun = arg0
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            DryRun = arg0
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -814,18 +1863,58 @@ module internal ArgParseHelpers_ConsumePlugin =
                 DryRun = None
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                match this.DryRun with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "dry-run")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.DryRun <-
+                            value
+                            |> (fun x ->
+                                if System.Boolean.Parse x = Consts.FALSE then
+                                    DryRunMode.Wet
+                                else
+                                    DryRunMode.Dry
+                            )
+                            |> Some
+
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed ContainsFlagEnvVar.
     type internal ContainsFlagEnvVar_InProgress =
         {
             mutable DryRun : DryRunMode option
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ContainsFlagEnvVar, string list>
+            : Result<ContainsFlagEnvVar * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : Choice<DryRunMode, DryRunMode> =
                 match this.DryRun with
@@ -843,10 +1932,18 @@ module internal ArgParseHelpers_ConsumePlugin =
                     )
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        DryRun = arg0
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            DryRun = arg0
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -855,18 +1952,58 @@ module internal ArgParseHelpers_ConsumePlugin =
                 DryRun = None
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                match this.DryRun with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "dry-run")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.DryRun <-
+                            value
+                            |> (fun x ->
+                                if System.Boolean.Parse x = Consts.FALSE then
+                                    DryRunMode.Wet
+                                else
+                                    DryRunMode.Dry
+                            )
+                            |> Some
+
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed ContainsFlagDefaultValue.
     type internal ContainsFlagDefaultValue_InProgress =
         {
             mutable DryRun : DryRunMode option
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ContainsFlagDefaultValue, string list>
+            : Result<ContainsFlagDefaultValue * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : Choice<DryRunMode, DryRunMode> =
                 match this.DryRun with
@@ -874,10 +2011,18 @@ module internal ArgParseHelpers_ConsumePlugin =
                 | None -> Choice2Of2 (ContainsFlagDefaultValue.DefaultDryRun ())
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        DryRun = arg0
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            DryRun = arg0
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -886,6 +2031,44 @@ module internal ArgParseHelpers_ConsumePlugin =
                 DryRun = None
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                match this.DryRun with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "dry-run")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.DryRun <-
+                            value
+                            |> (fun x ->
+                                if System.Boolean.Parse x = Consts.FALSE then
+                                    DryRunMode.Wet
+                                else
+                                    DryRunMode.Dry
+                            )
+                            |> Some
+
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed ManyLongForms.
     type internal ManyLongForms_InProgress =
         {
@@ -893,12 +2076,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable SomeFlag : bool option
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<ManyLongForms, string list>
+            : Result<ManyLongForms * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : string =
                 match this.DoTheThing with
@@ -915,11 +2100,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        DoTheThing = arg0
-                        SomeFlag = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            DoTheThing = arg0
+                            SomeFlag = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -929,6 +2122,98 @@ module internal ArgParseHelpers_ConsumePlugin =
                 SomeFlag = None
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if
+                System.String.Equals (key, sprintf "--%s" "dont-turn-it-off", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.SomeFlag with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.SomeFlag <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "turn-it-on", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.SomeFlag with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.SomeFlag <- value |> (fun x -> System.Boolean.Parse x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (key, sprintf "--%s" "anotherarg", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.DoTheThing with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s / --%s" "do-something-else" "anotherarg")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.DoTheThing <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else if
+                System.String.Equals (
+                    key,
+                    sprintf "--%s" "do-something-else",
+                    System.StringComparison.OrdinalIgnoreCase
+                )
+            then
+                match this.DoTheThing with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s / --%s" "do-something-else" "anotherarg")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.DoTheThing <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed FlagsIntoPositionalArgs.
     type internal FlagsIntoPositionalArgs_InProgress =
         {
@@ -936,12 +2221,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable GrabEverything : ResizeArray<string>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<FlagsIntoPositionalArgs, string list>
+            : Result<FlagsIntoPositionalArgs * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : string =
                 match this.A with
@@ -960,11 +2247,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> List.map (fun x -> x)
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        A = arg0
-                        GrabEverything = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            A = arg0
+                            GrabEverything = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -974,6 +2269,40 @@ module internal ArgParseHelpers_ConsumePlugin =
                 GrabEverything = ResizeArray ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if
+                System.String.Equals (key, sprintf "--%s" "grab-everything", System.StringComparison.OrdinalIgnoreCase)
+            then
+                value |> (fun x -> x) |> this.GrabEverything.Add
+                () |> Ok
+            else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                match this.A with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "a")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.A <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed FlagsIntoPositionalArgsChoice.
     type internal FlagsIntoPositionalArgsChoice_InProgress =
         {
@@ -981,12 +2310,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable GrabEverything : ResizeArray<string>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<FlagsIntoPositionalArgsChoice, string list>
+            : Result<FlagsIntoPositionalArgsChoice * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : string =
                 match this.A with
@@ -1004,11 +2335,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 )
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        A = arg0
-                        GrabEverything = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            A = arg0
+                            GrabEverything = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -1018,6 +2357,40 @@ module internal ArgParseHelpers_ConsumePlugin =
                 GrabEverything = ResizeArray ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if
+                System.String.Equals (key, sprintf "--%s" "grab-everything", System.StringComparison.OrdinalIgnoreCase)
+            then
+                value |> (fun x -> x) |> this.GrabEverything.Add
+                () |> Ok
+            else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                match this.A with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "a")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.A <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed FlagsIntoPositionalArgsInt.
     type internal FlagsIntoPositionalArgsInt_InProgress =
         {
@@ -1025,12 +2398,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable GrabEverything : ResizeArray<int>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<FlagsIntoPositionalArgsInt, string list>
+            : Result<FlagsIntoPositionalArgsInt * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : string =
                 match this.A with
@@ -1049,11 +2424,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> List.map (fun x -> System.Int32.Parse x)
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        A = arg0
-                        GrabEverything = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            A = arg0
+                            GrabEverything = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -1063,6 +2446,40 @@ module internal ArgParseHelpers_ConsumePlugin =
                 GrabEverything = ResizeArray ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if
+                System.String.Equals (key, sprintf "--%s" "grab-everything", System.StringComparison.OrdinalIgnoreCase)
+            then
+                value |> (fun x -> System.Int32.Parse x) |> this.GrabEverything.Add
+                () |> Ok
+            else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                match this.A with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "a")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.A <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed FlagsIntoPositionalArgsIntChoice.
     type internal FlagsIntoPositionalArgsIntChoice_InProgress =
         {
@@ -1070,12 +2487,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable GrabEverything : ResizeArray<int>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<FlagsIntoPositionalArgsIntChoice, string list>
+            : Result<FlagsIntoPositionalArgsIntChoice * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : string =
                 match this.A with
@@ -1093,11 +2512,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 )
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        A = arg0
-                        GrabEverything = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            A = arg0
+                            GrabEverything = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -1107,6 +2534,40 @@ module internal ArgParseHelpers_ConsumePlugin =
                 GrabEverything = ResizeArray ()
             }
 
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if
+                System.String.Equals (key, sprintf "--%s" "grab-everything", System.StringComparison.OrdinalIgnoreCase)
+            then
+                value |> (fun x -> System.Int32.Parse x) |> this.GrabEverything.Add
+                () |> Ok
+            else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                match this.A with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "a")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.A <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
+
     /// A partially-parsed FlagsIntoPositionalArgs'.
     type internal FlagsIntoPositionalArgs'_InProgress =
         {
@@ -1114,12 +2575,14 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable DontGrabEverything : ResizeArray<string>
         }
 
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
-            : Result<FlagsIntoPositionalArgs', string list>
+            : Result<FlagsIntoPositionalArgs' * string option, string list>
             =
             let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : string =
                 match this.A with
@@ -1138,11 +2601,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> List.map (fun x -> x)
 
             if errors.Count = 0 then
-                Ok
-                    {
-                        A = arg0
-                        DontGrabEverything = arg1
-                    }
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            A = arg0
+                            DontGrabEverything = arg1
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
             else
                 errors |> Seq.toList |> Error
 
@@ -1151,6 +2622,44 @@ module internal ArgParseHelpers_ConsumePlugin =
                 A = None
                 DontGrabEverything = ResizeArray ()
             }
+
+        /// Processes the key-value pair, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            if
+                System.String.Equals (
+                    key,
+                    sprintf "--%s" "dont-grab-everything",
+                    System.StringComparison.OrdinalIgnoreCase
+                )
+            then
+                value |> (fun x -> x) |> this.DontGrabEverything.Add
+                () |> Ok
+            else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
+                match this.A with
+                | Some x ->
+                    sprintf
+                        "Argument '%s' was supplied multiple times: %s and %s"
+                        (sprintf "--%s" "a")
+                        (x.ToString ())
+                        (value.ToString ())
+                    |> errors_.Add
+
+                    Ok ()
+                | None ->
+                    try
+                        this.A <- value |> (fun x -> x) |> Some
+                        Ok ()
+                    with _ as exc ->
+                        exc.Message |> Some |> Error
+            else
+                Error None
 namespace ConsumePlugin
 
 open ArgParserHelpers

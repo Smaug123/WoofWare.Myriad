@@ -132,7 +132,23 @@ module internal ShibaGenerator =
             /// `None` if not positional. `Some None` if positional and the PositionalArgs attribute had no contents.
             /// `Some Some` if the PositionalArgs attribute had an argument.
             Positional : SynExpr option option
+            /// Any of the forms in this set are acceptable, but make sure they all start with a dash, or we might
+            /// get confused with positional args or something! I haven't thought that hard about this.
+            /// In the default case, this is `Const("arg-name")` for the `ArgName : blah` field; note that we have
+            /// omitted the initial `--` that will be required at runtime.
+            ArgForm : SynExpr list
+            /// Name of the field of the in-progress record storing this leaf.
+            TargetConstructionField : Ident
         }
+
+        /// A SynExpr of type `string` which we can display to the user at generated-program runtime to display all
+        /// the ways they can refer to this arg.
+        member arg.HumanReadableArgForm : SynExpr =
+            let formatString = List.replicate arg.ArgForm.Length "--%s" |> String.concat " / "
+
+            (SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst formatString), arg.ArgForm)
+            ||> List.fold SynExpr.applyFunction
+            |> SynExpr.paren
 
     type private ParseFunctionSpec<'choice> =
         /// A leaf node, e.g. `--foo=3`.
@@ -172,6 +188,20 @@ module internal ShibaGenerator =
                 | _ -> None
             )
 
+        let longForms =
+            attrs
+            |> List.choose (fun attr ->
+                match attr.TypeName with
+                | SynLongIdent.SynLongIdent (ident, _, _) ->
+                    match (List.last ident).idText with
+                    | "ArgumentLongForm"
+                    | "ArgumentLongFormAttribute" -> Some attr.ArgExpr
+                    | _ -> None
+            )
+            |> function
+                | [] -> List.singleton (SynExpr.CreateConst (argify fieldName))
+                | l -> List.ofSeq l
+
         match ty with
         | String ->
             {
@@ -179,6 +209,8 @@ module internal ShibaGenerator =
                 Acc = Accumulation.Required
                 TypeAfterParse = SynType.string
                 Positional = positional
+                ArgForm = longForms
+                TargetConstructionField = fieldName
             }
             |> ParseFunctionSpec.Leaf
         | PrimitiveType pt ->
@@ -192,6 +224,8 @@ module internal ShibaGenerator =
                 Acc = Accumulation.Required
                 TypeAfterParse = ty
                 Positional = positional
+                ArgForm = longForms
+                TargetConstructionField = fieldName
             }
             |> ParseFunctionSpec.Leaf
         | Uri ->
@@ -203,6 +237,8 @@ module internal ShibaGenerator =
                 Acc = Accumulation.Required
                 TypeAfterParse = ty
                 Positional = positional
+                ArgForm = longForms
+                TargetConstructionField = fieldName
             }
             |> ParseFunctionSpec.Leaf
         | TimeSpan ->
@@ -263,6 +299,8 @@ module internal ShibaGenerator =
                 Acc = Accumulation.Required
                 TypeAfterParse = ty
                 Positional = positional
+                ArgForm = longForms
+                TargetConstructionField = fieldName
             }
             |> ParseFunctionSpec.Leaf
         | FileInfo ->
@@ -276,6 +314,8 @@ module internal ShibaGenerator =
                 Acc = Accumulation.Required
                 TypeAfterParse = ty
                 Positional = positional
+                ArgForm = longForms
+                TargetConstructionField = fieldName
             }
             |> ParseFunctionSpec.Leaf
         | DirectoryInfo ->
@@ -289,6 +329,8 @@ module internal ShibaGenerator =
                 Acc = Accumulation.Required
                 TypeAfterParse = ty
                 Positional = positional
+                ArgForm = longForms
+                TargetConstructionField = fieldName
             }
             |> ParseFunctionSpec.Leaf
         | OptionType eltTy ->
@@ -457,6 +499,8 @@ module internal ShibaGenerator =
                     Acc = Accumulation.Required
                     TypeAfterParse = ty
                     Positional = positional
+                    ArgForm = longForms
+                    TargetConstructionField = fieldName
                 }
                 |> ParseFunctionSpec.Leaf
 
@@ -480,6 +524,131 @@ module internal ShibaGenerator =
             Original : UnionType
             Cases : Map<string, ParsedRecordStructure<'choice>>
         }
+
+    /// `member this.ProcessKeyValue (errors_ : ResizeArray<string>) (key : string) (value : string) : Result<unit, string option> = ...`
+    /// Returns a possible error.
+    /// A parse failure might not be fatal (e.g. maybe the input was optionally of arity 0, and we failed to do
+    /// the parse because in fact the key decided not to take this argument); in that case we return Error None.
+    let private processKeyValue<'choice> (args : LeafData<'choice> list) : SynBinding =
+        let args =
+            args
+            |> List.map (fun arg ->
+                match arg.Acc with
+                | Accumulation.Required
+                | Accumulation.Choice _
+                | Accumulation.ChoicePositional _
+                | Accumulation.Optional ->
+                    let multipleErrorMessage =
+                        SynExpr.createIdent "sprintf"
+                        |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %s and %s")
+                        |> SynExpr.applyTo arg.HumanReadableArgForm
+                        |> SynExpr.applyTo (SynExpr.createIdent "x" |> SynExpr.callMethod "ToString" |> SynExpr.paren)
+                        |> SynExpr.applyTo (
+                            SynExpr.createIdent "value" |> SynExpr.callMethod "ToString" |> SynExpr.paren
+                        )
+
+                    let performAssignment =
+                        [
+                            SynExpr.createIdent "value"
+                            |> SynExpr.pipeThroughFunction arg.ParseFn
+                            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                            |> SynExpr.assign (
+                                SynLongIdent.create [ Ident.create "this" ; arg.TargetConstructionField ]
+                            )
+
+                            SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                        ]
+                        |> SynExpr.sequential
+
+                    [
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
+                            (SynExpr.sequential
+                                [
+                                    multipleErrorMessage
+                                    |> SynExpr.pipeThroughFunction (
+                                        SynExpr.dotGet "Add" (SynExpr.createIdent "errors_")
+                                    )
+                                    SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                                ])
+                        SynMatchClause.create
+                            (SynPat.named "None")
+                            (SynExpr.pipeThroughTryWith
+                                SynPat.anon
+                                (SynExpr.createLongIdent [ "exc" ; "Message" ]
+                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+                                performAssignment)
+                    ]
+                    |> SynExpr.createMatch (
+                        SynExpr.createLongIdent' [ Ident.create "this" ; arg.TargetConstructionField ]
+                    )
+                | Accumulation.List (Accumulation.List _)
+                | Accumulation.List Accumulation.Optional
+                | Accumulation.List (Accumulation.Choice _) ->
+                    failwith
+                        "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists."
+                | Accumulation.List (Accumulation.ChoicePositional _)
+                // ChoicePositional gets aggregated just like any other arg into its containing list;
+                // it's only when freezing the in-progress structure that we annotate them with choice information.
+                | Accumulation.List Accumulation.Required ->
+                    [
+                        SynExpr.createIdent "value"
+                        |> SynExpr.pipeThroughFunction arg.ParseFn
+                        |> SynExpr.pipeThroughFunction (
+                            SynExpr.createLongIdent'
+                                [ Ident.create "this" ; arg.TargetConstructionField ; Ident.create "Add" ]
+                        )
+                        SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
+                    ]
+                    |> SynExpr.sequential
+                |> fun expr -> arg.ArgForm, expr
+            )
+
+        // let posArg =
+        //     SynExpr.createIdent "value"
+        //     |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent ["positionals" ; "Add"])
+        //     |> List.singleton
+
+        (SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None"), args)
+        ||> List.fold (fun finalBranch (argForm, arg) ->
+            (finalBranch, argForm)
+            ||> List.fold (fun finalBranch argForm ->
+                arg
+                |> SynExpr.ifThenElse
+                    (SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                        (SynExpr.tuple
+                            [
+                                SynExpr.createIdent "key"
+                                SynExpr.applyFunction
+                                    (SynExpr.applyFunction
+                                        (SynExpr.createIdent "sprintf")
+                                        (SynExpr.CreateConst "--%s"))
+                                    argForm
+                                SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                            ]))
+                    finalBranch
+            )
+        )
+        |> SynBinding.basic
+            [ Ident.create "this" ; Ident.create "ProcessKeyValue" ]
+            [
+                SynPat.annotateType (SynType.app "ResizeArray" [ SynType.string ]) (SynPat.named "errors_")
+                SynPat.annotateType SynType.string (SynPat.named "key")
+                SynPat.annotateType SynType.string (SynPat.named "value")
+            ]
+        |> SynBinding.withReturnAnnotation (
+            SynType.app "Result" [ SynType.unit ; SynType.appPostfix "option" SynType.string ]
+        )
+        |> SynBinding.withXmlDoc (
+            [
+                " Processes the key-value pair, returning Error if no key was matched."
+                " If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>)."
+                " This can nevertheless be a successful parse, e.g. when the key may have arity 0."
+            ]
+            |> PreXmlDoc.create'
+        )
 
     /// Build the "in-progress record" which is basically "the input record, but with all fields mutable and optional".
     let private inProgressRecordType (record : ParsedRecordStructure<ArgumentDefaultSpec>) : RecordType =
@@ -552,6 +721,15 @@ module internal ShibaGenerator =
                     | Some ident -> SynLongIdent.create [ ident ], SynExpr.createIdent $"arg%i{i}"
                 )
                 |> SynExpr.createRecord None
+                |> fun record ->
+                    SynExpr.tupleNoParen
+                        [
+                            record
+                            SynExpr.applyFunction
+                                (SynExpr.createLongIdent [ "Seq" ; "tryExactlyOne" ])
+                                (SynExpr.createIdent "positionalConsumers")
+                        ]
+                |> SynExpr.paren
                 |> SynExpr.applyFunction (SynExpr.createIdent "Ok")
 
             let defaultOf =
@@ -581,8 +759,27 @@ module internal ShibaGenerator =
                                 SynMatchClause.create
                                     (SynPat.identWithArgs
                                         [ Ident.create "Ok" ]
-                                        (SynArgPats.create [ SynPat.named "result" ]))
-                                    (SynExpr.createIdent "result")
+                                        (SynArgPats.create
+                                            [ SynPat.named "result" ; SynPat.named "consumedPositional" ]))
+                                    (SynExpr.sequential
+                                        [
+                                            SynExpr.createMatch
+                                                (SynExpr.createIdent "consumedPositional")
+                                                [
+                                                    SynMatchClause.create
+                                                        (SynPat.named "None")
+                                                        (SynExpr.CreateConst ())
+                                                    SynMatchClause.create
+                                                        (SynPat.nameWithArgs
+                                                            "Some"
+                                                            [ SynPat.named "positionalConsumer" ])
+                                                        (SynExpr.callMethodArg
+                                                            "Add"
+                                                            (SynExpr.createIdent "positionalConsumer")
+                                                            (SynExpr.createIdent "positionalConsumers"))
+                                                ]
+                                            SynExpr.createIdent "result"
+                                        ])
                                 SynMatchClause.create
                                     (SynPat.identWithArgs
                                         [ Ident.create "Error" ]
@@ -617,6 +814,8 @@ module internal ShibaGenerator =
                                     | Accumulation.List _ ->
                                         failwith "unexpected: positional args should not be a list of lists"
                                     | Accumulation.Required ->
+                                        // TODO: we need to preserve the ordering on these with respect to
+                                        // the explicitly passed `--foo=` positionals
                                         SynExpr.createIdent "positionals"
                                         |> SynExpr.pipeThroughFunction (
                                             SynExpr.applyFunction
@@ -749,17 +948,35 @@ module internal ShibaGenerator =
                     |> List.singleton
                 )
 
-            SynExpr.ifThenElse
+            instantiation
+            |> SynExpr.ifThenElse
+                (SynExpr.lessThanOrEqual
+                    (SynExpr.CreateConst 1)
+                    (SynExpr.dotGet "Count" (SynExpr.createIdent "positionalConsumers")))
+                (SynExpr.createIdent "positionalConsumers"
+                 |> SynExpr.applyFunction (
+                     SynExpr.applyFunction (SynExpr.createLongIdent [ "String" ; "concat" ]) (SynExpr.CreateConst ", ")
+                 )
+                 |> SynExpr.plus (SynExpr.CreateConst "Multiple parsers consumed positional args: ")
+                 |> SynExpr.paren
+                 |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "List" ; "singleton" ])
+                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+            |> SynExpr.ifThenElse
                 (SynExpr.equals (SynExpr.dotGet "Count" (SynExpr.createIdent "errors")) (SynExpr.CreateConst 0))
                 (SynExpr.createIdent "errors"
                  |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
                  |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
-                instantiation
             |> SynExpr.createLet assignVariables
             |> SynExpr.createLet
                 [
                     SynBinding.basic
                         [ Ident.create "errors" ]
+                        []
+                        (SynExpr.applyFunction
+                            (SynExpr.typeApp [ SynType.string ] (SynExpr.createIdent "ResizeArray"))
+                            (SynExpr.CreateConst ()))
+                    SynBinding.basic
+                        [ Ident.create "positionalConsumers" ]
                         []
                         (SynExpr.applyFunction
                             (SynExpr.typeApp [ SynType.string ] (SynExpr.createIdent "ResizeArray"))
@@ -779,9 +996,18 @@ module internal ShibaGenerator =
                 SynType.app
                     "Result"
                     [
-                        SynType.createLongIdent [ record.Original.Name ]
+                        SynType.tupleNoParen
+                            [
+                                SynType.createLongIdent [ record.Original.Name ]
+                                SynType.option SynType.string
+                            ]
+                        |> Option.get
                         SynType.list SynType.string
                     ]
+            )
+            |> SynBinding.withXmlDoc (
+                PreXmlDoc.create
+                    "Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args."
             )
             |> SynMemberDefn.memberImplementation
 
@@ -810,10 +1036,18 @@ module internal ShibaGenerator =
             |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ record.NameOfInProgressType ])
             |> SynMemberDefn.staticMember
 
+        let processKeyValue =
+            record.LeafNodes
+            |> Map.toSeq
+            |> Seq.map snd
+            |> Seq.toList
+            |> processKeyValue
+            |> SynMemberDefn.memberImplementation
+
         {
             Name = record.NameOfInProgressType
             Fields = fields
-            Members = [ assembleMethod ; emptyConstructor ] |> Some
+            Members = [ assembleMethod ; emptyConstructor ; processKeyValue ] |> Some
             XmlDoc = PreXmlDoc.create $"A partially-parsed %s{record.Original.Name.idText}." |> Some
             Generics =
                 match record.Original.Generics with
