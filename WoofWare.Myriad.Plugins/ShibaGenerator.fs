@@ -863,7 +863,7 @@ module internal ShibaGenerator =
             let assignVariables =
                 record.Original.Fields
                 |> List.mapi (fun i f -> (i, f))
-                |> List.collect (fun (i, SynField.SynField (attributes = attrs ; fieldType = ty ; idOpt = ident)) ->
+                |> List.collect (fun (i, SynField.SynField (fieldType = ty ; idOpt = ident)) ->
                     match ident with
                     | None ->
                         failwith
@@ -930,7 +930,8 @@ module internal ShibaGenerator =
                         match record.LeafNodes |> Map.tryFind ident.idText with
                         | Some leaf ->
                             match leaf.Positional with
-                            | Some pos ->
+                            // TODO: account for includeFlagLike
+                            | Some includeFlagLike ->
                                 // Positional args carried in from external argument.
                                 // TODO: register whether they came before or after separator
                                 match leaf.Acc with
@@ -944,7 +945,7 @@ module internal ShibaGenerator =
                                         SynExpr.createIdent "positionals"
                                         |> SynExpr.pipeThroughFunction (
                                             SynExpr.applyFunction
-                                                (SynExpr.createLongIdent [ "List" ; "map" ])
+                                                (SynExpr.createLongIdent [ "Seq" ; "map" ])
                                                 (SynExpr.createLambda
                                                     "x"
                                                     (SynExpr.createMatch
@@ -964,9 +965,21 @@ module internal ShibaGenerator =
                                         )
                                         |> SynExpr.pipeThroughFunction (
                                             SynExpr.applyFunction
-                                                (SynExpr.createLongIdent [ "List" ; "map" ])
+                                                (SynExpr.createLongIdent [ "Seq" ; "map" ])
                                                 leaf.ParseFn
                                         )
+                                        // TODO and this will have to account for the ordering
+                                        |> SynExpr.pipeThroughFunction (
+                                            SynExpr.createLambda
+                                                "x"
+                                                (SynExpr.createLongIdent [ "Seq" ; "append" ]
+                                                 |> SynExpr.applyTo (
+                                                     SynExpr.createLongIdent'
+                                                         [ Ident.create "this" ; leaf.TargetConstructionField ]
+                                                 )
+                                                 |> SynExpr.applyTo (SynExpr.createIdent "x"))
+                                        )
+                                        |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
                                     | Accumulation.Optional ->
                                         failwith "unexpected: positional args should not be a list of options"
                                     | Accumulation.Choice _ ->
@@ -1055,7 +1068,13 @@ module internal ShibaGenerator =
                                                 [
                                                     SynExpr.callMethodArg
                                                         "Add"
-                                                        (SynExpr.CreateConst $"no value provided for %s{ident.idText}")
+                                                        (leaf.ArgForm.[0]
+                                                         |> SynExpr.applyFunction (
+                                                             SynExpr.CreateConst
+                                                                 "Required argument '--%s' received no value"
+                                                             |> SynExpr.applyFunction (SynExpr.createIdent "sprintf")
+                                                         )
+                                                         |> SynExpr.paren)
                                                         (SynExpr.createIdent "errors")
                                                     defaultOf
                                                 ])
@@ -1564,6 +1583,277 @@ module internal ShibaGenerator =
 
         taggedMod
 
+    /// `let rec go (state : %ParseState%) (args : string list) : unit = ...`
+    let private mainLoop (parseState : Ident) (errorAcc : Ident) (leftoverArgs : Ident) : SynBinding =
+        /// `go (AwaitingValue arg) args`
+        let recurseValue =
+            SynExpr.createIdent "go"
+            |> SynExpr.applyTo (
+                SynExpr.paren (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingValue" ])
+                        (SynExpr.createIdent "arg")
+                )
+            )
+
+        /// `go AwaitingKey args`
+        let recurseKey =
+            (SynExpr.createIdent "go")
+            |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
+            |> SynExpr.applyTo (SynExpr.createIdent "args")
+
+        /// `failwithf "Unable to process argument ..."`
+        let fail =
+            SynExpr.createIdent "failwithf"
+            |> SynExpr.applyTo (SynExpr.CreateConst "Unable to process argument %s as key %s and value %s")
+            |> SynExpr.applyTo (SynExpr.createIdent "arg")
+            |> SynExpr.applyTo (SynExpr.createIdent "key")
+            |> SynExpr.applyTo (SynExpr.createIdent "value")
+
+        let processAsPositional =
+            SynExpr.sequential
+                [
+                    SynExpr.createIdent "arg"
+                    |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
+
+                    recurseKey
+                ]
+
+        let notMatched =
+            let handleFailure =
+                [
+                    SynMatchClause.create (SynPat.named "None") fail
+
+                    SynMatchClause.create
+                        (SynPat.nameWithArgs "Some" [ SynPat.named "msg" ])
+                        (SynExpr.sequential
+                            [
+                                SynExpr.createIdent "sprintf"
+                                |> SynExpr.applyTo (SynExpr.CreateConst "%s (at arg %s)")
+                                |> SynExpr.applyTo (SynExpr.createIdent "msg")
+                                |> SynExpr.applyTo (SynExpr.createIdent "arg")
+                                |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc))
+
+                                recurseKey
+                            ])
+                ]
+                |> SynExpr.createMatch (SynExpr.createIdent "x")
+
+            handleFailure
+
+        let argStartsWithDashes =
+            SynExpr.createIdent "arg"
+            |> SynExpr.callMethodArg
+                "StartsWith"
+                (SynExpr.tuple
+                    [
+                        SynExpr.CreateConst "--"
+                        SynExpr.createLongIdent [ "System" ; "StringComparison" ; "Ordinal" ]
+                    ])
+
+        let processKey =
+            SynExpr.ifThenElse
+                argStartsWithDashes
+                processAsPositional
+                (SynExpr.ifThenElse
+                    (SynExpr.equals (SynExpr.createIdent "arg") (SynExpr.CreateConst "--help"))
+                    (SynExpr.createLet
+                        [
+                            SynBinding.basic
+                                [ Ident.create "equals" ]
+                                []
+                                (SynExpr.callMethodArg "IndexOf" (SynExpr.CreateConst '=') (SynExpr.createIdent "arg"))
+                        ]
+                        (SynExpr.ifThenElse
+                            (SynExpr.lessThan (SynExpr.CreateConst 0) (SynExpr.createIdent "equals"))
+                            (SynExpr.createLet
+                                [
+                                    SynBinding.basic
+                                        [ Ident.create "key" ]
+                                        []
+                                        (SynExpr.arrayIndexRange
+                                            (Some (SynExpr.CreateConst 0))
+                                            (Some (SynExpr.minusN (SynLongIdent.createS "equals") 1))
+                                            (SynExpr.createIdent "arg"))
+                                    SynBinding.basic
+                                        [ Ident.create "value" ]
+                                        []
+                                        (SynExpr.arrayIndexRange
+                                            (Some (SynExpr.plus (SynExpr.createIdent "equals") (SynExpr.CreateConst 1)))
+                                            None
+                                            (SynExpr.createIdent "arg"))
+                                ]
+                                (SynExpr.createMatch
+                                    (SynExpr.callMethodArg
+                                        "ProcessKeyValue"
+                                        (SynExpr.createIdent "errors_")
+                                        (SynExpr.createIdent "inProgress")
+                                     |> SynExpr.applyTo (SynExpr.createIdent "key")
+                                     |> SynExpr.applyTo (SynExpr.createIdent "value"))
+                                    [
+                                        SynMatchClause.create (SynPat.nameWithArgs "Ok" [ SynPat.unit ]) recurseKey
+
+                                        SynMatchClause.create
+                                            (SynPat.nameWithArgs "Error" [ SynPat.named "x" ])
+                                            notMatched
+                                    ]))
+                            (SynExpr.createIdent "args" |> SynExpr.pipeThroughFunction recurseValue)))
+                    ( //SynExpr.createIdent "helpText"
+                    //|> SynExpr.applyTo (SynExpr.CreateConst ())
+                    SynExpr.CreateConst "TODO"
+                    |> SynExpr.pipeThroughFunction (
+                        SynExpr.applyFunction
+                            (SynExpr.createIdent "failwithf")
+                            (SynExpr.CreateConst @"Help text requested.\n%s")
+                    )))
+
+        let processValue =
+            // During failure, we've received an optional exception message that happened when we tried to parse
+            // the value; it's in the variable `exc`.
+            // `fail` is for the case where we're genuinely emitting an error.
+            // If we're in `PositionalArgs true` mode, though, we won't call `fail`.
+            // TODO: unused?!
+            let fail =
+                [
+                    SynExpr.createIdent "failwithf"
+                    |> SynExpr.applyTo (
+                        SynExpr.CreateConst @"Unable to process supplied arg %s. Help text follows.\n%s"
+                    )
+                    |> SynExpr.applyTo (SynExpr.createIdent "key")
+                    |> SynExpr.applyTo (
+                        SynExpr.applyFunction (SynExpr.createIdent "helpText") (SynExpr.CreateConst ())
+                        |> SynExpr.paren
+                    )
+                    |> SynMatchClause.create (SynPat.named "None")
+
+                    SynExpr.createIdent "msg"
+                    |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc))
+                    |> SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "msg" ])
+                ]
+                |> SynExpr.createMatch (SynExpr.createIdent "exc")
+
+            let onFailure =
+                [
+                    SynExpr.createIdent "key"
+                    |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
+
+                    SynExpr.createIdent "go"
+                    |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
+                    |> SynExpr.applyTo (SynExpr.listCons (SynExpr.createIdent "arg") (SynExpr.createIdent "args"))
+                ]
+                |> SynExpr.sequential
+
+            [
+                SynMatchClause.create
+                    (SynPat.nameWithArgs "Ok" [ SynPat.unit ])
+                    (SynExpr.applyFunction
+                        (SynExpr.applyFunction
+                            (SynExpr.createIdent "go")
+                            (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ]))
+                        (SynExpr.createIdent "args"))
+                SynMatchClause.create
+                    (SynPat.nameWithArgs "Error" [ SynPat.named "exc" ])
+                    (SynExpr.ifThenElse
+                        (SynExpr.applyFunction
+                            (SynExpr.callMethodArg
+                                "SetFlagValue_"
+                                (SynExpr.createIdent "errors_")
+                                (SynExpr.createIdent "inProgress"))
+                            (SynExpr.createIdent "key"))
+                        onFailure
+                        (SynExpr.createIdent "go"
+                         |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
+                         |> SynExpr.applyTo (SynExpr.listCons (SynExpr.createIdent "arg") (SynExpr.createIdent "args"))))
+            ]
+            |> SynExpr.createMatch (
+                SynExpr.applyFunction
+                    (SynExpr.applyFunction
+                        (SynExpr.callMethodArg
+                            "ProcessKeyValue"
+                            (SynExpr.createIdent "errors_")
+                            (SynExpr.createIdent "inProgress"))
+                        (SynExpr.createIdent "key"))
+                    (SynExpr.createIdent "arg")
+            )
+
+        let argBody =
+            [
+                SynMatchClause.create
+                    (SynPat.identWithArgs [ parseState ; Ident.create "AwaitingKey" ] (SynArgPats.create []))
+                    processKey
+                SynMatchClause.create
+                    (SynPat.identWithArgs
+                        [ parseState ; Ident.create "AwaitingValue" ]
+                        (SynArgPats.createNamed [ "key" ]))
+                    processValue
+            ]
+            |> SynExpr.createMatch (SynExpr.createIdent "state")
+
+        let body =
+            let trailingArgMessage =
+                SynExpr.createIdent "sprintf"
+                |> SynExpr.applyTo (
+                    SynExpr.CreateConst
+                        "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                )
+                |> SynExpr.applyTo (SynExpr.createIdent "key")
+
+            [
+                SynMatchClause.create
+                    SynPat.emptyList
+                    (SynExpr.createMatch
+                        (SynExpr.createIdent "state")
+                        [
+                            SynMatchClause.create
+                                (SynPat.identWithArgs [ parseState ; Ident.create "AwaitingKey" ] (SynArgPats.create []))
+                                (SynExpr.CreateConst ())
+                            SynMatchClause.create
+                                (SynPat.identWithArgs
+                                    [ parseState ; Ident.create "AwaitingValue" ]
+                                    (SynArgPats.createNamed [ "key" ]))
+                                (SynExpr.ifThenElse
+                                    (SynExpr.applyFunction
+                                        (SynExpr.callMethodArg
+                                            "SetFlagValue_"
+                                            (SynExpr.createIdent "errors_")
+                                            (SynExpr.createIdent "inProgress"))
+                                        (SynExpr.createIdent "key"))
+                                    (trailingArgMessage
+                                     |> SynExpr.pipeThroughFunction (
+                                         SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc)
+                                     ))
+                                    (SynExpr.CreateConst ()))
+                        ])
+                SynMatchClause.create
+                    (SynPat.listCons (SynPat.createConst (SynConst.Create "--")) (SynPat.named "rest"))
+                    (SynExpr.callMethodArg
+                        "AddRange"
+                        (SynExpr.paren (
+                            SynExpr.createIdent "rest"
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.applyFunction
+                                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                                    (SynExpr.createIdent "Choice2Of2")
+                            )
+                        ))
+                        (SynExpr.createIdent' leftoverArgs))
+                SynMatchClause.create (SynPat.listCons (SynPat.named "arg") (SynPat.named "args")) argBody
+            ]
+            |> SynExpr.createMatch (SynExpr.createIdent "args")
+
+        let args =
+            [
+                SynPat.named "state"
+                |> SynPat.annotateType (SynType.createLongIdent [ parseState ])
+                SynPat.named "args"
+                |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
+            ]
+
+        SynBinding.basic [ Ident.create "go" ] args body
+        |> SynBinding.withRecursion true
+
     // The type for which we're generating args may refer to any of the supplied records/unions.
     let createModule
         (opens : SynOpenDeclTarget list)
@@ -1646,22 +1936,46 @@ module internal ShibaGenerator =
                         (SynExpr.createLongIdent [ "String" ; "concat" ])
                         (SynExpr.createLongIdent [ "System" ; "Environment" ; "NewLine" ])
                 )
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.createLambda
+                        "x"
+                        (SynExpr.plus (SynExpr.CreateConst "Errors during parse!\\n") (SynExpr.createIdent "x"))
+                )
                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "failwith")
 
             let parsePrime =
                 [
-                    SynMatchClause.create
-                        (SynPat.nameWithArgs "Ok" [ SynPat.named "result" ])
-                        (SynExpr.createIdent "result")
-                    SynMatchClause.create (SynPat.nameWithArgs "Error" [ SynPat.named "e" ]) raiseErrors
+                    SynExpr.applyFunction
+                        (SynExpr.createIdent "go")
+                        (SynExpr.createLongIdent' [ parseStateIdent ; Ident.create "AwaitingKey" ])
+                    |> SynExpr.applyTo (SynExpr.createIdent "args")
+
+                    [
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs "Ok" [ SynPat.tuple [ SynPat.named "result" ; SynPat.anon ] ])
+                            (SynExpr.createIdent "result")
+                        SynMatchClause.create (SynPat.nameWithArgs "Error" [ SynPat.named "e" ]) raiseErrors
+                    ]
+                    |> SynExpr.createMatch (
+                        SynExpr.callMethodArg
+                            "Assemble_"
+                            (SynExpr.createIdent "getEnvironmentVariable")
+                            (SynExpr.createIdent "inProgress")
+                        |> SynExpr.applyTo (
+                            SynExpr.createIdent "positionals"
+                            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
+                            |> SynExpr.paren
+                        )
+                    )
                 ]
-                |> SynExpr.createMatch (SynExpr.createIdent "parseAttempt")
+                |> SynExpr.sequential
                 |> SynExpr.createLet
                     [
                         SynBinding.basic
-                            [ Ident.create "parseAttempt" ]
+                            [ Ident.create "errors_" ]
                             []
-                            (SynExpr.applyFunction (SynExpr.createIdent "failwith") (SynExpr.CreateConst "TODO"))
+                            (SynExpr.applyFunction (SynExpr.createIdent "ResizeArray") (SynExpr.CreateConst ()))
+                        mainLoop parseStateIdent (Ident.create "errors_") (Ident.create "positionals")
                     ]
                 |> SynExpr.createLet
                     [
@@ -1678,7 +1992,9 @@ module internal ShibaGenerator =
                             [ Ident.create "positionals" ]
                             []
                             (SynExpr.applyFunction (SynExpr.createIdent "ResizeArray") (SynExpr.CreateConst ()))
-                        |> SynBinding.withReturnAnnotation (SynType.app "ResizeArray" [ SynType.string ])
+                        |> SynBinding.withReturnAnnotation (
+                            SynType.app "ResizeArray" [ SynType.app "Choice" [ SynType.string ; SynType.string ] ]
+                        )
                     ]
                 |> SynBinding.basic
                     [ Ident.create "parse'" ]
