@@ -27,7 +27,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<BasicNoPositionals * string option, string list>
@@ -88,7 +88,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -151,6 +151,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.Baz <- true |> Some
+                    true
+            else
+                false
+
     /// A partially-parsed Basic.
     type internal Basic_InProgress =
         {
@@ -161,7 +176,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<Basic * string option, string list>
@@ -229,7 +244,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -292,6 +307,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.Baz <- true |> Some
+                    true
+            else
+                false
+
     /// A partially-parsed BasicWithIntPositionals.
     type internal BasicWithIntPositionals_InProgress =
         {
@@ -302,7 +332,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<BasicWithIntPositionals * string option, string list>
@@ -370,7 +400,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -433,6 +463,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.Baz <- true |> Some
+                    true
+            else
+                false
+
     /// A partially-parsed LoadsOfTypes.
     type internal LoadsOfTypes_InProgress =
         {
@@ -450,7 +495,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<LoadsOfTypes * string option, string list>
@@ -564,7 +609,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -760,6 +805,33 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if
+                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.OptionalThing with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "optional-thing")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.OptionalThing <- true |> Some
+                    true
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.Baz <- true |> Some
+                    true
+            else
+                false
+
     /// A partially-parsed LoadsOfTypesNoPositionals.
     type internal LoadsOfTypesNoPositionals_InProgress =
         {
@@ -776,7 +848,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<LoadsOfTypesNoPositionals * string option, string list>
@@ -879,7 +951,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1070,6 +1142,33 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if
+                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.OptionalThing with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "optional-thing")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.OptionalThing <- true |> Some
+                    true
+            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                match this.Baz with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.Baz <- true |> Some
+                    true
+            else
+                false
+
     /// A partially-parsed DatesAndTimes.
     type internal DatesAndTimes_InProgress =
         {
@@ -1080,7 +1179,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<DatesAndTimes * string option, string list>
@@ -1146,7 +1245,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1251,6 +1350,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
     /// A partially-parsed ChildRecord.
     type internal ChildRecord_InProgress =
         {
@@ -1259,7 +1361,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ChildRecord * string option, string list>
@@ -1307,7 +1409,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1350,6 +1452,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
     /// A partially-parsed ParentRecord.
     type internal ParentRecord_InProgress =
         {
@@ -1358,7 +1463,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ParentRecord * string option, string list>
@@ -1367,7 +1472,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : ChildRecord =
-                match this.Child.Assemble getEnvironmentVariable positionals with
+                match this.Child.Assemble_ getEnvironmentVariable positionals with
                 | Ok (result, consumedPositional) ->
                     match consumedPositional with
                     | None -> ()
@@ -1411,7 +1516,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1437,6 +1542,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase) then
+                match this.AndAnother with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "and-another")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.AndAnother <- true |> Some
+                    true
+            else
+                false
+
     /// A partially-parsed ChildRecordWithPositional.
     type internal ChildRecordWithPositional_InProgress =
         {
@@ -1445,7 +1565,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ChildRecordWithPositional * string option, string list>
@@ -1495,7 +1615,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1524,6 +1644,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
     /// A partially-parsed ParentRecordChildPos.
     type internal ParentRecordChildPos_InProgress =
         {
@@ -1532,7 +1655,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ParentRecordChildPos * string option, string list>
@@ -1541,7 +1664,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : ChildRecordWithPositional =
-                match this.Child.Assemble getEnvironmentVariable positionals with
+                match this.Child.Assemble_ getEnvironmentVariable positionals with
                 | Ok (result, consumedPositional) ->
                     match consumedPositional with
                     | None -> ()
@@ -1585,7 +1708,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1611,6 +1734,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase) then
+                match this.AndAnother with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "and-another")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.AndAnother <- true |> Some
+                    true
+            else
+                false
+
     /// A partially-parsed ParentRecordSelfPos.
     type internal ParentRecordSelfPos_InProgress =
         {
@@ -1619,7 +1757,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ParentRecordSelfPos * string option, string list>
@@ -1628,7 +1766,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : ChildRecord =
-                match this.Child.Assemble getEnvironmentVariable positionals with
+                match this.Child.Assemble_ getEnvironmentVariable positionals with
                 | Ok (result, consumedPositional) ->
                     match consumedPositional with
                     | None -> ()
@@ -1674,7 +1812,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1686,6 +1824,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
     /// A partially-parsed ChoicePositionals.
     type internal ChoicePositionals_InProgress =
         {
@@ -1693,7 +1834,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ChoicePositionals * string option, string list>
@@ -1733,7 +1874,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1745,6 +1886,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
     /// A partially-parsed ContainsBoolEnvVar.
     type internal ContainsBoolEnvVar_InProgress =
         {
@@ -1752,7 +1896,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ContainsBoolEnvVar * string option, string list>
@@ -1794,7 +1938,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1820,6 +1964,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "bool-var", System.StringComparison.OrdinalIgnoreCase) then
+                match this.BoolVar with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "bool-var")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.BoolVar <- true |> Some
+                    true
+            else
+                false
+
     /// A partially-parsed WithFlagDu.
     type internal WithFlagDu_InProgress =
         {
@@ -1827,7 +1986,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<WithFlagDu * string option, string list>
@@ -1866,7 +2025,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1901,6 +2060,27 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                match this.DryRun with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.DryRun <-
+                        if true = Consts.FALSE then
+                            DryRunMode.Wet
+                        else
+                            DryRunMode.Dry
+                        |> Some
+
+                    true
+            else
+                false
+
     /// A partially-parsed ContainsFlagEnvVar.
     type internal ContainsFlagEnvVar_InProgress =
         {
@@ -1908,7 +2088,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ContainsFlagEnvVar * string option, string list>
@@ -1955,7 +2135,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1990,6 +2170,27 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                match this.DryRun with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.DryRun <-
+                        if true = Consts.FALSE then
+                            DryRunMode.Wet
+                        else
+                            DryRunMode.Dry
+                        |> Some
+
+                    true
+            else
+                false
+
     /// A partially-parsed ContainsFlagDefaultValue.
     type internal ContainsFlagDefaultValue_InProgress =
         {
@@ -1997,7 +2198,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ContainsFlagDefaultValue * string option, string list>
@@ -2034,7 +2235,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2069,6 +2270,27 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+                match this.DryRun with
+                | Some x ->
+                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.DryRun <-
+                        if true = Consts.FALSE then
+                            DryRunMode.Wet
+                        else
+                            DryRunMode.Dry
+                        |> Some
+
+                    true
+            else
+                false
+
     /// A partially-parsed ManyLongForms.
     type internal ManyLongForms_InProgress =
         {
@@ -2077,7 +2299,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<ManyLongForms * string option, string list>
@@ -2125,7 +2347,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2214,6 +2436,39 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
+            if
+                System.String.Equals (key, sprintf "--%s" "dont-turn-it-off", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.SomeFlag with
+                | Some x ->
+                    sprintf
+                        "Flag '%s' was supplied multiple times"
+                        (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.SomeFlag <- true |> Some
+                    true
+            else if
+                System.String.Equals (key, sprintf "--%s" "turn-it-on", System.StringComparison.OrdinalIgnoreCase)
+            then
+                match this.SomeFlag with
+                | Some x ->
+                    sprintf
+                        "Flag '%s' was supplied multiple times"
+                        (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
+                    |> errors_.Add
+
+                    true
+                | None ->
+                    this.SomeFlag <- true |> Some
+                    true
+            else
+                false
+
     /// A partially-parsed FlagsIntoPositionalArgs.
     type internal FlagsIntoPositionalArgs_InProgress =
         {
@@ -2222,7 +2477,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<FlagsIntoPositionalArgs * string option, string list>
@@ -2272,7 +2527,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2303,6 +2558,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
     /// A partially-parsed FlagsIntoPositionalArgsChoice.
     type internal FlagsIntoPositionalArgsChoice_InProgress =
         {
@@ -2311,7 +2569,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<FlagsIntoPositionalArgsChoice * string option, string list>
@@ -2360,7 +2618,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2391,6 +2649,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
     /// A partially-parsed FlagsIntoPositionalArgsInt.
     type internal FlagsIntoPositionalArgsInt_InProgress =
         {
@@ -2399,7 +2660,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<FlagsIntoPositionalArgsInt * string option, string list>
@@ -2449,7 +2710,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2480,6 +2741,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
     /// A partially-parsed FlagsIntoPositionalArgsIntChoice.
     type internal FlagsIntoPositionalArgsIntChoice_InProgress =
         {
@@ -2488,7 +2752,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<FlagsIntoPositionalArgsIntChoice * string option, string list>
@@ -2537,7 +2801,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2568,6 +2832,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
     /// A partially-parsed FlagsIntoPositionalArgs'.
     type internal FlagsIntoPositionalArgs'_InProgress =
         {
@@ -2576,7 +2843,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
-        member this.Assemble
+        member this.Assemble_
             (getEnvironmentVariable : string -> string)
             (positionals : Choice<string, string> list)
             : Result<FlagsIntoPositionalArgs' * string option, string list>
@@ -2626,7 +2893,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue
+        member this.ProcessKeyValue_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2660,6 +2927,9 @@ module internal ArgParseHelpers_ConsumePlugin =
                         exc.Message |> Some |> Error
             else
                 Error None
+
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
 namespace ConsumePlugin
 
 open ArgParserHelpers

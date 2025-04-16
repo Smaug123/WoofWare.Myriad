@@ -517,6 +517,7 @@ module internal ShibaGenerator =
             LeafNodes : Map<string, LeafData<'choice>>
             Records : Map<string, ParsedRecordStructure<'choice>>
             Unions : Map<string, ParsedUnionStructure<'choice>>
+            FlagDus : FlagDu list
         }
 
     and internal ParsedUnionStructure<'choice> =
@@ -525,7 +526,74 @@ module internal ShibaGenerator =
             Cases : Map<string, ParsedRecordStructure<'choice>>
         }
 
-    /// `member this.ProcessKeyValue (errors_ : ResizeArray<string>) (key : string) (value : string) : Result<unit, string option> = ...`
+    /// `member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = ...`
+    /// The second member of the `flags` list tuple is the constant "true" with which we will interpret the
+    /// arity-0 `--foo`. So in the case of a boolean-typed field, this is `true`; in the case of a Flag-typed field,
+    /// this is `FlagType.WhicheverCaseHadTrue`.
+    let private setFlagValue (flags : (LeafData<'choice> * SynExpr) list) : SynBinding =
+        (SynExpr.CreateConst false, flags)
+        ||> List.fold (fun finalExpr (flag, trueCase) ->
+            let multipleErrorMessage =
+                SynExpr.createIdent "sprintf"
+                |> SynExpr.applyTo (SynExpr.CreateConst "Flag '%s' was supplied multiple times")
+                |> SynExpr.applyTo flag.HumanReadableArgForm
+
+            let matchFlag =
+                [
+                    SynMatchClause.create
+                        (SynPat.nameWithArgs "Some" [ SynPat.anon ])
+                        // This is an error, but it's one we can gracefully report at the end.
+                        (SynExpr.sequential
+                            [
+                                multipleErrorMessage
+                                |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent "errors_"))
+                                SynExpr.CreateConst true
+                            ])
+
+                    SynMatchClause.create
+                        (SynPat.named "None")
+                        ([
+                            SynExpr.assign
+                                (SynLongIdent.create [ Ident.create "this" ; flag.TargetConstructionField ])
+                                (SynExpr.pipeThroughFunction (SynExpr.createIdent "Some") trueCase)
+                            SynExpr.CreateConst true
+                         ]
+                         |> SynExpr.sequential)
+                ]
+                |> SynExpr.createMatch (
+                    SynExpr.createLongIdent' [ Ident.create "this" ; flag.TargetConstructionField ]
+                )
+
+            (finalExpr, flag.ArgForm)
+            ||> List.fold (fun finalExpr argForm ->
+                SynExpr.ifThenElse
+                    (SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                        (SynExpr.tuple
+                            [
+                                SynExpr.createIdent "key"
+                                SynExpr.applyFunction
+                                    (SynExpr.applyFunction
+                                        (SynExpr.createIdent "sprintf")
+                                        (SynExpr.CreateConst "--%s"))
+                                    argForm
+                                SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                            ]))
+                    finalExpr
+                    matchFlag
+            )
+        )
+        |> SynBinding.basic
+            [ Ident.create "this" ; Ident.create "SetFlagValue_" ]
+            [
+                SynPat.annotateType (SynType.app "ResizeArray" [ SynType.string ]) (SynPat.named "errors_")
+                SynPat.annotateType SynType.string (SynPat.named "key")
+            ]
+        |> SynBinding.withReturnAnnotation (SynType.named "bool")
+        |> SynBinding.withXmlDoc (PreXmlDoc.create "Returns false if we didn't set a value.")
+        |> SynBinding.makeInstanceMember
+
+    /// `member this.ProcessKeyValue_ (errors_ : ResizeArray<string>) (key : string) (value : string) : Result<unit, string option> = ...`
     /// Returns a possible error.
     /// A parse failure might not be fatal (e.g. maybe the input was optionally of arity 0, and we failed to do
     /// the parse because in fact the key decided not to take this argument); in that case we return Error None.
@@ -632,7 +700,7 @@ module internal ShibaGenerator =
             )
         )
         |> SynBinding.basic
-            [ Ident.create "this" ; Ident.create "ProcessKeyValue" ]
+            [ Ident.create "this" ; Ident.create "ProcessKeyValue_" ]
             [
                 SynPat.annotateType (SynType.app "ResizeArray" [ SynType.string ]) (SynPat.named "errors_")
                 SynPat.annotateType SynType.string (SynPat.named "key")
@@ -649,6 +717,7 @@ module internal ShibaGenerator =
             ]
             |> PreXmlDoc.create'
         )
+        |> SynBinding.makeInstanceMember
 
     /// Build the "in-progress record" which is basically "the input record, but with all fields mutable and optional".
     let private inProgressRecordType (record : ParsedRecordStructure<ArgumentDefaultSpec>) : RecordType =
@@ -751,7 +820,7 @@ module internal ShibaGenerator =
                             // This was a record; defer to its parser.
                             let subAssembleCall =
                                 SynExpr.dotGet ident.idText (SynExpr.createIdent "this")
-                                |> SynExpr.callMethodArg "Assemble" (SynExpr.createIdent "getEnvironmentVariable")
+                                |> SynExpr.callMethodArg "Assemble_" (SynExpr.createIdent "getEnvironmentVariable")
                                 |> SynExpr.applyTo (SynExpr.createIdent "positionals")
 
                             // TODO: need to know if it has positionals
@@ -983,7 +1052,7 @@ module internal ShibaGenerator =
                             (SynExpr.CreateConst ()))
                 ]
             |> SynBinding.basic
-                [ Ident.create "this" ; Ident.create "Assemble" ]
+                [ Ident.create "this" ; Ident.create "Assemble_" ]
                 [
                     SynPat.annotateType
                         (SynType.funFromDomain SynType.string SynType.string)
@@ -1044,10 +1113,38 @@ module internal ShibaGenerator =
             |> processKeyValue
             |> SynMemberDefn.memberImplementation
 
+        let flags =
+            record.LeafNodes
+            |> Map.toSeq
+            |> Seq.choose (fun (_, pf) ->
+                match pf.Acc with
+                | Required
+                | Optional
+                | Accumulation.Choice _ -> Some pf
+                // We don't allow flags to be passed multiple times and accumulated into a list.
+                | Accumulation.List _
+                | Accumulation.ChoicePositional _ -> None
+            )
+            |> Seq.choose (fun pf ->
+                match pf.TypeAfterParse with
+                | PrimitiveType pt ->
+                    if (pt |> List.map _.idText) = [ "System" ; "Boolean" ] then
+                        Some (pf, SynExpr.CreateConst true)
+                    else
+                        None
+                | ty ->
+                    match identifyAsFlag record.FlagDus ty with
+                    | Some flag -> (pf, FlagDu.FromBoolean flag (SynExpr.CreateConst true)) |> Some
+                    | _ -> None
+            )
+            |> Seq.toList
+
+        let setFlagValue = setFlagValue flags |> SynMemberDefn.memberImplementation
+
         {
             Name = record.NameOfInProgressType
             Fields = fields
-            Members = [ assembleMethod ; emptyConstructor ; processKeyValue ] |> Some
+            Members = [ assembleMethod ; emptyConstructor ; processKeyValue ; setFlagValue ] |> Some
             XmlDoc = PreXmlDoc.create $"A partially-parsed %s{record.Original.Name.idText}." |> Some
             Generics =
                 match record.Original.Generics with
@@ -1132,6 +1229,7 @@ module internal ShibaGenerator =
                 LeafNodes = leaf |> Map.ofList
                 Records = records |> Map.ofList
                 Unions = unions |> Map.ofList
+                FlagDus = flagDus
             }
             |> Some
 
