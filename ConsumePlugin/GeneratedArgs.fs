@@ -88,7 +88,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -151,11 +151,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match this.Baz with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
                     |> errors_.Add
 
@@ -244,7 +254,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -307,11 +317,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match this.Baz with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
                     |> errors_.Add
 
@@ -400,7 +420,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -463,11 +483,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match this.Baz with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
                     |> errors_.Add
 
@@ -609,7 +639,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -805,13 +835,23 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if
                 System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match this.OptionalThing with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "optional-thing")
                     |> errors_.Add
 
@@ -821,7 +861,7 @@ module internal ArgParseHelpers_ConsumePlugin =
                     true
             else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match this.Baz with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
                     |> errors_.Add
 
@@ -951,7 +991,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1142,13 +1182,23 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if
                 System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
             then
                 match this.OptionalThing with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "optional-thing")
                     |> errors_.Add
 
@@ -1158,7 +1208,7 @@ module internal ArgParseHelpers_ConsumePlugin =
                     true
             else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
                 match this.Baz with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
                     |> errors_.Add
 
@@ -1245,7 +1295,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1350,6 +1400,16 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
 
@@ -1409,7 +1469,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1451,6 +1511,16 @@ module internal ArgParseHelpers_ConsumePlugin =
                         exc.Message |> Some |> Error
             else
                 Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -1516,7 +1586,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1542,11 +1612,39 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Passes the key-value pair to any child records, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValueRecord_
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            let errors : ResizeArray<string> = ResizeArray ()
+
+            match this.Child.ProcessKeyValue errors_ key value with
+            | Ok () -> Ok ()
+            | Error e -> Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf ->
+                match this.ProcessKeyValueRecord_ errors_ key value with
+                | Ok () -> Ok ()
+                | Error errorFromRecord -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase) then
                 match this.AndAnother with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "and-another")
                     |> errors_.Add
 
@@ -1615,7 +1713,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1643,6 +1741,16 @@ module internal ArgParseHelpers_ConsumePlugin =
                         exc.Message |> Some |> Error
             else
                 Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -1708,7 +1816,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1734,11 +1842,39 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        /// Passes the key-value pair to any child records, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValueRecord_
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            let errors : ResizeArray<string> = ResizeArray ()
+
+            match this.Child.ProcessKeyValue errors_ key value with
+            | Ok () -> Ok ()
+            | Error e -> Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf ->
+                match this.ProcessKeyValueRecord_ errors_ key value with
+                | Ok () -> Ok ()
+                | Error errorFromRecord -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase) then
                 match this.AndAnother with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "and-another")
                     |> errors_.Add
 
@@ -1812,7 +1948,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1823,6 +1959,34 @@ module internal ArgParseHelpers_ConsumePlugin =
                 () |> Ok
             else
                 Error None
+
+        /// Passes the key-value pair to any child records, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValueRecord_
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            let errors : ResizeArray<string> = ResizeArray ()
+
+            match this.Child.ProcessKeyValue errors_ key value with
+            | Ok () -> Ok ()
+            | Error e -> Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf ->
+                match this.ProcessKeyValueRecord_ errors_ key value with
+                | Ok () -> Ok ()
+                | Error errorFromRecord -> Error None
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -1874,7 +2038,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1885,6 +2049,16 @@ module internal ArgParseHelpers_ConsumePlugin =
                 () |> Ok
             else
                 Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -1938,7 +2112,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1964,11 +2138,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if System.String.Equals (key, sprintf "--%s" "bool-var", System.StringComparison.OrdinalIgnoreCase) then
                 match this.BoolVar with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "bool-var")
                     |> errors_.Add
 
@@ -2025,7 +2209,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2060,11 +2244,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
                 match this.DryRun with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
                     |> errors_.Add
 
@@ -2135,7 +2329,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2170,11 +2364,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
                 match this.DryRun with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
                     |> errors_.Add
 
@@ -2235,7 +2439,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2270,11 +2474,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
                 match this.DryRun with
-                | Some x ->
+                | Some _ ->
                     sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
                     |> errors_.Add
 
@@ -2347,7 +2561,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2436,13 +2650,23 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
             if
                 System.String.Equals (key, sprintf "--%s" "dont-turn-it-off", System.StringComparison.OrdinalIgnoreCase)
             then
                 match this.SomeFlag with
-                | Some x ->
+                | Some _ ->
                     sprintf
                         "Flag '%s' was supplied multiple times"
                         (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
@@ -2456,7 +2680,7 @@ module internal ArgParseHelpers_ConsumePlugin =
                 System.String.Equals (key, sprintf "--%s" "turn-it-on", System.StringComparison.OrdinalIgnoreCase)
             then
                 match this.SomeFlag with
-                | Some x ->
+                | Some _ ->
                     sprintf
                         "Flag '%s' was supplied multiple times"
                         (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
@@ -2527,7 +2751,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2557,6 +2781,16 @@ module internal ArgParseHelpers_ConsumePlugin =
                         exc.Message |> Some |> Error
             else
                 Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -2618,7 +2852,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2648,6 +2882,16 @@ module internal ArgParseHelpers_ConsumePlugin =
                         exc.Message |> Some |> Error
             else
                 Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -2710,7 +2954,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2740,6 +2984,16 @@ module internal ArgParseHelpers_ConsumePlugin =
                         exc.Message |> Some |> Error
             else
                 Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -2801,7 +3055,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2831,6 +3085,16 @@ module internal ArgParseHelpers_ConsumePlugin =
                         exc.Message |> Some |> Error
             else
                 Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -2893,7 +3157,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        member this.ProcessKeyValue_
+        member this.ProcessKeyValueSelf_
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2928,8 +3192,124 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 Error None
 
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueSelf_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromLeaf -> Error None
+
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+
+    /// A partially-parsed PassThru.
+    type internal PassThru_InProgress =
+        {
+            mutable A : ParentRecordChildPos_InProgress
+        }
+
+        /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
+        member this.Assemble_
+            (getEnvironmentVariable : string -> string)
+            (positionals : Choice<string, string> list)
+            : Result<PassThru * string option, string list>
+            =
+            let errors = ResizeArray<string> ()
+            let positionalConsumers = ResizeArray<string> ()
+
+            let arg0 : ParentRecordChildPos =
+                match this.A.Assemble_ getEnvironmentVariable positionals with
+                | Ok (result, consumedPositional) ->
+                    match consumedPositional with
+                    | None -> ()
+                    | Some positionalConsumer -> positionalConsumers.Add positionalConsumer
+
+                    result
+                | Error err ->
+                    errors.AddRange err
+                    Unchecked.defaultof<_>
+
+            if errors.Count = 0 then
+                if positionalConsumers.Count <= 1 then
+                    Ok (
+                        {
+                            A = arg0
+                        },
+                        Seq.tryExactlyOne positionalConsumers
+                    )
+                else
+                    ("Multiple parsers consumed positional args: "
+                     + String.concat ", " positionalConsumers)
+                    |> List.singleton
+                    |> Error
+            else
+                errors |> Seq.toList |> Error
+
+        static member _Empty () : PassThru_InProgress =
+            {
+                A = ParentRecordChildPos_InProgress._Empty ()
+            }
+
+        /// Passes the key-value pair to any child records, returning Error if no key was matched.
+        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
+        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
+        member this.ProcessKeyValueRecord_
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            let errors : ResizeArray<string> = ResizeArray ()
+
+            match this.A.ProcessKeyValue errors_ key value with
+            | Ok () -> Ok ()
+            | Error e -> Error None
+
+        member this.ProcessKeyValue
+            (errors_ : ResizeArray<string>)
+            (key : string)
+            (value : string)
+            : Result<unit, string option>
+            =
+            match this.ProcessKeyValueRecord_ errors_ key value with
+            | Ok () -> Ok ()
+            | Error errorFromRecord -> Error None
+
+        /// Returns false if we didn't set a value.
+        member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+namespace ConsumePlugin
+
+open ArgParserHelpers
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type PassThru
+[<AutoOpen>]
+module PassThruArgParse =
+    type internal ParseState_PassThru =
+        /// Ready to consume a key or positional arg
+        | AwaitingKey
+        /// Waiting to receive a value for the key we've already consumed
+        | AwaitingValue of key : string
+
+    /// Extension methods for argument parsing
+    type PassThru with
+
+        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : PassThru =
+            let inProgress = ArgParseHelpers_ConsumePlugin.PassThru_InProgress._Empty ()
+            let positionals : ResizeArray<string> = ResizeArray ()
+            let parseAttempt = failwith "TODO"
+
+            match parseAttempt with
+            | Ok result -> result
+            | Error e -> e |> String.concat System.Environment.NewLine |> failwith
+
+        static member parse (args : string list) : PassThru =
+            PassThru.parse' System.Environment.GetEnvironmentVariable args
 namespace ConsumePlugin
 
 open ArgParserHelpers

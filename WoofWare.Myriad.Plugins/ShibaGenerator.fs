@@ -593,11 +593,67 @@ module internal ShibaGenerator =
         |> SynBinding.withXmlDoc (PreXmlDoc.create "Returns false if we didn't set a value.")
         |> SynBinding.makeInstanceMember
 
-    /// `member this.ProcessKeyValue_ (errors_ : ResizeArray<string>) (key : string) (value : string) : Result<unit, string option> = ...`
+    /// `member this.ProcessKeyValueRecord_ (errors_ : ResizeArray<string>) (key : string) (value : string) : Result<unit, string option> = ...`
     /// Returns a possible error.
     /// A parse failure might not be fatal (e.g. maybe the input was optionally of arity 0, and we failed to do
     /// the parse because in fact the key decided not to take this argument); in that case we return Error None.
-    let private processKeyValue<'choice> (args : LeafData<'choice> list) : SynBinding =
+    ///
+    /// `args` is a list of the name of the field and the structure which is that field's contents.
+    let private processKeyValueRecord<'choice> (args : (string * ParsedRecordStructure<'choice>) list) : SynBinding =
+        (SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None"), args)
+        ||> List.fold (fun finalBranch (fieldName, _record) ->
+            [
+                SynMatchClause.create
+                    (SynPat.nameWithArgs "Ok" [ SynPat.unit ])
+                    (SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ()))
+                SynMatchClause.create
+                    (SynPat.nameWithArgs "Error" [ SynPat.named "e" ])
+                    (SynExpr.sequential
+                        [
+
+                            finalBranch
+                        ])
+            ]
+            |> SynExpr.createMatch (
+                SynExpr.createLongIdent [ "this" ; fieldName ; "ProcessKeyValue" ]
+                |> SynExpr.applyTo (SynExpr.createIdent "errors_")
+                |> SynExpr.applyTo (SynExpr.createIdent "key")
+                |> SynExpr.applyTo (SynExpr.createIdent "value")
+            )
+        )
+        |> SynExpr.createLet
+            [
+                SynBinding.basic
+                    [ Ident.create "errors" ]
+                    []
+                    (SynExpr.applyFunction (SynExpr.createIdent "ResizeArray") (SynExpr.CreateConst ()))
+                |> SynBinding.withReturnAnnotation (SynType.app "ResizeArray" [ SynType.string ])
+            ]
+        |> SynBinding.basic
+            [ Ident.create "this" ; Ident.create "ProcessKeyValueRecord_" ]
+            [
+                SynPat.annotateType (SynType.app "ResizeArray" [ SynType.string ]) (SynPat.named "errors_")
+                SynPat.annotateType SynType.string (SynPat.named "key")
+                SynPat.annotateType SynType.string (SynPat.named "value")
+            ]
+        |> SynBinding.withReturnAnnotation (
+            SynType.app "Result" [ SynType.unit ; SynType.appPostfix "option" SynType.string ]
+        )
+        |> SynBinding.withXmlDoc (
+            [
+                " Passes the key-value pair to any child records, returning Error if no key was matched."
+                " If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>)."
+                " This can nevertheless be a successful parse, e.g. when the key may have arity 0."
+            ]
+            |> PreXmlDoc.create'
+        )
+        |> SynBinding.makeInstanceMember
+
+    /// `member this.ProcessKeyValueSelf_ (errors_ : ResizeArray<string>) (key : string) (value : string) : Result<unit, string option> = ...`
+    /// Returns a possible error.
+    /// A parse failure might not be fatal (e.g. maybe the input was optionally of arity 0, and we failed to do
+    /// the parse because in fact the key decided not to take this argument); in that case we return Error None.
+    let private processKeyValueSelf<'choice> (args : LeafData<'choice> list) : SynBinding =
         let args =
             args
             |> List.map (fun arg ->
@@ -700,7 +756,7 @@ module internal ShibaGenerator =
             )
         )
         |> SynBinding.basic
-            [ Ident.create "this" ; Ident.create "ProcessKeyValue_" ]
+            [ Ident.create "this" ; Ident.create "ProcessKeyValueSelf_" ]
             [
                 SynPat.annotateType (SynType.app "ResizeArray" [ SynType.string ]) (SynPat.named "errors_")
                 SynPat.annotateType SynType.string (SynPat.named "key")
@@ -1105,12 +1161,81 @@ module internal ShibaGenerator =
             |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ record.NameOfInProgressType ])
             |> SynMemberDefn.staticMember
 
+        let processKeyValueSelf =
+            if record.LeafNodes.IsEmpty then
+                None
+            else
+                record.LeafNodes
+                |> Map.toSeq
+                |> Seq.map snd
+                |> Seq.toList
+                |> processKeyValueSelf
+                |> SynMemberDefn.memberImplementation
+                |> Some
+
+        let processKeyValueChildRecords =
+            if record.Records.IsEmpty then
+                None
+            else
+                record.Records
+                |> Map.toSeq
+                |> Seq.toList
+                |> processKeyValueRecord
+                |> SynMemberDefn.memberImplementation
+                |> Some
+
         let processKeyValue =
-            record.LeafNodes
-            |> Map.toSeq
-            |> Seq.map snd
-            |> Seq.toList
-            |> processKeyValue
+            let afterErrorFromRecord =
+                SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None")
+
+            let afterErrorFromLeaf =
+                match processKeyValueChildRecords with
+                | None -> afterErrorFromRecord
+                | Some _ ->
+                    [
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs "Ok" [ SynPat.unit ])
+                            (SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ()))
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs "Error" [ SynPat.named "errorFromRecord" ])
+                            afterErrorFromRecord
+                    ]
+                    |> SynExpr.createMatch (
+                        SynExpr.createLongIdent [ "this" ; "ProcessKeyValueRecord_" ]
+                        |> SynExpr.applyTo (SynExpr.createIdent "errors_")
+                        |> SynExpr.applyTo (SynExpr.createIdent "key")
+                        |> SynExpr.applyTo (SynExpr.createIdent "value")
+                    )
+
+            let firstMatch =
+                match processKeyValueSelf with
+                | None -> afterErrorFromLeaf
+                | Some _ ->
+                    [
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs "Ok" [ SynPat.unit ])
+                            (SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ()))
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs "Error" [ SynPat.named "errorFromLeaf" ])
+                            afterErrorFromLeaf
+                    ]
+                    |> SynExpr.createMatch (
+                        SynExpr.createLongIdent [ "this" ; "ProcessKeyValueSelf_" ]
+                        |> SynExpr.applyTo (SynExpr.createIdent "errors_")
+                        |> SynExpr.applyTo (SynExpr.createIdent "key")
+                        |> SynExpr.applyTo (SynExpr.createIdent "value")
+                    )
+
+            firstMatch
+            |> SynBinding.basic
+                [ Ident.create "this" ; Ident.create "ProcessKeyValue" ]
+                [
+                    SynPat.annotateType (SynType.app "ResizeArray" [ SynType.string ]) (SynPat.named "errors_")
+                    SynPat.annotateType SynType.string (SynPat.named "key")
+                    SynPat.annotateType SynType.string (SynPat.named "value")
+                ]
+            |> SynBinding.withReturnAnnotation (SynType.app "Result" [ SynType.unit ; SynType.option SynType.string ])
+            |> SynBinding.makeInstanceMember
             |> SynMemberDefn.memberImplementation
 
         let flags =
@@ -1144,7 +1269,17 @@ module internal ShibaGenerator =
         {
             Name = record.NameOfInProgressType
             Fields = fields
-            Members = [ assembleMethod ; emptyConstructor ; processKeyValue ; setFlagValue ] |> Some
+            Members =
+                [
+                    Some assembleMethod
+                    Some emptyConstructor
+                    processKeyValueSelf
+                    processKeyValueChildRecords
+                    Some processKeyValue
+                    Some setFlagValue
+                ]
+                |> List.choose id
+                |> Some
             XmlDoc = PreXmlDoc.create $"A partially-parsed %s{record.Original.Name.idText}." |> Some
             Generics =
                 match record.Original.Generics with
