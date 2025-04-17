@@ -196,6 +196,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 false
 
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
+
     /// A partially-parsed Basic.
     type internal Basic_InProgress =
         {
@@ -392,6 +395,9 @@ module internal ArgParseHelpers_ConsumePlugin =
                     true
             else
                 false
+
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed BasicWithIntPositionals.
     type internal BasicWithIntPositionals_InProgress =
@@ -593,6 +599,9 @@ module internal ArgParseHelpers_ConsumePlugin =
                     true
             else
                 false
+
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed LoadsOfTypes.
     type internal LoadsOfTypes_InProgress =
@@ -998,6 +1007,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 false
 
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
+
     /// A partially-parsed LoadsOfTypesNoPositionals.
     type internal LoadsOfTypesNoPositionals_InProgress =
         {
@@ -1370,6 +1382,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 false
 
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
+
     /// A partially-parsed DatesAndTimes.
     type internal DatesAndTimes_InProgress =
         {
@@ -1584,6 +1599,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed ChildRecord.
     type internal ChildRecord_InProgress =
@@ -1716,6 +1733,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed ParentRecord.
     type internal ParentRecord_InProgress =
@@ -1868,6 +1887,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 false
 
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
+
     /// A partially-parsed ChildRecordWithPositional.
     type internal ChildRecordWithPositional_InProgress =
         {
@@ -1998,6 +2020,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed ParentRecordChildPos.
     type internal ParentRecordChildPos_InProgress =
@@ -2150,6 +2174,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 false
 
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
+
     /// A partially-parsed ParentRecordSelfPos.
     type internal ParentRecordSelfPos_InProgress =
         {
@@ -2291,6 +2318,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed ChoicePositionals.
     type internal ChoicePositionals_InProgress =
@@ -2385,6 +2414,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed ContainsBoolEnvVar.
     type internal ContainsBoolEnvVar_InProgress =
@@ -2512,6 +2543,9 @@ module internal ArgParseHelpers_ConsumePlugin =
                     true
             else
                 false
+
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed WithFlagDu.
     type internal WithFlagDu_InProgress =
@@ -2644,6 +2678,9 @@ module internal ArgParseHelpers_ConsumePlugin =
                     true
             else
                 false
+
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed ContainsFlagEnvVar.
     type internal ContainsFlagEnvVar_InProgress =
@@ -2799,6 +2836,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 false
 
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
+
     /// A partially-parsed ContainsFlagDefaultValue.
     type internal ContainsFlagDefaultValue_InProgress =
         {
@@ -2928,6 +2968,9 @@ module internal ArgParseHelpers_ConsumePlugin =
                     true
             else
                 false
+
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed ManyLongForms.
     type internal ManyLongForms_InProgress =
@@ -3138,6 +3181,9 @@ module internal ArgParseHelpers_ConsumePlugin =
             else
                 false
 
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
+
     /// A partially-parsed FlagsIntoPositionalArgs.
     type internal FlagsIntoPositionalArgs_InProgress =
         {
@@ -3270,6 +3316,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed FlagsIntoPositionalArgsChoice.
     type internal FlagsIntoPositionalArgsChoice_InProgress =
@@ -3393,6 +3441,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed FlagsIntoPositionalArgsInt.
     type internal FlagsIntoPositionalArgsInt_InProgress =
@@ -3530,6 +3580,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed FlagsIntoPositionalArgsIntChoice.
     type internal FlagsIntoPositionalArgsIntChoice_InProgress =
@@ -3657,6 +3709,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed FlagsIntoPositionalArgs'.
     type internal FlagsIntoPositionalArgs'_InProgress =
@@ -3794,6 +3848,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 
     /// A partially-parsed PassThru.
     type internal PassThru_InProgress =
@@ -3889,6 +3945,8 @@ module internal ArgParseHelpers_ConsumePlugin =
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
+        /// Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces.
+        static member HelpText_ (prefix : string option) (indent : int) : string = failwith "TODO"
 namespace ConsumePlugin
 
 open ArgParserHelpers

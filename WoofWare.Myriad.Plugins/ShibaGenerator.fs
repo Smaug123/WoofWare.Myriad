@@ -1339,6 +1339,22 @@ module internal ShibaGenerator =
             )
             |> SynMemberDefn.memberImplementation
 
+        let helpText =
+            SynExpr.createIdent "failwith"
+            |> SynExpr.applyTo (SynExpr.CreateConst "TODO")
+            |> SynBinding.basic
+                [ Ident.create "HelpText_" ]
+                [
+                    SynPat.named "prefix" |> SynPat.annotateType (SynType.option SynType.string)
+                    SynPat.named "indent" |> SynPat.annotateType SynType.int
+                ]
+            |> SynBinding.withXmlDoc (
+                PreXmlDoc.create
+                    "Compute help text for this parser, optionally noting the given prefix on each argument and indenting each line by this many spaces."
+            )
+            |> SynBinding.withReturnAnnotation SynType.string
+            |> SynMemberDefn.staticMember
+
         let emptyConstructor =
             [
                 for KeyValue (nodeName, leaf) in record.LeafNodes do
@@ -1501,6 +1517,7 @@ module internal ShibaGenerator =
                     processKeyValueChildRecords
                     Some processKeyValue
                     Some setFlagValue
+                    Some helpText
                 ]
                 |> List.choose id
                 |> Some
