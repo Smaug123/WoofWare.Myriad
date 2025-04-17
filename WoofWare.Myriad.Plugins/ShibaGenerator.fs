@@ -1929,8 +1929,8 @@ module internal ShibaGenerator =
                 SynPat.named "args"
                 |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
 
-            let raiseErrors =
-                SynExpr.createIdent "e"
+            let raiseErrors (errorIdent : Ident) =
+                SynExpr.createIdent' errorIdent
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "String" ; "concat" ])
@@ -1950,11 +1950,19 @@ module internal ShibaGenerator =
                         (SynExpr.createLongIdent' [ parseStateIdent ; Ident.create "AwaitingKey" ])
                     |> SynExpr.applyTo (SynExpr.createIdent "args")
 
+                    SynExpr.ifThenElse
+                        (SynExpr.dotGet "Count" (SynExpr.createIdent "errors_")
+                         |> SynExpr.equals (SynExpr.CreateConst 0))
+                        (raiseErrors (Ident.create "errors_"))
+                        (SynExpr.CreateConst ())
+
                     [
                         SynMatchClause.create
                             (SynPat.nameWithArgs "Ok" [ SynPat.tuple [ SynPat.named "result" ; SynPat.anon ] ])
                             (SynExpr.createIdent "result")
-                        SynMatchClause.create (SynPat.nameWithArgs "Error" [ SynPat.named "e" ]) raiseErrors
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs "Error" [ SynPat.named "e" ])
+                            (raiseErrors (Ident.create "e"))
                     ]
                     |> SynExpr.createMatch (
                         SynExpr.callMethodArg

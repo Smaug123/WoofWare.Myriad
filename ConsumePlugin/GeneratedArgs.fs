@@ -3381,6 +3381,14 @@ module PassThruArgParse =
 
             go ParseState_PassThru.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -3477,6 +3485,14 @@ module FlagsIntoPositionalArgs'ArgParse =
                                 go ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
 
             go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
+
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
@@ -3575,6 +3591,14 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
 
             go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -3671,6 +3695,14 @@ module FlagsIntoPositionalArgsIntArgParse =
                                 go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey (arg :: args)
 
             go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
@@ -3769,6 +3801,14 @@ module FlagsIntoPositionalArgsChoiceArgParse =
 
             go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -3866,6 +3906,14 @@ module FlagsIntoPositionalArgsArgParse =
 
             go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -3956,6 +4004,14 @@ module ManyLongFormsArgParse =
                                 go ParseState_ManyLongForms.AwaitingKey (arg :: args)
 
             go ParseState_ManyLongForms.AwaitingKey args
+
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
@@ -4054,6 +4110,14 @@ module ContainsFlagDefaultValueArgParse =
 
             go ParseState_ContainsFlagDefaultValue.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -4147,6 +4211,14 @@ module ContainsFlagEnvVarArgParse =
 
             go ParseState_ContainsFlagEnvVar.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -4237,6 +4309,14 @@ module WithFlagDuArgParse =
                                 go ParseState_WithFlagDu.AwaitingKey (arg :: args)
 
             go ParseState_WithFlagDu.AwaitingKey args
+
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
@@ -4331,6 +4411,14 @@ module ContainsBoolEnvVarArgParse =
 
             go ParseState_ContainsBoolEnvVar.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -4423,6 +4511,14 @@ module ChoicePositionalsArgParse =
                                 go ParseState_ChoicePositionals.AwaitingKey (arg :: args)
 
             go ParseState_ChoicePositionals.AwaitingKey args
+
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
@@ -4517,6 +4613,14 @@ module ParentRecordSelfPosArgParse =
 
             go ParseState_ParentRecordSelfPos.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -4610,6 +4714,14 @@ module ParentRecordChildPosArgParse =
 
             go ParseState_ParentRecordChildPos.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -4700,6 +4812,14 @@ module ParentRecordArgParse =
                                 go ParseState_ParentRecord.AwaitingKey (arg :: args)
 
             go ParseState_ParentRecord.AwaitingKey args
+
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
@@ -4792,6 +4912,14 @@ module DatesAndTimesArgParse =
 
             go ParseState_DatesAndTimes.AwaitingKey args
 
+            if 0 = errors_.Count then
+                ()
+            else
+                errors_
+                |> String.concat System.Environment.NewLine
+                |> (fun x -> "Errors during parse!\n" + x)
+                |> failwith
+
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, _) -> result
             | Error e ->
@@ -4878,6 +5006,14 @@ module LoadsOfTypesNoPositionals =
 
         go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
 
+        if 0 = errors_.Count then
+            ()
+        else
+            errors_
+            |> String.concat System.Environment.NewLine
+            |> (fun x -> "Errors during parse!\n" + x)
+            |> failwith
+
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, _) -> result
         | Error e ->
@@ -4961,6 +5097,14 @@ module LoadsOfTypes =
                             go ParseState_LoadsOfTypes.AwaitingKey (arg :: args)
 
         go ParseState_LoadsOfTypes.AwaitingKey args
+
+        if 0 = errors_.Count then
+            ()
+        else
+            errors_
+            |> String.concat System.Environment.NewLine
+            |> (fun x -> "Errors during parse!\n" + x)
+            |> failwith
 
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, _) -> result
@@ -5048,6 +5192,14 @@ module BasicWithIntPositionals =
 
         go ParseState_BasicWithIntPositionals.AwaitingKey args
 
+        if 0 = errors_.Count then
+            ()
+        else
+            errors_
+            |> String.concat System.Environment.NewLine
+            |> (fun x -> "Errors during parse!\n" + x)
+            |> failwith
+
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, _) -> result
         | Error e ->
@@ -5131,6 +5283,14 @@ module Basic =
                             go ParseState_Basic.AwaitingKey (arg :: args)
 
         go ParseState_Basic.AwaitingKey args
+
+        if 0 = errors_.Count then
+            ()
+        else
+            errors_
+            |> String.concat System.Environment.NewLine
+            |> (fun x -> "Errors during parse!\n" + x)
+            |> failwith
 
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, _) -> result
@@ -5217,6 +5377,14 @@ module BasicNoPositionals =
                             go ParseState_BasicNoPositionals.AwaitingKey (arg :: args)
 
         go ParseState_BasicNoPositionals.AwaitingKey args
+
+        if 0 = errors_.Count then
+            ()
+        else
+            errors_
+            |> String.concat System.Environment.NewLine
+            |> (fun x -> "Errors during parse!\n" + x)
+            |> failwith
 
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, _) -> result
