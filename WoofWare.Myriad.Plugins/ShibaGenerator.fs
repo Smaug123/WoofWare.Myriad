@@ -1958,8 +1958,16 @@ module internal ShibaGenerator =
 
                     [
                         SynMatchClause.create
-                            (SynPat.nameWithArgs "Ok" [ SynPat.tuple [ SynPat.named "result" ; SynPat.anon ] ])
-                            (SynExpr.createIdent "result")
+                            (SynPat.nameWithArgs
+                                "Ok"
+                                [ SynPat.tuple [ SynPat.named "result" ; SynPat.named "posConsumer" ] ])
+                            (SynExpr.ifThenElse
+                                (SynExpr.booleanAnd
+                                    (SynExpr.dotGet "Count" (SynExpr.createIdent "positionals")
+                                     |> SynExpr.greaterThan (SynExpr.CreateConst 0))
+                                    (SynExpr.dotGet "IsNone" (SynExpr.createIdent "posConsumer")))
+                                (SynExpr.createIdent "result")
+                                (SynExpr.applyFunction (SynExpr.createIdent "failwith") (SynExpr.CreateConst "TODO")))
                         SynMatchClause.create
                             (SynPat.nameWithArgs "Error" [ SynPat.named "e" ])
                             (raiseErrors (Ident.create "e"))

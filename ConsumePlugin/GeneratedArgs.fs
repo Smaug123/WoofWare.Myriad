@@ -3390,7 +3390,11 @@ module PassThruArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -3495,7 +3499,11 @@ module FlagsIntoPositionalArgs'ArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -3600,7 +3608,11 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -3705,7 +3717,11 @@ module FlagsIntoPositionalArgsIntArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -3810,7 +3826,11 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -3915,7 +3935,11 @@ module FlagsIntoPositionalArgsArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4014,7 +4038,11 @@ module ManyLongFormsArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4119,7 +4147,11 @@ module ContainsFlagDefaultValueArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4220,7 +4252,11 @@ module ContainsFlagEnvVarArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4319,7 +4355,11 @@ module WithFlagDuArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4420,7 +4460,11 @@ module ContainsBoolEnvVarArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4521,7 +4565,11 @@ module ChoicePositionalsArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4622,7 +4670,11 @@ module ParentRecordSelfPosArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4723,7 +4775,11 @@ module ParentRecordChildPosArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4822,7 +4878,11 @@ module ParentRecordArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -4921,7 +4981,11 @@ module DatesAndTimesArgParse =
                 |> failwith
 
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-            | Ok (result, _) -> result
+            | Ok (result, posConsumer) ->
+                if positionals.Count > 0 && posConsumer.IsNone then
+                    failwith "TODO"
+                else
+                    result
             | Error e ->
                 e
                 |> String.concat System.Environment.NewLine
@@ -5015,7 +5079,11 @@ module LoadsOfTypesNoPositionals =
             |> failwith
 
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-        | Ok (result, _) -> result
+        | Ok (result, posConsumer) ->
+            if positionals.Count > 0 && posConsumer.IsNone then
+                failwith "TODO"
+            else
+                result
         | Error e ->
             e
             |> String.concat System.Environment.NewLine
@@ -5107,7 +5175,11 @@ module LoadsOfTypes =
             |> failwith
 
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-        | Ok (result, _) -> result
+        | Ok (result, posConsumer) ->
+            if positionals.Count > 0 && posConsumer.IsNone then
+                failwith "TODO"
+            else
+                result
         | Error e ->
             e
             |> String.concat System.Environment.NewLine
@@ -5201,7 +5273,11 @@ module BasicWithIntPositionals =
             |> failwith
 
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-        | Ok (result, _) -> result
+        | Ok (result, posConsumer) ->
+            if positionals.Count > 0 && posConsumer.IsNone then
+                failwith "TODO"
+            else
+                result
         | Error e ->
             e
             |> String.concat System.Environment.NewLine
@@ -5293,7 +5369,11 @@ module Basic =
             |> failwith
 
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-        | Ok (result, _) -> result
+        | Ok (result, posConsumer) ->
+            if positionals.Count > 0 && posConsumer.IsNone then
+                failwith "TODO"
+            else
+                result
         | Error e ->
             e
             |> String.concat System.Environment.NewLine
@@ -5387,7 +5467,11 @@ module BasicNoPositionals =
             |> failwith
 
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
-        | Ok (result, _) -> result
+        | Ok (result, posConsumer) ->
+            if positionals.Count > 0 && posConsumer.IsNone then
+                failwith "TODO"
+            else
+                result
         | Error e ->
             e
             |> String.concat System.Environment.NewLine
