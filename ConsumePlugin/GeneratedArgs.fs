@@ -161,7 +161,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -335,7 +336,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -513,7 +515,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -882,7 +885,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -1236,7 +1240,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -1457,7 +1462,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -1571,7 +1577,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -1689,10 +1696,11 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf ->
+            | Error None ->
                 match this.ProcessKeyValueRecord_ argNum_ errors_ key value with
                 | Ok () -> Ok ()
-                | Error errorFromRecord -> Error None
+                | Error errorFromRecord -> Error errorFromRecord
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -1812,7 +1820,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -1930,10 +1939,11 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf ->
+            | Error None ->
                 match this.ProcessKeyValueRecord_ argNum_ errors_ key value with
                 | Ok () -> Ok ()
-                | Error errorFromRecord -> Error None
+                | Error errorFromRecord -> Error errorFromRecord
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -2061,10 +2071,11 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf ->
+            | Error None ->
                 match this.ProcessKeyValueRecord_ argNum_ errors_ key value with
                 | Ok () -> Ok ()
-                | Error errorFromRecord -> Error None
+                | Error errorFromRecord -> Error errorFromRecord
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -2140,7 +2151,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -2237,7 +2249,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -2345,7 +2358,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -2481,7 +2495,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -2593,7 +2608,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -2772,7 +2788,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool =
@@ -2912,7 +2929,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -3017,7 +3035,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -3131,7 +3150,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -3240,7 +3260,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -3354,7 +3375,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromLeaf -> Error None
+            | Error None -> Error None
+            | Error (Some errorFromLeaf) -> Error (Some errorFromLeaf)
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -3432,7 +3454,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             match this.ProcessKeyValueRecord_ argNum_ errors_ key value with
             | Ok () -> Ok ()
-            | Error errorFromRecord -> Error None
+            | Error errorFromRecord -> Error errorFromRecord
 
         /// Returns false if we didn't set a value.
         member this.SetFlagValue_ (errors_ : ResizeArray<string>) (key : string) : bool = false
@@ -3485,7 +3507,7 @@ module PassThruArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_PassThru.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_PassThru.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -3600,7 +3622,7 @@ module FlagsIntoPositionalArgs'ArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgs'.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgs'.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -3715,8 +3737,10 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args
-                                    |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue arg)
+                                    go
+                                        (argNum_ + 1)
+                                        (ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue arg)
+                                        args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -3840,8 +3864,7 @@ module FlagsIntoPositionalArgsIntArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args
-                                    |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgsInt.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgsInt.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -3956,8 +3979,7 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args
-                                    |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -4073,7 +4095,7 @@ module FlagsIntoPositionalArgsArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgs.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgs.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -4182,7 +4204,7 @@ module ManyLongFormsArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_ManyLongForms.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_ManyLongForms.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -4297,7 +4319,7 @@ module ContainsFlagDefaultValueArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_ContainsFlagDefaultValue.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_ContainsFlagDefaultValue.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -4408,7 +4430,7 @@ module ContainsFlagEnvVarArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_ContainsFlagEnvVar.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_ContainsFlagEnvVar.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -4517,7 +4539,7 @@ module WithFlagDuArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_WithFlagDu.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_WithFlagDu.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -4628,7 +4650,7 @@ module ContainsBoolEnvVarArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_ContainsBoolEnvVar.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_ContainsBoolEnvVar.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -4739,7 +4761,7 @@ module ChoicePositionalsArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_ChoicePositionals.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_ChoicePositionals.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -4850,7 +4872,7 @@ module ParentRecordSelfPosArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_ParentRecordSelfPos.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_ParentRecordSelfPos.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -4961,7 +4983,7 @@ module ParentRecordChildPosArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_ParentRecordChildPos.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_ParentRecordChildPos.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -5070,7 +5092,7 @@ module ParentRecordArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_ParentRecord.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_ParentRecord.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -5179,7 +5201,7 @@ module DatesAndTimesArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (argNum_ + 1) (ParseState_DatesAndTimes.AwaitingValue arg)
+                                    go (argNum_ + 1) (ParseState_DatesAndTimes.AwaitingValue arg) args
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
@@ -5286,8 +5308,7 @@ module LoadsOfTypesNoPositionals =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args
-                                |> go (argNum_ + 1) (ParseState_LoadsOfTypesNoPositionals.AwaitingValue arg)
+                                go (argNum_ + 1) (ParseState_LoadsOfTypesNoPositionals.AwaitingValue arg) args
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]
@@ -5392,7 +5413,7 @@ module LoadsOfTypes =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args |> go (argNum_ + 1) (ParseState_LoadsOfTypes.AwaitingValue arg)
+                                go (argNum_ + 1) (ParseState_LoadsOfTypes.AwaitingValue arg) args
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]
@@ -5499,7 +5520,7 @@ module BasicWithIntPositionals =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args |> go (argNum_ + 1) (ParseState_BasicWithIntPositionals.AwaitingValue arg)
+                                go (argNum_ + 1) (ParseState_BasicWithIntPositionals.AwaitingValue arg) args
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]
@@ -5604,7 +5625,7 @@ module Basic =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args |> go (argNum_ + 1) (ParseState_Basic.AwaitingValue arg)
+                                go (argNum_ + 1) (ParseState_Basic.AwaitingValue arg) args
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]
@@ -5711,7 +5732,7 @@ module BasicNoPositionals =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args |> go (argNum_ + 1) (ParseState_BasicNoPositionals.AwaitingValue arg)
+                                go (argNum_ + 1) (ParseState_BasicNoPositionals.AwaitingValue arg) args
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]

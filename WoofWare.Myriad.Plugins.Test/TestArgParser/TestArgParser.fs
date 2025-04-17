@@ -318,8 +318,7 @@ Required argument '--baz' received no value"""
         exc.Message
         |> shouldEqual
             """Errors during parse!
-Input string was not in a correct format. (at arg --invariant-exact=23:59)
-Required argument '--invariant-exact' received no value"""
+Input string was not in a correct format. (at arg --invariant-exact=23:59)"""
 
         let exc =
             Assert.Throws<exn> (fun () ->
@@ -337,8 +336,7 @@ Required argument '--invariant-exact' received no value"""
         exc.Message
         |> shouldEqual
             """Errors during parse!
-Input string was not in a correct format. (at arg --exact=11:34)
-Required argument '--exact' received no value"""
+Input string was not in a correct format. (at arg --exact=11:34)"""
 
         count.Value |> shouldEqual 0
 
@@ -604,7 +602,10 @@ Required argument '--exact' received no value"""
             )
 
         exc.Message
-        |> shouldEqual """Unable to process argument --do-the-thing=foo as key --do-the-thing and value foo"""
+        |> shouldEqual
+            """Errors during parse!
+Required argument '--do-something-else' received no value
+Required argument '--turn-it-on' received no value"""
 
     [<Test>]
     let ``Long-form args help text`` () =

@@ -1298,12 +1298,9 @@ module internal ShibaGenerator =
                 |> Some
 
         let processKeyValue =
-            let afterErrorFromRecord =
-                SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None")
-
             let afterErrorFromLeaf =
                 match processKeyValueChildRecords with
-                | None -> afterErrorFromRecord
+                | None -> SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None")
                 | Some _ ->
                     [
                         SynMatchClause.create
@@ -1311,7 +1308,7 @@ module internal ShibaGenerator =
                             (SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ()))
                         SynMatchClause.create
                             (SynPat.nameWithArgs "Error" [ SynPat.named "errorFromRecord" ])
-                            afterErrorFromRecord
+                            (SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "errorFromRecord"))
                     ]
                     |> SynExpr.createMatch (
                         SynExpr.createLongIdent [ "this" ; "ProcessKeyValueRecord_" ]
@@ -1330,8 +1327,29 @@ module internal ShibaGenerator =
                             (SynPat.nameWithArgs "Ok" [ SynPat.unit ])
                             (SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ()))
                         SynMatchClause.create
-                            (SynPat.nameWithArgs "Error" [ SynPat.named "errorFromLeaf" ])
+                            (SynPat.nameWithArgs "Error" [ SynPat.named "None" ])
+                            // We didn't manage to parse this arg, but we didn't actually fail to do so;
+                            // give our sub-parsers a try.
                             afterErrorFromLeaf
+                        SynMatchClause.create
+                            (SynPat.nameWithArgs
+                                "Error"
+                                [
+                                    SynPat.paren (
+                                        SynPat.identWithArgs
+                                            [ Ident.create "Some" ]
+                                            (SynArgPats.createNamed [ "errorFromLeaf" ])
+                                    )
+                                ])
+                            // We tried and explicitly failed to consume the argument ourselves, so just hand the error
+                            // back out without even trying our sub-parsers.
+                            (SynExpr.applyFunction
+                                (SynExpr.createIdent "Error")
+                                (SynExpr.paren (
+                                    SynExpr.applyFunction
+                                        (SynExpr.createIdent "Some")
+                                        (SynExpr.createIdent "errorFromLeaf")
+                                )))
                     ]
                     |> SynExpr.createMatch (
                         SynExpr.createLongIdent [ "this" ; "ProcessKeyValueSelf_" ]
@@ -1804,7 +1822,7 @@ module internal ShibaGenerator =
                                             (SynPat.nameWithArgs "Error" [ SynPat.named "x" ])
                                             notMatched
                                     ]))
-                            (SynExpr.createIdent "args" |> SynExpr.pipeThroughFunction recurseValue)))
+                            (SynExpr.createIdent "args" |> SynExpr.applyFunction recurseValue)))
                     ( //SynExpr.createIdent "helpText"
                     //|> SynExpr.applyTo (SynExpr.CreateConst ())
                     SynExpr.CreateConst "TODO"
