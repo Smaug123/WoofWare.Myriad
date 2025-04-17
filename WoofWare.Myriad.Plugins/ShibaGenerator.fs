@@ -87,6 +87,9 @@ type private ParseFunction<'acc> =
 
 module internal ShibaGenerator =
     //let log (s : string) = System.IO.File.AppendAllText ("/tmp/myriad.log", s + "\n")
+    let private choice1Of2 = SynExpr.createIdent "Choice1Of2"
+    let private choice2Of2 = SynExpr.createIdent "Choice2Of2"
+
     type RecognisedType =
         | Union of UnionType
         | Record of RecordType
@@ -1064,51 +1067,56 @@ module internal ShibaGenerator =
                                         failwith
                                             "internal error: positional args, if Choicey, should be a ChoicePositional"
                                     | Accumulation.ChoicePositional attrContents ->
-                                        SynExpr.createIdent "positionals"
-                                        |> SynExpr.pipeThroughFunction (
-                                            SynExpr.applyFunction
-                                                (SynExpr.createLongIdent [ "List" ; "map" ])
-                                                (SynExpr.createLambda
-                                                    "x"
-                                                    (SynExpr.createMatch
-                                                        (SynExpr.createIdent "x")
-                                                        [
-                                                            SynMatchClause.create
-                                                                (SynPat.identWithArgs
-                                                                    [ Ident.create "Choice1Of2" ]
-                                                                    (SynArgPats.create
-                                                                        [
-                                                                            SynPat.tuple
-                                                                                [
-                                                                                    SynPat.named "x"
-                                                                                    SynPat.named "argPos"
-                                                                                ]
-                                                                        ]))
-                                                                (SynExpr.applyFunction
-                                                                    leaf.ParseFn
-                                                                    (SynExpr.createIdent "x")
-                                                                 |> SynExpr.pipeThroughFunction (
-                                                                     SynExpr.createIdent "Choice1Of2"
-                                                                 ))
-                                                            SynMatchClause.create
-                                                                (SynPat.identWithArgs
-                                                                    [ Ident.create "Choice2Of2" ]
-                                                                    (SynArgPats.create
-                                                                        [
-                                                                            SynPat.tuple
-                                                                                [
-                                                                                    SynPat.named "x"
-                                                                                    SynPat.named "argPos"
-                                                                                ]
-                                                                        ]))
-                                                                (SynExpr.applyFunction
-                                                                    leaf.ParseFn
-                                                                    (SynExpr.createIdent "x")
-                                                                 |> SynExpr.pipeThroughFunction (
-                                                                     SynExpr.createIdent "Choice2Of2"
-                                                                 ))
-                                                        ]))
-                                        )
+                                        [
+                                            SynExpr.callMethodArg
+                                                "Add"
+                                                leaf.HumanReadableArgForm
+                                                (SynExpr.createIdent "positionalConsumers")
+                                            SynExpr.createIdent "positionals"
+                                            |> SynExpr.pipeThroughFunction (
+                                                SynExpr.applyFunction
+                                                    (SynExpr.createLongIdent [ "List" ; "map" ])
+                                                    (SynExpr.createLambda
+                                                        "x"
+                                                        (SynExpr.createMatch
+                                                            (SynExpr.createIdent "x")
+                                                            [
+                                                                SynMatchClause.create
+                                                                    (SynPat.identWithArgs
+                                                                        [ Ident.create "Choice1Of2" ]
+                                                                        (SynArgPats.create
+                                                                            [
+                                                                                SynPat.tuple
+                                                                                    [
+                                                                                        SynPat.named "x"
+                                                                                        SynPat.named "argPos"
+                                                                                    ]
+                                                                            ]))
+                                                                    (SynExpr.applyFunction
+                                                                        leaf.ParseFn
+                                                                        (SynExpr.createIdent "x")
+                                                                     |> SynExpr.pipeThroughFunction choice1Of2)
+                                                                SynMatchClause.create
+                                                                    (SynPat.identWithArgs
+                                                                        [ Ident.create "Choice2Of2" ]
+                                                                        (SynArgPats.create
+                                                                            [
+                                                                                SynPat.tuple
+                                                                                    [
+                                                                                        SynPat.named "x"
+                                                                                        SynPat.named "argPos"
+                                                                                    ]
+                                                                            ]))
+                                                                    (SynExpr.applyFunction
+                                                                        leaf.ParseFn
+                                                                        (SynExpr.createIdent "x")
+                                                                     |> SynExpr.pipeThroughFunction (
+                                                                         SynExpr.createIdent "Choice2Of2"
+                                                                     ))
+                                                            ]))
+                                            )
+                                        ]
+                                        |> SynExpr.sequential
                                 | _ -> failwith "unexpected: positional arguments should be a list"
                             | None ->
 
@@ -1158,9 +1166,7 @@ module internal ShibaGenerator =
                                             (SynPat.identWithArgs
                                                 [ Ident.create "Some" ]
                                                 (SynArgPats.create [ SynPat.named "result" ]))
-                                            (SynExpr.applyFunction
-                                                (SynExpr.createIdent "Choice1Of2")
-                                                (SynExpr.createIdent "result"))
+                                            (SynExpr.applyFunction choice1Of2 (SynExpr.createIdent "result"))
                                         SynMatchClause.create
                                             (SynPat.identWithArgs [ Ident.create "None" ] (SynArgPats.create []))
                                             (match choice with
@@ -1175,7 +1181,7 @@ module internal ShibaGenerator =
                                                      name.idText
                                                      (SynExpr.createIdent' record.Original.Name)
                                              |> SynExpr.paren
-                                             |> SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2"))
+                                             |> SynExpr.applyFunction choice2Of2)
                                     ]
                                     |> SynExpr.createMatch (SynExpr.dotGet ident.idText (SynExpr.createIdent "this"))
                                 | Accumulation.List acc ->
@@ -1755,7 +1761,7 @@ module internal ShibaGenerator =
             SynExpr.sequential
                 [
                     SynExpr.tuple [ SynExpr.createIdent "arg" ; SynExpr.createIdent "argNum_" ]
-                    |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                    |> SynExpr.pipeThroughFunction choice1Of2
                     |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
 
                     recurseKey
@@ -1878,7 +1884,7 @@ module internal ShibaGenerator =
             let onFailure =
                 [
                     SynExpr.tuple [ SynExpr.createIdent "key" ; SynExpr.createIdent "argNum_" ]
-                    |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                    |> SynExpr.pipeThroughFunction choice1Of2
                     |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
 
                     SynExpr.createIdent "go"
@@ -1990,9 +1996,7 @@ module internal ShibaGenerator =
                                             ]))
                             )
                             |> SynExpr.pipeThroughFunction (
-                                SynExpr.applyFunction
-                                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                                    (SynExpr.createIdent "Choice2Of2")
+                                SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ]) choice2Of2
                             )
                         ))
                         (SynExpr.createIdent' leftoverArgs))

@@ -2075,6 +2075,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             let positionalConsumers = ResizeArray<string> ()
 
             let arg0 : Choice<string, string> list =
+                positionalConsumers.Add (sprintf "--%s" "args")
+
                 positionals
                 |> List.map (fun x ->
                     match x with
@@ -2927,6 +2929,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             let arg1 : Choice<string, string> list =
+                positionalConsumers.Add (sprintf "--%s" "grab-everything")
+
                 positionals
                 |> List.map (fun x ->
                     match x with
@@ -3142,6 +3146,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             let arg1 : Choice<int, int> list =
+                positionalConsumers.Add (sprintf "--%s" "grab-everything")
+
                 positionals
                 |> List.map (fun x ->
                     match x with
