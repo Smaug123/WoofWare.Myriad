@@ -72,6 +72,10 @@
     <Compile Include="GeneratedArgs.fs">
       <MyriadFile>Args.fs</MyriadFile>
     </Compile>
+    <Compile Include="ArgsWithUnions.fs" />
+    <Compile Include="GeneratedArgsWithUnions.fs">
+      <MyriadFile>ArgsWithUnions.fs</MyriadFile>
+    </Compile>
     <!--
     <None Include="swagger-gitea.json" />
     <Compile Include="GeneratedSwaggerGitea.fs">

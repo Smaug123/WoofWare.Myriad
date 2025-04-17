@@ -149,6 +149,8 @@ module internal ShibaGenerator =
     /// for example, maybe it returns a `ty option` or a `ty list`).
     /// The resulting SynType, if you get one, is the type of the *element* being parsed; so if the Accumulation is List, the SynType
     /// is the list element.
+    ///
+    /// This may fail, e.g. if we haven't yet parsed the types on which we depend.
     let rec private createParseFunction<'choice>
         (choice : ArgumentDefaultSpec option -> 'choice)
         (flagDus : FlagDu list)
@@ -157,7 +159,7 @@ module internal ShibaGenerator =
         (fieldName : Ident)
         (attrs : SynAttribute list)
         (ty : SynType)
-        : ParseFunctionSpec<'choice>
+        : Result<ParseFunctionSpec<'choice>, string>
         =
         let positional =
             attrs
@@ -197,6 +199,7 @@ module internal ShibaGenerator =
                 BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
+            |> Ok
         | PrimitiveType pt ->
             let isBoolLike =
                 if pt |> List.map _.idText = [ "System" ; "Boolean" ] then
@@ -219,6 +222,7 @@ module internal ShibaGenerator =
                 BoolCases = isBoolLike
             }
             |> ParseFunctionSpec.Leaf
+            |> Ok
         | Uri ->
             {
                 ParseFn =
@@ -233,6 +237,7 @@ module internal ShibaGenerator =
                 BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
+            |> Ok
         | TimeSpan ->
             let parseExact =
                 attrs
@@ -296,6 +301,7 @@ module internal ShibaGenerator =
                 BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
+            |> Ok
         | FileInfo ->
             {
                 ParseFn =
@@ -312,6 +318,7 @@ module internal ShibaGenerator =
                 BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
+            |> Ok
         | DirectoryInfo ->
             {
                 ParseFn =
@@ -328,6 +335,7 @@ module internal ShibaGenerator =
                 BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
+            |> Ok
         | OptionType eltTy ->
             match
                 createParseFunction
@@ -339,6 +347,10 @@ module internal ShibaGenerator =
                     attrs
                     eltTy
             with
+            | Error e -> Error e
+            | Ok parseFn ->
+
+            match parseFn with
             | ParseFunctionSpec.Leaf data ->
                 match data.Acc with
                 | Accumulation.Optional ->
@@ -351,11 +363,12 @@ module internal ShibaGenerator =
                 | Accumulation.List _ ->
                     failwith $"ArgParser does not support optional lists at field %s{fieldName.idText}: %O{ty}"
                 | Accumulation.Required ->
-                    ParseFunctionSpec.Leaf
-                        { data with
-                            Acc = Accumulation.Optional
-                        }
-            | ParseFunctionSpec.UserDefined _ -> ParseFunctionSpec.OptionOfUserDefined
+                    { data with
+                        Acc = Accumulation.Optional
+                    }
+                    |> ParseFunctionSpec.Leaf
+                    |> Ok
+            | ParseFunctionSpec.UserDefined _ -> Ok ParseFunctionSpec.OptionOfUserDefined
             | ParseFunctionSpec.OptionOfUserDefined ->
                 failwith $"ArgParser does not support lists of options at field %s{fieldName.idText}"
         | ChoiceType elts ->
@@ -375,6 +388,10 @@ module internal ShibaGenerator =
                         attrs
                         elt1
                 with
+                | Error e -> Error e
+                | Ok parseFn ->
+
+                match parseFn with
                 | ParseFunctionSpec.Leaf data ->
                     match data.Acc with
                     | Accumulation.Optional ->
@@ -428,15 +445,17 @@ module internal ShibaGenerator =
 
                     match positional with
                     | Some positional ->
-                        ParseFunctionSpec.Leaf
-                            { data with
-                                Acc = Accumulation.ChoicePositional positional
-                            }
+                        { data with
+                            Acc = Accumulation.ChoicePositional positional
+                        }
+                        |> ParseFunctionSpec.Leaf
+                        |> Ok
                     | None ->
-                        ParseFunctionSpec.Leaf
-                            { data with
-                                Acc = Accumulation.Choice (choice relevantAttr)
-                            }
+                        { data with
+                            Acc = Accumulation.Choice (choice relevantAttr)
+                        }
+                        |> ParseFunctionSpec.Leaf
+                        |> Ok
                 | _ ->
                     failwith
                         $"Choices are only allowed to contain leaves; at %s{fieldName.idText}, got type %s{SynType.toHumanReadableString elt1}"
@@ -456,31 +475,43 @@ module internal ShibaGenerator =
                     attrs
                     eltTy
             with
+            | Error e -> Error e
+            | Ok parseFn ->
+            match parseFn with
             | ParseFunctionSpec.Leaf data ->
-                ParseFunctionSpec.Leaf
-                    { data with
-                        Acc = Accumulation.List data.Acc
-                    }
+                { data with
+                    Acc = Accumulation.List data.Acc
+                }
+                |> ParseFunctionSpec.Leaf
+                |> Ok
             | _ ->
                 failwith
                     $"Lists are only allowed to contain leaves; at %s{fieldName.idText}, got type %s{SynType.toHumanReadableString eltTy}"
         | ty ->
             match identifyAsFlag flagDus ty with
             | None ->
+                let recognisedRecords =
+                    userDefinedRecordTypesWithParser
+                    |> String.concat ", "
+                let recognisedUnions =
+                    userDefinedUnionTypesWithParser
+                    |> String.concat ", "
+                let errorMessage =
+                    $"we did not recognise the type %s{SynType.toHumanReadableString ty} as something we could build a parser for; we know about these record types:\n%s{recognisedRecords}\nand these unions:\n%s{recognisedUnions}"
                 match ty with
                 | SynType.LongIdent (SynLongIdent.SynLongIdent (id = id)) ->
                     let typeName = List.last id
 
                     if Seq.contains typeName.idText userDefinedRecordTypesWithParser then
                         ParseFunctionSpec.UserDefined (true, typeName)
+                        |> Ok
                     elif Seq.contains (List.last id).idText userDefinedUnionTypesWithParser then
                         ParseFunctionSpec.UserDefined (false, typeName)
+                        |> Ok
                     else
-                        failwith
-                            $"we did not recognise the type %s{SynType.toHumanReadableString ty} as something we could build a parser for"
+                        Error errorMessage
                 | _ ->
-                    failwith
-                        $"we did not recognise the type %s{SynType.toHumanReadableString ty} as something we could build a parser for"
+                    Error errorMessage
             | Some flagDu ->
                 // Parse as a bool, and then do the `if-then` dance.
                 let parser =
@@ -499,6 +530,7 @@ module internal ShibaGenerator =
                     BoolCases = Some (Choice1Of2 flagDu)
                 }
                 |> ParseFunctionSpec.Leaf
+                |> Ok
 
     type internal DatalessUnion =
         {
@@ -1544,13 +1576,13 @@ module internal ShibaGenerator =
             DatalessUnions : Map<string, DatalessUnion>
         }
 
-    /// Returns None if we haven't yet obtained parse structures for the dependencies of this record.
+    /// Returns Error if we haven't yet obtained parse structures for the dependencies of this record.
     let private parseRecord
         (knownRecordParserTypes : IReadOnlyDictionary<string, ParsedRecordStructure<ArgumentDefaultSpec>>)
         (knownUnionParserTypes : IReadOnlyDictionary<string, ParsedUnionStructure<ArgumentDefaultSpec>>)
         (flagDus : FlagDu list)
         (rt : RecordType)
-        : ParsedRecordStructure<ArgumentDefaultSpec> option
+        : Result<ParsedRecordStructure<ArgumentDefaultSpec>, string>
         =
         let getChoice (spec : ArgumentDefaultSpec option) : ArgumentDefaultSpec =
             match spec with
@@ -1560,11 +1592,11 @@ module internal ShibaGenerator =
             | Some spec -> spec
 
         let aggregated =
-            (Some ([], [], []), rt.Fields)
+            (Ok ([], [], []), rt.Fields)
             ||> List.fold (fun aggr (SynField.SynField (idOpt = ident ; attributes = attrs ; fieldType = ty)) ->
                 match aggr with
-                | None -> None
-                | Some (leaf, records, unions) ->
+                | Error e -> Error e
+                | Ok (leaf, records, unions) ->
 
                 match ident with
                 | None ->
@@ -1583,22 +1615,26 @@ module internal ShibaGenerator =
                         ty
 
                 match spec with
-                | Leaf data -> ((ident.idText, data) :: leaf, records, unions) |> Some
+                | Error e -> Error e
+                | Ok spec ->
+
+                match spec with
+                | Leaf data -> ((ident.idText, data) :: leaf, records, unions) |> Ok
                 | UserDefined (isRecord, typeName) ->
                     if isRecord then
                         match knownRecordParserTypes.TryGetValue typeName.idText with
-                        | false, _ -> None
-                        | true, v -> (leaf, (ident.idText, v) :: records, unions) |> Some
+                        | false, _ -> Error $"Record %s{typeName.idText} not yet parsed"
+                        | true, v -> (leaf, (ident.idText, v) :: records, unions) |> Ok
                     else
                         match knownUnionParserTypes.TryGetValue typeName.idText with
-                        | false, _ -> None
-                        | true, v -> (leaf, records, (ident.idText, v) :: unions) |> Some
+                        | false, _ -> Error $"Union %s{typeName.idText} not yet parsed"
+                        | true, v -> (leaf, records, (ident.idText, v) :: unions) |> Ok
                 | OptionOfUserDefined -> failwith "todo"
             )
 
         match aggregated with
-        | None -> None
-        | Some (leaf, records, unions) ->
+        | Error e -> Error e
+        | Ok (leaf, records, unions) ->
             {
                 NameOfInProgressType = rt.Name.idText + "_InProgress" |> Ident.create
                 Original = rt
@@ -1607,15 +1643,17 @@ module internal ShibaGenerator =
                 Unions = unions |> Map.ofList
                 FlagDus = flagDus
             }
-            |> Some
+            |> Ok
 
     /// Returns None if we haven't yet obtained parse structures for the dependencies of this union.
     /// This function already knows that it's a parser: that is, every case has exactly one field.
     /// It doesn't necessarily know that those fields can be parsed as records.
+    ///
+    /// This can fail, e.g. if we haven't yet learned all the record types on which this union depends.
     let private parseUnion
         (knownRecordTypes : IReadOnlyDictionary<string, ParsedRecordStructure<ArgumentDefaultSpec>>)
         (ut : UnionType)
-        : ParsedUnionStructure<ArgumentDefaultSpec> option
+        : Result<ParsedUnionStructure<ArgumentDefaultSpec>, string>
         =
         ut.Cases
         |> List.map (fun case ->
@@ -1631,16 +1669,17 @@ module internal ShibaGenerator =
 
             match field.Type with
             | SynType.LongIdent (SynLongIdent.SynLongIdent (id = id)) ->
-                match knownRecordTypes.TryGetValue (List.last id).idText with
-                | false, _ -> None
-                | true, v -> Some (case.Name.idText, v)
+                let desiredType = (List.last id).idText
+                match knownRecordTypes.TryGetValue desiredType with
+                | false, _ -> Error $"Type not yet known: %s{desiredType}"
+                | true, v -> Ok (case.Name.idText, v)
             | _ ->
                 failwith
                     "ArgParser generator requires discriminated union cases to each contain exactly one field which is a record type, to hold their data."
         )
-        |> List.allSome
-        |> Option.map Map.ofList
-        |> Option.map (fun x ->
+        |> List.allOkOrError
+        |> Result.map Map.ofList
+        |> Result.map (fun x ->
             {
                 Original = ut
                 Cases = x
@@ -1734,26 +1773,27 @@ module internal ShibaGenerator =
         let allKnownUnionTypes = Dictionary ()
         let allKnownRecordTypes = Dictionary ()
 
-        let mutable keepLooping = true
+        let mutable keepLoopingReason = Some "not yet started"
 
-        while keepLooping do
-            keepLooping <- false
+        while keepLoopingReason.IsSome do
+            keepLoopingReason <- None
             let mutable madeAChange = false
 
             for record in records do
                 if not (allKnownRecordTypes.ContainsKey record.Name.idText) then
                     match parseRecord allKnownRecordTypes allKnownUnionTypes (flagDus |> List.map snd) record with
-                    | None -> keepLooping <- true
-                    | Some v ->
+                    | Error e -> keepLoopingReason <- Some e
+                    | Ok v ->
                         allKnownRecordTypes.Add (record.Name.idText, v)
                         madeAChange <- true
 
             for union in parserUnions do
-                match parseUnion allKnownRecordTypes union with
-                | None -> keepLooping <- true
-                | Some v ->
-                    allKnownUnionTypes.Add (union.Name.idText, v)
-                    madeAChange <- true
+                if not (allKnownUnionTypes.ContainsKey union.Name.idText) then
+                    match parseUnion allKnownRecordTypes union with
+                    | Error e -> keepLoopingReason <- Some e
+                    | Ok v ->
+                        allKnownUnionTypes.Add (union.Name.idText, v)
+                        madeAChange <- true
 
             if not madeAChange then
                 let knownRecords = allKnownRecordTypes.Keys |> String.concat ","
