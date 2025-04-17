@@ -444,7 +444,7 @@ Required argument '--exact' received no value"""
         ]
         |> List.map TestCaseData
 
-    [<TestCaseSource(nameof (boolCases))>]
+    [<TestCaseSource(nameof boolCases)>]
     let ``Bool env vars can be populated`` (envValue : string, boolValue : bool) =
         let getEnvVar (s : string) =
             s |> shouldEqual "CONSUMEPLUGIN_THINGS"

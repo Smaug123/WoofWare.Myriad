@@ -139,6 +139,13 @@ module internal ShibaGenerator =
             ArgForm : SynExpr list
             /// Name of the field of the in-progress record storing this leaf.
             TargetConstructionField : Ident
+            /// If this is a boolean-like field (e.g. a bool or a flag DU), the help text should look a bit different:
+            /// we should lie to the user about the value of the cases there.
+            /// Similarly, if we're reading from an environment variable with the laxer parsing rules of accepting e.g.
+            /// "0" instead of "false", we need to know if we're reading a bool.
+            /// In that case, `boolCases` is Some, and contains the construction of the flag (or boolean, in which case
+            /// you get no data).
+            BoolCases : Choice<FlagDu, unit> option
         }
 
         /// A SynExpr of type `string` which we can display to the user at generated-program runtime to display all
@@ -211,9 +218,16 @@ module internal ShibaGenerator =
                 Positional = positional
                 ArgForm = longForms
                 TargetConstructionField = fieldName
+                BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
         | PrimitiveType pt ->
+            let isBoolLike =
+                if pt |> List.map _.idText = [ "System" ; "Boolean" ] then
+                    Some (Choice2Of2 ())
+                else
+                    identifyAsFlag flagDus ty |> Option.map Choice1Of2
+
             {
                 ParseFn =
                     SynExpr.createLambda
@@ -226,6 +240,7 @@ module internal ShibaGenerator =
                 Positional = positional
                 ArgForm = longForms
                 TargetConstructionField = fieldName
+                BoolCases = isBoolLike
             }
             |> ParseFunctionSpec.Leaf
         | Uri ->
@@ -239,6 +254,7 @@ module internal ShibaGenerator =
                 Positional = positional
                 ArgForm = longForms
                 TargetConstructionField = fieldName
+                BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
         | TimeSpan ->
@@ -301,6 +317,7 @@ module internal ShibaGenerator =
                 Positional = positional
                 ArgForm = longForms
                 TargetConstructionField = fieldName
+                BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
         | FileInfo ->
@@ -316,6 +333,7 @@ module internal ShibaGenerator =
                 Positional = positional
                 ArgForm = longForms
                 TargetConstructionField = fieldName
+                BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
         | DirectoryInfo ->
@@ -331,6 +349,7 @@ module internal ShibaGenerator =
                 Positional = positional
                 ArgForm = longForms
                 TargetConstructionField = fieldName
+                BoolCases = None
             }
             |> ParseFunctionSpec.Leaf
         | OptionType eltTy ->
@@ -501,6 +520,7 @@ module internal ShibaGenerator =
                     Positional = positional
                     ArgForm = longForms
                     TargetConstructionField = fieldName
+                    BoolCases = Some (Choice1Of2 flagDu)
                 }
                 |> ParseFunctionSpec.Leaf
 
@@ -1020,6 +1040,43 @@ module internal ShibaGenerator =
                                 | _ -> failwith "unexpected: positional arguments should be a list"
                             | None ->
 
+                            let parseFn =
+                                match leaf.BoolCases with
+                                | Some boolLike ->
+                                    let trueCase, falseCase =
+                                        match boolLike with
+                                        | Choice2Of2 () -> SynExpr.CreateConst true, SynExpr.CreateConst false
+                                        | Choice1Of2 flag ->
+                                            FlagDu.FromBoolean flag (SynExpr.CreateConst true),
+                                            FlagDu.FromBoolean flag (SynExpr.CreateConst false)
+
+                                    // We permit environment variables to be populated with 0 and 1 as well.
+                                    SynExpr.ifThenElse
+                                        (SynExpr.applyFunction
+                                            (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                                            (SynExpr.tuple
+                                                [
+                                                    SynExpr.createIdent "x"
+                                                    SynExpr.CreateConst "1"
+                                                    SynExpr.createLongIdent
+                                                        [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                                                ]))
+                                        (SynExpr.ifThenElse
+                                            (SynExpr.applyFunction
+                                                (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                                                (SynExpr.tuple
+                                                    [
+                                                        SynExpr.createIdent "x"
+                                                        SynExpr.CreateConst "0"
+                                                        SynExpr.createLongIdent
+                                                            [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                                                    ]))
+                                            (SynExpr.createIdent "x" |> SynExpr.pipeThroughFunction leaf.ParseFn)
+                                            falseCase)
+                                        trueCase
+                                    |> SynExpr.createLambda "x"
+                                | None -> leaf.ParseFn
+
                             let extract =
                                 match leaf.Acc with
                                 | Accumulation.ChoicePositional choice -> failwith "TODO"
@@ -1040,7 +1097,7 @@ module internal ShibaGenerator =
                                                  |> SynExpr.pipeThroughFunction (
                                                      SynExpr.createIdent "getEnvironmentVariable"
                                                  )
-                                                 |> SynExpr.pipeThroughFunction leaf.ParseFn
+                                                 |> SynExpr.pipeThroughFunction parseFn
                                              | ArgumentDefaultSpec.FunctionCall name ->
                                                  SynExpr.callMethod
                                                      name.idText

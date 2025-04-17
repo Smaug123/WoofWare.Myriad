@@ -2098,7 +2098,14 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Choice2Of2 (
                         "CONSUMEPLUGIN_THINGS"
                         |> getEnvironmentVariable
-                        |> (fun x -> System.Boolean.Parse x)
+                        |> (fun x ->
+                            if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
+                                true
+                            else if System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase) then
+                                false
+                            else
+                                x |> (fun x -> System.Boolean.Parse x)
+                        )
                     )
 
             if errors.Count = 0 then
@@ -2311,10 +2318,24 @@ module internal ArgParseHelpers_ConsumePlugin =
                         "CONSUMEPLUGIN_THINGS"
                         |> getEnvironmentVariable
                         |> (fun x ->
-                            if System.Boolean.Parse x = Consts.FALSE then
-                                DryRunMode.Wet
+                            if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
+                                if true = Consts.FALSE then
+                                    DryRunMode.Wet
+                                else
+                                    DryRunMode.Dry
+                            else if System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase) then
+                                if false = Consts.FALSE then
+                                    DryRunMode.Wet
+                                else
+                                    DryRunMode.Dry
                             else
-                                DryRunMode.Dry
+                                x
+                                |> (fun x ->
+                                    if System.Boolean.Parse x = Consts.FALSE then
+                                        DryRunMode.Wet
+                                    else
+                                        DryRunMode.Dry
+                                )
                         )
                     )
 
