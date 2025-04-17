@@ -636,6 +636,7 @@ module internal ShibaGenerator =
             ]
             |> SynExpr.createMatch (
                 SynExpr.createLongIdent [ "this" ; fieldName ; "ProcessKeyValue" ]
+                |> SynExpr.applyTo (SynExpr.createIdent "argNum_")
                 |> SynExpr.applyTo (SynExpr.createIdent "errors_")
                 |> SynExpr.applyTo (SynExpr.createIdent "key")
                 |> SynExpr.applyTo (SynExpr.createIdent "value")
@@ -652,6 +653,7 @@ module internal ShibaGenerator =
         |> SynBinding.basic
             [ Ident.create "this" ; Ident.create "ProcessKeyValueRecord_" ]
             [
+                SynPat.annotateType SynType.int (SynPat.named "argNum_")
                 SynPat.annotateType (SynType.app "ResizeArray" [ SynType.string ]) (SynPat.named "errors_")
                 SynPat.annotateType SynType.string (SynPat.named "key")
                 SynPat.annotateType SynType.string (SynPat.named "value")
@@ -739,6 +741,15 @@ module internal ShibaGenerator =
                     [
                         SynExpr.createIdent "value"
                         |> SynExpr.pipeThroughFunction arg.ParseFn
+                        // Annotate the positional with arg index info
+                        |> SynExpr.pipeThroughFunction (
+                            match arg.Positional with
+                            | None -> SynExpr.createLambda "x" (SynExpr.createIdent "x")
+                            | Some _ ->
+                                SynExpr.createLambda
+                                    "x"
+                                    (SynExpr.tupleNoParen [ SynExpr.createIdent "x" ; SynExpr.createIdent "argNum_" ])
+                        )
                         |> SynExpr.pipeThroughFunction (
                             SynExpr.createLongIdent'
                                 [ Ident.create "this" ; arg.TargetConstructionField ; Ident.create "Add" ]
@@ -778,6 +789,7 @@ module internal ShibaGenerator =
         |> SynBinding.basic
             [ Ident.create "this" ; Ident.create "ProcessKeyValueSelf_" ]
             [
+                SynPat.annotateType SynType.int (SynPat.named "argNum_")
                 SynPat.annotateType (SynType.app "ResizeArray" [ SynType.string ]) (SynPat.named "errors_")
                 SynPat.annotateType SynType.string (SynPat.named "key")
                 SynPat.annotateType SynType.string (SynPat.named "value")
@@ -806,7 +818,14 @@ module internal ShibaGenerator =
                     | Accumulation.Choice _ -> SynType.option data.TypeAfterParse, true
                     | Accumulation.ChoicePositional _ -> failwith "TODO"
                     | Accumulation.List acc ->
-                        SynType.app' (SynType.createLongIdent' [ "ResizeArray" ]) [ data.TypeAfterParse ], false
+                        match data.Positional with
+                        | Some _ ->
+                            SynType.app'
+                                (SynType.createLongIdent' [ "ResizeArray" ])
+                                [ SynType.tupleNoParen [ data.TypeAfterParse ; SynType.int ] |> Option.get ],
+                            false
+                        | None ->
+                            SynType.app' (SynType.createLongIdent' [ "ResizeArray" ]) [ data.TypeAfterParse ], false
                     | Accumulation.Optional -> SynType.option data.TypeAfterParse, true
                     | Accumulation.Required -> SynType.option data.TypeAfterParse, true
 
@@ -984,11 +1003,40 @@ module internal ShibaGenerator =
                                                         ]))
                                         )
                                         |> SynExpr.pipeThroughFunction (
+                                            let body =
+                                                SynExpr.tupleNoParen
+                                                    [
+                                                        SynExpr.pipeThroughFunction
+                                                            leaf.ParseFn
+                                                            (SynExpr.createIdent "str")
+                                                        SynExpr.createIdent "argNum_"
+                                                    ]
+
                                             SynExpr.applyFunction
                                                 (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                                                leaf.ParseFn
+                                                (SynExpr.Lambda (
+                                                    false,
+                                                    false,
+                                                    SynSimplePats.create
+                                                        [
+                                                            SynSimplePat.createId (Ident.create "str")
+                                                            SynSimplePat.createId (Ident.create "argNum_")
+                                                        ],
+                                                    body,
+                                                    Some (
+                                                        [
+                                                            SynPat.tuple
+                                                                [ SynPat.named "str" ; SynPat.named "argNum_" ]
+                                                        ],
+                                                        body
+                                                    ),
+                                                    range0,
+                                                    {
+                                                        ArrowRange = Some range0
+                                                    }
+                                                 )
+                                                 |> SynExpr.paren)
                                         )
-                                        // TODO and this will have to account for the ordering
                                         |> SynExpr.pipeThroughFunction (
                                             SynExpr.createLambda
                                                 "x"
@@ -998,6 +1046,16 @@ module internal ShibaGenerator =
                                                          [ Ident.create "this" ; leaf.TargetConstructionField ]
                                                  )
                                                  |> SynExpr.applyTo (SynExpr.createIdent "x"))
+                                        )
+                                        |> SynExpr.pipeThroughFunction (
+                                            SynExpr.applyFunction
+                                                (SynExpr.createLongIdent [ "Seq" ; "sortBy" ])
+                                                (SynExpr.createIdent "snd")
+                                        )
+                                        |> SynExpr.pipeThroughFunction (
+                                            SynExpr.applyFunction
+                                                (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                                                (SynExpr.createIdent "fst")
                                         )
                                         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
                                     | Accumulation.Optional ->
@@ -1018,7 +1076,14 @@ module internal ShibaGenerator =
                                                             SynMatchClause.create
                                                                 (SynPat.identWithArgs
                                                                     [ Ident.create "Choice1Of2" ]
-                                                                    (SynArgPats.createNamed [ "x" ]))
+                                                                    (SynArgPats.create
+                                                                        [
+                                                                            SynPat.tuple
+                                                                                [
+                                                                                    SynPat.named "x"
+                                                                                    SynPat.named "argPos"
+                                                                                ]
+                                                                        ]))
                                                                 (SynExpr.applyFunction
                                                                     leaf.ParseFn
                                                                     (SynExpr.createIdent "x")
@@ -1028,7 +1093,14 @@ module internal ShibaGenerator =
                                                             SynMatchClause.create
                                                                 (SynPat.identWithArgs
                                                                     [ Ident.create "Choice2Of2" ]
-                                                                    (SynArgPats.createNamed [ "x" ]))
+                                                                    (SynArgPats.create
+                                                                        [
+                                                                            SynPat.tuple
+                                                                                [
+                                                                                    SynPat.named "x"
+                                                                                    SynPat.named "argPos"
+                                                                                ]
+                                                                        ]))
                                                                 (SynExpr.applyFunction
                                                                     leaf.ParseFn
                                                                     (SynExpr.createIdent "x")
@@ -1190,7 +1262,14 @@ module internal ShibaGenerator =
                         (SynType.funFromDomain SynType.string SynType.string)
                         (SynPat.named "getEnvironmentVariable")
                     SynPat.annotateType
-                        (SynType.list (SynType.app "Choice" [ SynType.string ; SynType.string ]))
+                        (SynType.list (
+                            SynType.app
+                                "Choice"
+                                [
+                                    SynType.tupleNoParen [ SynType.string ; SynType.int ] |> Option.get
+                                    SynType.tupleNoParen [ SynType.string ; SynType.int ] |> Option.get
+                                ]
+                        ))
                         (SynPat.named "positionals")
                 ]
             |> SynBinding.withReturnAnnotation (
@@ -1278,6 +1357,7 @@ module internal ShibaGenerator =
                     ]
                     |> SynExpr.createMatch (
                         SynExpr.createLongIdent [ "this" ; "ProcessKeyValueRecord_" ]
+                        |> SynExpr.applyTo (SynExpr.createIdent "argNum_")
                         |> SynExpr.applyTo (SynExpr.createIdent "errors_")
                         |> SynExpr.applyTo (SynExpr.createIdent "key")
                         |> SynExpr.applyTo (SynExpr.createIdent "value")
@@ -1297,6 +1377,7 @@ module internal ShibaGenerator =
                     ]
                     |> SynExpr.createMatch (
                         SynExpr.createLongIdent [ "this" ; "ProcessKeyValueSelf_" ]
+                        |> SynExpr.applyTo (SynExpr.createIdent "argNum_")
                         |> SynExpr.applyTo (SynExpr.createIdent "errors_")
                         |> SynExpr.applyTo (SynExpr.createIdent "key")
                         |> SynExpr.applyTo (SynExpr.createIdent "value")
@@ -1306,6 +1387,7 @@ module internal ShibaGenerator =
             |> SynBinding.basic
                 [ Ident.create "this" ; Ident.create "ProcessKeyValue" ]
                 [
+                    SynPat.annotateType SynType.int (SynPat.named "argNum_")
                     SynPat.annotateType (SynType.app "ResizeArray" [ SynType.string ]) (SynPat.named "errors_")
                     SynPat.annotateType SynType.string (SynPat.named "key")
                     SynPat.annotateType SynType.string (SynPat.named "value")
@@ -1642,9 +1724,10 @@ module internal ShibaGenerator =
 
     /// `let rec go (state : %ParseState%) (args : string list) : unit = ...`
     let private mainLoop (parseState : Ident) (errorAcc : Ident) (leftoverArgs : Ident) : SynBinding =
-        /// `go (AwaitingValue arg) args`
+        /// `go (argNum + 1) (AwaitingValue arg)`
         let recurseValue =
             SynExpr.createIdent "go"
+            |> SynExpr.applyTo (SynExpr.paren (SynExpr.plus (SynExpr.createIdent "argNum_") (SynExpr.CreateConst 1)))
             |> SynExpr.applyTo (
                 SynExpr.paren (
                     SynExpr.applyFunction
@@ -1653,9 +1736,10 @@ module internal ShibaGenerator =
                 )
             )
 
-        /// `go AwaitingKey args`
+        /// `go (argNum + 1) AwaitingKey args`
         let recurseKey =
             (SynExpr.createIdent "go")
+            |> SynExpr.applyTo (SynExpr.paren (SynExpr.plus (SynExpr.createIdent "argNum_") (SynExpr.CreateConst 1)))
             |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
             |> SynExpr.applyTo (SynExpr.createIdent "args")
 
@@ -1670,7 +1754,7 @@ module internal ShibaGenerator =
         let processAsPositional =
             SynExpr.sequential
                 [
-                    SynExpr.createIdent "arg"
+                    SynExpr.tuple [ SynExpr.createIdent "arg" ; SynExpr.createIdent "argNum_" ]
                     |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
                     |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
 
@@ -1744,8 +1828,9 @@ module internal ShibaGenerator =
                                 (SynExpr.createMatch
                                     (SynExpr.callMethodArg
                                         "ProcessKeyValue"
-                                        (SynExpr.createIdent "errors_")
+                                        (SynExpr.createIdent "argNum_")
                                         (SynExpr.createIdent "inProgress")
+                                     |> SynExpr.applyTo (SynExpr.createIdent "errors_")
                                      |> SynExpr.applyTo (SynExpr.createIdent "key")
                                      |> SynExpr.applyTo (SynExpr.createIdent "value"))
                                     [
@@ -1792,11 +1877,14 @@ module internal ShibaGenerator =
 
             let onFailure =
                 [
-                    SynExpr.createIdent "key"
+                    SynExpr.tuple [ SynExpr.createIdent "key" ; SynExpr.createIdent "argNum_" ]
                     |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
                     |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent' [ leftoverArgs ; Ident.create "Add" ])
 
                     SynExpr.createIdent "go"
+                    |> SynExpr.applyTo (
+                        SynExpr.paren (SynExpr.plus (SynExpr.createIdent "argNum_") (SynExpr.CreateConst 1))
+                    )
                     |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
                     |> SynExpr.applyTo (SynExpr.listCons (SynExpr.createIdent "arg") (SynExpr.createIdent "args"))
                 ]
@@ -1807,7 +1895,7 @@ module internal ShibaGenerator =
                     (SynPat.nameWithArgs "Ok" [ SynPat.unit ])
                     (SynExpr.applyFunction
                         (SynExpr.applyFunction
-                            (SynExpr.createIdent "go")
+                            (SynExpr.createIdent "go" |> SynExpr.applyTo (SynExpr.createIdent "argNum_"))
                             (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ]))
                         (SynExpr.createIdent "args"))
                 SynMatchClause.create
@@ -1821,18 +1909,19 @@ module internal ShibaGenerator =
                             (SynExpr.createIdent "key"))
                         onFailure
                         (SynExpr.createIdent "go"
+                         |> SynExpr.applyTo (SynExpr.createIdent "argNum_")
                          |> SynExpr.applyTo (SynExpr.createLongIdent' [ parseState ; Ident.create "AwaitingKey" ])
                          |> SynExpr.applyTo (SynExpr.listCons (SynExpr.createIdent "arg") (SynExpr.createIdent "args"))))
             ]
             |> SynExpr.createMatch (
                 SynExpr.applyFunction
-                    (SynExpr.applyFunction
-                        (SynExpr.callMethodArg
-                            "ProcessKeyValue"
-                            (SynExpr.createIdent "errors_")
-                            (SynExpr.createIdent "inProgress"))
-                        (SynExpr.createIdent "key"))
-                    (SynExpr.createIdent "arg")
+                    (SynExpr.callMethodArg
+                        "ProcessKeyValue"
+                        (SynExpr.createIdent "argNum_")
+                        (SynExpr.createIdent "inProgress"))
+                    (SynExpr.createIdent "errors_")
+                |> SynExpr.applyTo (SynExpr.createIdent "key")
+                |> SynExpr.applyTo (SynExpr.createIdent "arg")
             )
 
         let argBody =
@@ -1892,6 +1981,17 @@ module internal ShibaGenerator =
                             |> SynExpr.pipeThroughFunction (
                                 SynExpr.applyFunction
                                     (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                                    (SynExpr.createLambda
+                                        "x"
+                                        (SynExpr.tuple
+                                            [
+                                                SynExpr.createIdent "x"
+                                                SynExpr.plus (SynExpr.createIdent "argNum_") (SynExpr.CreateConst 1)
+                                            ]))
+                            )
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.applyFunction
+                                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
                                     (SynExpr.createIdent "Choice2Of2")
                             )
                         ))
@@ -1902,6 +2002,7 @@ module internal ShibaGenerator =
 
         let args =
             [
+                SynPat.named "argNum_" |> SynPat.annotateType SynType.int
                 SynPat.named "state"
                 |> SynPat.annotateType (SynType.createLongIdent [ parseState ])
                 SynPat.named "args"
@@ -2003,7 +2104,7 @@ module internal ShibaGenerator =
             let parsePrime =
                 [
                     SynExpr.applyFunction
-                        (SynExpr.createIdent "go")
+                        (SynExpr.applyFunction (SynExpr.createIdent "go") (SynExpr.CreateConst 0))
                         (SynExpr.createLongIdent' [ parseStateIdent ; Ident.create "AwaitingKey" ])
                     |> SynExpr.applyTo (SynExpr.createIdent "args")
 
@@ -2066,7 +2167,16 @@ module internal ShibaGenerator =
                             []
                             (SynExpr.applyFunction (SynExpr.createIdent "ResizeArray") (SynExpr.CreateConst ()))
                         |> SynBinding.withReturnAnnotation (
-                            SynType.app "ResizeArray" [ SynType.app "Choice" [ SynType.string ; SynType.string ] ]
+                            SynType.app
+                                "ResizeArray"
+                                [
+                                    SynType.app
+                                        "Choice"
+                                        [
+                                            SynType.tupleNoParen [ SynType.string ; SynType.int ] |> Option.get
+                                            SynType.tupleNoParen [ SynType.string ; SynType.int ] |> Option.get
+                                        ]
+                                ]
                         )
                     ]
                 |> SynBinding.basic

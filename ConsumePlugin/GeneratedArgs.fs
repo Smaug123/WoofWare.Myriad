@@ -29,7 +29,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<BasicNoPositionals * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -89,13 +89,14 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
             if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
-                value |> (fun x -> System.Int32.Parse x) |> this.Rest.Add
+                value |> (fun x -> System.Int32.Parse x) |> (fun x -> x) |> this.Rest.Add
                 () |> Ok
             else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match this.Foo with
@@ -152,12 +153,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -182,13 +184,13 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Bar : string option
             mutable Baz : bool option
             mutable Foo : int option
-            mutable Rest : ResizeArray<string>
+            mutable Rest : ResizeArray<string * int>
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<Basic * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -222,8 +224,10 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice1Of2 x -> x
                     | Choice2Of2 x -> x
                 )
-                |> Seq.map (fun x -> x)
+                |> Seq.map (fun (str, argNum_) -> str |> (fun x -> x), argNum_)
                 |> (fun x -> Seq.append this.Rest x)
+                |> Seq.sortBy snd
+                |> Seq.map fst
                 |> Seq.toList
 
             if errors.Count = 0 then
@@ -257,13 +261,14 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
             if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
-                value |> (fun x -> x) |> this.Rest.Add
+                value |> (fun x -> x) |> (fun x -> x, argNum_) |> this.Rest.Add
                 () |> Ok
             else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match this.Foo with
@@ -320,12 +325,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -350,13 +356,13 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Bar : string option
             mutable Baz : bool option
             mutable Foo : int option
-            mutable Rest : ResizeArray<int>
+            mutable Rest : ResizeArray<int * int>
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<BasicWithIntPositionals * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -390,8 +396,10 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice1Of2 x -> x
                     | Choice2Of2 x -> x
                 )
-                |> Seq.map (fun x -> System.Int32.Parse x)
+                |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Int32.Parse x), argNum_)
                 |> (fun x -> Seq.append this.Rest x)
+                |> Seq.sortBy snd
+                |> Seq.map fst
                 |> Seq.toList
 
             if errors.Count = 0 then
@@ -425,13 +433,18 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
             if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
-                value |> (fun x -> System.Int32.Parse x) |> this.Rest.Add
+                value
+                |> (fun x -> System.Int32.Parse x)
+                |> (fun x -> x, argNum_)
+                |> this.Rest.Add
+
                 () |> Ok
             else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match this.Foo with
@@ -488,12 +501,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -521,7 +535,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             mutable Foo : int option
             mutable OptionalThing : bool option
             mutable OptionalThingWithNoDefault : int option
-            mutable Positionals : ResizeArray<int>
+            mutable Positionals : ResizeArray<int * int>
             mutable SomeDirectory : DirectoryInfo option
             mutable SomeFile : FileInfo option
             mutable SomeList : ResizeArray<DirectoryInfo>
@@ -531,7 +545,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<LoadsOfTypes * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -583,8 +597,10 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice1Of2 x -> x
                     | Choice2Of2 x -> x
                 )
-                |> Seq.map (fun x -> System.Int32.Parse x)
+                |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Int32.Parse x), argNum_)
                 |> (fun x -> Seq.append this.Positionals x)
+                |> Seq.sortBy snd
+                |> Seq.map fst
                 |> Seq.toList
 
             let arg8 : Choice<bool, bool> =
@@ -647,6 +663,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -678,7 +695,11 @@ module internal ArgParseHelpers_ConsumePlugin =
             else if
                 System.String.Equals (key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
             then
-                value |> (fun x -> System.IO.DirectoryInfo x) |> this.SomeList.Add
+                value
+                |> (fun x -> System.IO.DirectoryInfo x)
+                |> (fun x -> x)
+                |> this.SomeList.Add
+
                 () |> Ok
             else if
                 System.String.Equals (key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
@@ -721,7 +742,11 @@ module internal ArgParseHelpers_ConsumePlugin =
             else if
                 System.String.Equals (key, sprintf "--%s" "positionals", System.StringComparison.OrdinalIgnoreCase)
             then
-                value |> (fun x -> System.Int32.Parse x) |> this.Positionals.Add
+                value
+                |> (fun x -> System.Int32.Parse x)
+                |> (fun x -> x, argNum_)
+                |> this.Positionals.Add
+
                 () |> Ok
             else if
                 System.String.Equals (
@@ -843,12 +868,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -897,7 +923,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<LoadsOfTypesNoPositionals * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -1000,6 +1026,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1031,7 +1058,11 @@ module internal ArgParseHelpers_ConsumePlugin =
             else if
                 System.String.Equals (key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
             then
-                value |> (fun x -> System.IO.DirectoryInfo x) |> this.SomeList.Add
+                value
+                |> (fun x -> System.IO.DirectoryInfo x)
+                |> (fun x -> x)
+                |> this.SomeList.Add
+
                 () |> Ok
             else if
                 System.String.Equals (key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
@@ -1191,12 +1222,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -1239,7 +1271,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<DatesAndTimes * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -1305,6 +1337,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1410,12 +1443,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -1432,7 +1466,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ChildRecord * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -1479,6 +1513,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1522,12 +1557,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -1544,7 +1580,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ParentRecord * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -1596,6 +1632,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1625,6 +1662,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueRecord_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1632,20 +1670,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors : ResizeArray<string> = ResizeArray ()
 
-            match this.Child.ProcessKeyValue errors_ key value with
+            match this.Child.ProcessKeyValue argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error e -> Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf ->
-                match this.ProcessKeyValueRecord_ errors_ key value with
+                match this.ProcessKeyValueRecord_ argNum_ errors_ key value with
                 | Ok () -> Ok ()
                 | Error errorFromRecord -> Error None
 
@@ -1668,13 +1707,13 @@ module internal ArgParseHelpers_ConsumePlugin =
     type internal ChildRecordWithPositional_InProgress =
         {
             mutable Thing1 : int option
-            mutable Thing2 : ResizeArray<Uri>
+            mutable Thing2 : ResizeArray<Uri * int>
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ChildRecordWithPositional * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -1694,8 +1733,10 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice1Of2 x -> x
                     | Choice2Of2 x -> x
                 )
-                |> Seq.map (fun x -> System.Uri x)
+                |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Uri x), argNum_)
                 |> (fun x -> Seq.append this.Thing2 x)
+                |> Seq.sortBy snd
+                |> Seq.map fst
                 |> Seq.toList
 
             if errors.Count = 0 then
@@ -1725,13 +1766,14 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
             if System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase) then
-                value |> (fun x -> System.Uri x) |> this.Thing2.Add
+                value |> (fun x -> System.Uri x) |> (fun x -> x, argNum_) |> this.Thing2.Add
                 () |> Ok
             else if System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase) then
                 match this.Thing1 with
@@ -1754,12 +1796,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -1776,7 +1819,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ParentRecordChildPos * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -1828,6 +1871,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1857,6 +1901,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueRecord_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1864,20 +1909,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors : ResizeArray<string> = ResizeArray ()
 
-            match this.Child.ProcessKeyValue errors_ key value with
+            match this.Child.ProcessKeyValue argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error e -> Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf ->
-                match this.ProcessKeyValueRecord_ errors_ key value with
+                match this.ProcessKeyValueRecord_ argNum_ errors_ key value with
                 | Ok () -> Ok ()
                 | Error errorFromRecord -> Error None
 
@@ -1899,14 +1945,14 @@ module internal ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ParentRecordSelfPos.
     type internal ParentRecordSelfPos_InProgress =
         {
-            mutable AndAnother : ResizeArray<bool>
+            mutable AndAnother : ResizeArray<bool * int>
             mutable Child : ChildRecord_InProgress
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ParentRecordSelfPos * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -1931,8 +1977,10 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice1Of2 x -> x
                     | Choice2Of2 x -> x
                 )
-                |> Seq.map (fun x -> System.Boolean.Parse x)
+                |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Boolean.Parse x), argNum_)
                 |> (fun x -> Seq.append this.AndAnother x)
+                |> Seq.sortBy snd
+                |> Seq.map fst
                 |> Seq.toList
 
             if errors.Count = 0 then
@@ -1962,13 +2010,18 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
             if System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase) then
-                value |> (fun x -> System.Boolean.Parse x) |> this.AndAnother.Add
+                value
+                |> (fun x -> System.Boolean.Parse x)
+                |> (fun x -> x, argNum_)
+                |> this.AndAnother.Add
+
                 () |> Ok
             else
                 Error None
@@ -1977,6 +2030,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueRecord_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -1984,20 +2038,21 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors : ResizeArray<string> = ResizeArray ()
 
-            match this.Child.ProcessKeyValue errors_ key value with
+            match this.Child.ProcessKeyValue argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error e -> Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf ->
-                match this.ProcessKeyValueRecord_ errors_ key value with
+                match this.ProcessKeyValueRecord_ argNum_ errors_ key value with
                 | Ok () -> Ok ()
                 | Error errorFromRecord -> Error None
 
@@ -2007,13 +2062,13 @@ module internal ArgParseHelpers_ConsumePlugin =
     /// A partially-parsed ChoicePositionals.
     type internal ChoicePositionals_InProgress =
         {
-            mutable Args : ResizeArray<string>
+            mutable Args : ResizeArray<string * int>
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ChoicePositionals * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -2023,8 +2078,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> List.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> (fun x -> x) x |> Choice1Of2
-                    | Choice2Of2 x -> (fun x -> x) x |> Choice2Of2
+                    | Choice1Of2 (x, argPos) -> (fun x -> x) x |> Choice1Of2
+                    | Choice2Of2 (x, argPos) -> (fun x -> x) x |> Choice2Of2
                 )
 
             if errors.Count = 0 then
@@ -2052,24 +2107,26 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
             if System.String.Equals (key, sprintf "--%s" "args", System.StringComparison.OrdinalIgnoreCase) then
-                value |> (fun x -> x) |> this.Args.Add
+                value |> (fun x -> x) |> (fun x -> x, argNum_) |> this.Args.Add
                 () |> Ok
             else
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -2085,7 +2142,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ContainsBoolEnvVar * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -2133,6 +2190,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2159,12 +2217,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -2192,7 +2251,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<WithFlagDu * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -2230,6 +2289,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2265,12 +2325,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -2304,7 +2365,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ContainsFlagEnvVar * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -2364,6 +2425,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2399,12 +2461,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -2438,7 +2501,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ContainsFlagDefaultValue * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -2474,6 +2537,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2509,12 +2573,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -2549,7 +2614,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<ManyLongForms * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -2597,6 +2662,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2686,12 +2752,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -2732,13 +2799,13 @@ module internal ArgParseHelpers_ConsumePlugin =
     type internal FlagsIntoPositionalArgs_InProgress =
         {
             mutable A : string option
-            mutable GrabEverything : ResizeArray<string>
+            mutable GrabEverything : ResizeArray<string * int>
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<FlagsIntoPositionalArgs * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -2758,8 +2825,10 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice1Of2 x -> x
                     | Choice2Of2 x -> x
                 )
-                |> Seq.map (fun x -> x)
+                |> Seq.map (fun (str, argNum_) -> str |> (fun x -> x), argNum_)
                 |> (fun x -> Seq.append this.GrabEverything x)
+                |> Seq.sortBy snd
+                |> Seq.map fst
                 |> Seq.toList
 
             if errors.Count = 0 then
@@ -2789,6 +2858,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2797,7 +2867,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             if
                 System.String.Equals (key, sprintf "--%s" "grab-everything", System.StringComparison.OrdinalIgnoreCase)
             then
-                value |> (fun x -> x) |> this.GrabEverything.Add
+                value |> (fun x -> x) |> (fun x -> x, argNum_) |> this.GrabEverything.Add
                 () |> Ok
             else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                 match this.A with
@@ -2820,12 +2890,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -2836,13 +2907,13 @@ module internal ArgParseHelpers_ConsumePlugin =
     type internal FlagsIntoPositionalArgsChoice_InProgress =
         {
             mutable A : string option
-            mutable GrabEverything : ResizeArray<string>
+            mutable GrabEverything : ResizeArray<string * int>
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<FlagsIntoPositionalArgsChoice * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -2859,8 +2930,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> List.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> (fun x -> x) x |> Choice1Of2
-                    | Choice2Of2 x -> (fun x -> x) x |> Choice2Of2
+                    | Choice1Of2 (x, argPos) -> (fun x -> x) x |> Choice1Of2
+                    | Choice2Of2 (x, argPos) -> (fun x -> x) x |> Choice2Of2
                 )
 
             if errors.Count = 0 then
@@ -2890,6 +2961,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -2898,7 +2970,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             if
                 System.String.Equals (key, sprintf "--%s" "grab-everything", System.StringComparison.OrdinalIgnoreCase)
             then
-                value |> (fun x -> x) |> this.GrabEverything.Add
+                value |> (fun x -> x) |> (fun x -> x, argNum_) |> this.GrabEverything.Add
                 () |> Ok
             else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                 match this.A with
@@ -2921,12 +2993,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -2937,13 +3010,13 @@ module internal ArgParseHelpers_ConsumePlugin =
     type internal FlagsIntoPositionalArgsInt_InProgress =
         {
             mutable A : string option
-            mutable GrabEverything : ResizeArray<int>
+            mutable GrabEverything : ResizeArray<int * int>
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<FlagsIntoPositionalArgsInt * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -2963,8 +3036,10 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice1Of2 x -> x
                     | Choice2Of2 x -> x
                 )
-                |> Seq.map (fun x -> System.Int32.Parse x)
+                |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Int32.Parse x), argNum_)
                 |> (fun x -> Seq.append this.GrabEverything x)
+                |> Seq.sortBy snd
+                |> Seq.map fst
                 |> Seq.toList
 
             if errors.Count = 0 then
@@ -2994,6 +3069,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -3002,7 +3078,11 @@ module internal ArgParseHelpers_ConsumePlugin =
             if
                 System.String.Equals (key, sprintf "--%s" "grab-everything", System.StringComparison.OrdinalIgnoreCase)
             then
-                value |> (fun x -> System.Int32.Parse x) |> this.GrabEverything.Add
+                value
+                |> (fun x -> System.Int32.Parse x)
+                |> (fun x -> x, argNum_)
+                |> this.GrabEverything.Add
+
                 () |> Ok
             else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                 match this.A with
@@ -3025,12 +3105,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -3041,13 +3122,13 @@ module internal ArgParseHelpers_ConsumePlugin =
     type internal FlagsIntoPositionalArgsIntChoice_InProgress =
         {
             mutable A : string option
-            mutable GrabEverything : ResizeArray<int>
+            mutable GrabEverything : ResizeArray<int * int>
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<FlagsIntoPositionalArgsIntChoice * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -3064,8 +3145,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> List.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> (fun x -> System.Int32.Parse x) x |> Choice1Of2
-                    | Choice2Of2 x -> (fun x -> System.Int32.Parse x) x |> Choice2Of2
+                    | Choice1Of2 (x, argPos) -> (fun x -> System.Int32.Parse x) x |> Choice1Of2
+                    | Choice2Of2 (x, argPos) -> (fun x -> System.Int32.Parse x) x |> Choice2Of2
                 )
 
             if errors.Count = 0 then
@@ -3095,6 +3176,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -3103,7 +3185,11 @@ module internal ArgParseHelpers_ConsumePlugin =
             if
                 System.String.Equals (key, sprintf "--%s" "grab-everything", System.StringComparison.OrdinalIgnoreCase)
             then
-                value |> (fun x -> System.Int32.Parse x) |> this.GrabEverything.Add
+                value
+                |> (fun x -> System.Int32.Parse x)
+                |> (fun x -> x, argNum_)
+                |> this.GrabEverything.Add
+
                 () |> Ok
             else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                 match this.A with
@@ -3126,12 +3212,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -3142,13 +3229,13 @@ module internal ArgParseHelpers_ConsumePlugin =
     type internal FlagsIntoPositionalArgs'_InProgress =
         {
             mutable A : string option
-            mutable DontGrabEverything : ResizeArray<string>
+            mutable DontGrabEverything : ResizeArray<string * int>
         }
 
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<FlagsIntoPositionalArgs' * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -3168,8 +3255,10 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice1Of2 x -> x
                     | Choice2Of2 x -> x
                 )
-                |> Seq.map (fun x -> x)
+                |> Seq.map (fun (str, argNum_) -> str |> (fun x -> x), argNum_)
                 |> (fun x -> Seq.append this.DontGrabEverything x)
+                |> Seq.sortBy snd
+                |> Seq.map fst
                 |> Seq.toList
 
             if errors.Count = 0 then
@@ -3199,6 +3288,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueSelf_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -3211,7 +3301,7 @@ module internal ArgParseHelpers_ConsumePlugin =
                     System.StringComparison.OrdinalIgnoreCase
                 )
             then
-                value |> (fun x -> x) |> this.DontGrabEverything.Add
+                value |> (fun x -> x) |> (fun x -> x, argNum_) |> this.DontGrabEverything.Add
                 () |> Ok
             else if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
                 match this.A with
@@ -3234,12 +3324,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                 Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueSelf_ errors_ key value with
+            match this.ProcessKeyValueSelf_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromLeaf -> Error None
 
@@ -3255,7 +3346,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// Freeze this in-progress type. On success, returns the frozen type and the arg (if any) which consumed the input positional args.
         member this.Assemble_
             (getEnvironmentVariable : string -> string)
-            (positionals : Choice<string, string> list)
+            (positionals : Choice<string * int, string * int> list)
             : Result<PassThru * string option, string list>
             =
             let errors = ResizeArray<string> ()
@@ -3298,6 +3389,7 @@ module internal ArgParseHelpers_ConsumePlugin =
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
         member this.ProcessKeyValueRecord_
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
@@ -3305,17 +3397,18 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors : ResizeArray<string> = ResizeArray ()
 
-            match this.A.ProcessKeyValue errors_ key value with
+            match this.A.ProcessKeyValue argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error e -> Error None
 
         member this.ProcessKeyValue
+            (argNum_ : int)
             (errors_ : ResizeArray<string>)
             (key : string)
             (value : string)
             : Result<unit, string option>
             =
-            match this.ProcessKeyValueRecord_ errors_ key value with
+            match this.ProcessKeyValueRecord_ argNum_ errors_ key value with
             | Ok () -> Ok ()
             | Error errorFromRecord -> Error None
 
@@ -3342,10 +3435,10 @@ module PassThruArgParse =
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : PassThru =
             let inProgress = ArgParseHelpers_ConsumePlugin.PassThru_InProgress._Empty ()
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_PassThru) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_PassThru) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3358,7 +3451,8 @@ module PassThruArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_PassThru.AwaitingKey ->
@@ -3369,13 +3463,13 @@ module PassThruArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_PassThru.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_PassThru.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_PassThru.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_PassThru.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -3386,21 +3480,21 @@ module PassThruArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_PassThru.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_PassThru.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_PassThru.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_PassThru.AwaitingKey args
                     | ParseState_PassThru.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_PassThru.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_PassThru.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_PassThru.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_PassThru.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_PassThru.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_PassThru.AwaitingKey (arg :: args)
 
-            go ParseState_PassThru.AwaitingKey args
+            go 0 ParseState_PassThru.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -3451,10 +3545,10 @@ module FlagsIntoPositionalArgs'ArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgs'_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_FlagsIntoPositionalArgs') (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_FlagsIntoPositionalArgs') (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3467,7 +3561,8 @@ module FlagsIntoPositionalArgs'ArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgs'.AwaitingKey ->
@@ -3478,13 +3573,13 @@ module FlagsIntoPositionalArgs'ArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgs'.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgs'.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -3495,21 +3590,21 @@ module FlagsIntoPositionalArgs'ArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
                     | ParseState_FlagsIntoPositionalArgs'.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
 
-            go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
+            go 0 ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -3560,10 +3655,10 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgsIntChoice_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_FlagsIntoPositionalArgsIntChoice) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_FlagsIntoPositionalArgsIntChoice) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3576,7 +3671,8 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey ->
@@ -3587,13 +3683,15 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue arg)
+                                    args
+                                    |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () ->
+                                        go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -3604,21 +3702,25 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+
+                                            go
+                                                (argNum_ + 1)
+                                                ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey
+                                                args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
                     | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey (arg :: args)
 
-            go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
+            go 0 ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -3669,10 +3771,10 @@ module FlagsIntoPositionalArgsIntArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgsInt_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_FlagsIntoPositionalArgsInt) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_FlagsIntoPositionalArgsInt) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3685,7 +3787,8 @@ module FlagsIntoPositionalArgsIntArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgsInt.AwaitingKey ->
@@ -3696,13 +3799,14 @@ module FlagsIntoPositionalArgsIntArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgsInt.AwaitingValue arg)
+                                    args
+                                    |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgsInt.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -3713,21 +3817,21 @@ module FlagsIntoPositionalArgsIntArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
                     | ParseState_FlagsIntoPositionalArgsInt.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_FlagsIntoPositionalArgsInt.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsInt.AwaitingKey (arg :: args)
 
-            go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
+            go 0 ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -3778,10 +3882,10 @@ module FlagsIntoPositionalArgsChoiceArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgsChoice_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_FlagsIntoPositionalArgsChoice) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_FlagsIntoPositionalArgsChoice) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3794,7 +3898,8 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey ->
@@ -3805,13 +3910,15 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue arg)
+                                    args
+                                    |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () ->
+                                        go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -3822,21 +3929,21 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
                     | ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey (arg :: args)
 
-            go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
+            go 0 ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -3887,10 +3994,10 @@ module FlagsIntoPositionalArgsArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.FlagsIntoPositionalArgs_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_FlagsIntoPositionalArgs) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_FlagsIntoPositionalArgs) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -3903,7 +4010,8 @@ module FlagsIntoPositionalArgsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgs.AwaitingKey ->
@@ -3914,13 +4022,13 @@ module FlagsIntoPositionalArgsArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgs.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_FlagsIntoPositionalArgs.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -3931,21 +4039,21 @@ module FlagsIntoPositionalArgsArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs.AwaitingKey args
                     | ParseState_FlagsIntoPositionalArgs.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_FlagsIntoPositionalArgs.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
 
-            go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
+            go 0 ParseState_FlagsIntoPositionalArgs.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -3990,10 +4098,10 @@ module ManyLongFormsArgParse =
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ManyLongForms =
             let inProgress = ArgParseHelpers_ConsumePlugin.ManyLongForms_InProgress._Empty ()
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_ManyLongForms) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_ManyLongForms) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4006,7 +4114,8 @@ module ManyLongFormsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ManyLongForms.AwaitingKey ->
@@ -4017,13 +4126,13 @@ module ManyLongFormsArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_ManyLongForms.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_ManyLongForms.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_ManyLongForms.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_ManyLongForms.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4034,21 +4143,21 @@ module ManyLongFormsArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_ManyLongForms.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_ManyLongForms.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_ManyLongForms.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_ManyLongForms.AwaitingKey args
                     | ParseState_ManyLongForms.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_ManyLongForms.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_ManyLongForms.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_ManyLongForms.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_ManyLongForms.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_ManyLongForms.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_ManyLongForms.AwaitingKey (arg :: args)
 
-            go ParseState_ManyLongForms.AwaitingKey args
+            go 0 ParseState_ManyLongForms.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -4099,10 +4208,10 @@ module ContainsFlagDefaultValueArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ContainsFlagDefaultValue_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_ContainsFlagDefaultValue) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_ContainsFlagDefaultValue) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4115,7 +4224,8 @@ module ContainsFlagDefaultValueArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ContainsFlagDefaultValue.AwaitingKey ->
@@ -4126,13 +4236,13 @@ module ContainsFlagDefaultValueArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_ContainsFlagDefaultValue.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_ContainsFlagDefaultValue.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_ContainsFlagDefaultValue.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4143,21 +4253,21 @@ module ContainsFlagDefaultValueArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_ContainsFlagDefaultValue.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_ContainsFlagDefaultValue.AwaitingKey args
                     | ParseState_ContainsFlagDefaultValue.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_ContainsFlagDefaultValue.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_ContainsFlagDefaultValue.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_ContainsFlagDefaultValue.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_ContainsFlagDefaultValue.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_ContainsFlagDefaultValue.AwaitingKey (arg :: args)
 
-            go ParseState_ContainsFlagDefaultValue.AwaitingKey args
+            go 0 ParseState_ContainsFlagDefaultValue.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -4204,10 +4314,10 @@ module ContainsFlagEnvVarArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ContainsFlagEnvVar_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_ContainsFlagEnvVar) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_ContainsFlagEnvVar) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4220,7 +4330,8 @@ module ContainsFlagEnvVarArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ContainsFlagEnvVar.AwaitingKey ->
@@ -4231,13 +4342,13 @@ module ContainsFlagEnvVarArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_ContainsFlagEnvVar.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_ContainsFlagEnvVar.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_ContainsFlagEnvVar.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_ContainsFlagEnvVar.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4248,21 +4359,21 @@ module ContainsFlagEnvVarArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_ContainsFlagEnvVar.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_ContainsFlagEnvVar.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_ContainsFlagEnvVar.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_ContainsFlagEnvVar.AwaitingKey args
                     | ParseState_ContainsFlagEnvVar.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_ContainsFlagEnvVar.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_ContainsFlagEnvVar.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_ContainsFlagEnvVar.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_ContainsFlagEnvVar.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_ContainsFlagEnvVar.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_ContainsFlagEnvVar.AwaitingKey (arg :: args)
 
-            go ParseState_ContainsFlagEnvVar.AwaitingKey args
+            go 0 ParseState_ContainsFlagEnvVar.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -4307,10 +4418,10 @@ module WithFlagDuArgParse =
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : WithFlagDu =
             let inProgress = ArgParseHelpers_ConsumePlugin.WithFlagDu_InProgress._Empty ()
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_WithFlagDu) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_WithFlagDu) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4323,7 +4434,8 @@ module WithFlagDuArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_WithFlagDu.AwaitingKey ->
@@ -4334,13 +4446,13 @@ module WithFlagDuArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_WithFlagDu.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_WithFlagDu.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_WithFlagDu.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_WithFlagDu.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4351,21 +4463,21 @@ module WithFlagDuArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_WithFlagDu.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_WithFlagDu.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_WithFlagDu.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_WithFlagDu.AwaitingKey args
                     | ParseState_WithFlagDu.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_WithFlagDu.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_WithFlagDu.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_WithFlagDu.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_WithFlagDu.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_WithFlagDu.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_WithFlagDu.AwaitingKey (arg :: args)
 
-            go ParseState_WithFlagDu.AwaitingKey args
+            go 0 ParseState_WithFlagDu.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -4412,10 +4524,10 @@ module ContainsBoolEnvVarArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ContainsBoolEnvVar_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_ContainsBoolEnvVar) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_ContainsBoolEnvVar) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4428,7 +4540,8 @@ module ContainsBoolEnvVarArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ContainsBoolEnvVar.AwaitingKey ->
@@ -4439,13 +4552,13 @@ module ContainsBoolEnvVarArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_ContainsBoolEnvVar.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_ContainsBoolEnvVar.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_ContainsBoolEnvVar.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_ContainsBoolEnvVar.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4456,21 +4569,21 @@ module ContainsBoolEnvVarArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_ContainsBoolEnvVar.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_ContainsBoolEnvVar.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_ContainsBoolEnvVar.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_ContainsBoolEnvVar.AwaitingKey args
                     | ParseState_ContainsBoolEnvVar.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_ContainsBoolEnvVar.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_ContainsBoolEnvVar.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_ContainsBoolEnvVar.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_ContainsBoolEnvVar.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_ContainsBoolEnvVar.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_ContainsBoolEnvVar.AwaitingKey (arg :: args)
 
-            go ParseState_ContainsBoolEnvVar.AwaitingKey args
+            go 0 ParseState_ContainsBoolEnvVar.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -4517,10 +4630,10 @@ module ChoicePositionalsArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ChoicePositionals_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_ChoicePositionals) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_ChoicePositionals) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4533,7 +4646,8 @@ module ChoicePositionalsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ChoicePositionals.AwaitingKey ->
@@ -4544,13 +4658,13 @@ module ChoicePositionalsArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_ChoicePositionals.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_ChoicePositionals.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_ChoicePositionals.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_ChoicePositionals.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4561,21 +4675,21 @@ module ChoicePositionalsArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_ChoicePositionals.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_ChoicePositionals.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_ChoicePositionals.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_ChoicePositionals.AwaitingKey args
                     | ParseState_ChoicePositionals.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_ChoicePositionals.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_ChoicePositionals.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_ChoicePositionals.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_ChoicePositionals.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_ChoicePositionals.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_ChoicePositionals.AwaitingKey (arg :: args)
 
-            go ParseState_ChoicePositionals.AwaitingKey args
+            go 0 ParseState_ChoicePositionals.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -4622,10 +4736,10 @@ module ParentRecordSelfPosArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ParentRecordSelfPos_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_ParentRecordSelfPos) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_ParentRecordSelfPos) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4638,7 +4752,8 @@ module ParentRecordSelfPosArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecordSelfPos.AwaitingKey ->
@@ -4649,13 +4764,13 @@ module ParentRecordSelfPosArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_ParentRecordSelfPos.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_ParentRecordSelfPos.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_ParentRecordSelfPos.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_ParentRecordSelfPos.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4666,21 +4781,21 @@ module ParentRecordSelfPosArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_ParentRecordSelfPos.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_ParentRecordSelfPos.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_ParentRecordSelfPos.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_ParentRecordSelfPos.AwaitingKey args
                     | ParseState_ParentRecordSelfPos.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_ParentRecordSelfPos.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_ParentRecordSelfPos.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_ParentRecordSelfPos.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_ParentRecordSelfPos.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_ParentRecordSelfPos.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_ParentRecordSelfPos.AwaitingKey (arg :: args)
 
-            go ParseState_ParentRecordSelfPos.AwaitingKey args
+            go 0 ParseState_ParentRecordSelfPos.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -4727,10 +4842,10 @@ module ParentRecordChildPosArgParse =
             let inProgress =
                 ArgParseHelpers_ConsumePlugin.ParentRecordChildPos_InProgress._Empty ()
 
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_ParentRecordChildPos) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_ParentRecordChildPos) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4743,7 +4858,8 @@ module ParentRecordChildPosArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecordChildPos.AwaitingKey ->
@@ -4754,13 +4870,13 @@ module ParentRecordChildPosArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_ParentRecordChildPos.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_ParentRecordChildPos.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_ParentRecordChildPos.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_ParentRecordChildPos.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4771,21 +4887,21 @@ module ParentRecordChildPosArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_ParentRecordChildPos.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_ParentRecordChildPos.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_ParentRecordChildPos.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_ParentRecordChildPos.AwaitingKey args
                     | ParseState_ParentRecordChildPos.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_ParentRecordChildPos.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_ParentRecordChildPos.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_ParentRecordChildPos.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_ParentRecordChildPos.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_ParentRecordChildPos.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_ParentRecordChildPos.AwaitingKey (arg :: args)
 
-            go ParseState_ParentRecordChildPos.AwaitingKey args
+            go 0 ParseState_ParentRecordChildPos.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -4830,10 +4946,10 @@ module ParentRecordArgParse =
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecord =
             let inProgress = ArgParseHelpers_ConsumePlugin.ParentRecord_InProgress._Empty ()
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_ParentRecord) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_ParentRecord) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4846,7 +4962,8 @@ module ParentRecordArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecord.AwaitingKey ->
@@ -4857,13 +4974,13 @@ module ParentRecordArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_ParentRecord.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_ParentRecord.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_ParentRecord.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_ParentRecord.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4874,21 +4991,21 @@ module ParentRecordArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_ParentRecord.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_ParentRecord.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_ParentRecord.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_ParentRecord.AwaitingKey args
                     | ParseState_ParentRecord.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_ParentRecord.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_ParentRecord.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_ParentRecord.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_ParentRecord.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_ParentRecord.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_ParentRecord.AwaitingKey (arg :: args)
 
-            go ParseState_ParentRecord.AwaitingKey args
+            go 0 ParseState_ParentRecord.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -4933,10 +5050,10 @@ module DatesAndTimesArgParse =
 
         static member parse' (getEnvironmentVariable : string -> string) (args : string list) : DatesAndTimes =
             let inProgress = ArgParseHelpers_ConsumePlugin.DatesAndTimes_InProgress._Empty ()
-            let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+            let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
             let errors_ = ResizeArray ()
 
-            let rec go (state : ParseState_DatesAndTimes) (args : string list) =
+            let rec go (argNum_ : int) (state : ParseState_DatesAndTimes) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -4949,7 +5066,8 @@ module DatesAndTimesArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> errors_.Add
-                | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_DatesAndTimes.AwaitingKey ->
@@ -4960,13 +5078,13 @@ module DatesAndTimesArgParse =
                                 let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
-                                    args |> go (ParseState_DatesAndTimes.AwaitingValue arg)
+                                    args |> go (argNum_ + 1) (ParseState_DatesAndTimes.AwaitingValue arg)
                                 else
                                     let key = arg.[0 .. equals - 1]
                                     let value = arg.[equals + 1 ..]
 
-                                    match inProgress.ProcessKeyValue errors_ key value with
-                                    | Ok () -> go ParseState_DatesAndTimes.AwaitingKey args
+                                    match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                    | Ok () -> go (argNum_ + 1) ParseState_DatesAndTimes.AwaitingKey args
                                     | Error x ->
                                         match x with
                                         | None ->
@@ -4977,21 +5095,21 @@ module DatesAndTimesArgParse =
                                                 value
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                            go ParseState_DatesAndTimes.AwaitingKey args
+                                            go (argNum_ + 1) ParseState_DatesAndTimes.AwaitingKey args
                         else
-                            arg |> Choice1Of2 |> positionals.Add
-                            go ParseState_DatesAndTimes.AwaitingKey args
+                            (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_DatesAndTimes.AwaitingKey args
                     | ParseState_DatesAndTimes.AwaitingValue key ->
-                        match inProgress.ProcessKeyValue errors_ key arg with
-                        | Ok () -> go ParseState_DatesAndTimes.AwaitingKey args
+                        match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                        | Ok () -> go argNum_ ParseState_DatesAndTimes.AwaitingKey args
                         | Error exc ->
                             if inProgress.SetFlagValue_ errors_ key then
-                                go ParseState_DatesAndTimes.AwaitingKey (arg :: args)
+                                go argNum_ ParseState_DatesAndTimes.AwaitingKey (arg :: args)
                             else
-                                key |> Choice1Of2 |> positionals.Add
-                                go ParseState_DatesAndTimes.AwaitingKey (arg :: args)
+                                (key, argNum_) |> Choice1Of2 |> positionals.Add
+                                go (argNum_ + 1) ParseState_DatesAndTimes.AwaitingKey (arg :: args)
 
-            go ParseState_DatesAndTimes.AwaitingKey args
+            go 0 ParseState_DatesAndTimes.AwaitingKey args
 
             if 0 = errors_.Count then
                 ()
@@ -5035,10 +5153,10 @@ module LoadsOfTypesNoPositionals =
         let inProgress =
             ArgParseHelpers_ConsumePlugin.LoadsOfTypesNoPositionals_InProgress._Empty ()
 
-        let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+        let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
         let errors_ = ResizeArray ()
 
-        let rec go (state : ParseState_LoadsOfTypesNoPositionals) (args : string list) =
+        let rec go (argNum_ : int) (state : ParseState_LoadsOfTypesNoPositionals) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -5051,7 +5169,7 @@ module LoadsOfTypesNoPositionals =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> errors_.Add
-            | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+            | "--" :: rest -> positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
             | arg :: args ->
                 match state with
                 | ParseState_LoadsOfTypesNoPositionals.AwaitingKey ->
@@ -5062,34 +5180,35 @@ module LoadsOfTypesNoPositionals =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args |> go (ParseState_LoadsOfTypesNoPositionals.AwaitingValue arg)
+                                args
+                                |> go (argNum_ + 1) (ParseState_LoadsOfTypesNoPositionals.AwaitingValue arg)
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]
 
-                                match inProgress.ProcessKeyValue errors_ key value with
-                                | Ok () -> go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
+                                match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                | Ok () -> go (argNum_ + 1) ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
                                 | Error x ->
                                     match x with
                                     | None ->
                                         failwithf "Unable to process argument %s as key %s and value %s" arg key value
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                        go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
+                                        go (argNum_ + 1) ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
                     else
-                        arg |> Choice1Of2 |> positionals.Add
-                        go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
+                        (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                        go (argNum_ + 1) ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
                 | ParseState_LoadsOfTypesNoPositionals.AwaitingValue key ->
-                    match inProgress.ProcessKeyValue errors_ key arg with
-                    | Ok () -> go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
+                    match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                    | Ok () -> go argNum_ ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
                     | Error exc ->
                         if inProgress.SetFlagValue_ errors_ key then
-                            go ParseState_LoadsOfTypesNoPositionals.AwaitingKey (arg :: args)
+                            go argNum_ ParseState_LoadsOfTypesNoPositionals.AwaitingKey (arg :: args)
                         else
-                            key |> Choice1Of2 |> positionals.Add
-                            go ParseState_LoadsOfTypesNoPositionals.AwaitingKey (arg :: args)
+                            (key, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_LoadsOfTypesNoPositionals.AwaitingKey (arg :: args)
 
-        go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
+        go 0 ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
 
         if 0 = errors_.Count then
             ()
@@ -5131,10 +5250,10 @@ module LoadsOfTypes =
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypes =
         let inProgress = ArgParseHelpers_ConsumePlugin.LoadsOfTypes_InProgress._Empty ()
-        let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+        let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
         let errors_ = ResizeArray ()
 
-        let rec go (state : ParseState_LoadsOfTypes) (args : string list) =
+        let rec go (argNum_ : int) (state : ParseState_LoadsOfTypes) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -5147,7 +5266,7 @@ module LoadsOfTypes =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> errors_.Add
-            | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+            | "--" :: rest -> positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
             | arg :: args ->
                 match state with
                 | ParseState_LoadsOfTypes.AwaitingKey ->
@@ -5158,34 +5277,34 @@ module LoadsOfTypes =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args |> go (ParseState_LoadsOfTypes.AwaitingValue arg)
+                                args |> go (argNum_ + 1) (ParseState_LoadsOfTypes.AwaitingValue arg)
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]
 
-                                match inProgress.ProcessKeyValue errors_ key value with
-                                | Ok () -> go ParseState_LoadsOfTypes.AwaitingKey args
+                                match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                | Ok () -> go (argNum_ + 1) ParseState_LoadsOfTypes.AwaitingKey args
                                 | Error x ->
                                     match x with
                                     | None ->
                                         failwithf "Unable to process argument %s as key %s and value %s" arg key value
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                        go ParseState_LoadsOfTypes.AwaitingKey args
+                                        go (argNum_ + 1) ParseState_LoadsOfTypes.AwaitingKey args
                     else
-                        arg |> Choice1Of2 |> positionals.Add
-                        go ParseState_LoadsOfTypes.AwaitingKey args
+                        (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                        go (argNum_ + 1) ParseState_LoadsOfTypes.AwaitingKey args
                 | ParseState_LoadsOfTypes.AwaitingValue key ->
-                    match inProgress.ProcessKeyValue errors_ key arg with
-                    | Ok () -> go ParseState_LoadsOfTypes.AwaitingKey args
+                    match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                    | Ok () -> go argNum_ ParseState_LoadsOfTypes.AwaitingKey args
                     | Error exc ->
                         if inProgress.SetFlagValue_ errors_ key then
-                            go ParseState_LoadsOfTypes.AwaitingKey (arg :: args)
+                            go argNum_ ParseState_LoadsOfTypes.AwaitingKey (arg :: args)
                         else
-                            key |> Choice1Of2 |> positionals.Add
-                            go ParseState_LoadsOfTypes.AwaitingKey (arg :: args)
+                            (key, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_LoadsOfTypes.AwaitingKey (arg :: args)
 
-        go ParseState_LoadsOfTypes.AwaitingKey args
+        go 0 ParseState_LoadsOfTypes.AwaitingKey args
 
         if 0 = errors_.Count then
             ()
@@ -5229,10 +5348,10 @@ module BasicWithIntPositionals =
         let inProgress =
             ArgParseHelpers_ConsumePlugin.BasicWithIntPositionals_InProgress._Empty ()
 
-        let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+        let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
         let errors_ = ResizeArray ()
 
-        let rec go (state : ParseState_BasicWithIntPositionals) (args : string list) =
+        let rec go (argNum_ : int) (state : ParseState_BasicWithIntPositionals) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -5245,7 +5364,7 @@ module BasicWithIntPositionals =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> errors_.Add
-            | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+            | "--" :: rest -> positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
             | arg :: args ->
                 match state with
                 | ParseState_BasicWithIntPositionals.AwaitingKey ->
@@ -5256,34 +5375,34 @@ module BasicWithIntPositionals =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args |> go (ParseState_BasicWithIntPositionals.AwaitingValue arg)
+                                args |> go (argNum_ + 1) (ParseState_BasicWithIntPositionals.AwaitingValue arg)
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]
 
-                                match inProgress.ProcessKeyValue errors_ key value with
-                                | Ok () -> go ParseState_BasicWithIntPositionals.AwaitingKey args
+                                match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                | Ok () -> go (argNum_ + 1) ParseState_BasicWithIntPositionals.AwaitingKey args
                                 | Error x ->
                                     match x with
                                     | None ->
                                         failwithf "Unable to process argument %s as key %s and value %s" arg key value
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                        go ParseState_BasicWithIntPositionals.AwaitingKey args
+                                        go (argNum_ + 1) ParseState_BasicWithIntPositionals.AwaitingKey args
                     else
-                        arg |> Choice1Of2 |> positionals.Add
-                        go ParseState_BasicWithIntPositionals.AwaitingKey args
+                        (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                        go (argNum_ + 1) ParseState_BasicWithIntPositionals.AwaitingKey args
                 | ParseState_BasicWithIntPositionals.AwaitingValue key ->
-                    match inProgress.ProcessKeyValue errors_ key arg with
-                    | Ok () -> go ParseState_BasicWithIntPositionals.AwaitingKey args
+                    match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                    | Ok () -> go argNum_ ParseState_BasicWithIntPositionals.AwaitingKey args
                     | Error exc ->
                         if inProgress.SetFlagValue_ errors_ key then
-                            go ParseState_BasicWithIntPositionals.AwaitingKey (arg :: args)
+                            go argNum_ ParseState_BasicWithIntPositionals.AwaitingKey (arg :: args)
                         else
-                            key |> Choice1Of2 |> positionals.Add
-                            go ParseState_BasicWithIntPositionals.AwaitingKey (arg :: args)
+                            (key, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_BasicWithIntPositionals.AwaitingKey (arg :: args)
 
-        go ParseState_BasicWithIntPositionals.AwaitingKey args
+        go 0 ParseState_BasicWithIntPositionals.AwaitingKey args
 
         if 0 = errors_.Count then
             ()
@@ -5325,10 +5444,10 @@ module Basic =
 
     let parse' (getEnvironmentVariable : string -> string) (args : string list) : Basic =
         let inProgress = ArgParseHelpers_ConsumePlugin.Basic_InProgress._Empty ()
-        let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+        let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
         let errors_ = ResizeArray ()
 
-        let rec go (state : ParseState_Basic) (args : string list) =
+        let rec go (argNum_ : int) (state : ParseState_Basic) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -5341,7 +5460,7 @@ module Basic =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> errors_.Add
-            | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+            | "--" :: rest -> positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
             | arg :: args ->
                 match state with
                 | ParseState_Basic.AwaitingKey ->
@@ -5352,34 +5471,34 @@ module Basic =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args |> go (ParseState_Basic.AwaitingValue arg)
+                                args |> go (argNum_ + 1) (ParseState_Basic.AwaitingValue arg)
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]
 
-                                match inProgress.ProcessKeyValue errors_ key value with
-                                | Ok () -> go ParseState_Basic.AwaitingKey args
+                                match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                | Ok () -> go (argNum_ + 1) ParseState_Basic.AwaitingKey args
                                 | Error x ->
                                     match x with
                                     | None ->
                                         failwithf "Unable to process argument %s as key %s and value %s" arg key value
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                        go ParseState_Basic.AwaitingKey args
+                                        go (argNum_ + 1) ParseState_Basic.AwaitingKey args
                     else
-                        arg |> Choice1Of2 |> positionals.Add
-                        go ParseState_Basic.AwaitingKey args
+                        (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                        go (argNum_ + 1) ParseState_Basic.AwaitingKey args
                 | ParseState_Basic.AwaitingValue key ->
-                    match inProgress.ProcessKeyValue errors_ key arg with
-                    | Ok () -> go ParseState_Basic.AwaitingKey args
+                    match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                    | Ok () -> go argNum_ ParseState_Basic.AwaitingKey args
                     | Error exc ->
                         if inProgress.SetFlagValue_ errors_ key then
-                            go ParseState_Basic.AwaitingKey (arg :: args)
+                            go argNum_ ParseState_Basic.AwaitingKey (arg :: args)
                         else
-                            key |> Choice1Of2 |> positionals.Add
-                            go ParseState_Basic.AwaitingKey (arg :: args)
+                            (key, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_Basic.AwaitingKey (arg :: args)
 
-        go ParseState_Basic.AwaitingKey args
+        go 0 ParseState_Basic.AwaitingKey args
 
         if 0 = errors_.Count then
             ()
@@ -5423,10 +5542,10 @@ module BasicNoPositionals =
         let inProgress =
             ArgParseHelpers_ConsumePlugin.BasicNoPositionals_InProgress._Empty ()
 
-        let positionals : ResizeArray<Choice<string, string>> = ResizeArray ()
+        let positionals : ResizeArray<Choice<string * int, string * int>> = ResizeArray ()
         let errors_ = ResizeArray ()
 
-        let rec go (state : ParseState_BasicNoPositionals) (args : string list) =
+        let rec go (argNum_ : int) (state : ParseState_BasicNoPositionals) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -5439,7 +5558,7 @@ module BasicNoPositionals =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> errors_.Add
-            | "--" :: rest -> positionals.AddRange (rest |> Seq.map Choice2Of2)
+            | "--" :: rest -> positionals.AddRange (rest |> Seq.map (fun x -> (x, argNum_ + 1)) |> Seq.map Choice2Of2)
             | arg :: args ->
                 match state with
                 | ParseState_BasicNoPositionals.AwaitingKey ->
@@ -5450,34 +5569,34 @@ module BasicNoPositionals =
                             let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
-                                args |> go (ParseState_BasicNoPositionals.AwaitingValue arg)
+                                args |> go (argNum_ + 1) (ParseState_BasicNoPositionals.AwaitingValue arg)
                             else
                                 let key = arg.[0 .. equals - 1]
                                 let value = arg.[equals + 1 ..]
 
-                                match inProgress.ProcessKeyValue errors_ key value with
-                                | Ok () -> go ParseState_BasicNoPositionals.AwaitingKey args
+                                match inProgress.ProcessKeyValue argNum_ errors_ key value with
+                                | Ok () -> go (argNum_ + 1) ParseState_BasicNoPositionals.AwaitingKey args
                                 | Error x ->
                                     match x with
                                     | None ->
                                         failwithf "Unable to process argument %s as key %s and value %s" arg key value
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
-                                        go ParseState_BasicNoPositionals.AwaitingKey args
+                                        go (argNum_ + 1) ParseState_BasicNoPositionals.AwaitingKey args
                     else
-                        arg |> Choice1Of2 |> positionals.Add
-                        go ParseState_BasicNoPositionals.AwaitingKey args
+                        (arg, argNum_) |> Choice1Of2 |> positionals.Add
+                        go (argNum_ + 1) ParseState_BasicNoPositionals.AwaitingKey args
                 | ParseState_BasicNoPositionals.AwaitingValue key ->
-                    match inProgress.ProcessKeyValue errors_ key arg with
-                    | Ok () -> go ParseState_BasicNoPositionals.AwaitingKey args
+                    match inProgress.ProcessKeyValue argNum_ errors_ key arg with
+                    | Ok () -> go argNum_ ParseState_BasicNoPositionals.AwaitingKey args
                     | Error exc ->
                         if inProgress.SetFlagValue_ errors_ key then
-                            go ParseState_BasicNoPositionals.AwaitingKey (arg :: args)
+                            go argNum_ ParseState_BasicNoPositionals.AwaitingKey (arg :: args)
                         else
-                            key |> Choice1Of2 |> positionals.Add
-                            go ParseState_BasicNoPositionals.AwaitingKey (arg :: args)
+                            (key, argNum_) |> Choice1Of2 |> positionals.Add
+                            go (argNum_ + 1) ParseState_BasicNoPositionals.AwaitingKey (arg :: args)
 
-        go ParseState_BasicNoPositionals.AwaitingKey args
+        go 0 ParseState_BasicNoPositionals.AwaitingKey args
 
         if 0 = errors_.Count then
             ()
