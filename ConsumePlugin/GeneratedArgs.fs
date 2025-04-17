@@ -34,6 +34,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : int =
                 match this.Foo with
@@ -58,8 +59,19 @@ module internal ArgParseHelpers_ConsumePlugin =
 
             let arg3 : int list = this.Rest |> Seq.toList
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Foo = arg0
@@ -70,12 +82,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : BasicNoPositionals_InProgress =
             {
@@ -196,6 +208,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : int =
                 match this.Foo with
@@ -224,7 +237,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> Seq.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> x
+                    | Choice1Of2 x ->
+                        if not (false) && (fst x).StartsWith ("--", System.StringComparison.Ordinal) then
+                            outOfPlacePositionals.Add (fst x)
+                            x
+                        else
+                            x
                     | Choice2Of2 x -> x
                 )
                 |> Seq.map (fun (str, argNum_) -> str |> (fun x -> x), argNum_)
@@ -233,8 +251,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> Seq.map fst
                 |> Seq.toList
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Foo = arg0
@@ -245,12 +274,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : Basic_InProgress =
             {
@@ -371,6 +400,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : int =
                 match this.Foo with
@@ -399,7 +429,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> Seq.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> x
+                    | Choice1Of2 x ->
+                        if not (false) && (fst x).StartsWith ("--", System.StringComparison.Ordinal) then
+                            outOfPlacePositionals.Add (fst x)
+                            x
+                        else
+                            x
                     | Choice2Of2 x -> x
                 )
                 |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Int32.Parse x), argNum_)
@@ -408,8 +443,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> Seq.map fst
                 |> Seq.toList
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Foo = arg0
@@ -420,12 +466,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : BasicWithIntPositionals_InProgress =
             {
@@ -557,6 +603,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : int =
                 match this.Foo with
@@ -603,7 +650,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> Seq.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> x
+                    | Choice1Of2 x ->
+                        if not (false) && (fst x).StartsWith ("--", System.StringComparison.Ordinal) then
+                            outOfPlacePositionals.Add (fst x)
+                            x
+                        else
+                            x
                     | Choice2Of2 x -> x
                 )
                 |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Int32.Parse x), argNum_)
@@ -627,8 +679,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 | Some result -> Choice1Of2 result
                 | None -> Choice2Of2 ("CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable |> (fun x -> x))
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Foo = arg0
@@ -646,12 +709,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : LoadsOfTypes_InProgress =
             {
@@ -938,6 +1001,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : int =
                 match this.Foo with
@@ -993,8 +1057,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 | Some result -> Choice1Of2 result
                 | None -> Choice2Of2 ("CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable |> (fun x -> x))
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Foo = arg0
@@ -1011,12 +1086,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : LoadsOfTypesNoPositionals_InProgress =
             {
@@ -1287,6 +1362,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : TimeSpan =
                 match this.Plain with
@@ -1317,8 +1393,19 @@ module internal ArgParseHelpers_ConsumePlugin =
 
                     Unchecked.defaultof<_                                                               >
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Plain = arg0
@@ -1329,12 +1416,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : DatesAndTimes_InProgress =
             {
@@ -1483,6 +1570,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : int =
                 match this.Thing1 with
@@ -1498,8 +1586,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     errors.Add (sprintf "Required argument '--%s' received no value" "thing2")
                     Unchecked.defaultof<_>
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Thing1 = arg0
@@ -1508,12 +1607,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ChildRecord_InProgress =
             {
@@ -1598,6 +1697,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : ChildRecord =
                 match this.Child.Assemble_ getEnvironmentVariable positionals with
@@ -1618,8 +1718,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     errors.Add (sprintf "Required argument '--%s' received no value" "and-another")
                     Unchecked.defaultof<_>
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Child = arg0
@@ -1628,12 +1739,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ParentRecord_InProgress =
             {
@@ -1732,6 +1843,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : int =
                 match this.Thing1 with
@@ -1746,7 +1858,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> Seq.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> x
+                    | Choice1Of2 x ->
+                        if not (false) && (fst x).StartsWith ("--", System.StringComparison.Ordinal) then
+                            outOfPlacePositionals.Add (fst x)
+                            x
+                        else
+                            x
                     | Choice2Of2 x -> x
                 )
                 |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Uri x), argNum_)
@@ -1755,8 +1872,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> Seq.map fst
                 |> Seq.toList
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Thing1 = arg0
@@ -1765,12 +1893,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ChildRecordWithPositional_InProgress =
             {
@@ -1841,6 +1969,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : ChildRecordWithPositional =
                 match this.Child.Assemble_ getEnvironmentVariable positionals with
@@ -1861,8 +1990,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     errors.Add (sprintf "Required argument '--%s' received no value" "and-another")
                     Unchecked.defaultof<_>
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Child = arg0
@@ -1871,12 +2011,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ParentRecordChildPos_InProgress =
             {
@@ -1975,6 +2115,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : ChildRecord =
                 match this.Child.Assemble_ getEnvironmentVariable positionals with
@@ -1994,7 +2135,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> Seq.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> x
+                    | Choice1Of2 x ->
+                        if not (false) && (fst x).StartsWith ("--", System.StringComparison.Ordinal) then
+                            outOfPlacePositionals.Add (fst x)
+                            x
+                        else
+                            x
                     | Choice2Of2 x -> x
                 )
                 |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Boolean.Parse x), argNum_)
@@ -2003,8 +2149,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> Seq.map fst
                 |> Seq.toList
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Child = arg0
@@ -2013,12 +2170,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ParentRecordSelfPos_InProgress =
             {
@@ -2094,6 +2251,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : Choice<string, string> list =
                 positionalConsumers.Add (sprintf "--%s" "args")
@@ -2105,8 +2263,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice2Of2 (x, argPos) -> (fun x -> x) x |> Choice2Of2
                 )
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             Args = arg0
@@ -2114,12 +2283,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ChoicePositionals_InProgress =
             {
@@ -2171,6 +2340,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : Choice<bool, bool> =
                 match this.BoolVar with
@@ -2189,8 +2359,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                         )
                     )
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             BoolVar = arg0
@@ -2198,12 +2379,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ContainsBoolEnvVar_InProgress =
             {
@@ -2281,6 +2462,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : DryRunMode =
                 match this.DryRun with
@@ -2289,8 +2471,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     errors.Add (sprintf "Required argument '--%s' received no value" "dry-run")
                     Unchecked.defaultof<_>
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             DryRun = arg0
@@ -2298,12 +2491,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : WithFlagDu_InProgress =
             {
@@ -2396,6 +2589,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : Choice<DryRunMode, DryRunMode> =
                 match this.DryRun with
@@ -2426,8 +2620,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                         )
                     )
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             DryRun = arg0
@@ -2435,12 +2640,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ContainsFlagEnvVar_InProgress =
             {
@@ -2533,14 +2738,26 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : Choice<DryRunMode, DryRunMode> =
                 match this.DryRun with
                 | Some result -> Choice1Of2 result
                 | None -> Choice2Of2 (ContainsFlagDefaultValue.DefaultDryRun ())
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             DryRun = arg0
@@ -2548,12 +2765,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ContainsFlagDefaultValue_InProgress =
             {
@@ -2647,6 +2864,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : string =
                 match this.DoTheThing with
@@ -2663,8 +2881,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     errors.Add (sprintf "Required argument '--%s' received no value" "turn-it-on")
                     Unchecked.defaultof<_>
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             DoTheThing = arg0
@@ -2673,12 +2902,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : ManyLongForms_InProgress =
             {
@@ -2839,6 +3068,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : string =
                 match this.A with
@@ -2853,7 +3083,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> Seq.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> x
+                    | Choice1Of2 x ->
+                        if not (true) && (fst x).StartsWith ("--", System.StringComparison.Ordinal) then
+                            outOfPlacePositionals.Add (fst x)
+                            x
+                        else
+                            x
                     | Choice2Of2 x -> x
                 )
                 |> Seq.map (fun (str, argNum_) -> str |> (fun x -> x), argNum_)
@@ -2862,8 +3097,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> Seq.map fst
                 |> Seq.toList
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             A = arg0
@@ -2872,12 +3118,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : FlagsIntoPositionalArgs_InProgress =
             {
@@ -2950,6 +3196,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : string =
                 match this.A with
@@ -2968,8 +3215,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice2Of2 (x, argPos) -> (fun x -> x) x |> Choice2Of2
                 )
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             A = arg0
@@ -2978,12 +3236,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : FlagsIntoPositionalArgsChoice_InProgress =
             {
@@ -3056,6 +3314,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : string =
                 match this.A with
@@ -3070,7 +3329,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> Seq.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> x
+                    | Choice1Of2 x ->
+                        if not (true) && (fst x).StartsWith ("--", System.StringComparison.Ordinal) then
+                            outOfPlacePositionals.Add (fst x)
+                            x
+                        else
+                            x
                     | Choice2Of2 x -> x
                 )
                 |> Seq.map (fun (str, argNum_) -> str |> (fun x -> System.Int32.Parse x), argNum_)
@@ -3079,8 +3343,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> Seq.map fst
                 |> Seq.toList
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             A = arg0
@@ -3089,12 +3364,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : FlagsIntoPositionalArgsInt_InProgress =
             {
@@ -3171,6 +3446,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : string =
                 match this.A with
@@ -3189,8 +3465,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     | Choice2Of2 (x, argPos) -> (fun x -> System.Int32.Parse x) x |> Choice2Of2
                 )
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             A = arg0
@@ -3199,12 +3486,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : FlagsIntoPositionalArgsIntChoice_InProgress =
             {
@@ -3281,6 +3568,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : string =
                 match this.A with
@@ -3295,7 +3583,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                 positionals
                 |> Seq.map (fun x ->
                     match x with
-                    | Choice1Of2 x -> x
+                    | Choice1Of2 x ->
+                        if not (false) && (fst x).StartsWith ("--", System.StringComparison.Ordinal) then
+                            outOfPlacePositionals.Add (fst x)
+                            x
+                        else
+                            x
                     | Choice2Of2 x -> x
                 )
                 |> Seq.map (fun (str, argNum_) -> str |> (fun x -> x), argNum_)
@@ -3304,8 +3597,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                 |> Seq.map fst
                 |> Seq.toList
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             A = arg0
@@ -3314,12 +3618,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : FlagsIntoPositionalArgs'_InProgress =
             {
@@ -3395,6 +3699,7 @@ module internal ArgParseHelpers_ConsumePlugin =
             =
             let errors = ResizeArray<string> ()
             let positionalConsumers = ResizeArray<string> ()
+            let outOfPlacePositionals : ResizeArray<string> = ResizeArray ()
 
             let arg0 : ParentRecordChildPos =
                 match this.A.Assemble_ getEnvironmentVariable positionals with
@@ -3408,8 +3713,19 @@ module internal ArgParseHelpers_ConsumePlugin =
                     errors.AddRange err
                     Unchecked.defaultof<_>
 
-            if errors.Count = 0 then
-                if positionalConsumers.Count <= 1 then
+            if positionalConsumers.Count <= 1 then
+                if outOfPlacePositionals.Count > 0 then
+                    outOfPlacePositionals
+                    |> String.concat " "
+                    |> (fun x ->
+                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
+                        + x
+                    )
+                    |> errors.Add
+                else
+                    ()
+
+                if errors.Count = 0 then
                     Ok (
                         {
                             A = arg0
@@ -3417,12 +3733,12 @@ module internal ArgParseHelpers_ConsumePlugin =
                         Seq.tryExactlyOne positionalConsumers
                     )
                 else
-                    ("Multiple parsers consumed positional args: "
-                     + String.concat ", " positionalConsumers)
-                    |> List.singleton
-                    |> Error
+                    errors |> Seq.toList |> Error
             else
-                errors |> Seq.toList |> Error
+                ("Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 + String.concat ", " positionalConsumers)
+                |> List.singleton
+                |> Error
 
         static member _Empty () : PassThru_InProgress =
             {

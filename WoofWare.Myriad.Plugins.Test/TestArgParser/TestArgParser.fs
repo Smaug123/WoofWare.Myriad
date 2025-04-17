@@ -79,11 +79,8 @@ module TestArgParser =
 
         exc.Message
         |> shouldEqual
-            """Parse error: The following arguments were not consumed: --non-existent. to process supplied arg --non-existent. Help text follows.
---foo  int32 : This is a foo!
---bar  string
---baz  bool
---rest  string (positional args) (can be repeated) : Here's where the rest of the args go"""
+            """Errors during parse!
+Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. --non-existent"""
 
     [<Test>]
     let ``Can supply positional args with key`` () =
@@ -693,7 +690,9 @@ Required argument '--turn-it-on' received no value"""
             )
 
         exc.Message
-        |> shouldEqual """Parse error: The following positional arguments were not consumed: --b=false --c hi --help"""
+        |> shouldEqual
+            """Errors during parse!
+Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. --b=false --c"""
 
         let exc =
             Assert.Throws<exn> (fun () ->
@@ -704,4 +703,6 @@ Required argument '--turn-it-on' received no value"""
         // Again perhaps eccentric!
         // Again, we don't try to detect that the user has missed out the desired argument to `--a`.
         exc.Message
-        |> shouldEqual """Parse error: The following arguments were not consumed: --c=hi"""
+        |> shouldEqual
+            """Errors during parse!
+Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. --c=hi"""

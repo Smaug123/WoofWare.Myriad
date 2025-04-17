@@ -84,6 +84,17 @@ module internal ShibaGenerator =
 
         result.ToString().TrimStart '-'
 
+    /// Expects `e` to be a string; calls `e.StartsWith("--", StringComparison.Ordinal)`.
+    let startsWithDashes (e : SynExpr) : SynExpr =
+        e
+        |> SynExpr.callMethodArg
+            "StartsWith"
+            (SynExpr.tuple
+                [
+                    SynExpr.CreateConst "--"
+                    SynExpr.createLongIdent [ "System" ; "StringComparison" ; "Ordinal" ]
+                ])
+
     type LeafData<'choice> =
         {
             /// Call this function to turn the input into the `TypeAfterParse`.
@@ -936,21 +947,33 @@ module internal ShibaGenerator =
                             match leaf.Positional with
                             // TODO: account for includeFlagLike
                             | Some includeFlagLike ->
-                                [
-                                    SynExpr.callMethodArg
-                                        "Add"
-                                        leaf.HumanReadableArgForm
-                                        (SynExpr.createIdent "positionalConsumers")
-                                    // Positional args carried in from external argument.
-                                    // TODO: register whether they came before or after separator
+                                let constructPositionalsList =
                                     match leaf.Acc with
                                     | List acc ->
                                         match acc with
                                         | Accumulation.List _ ->
                                             failwith "unexpected: positional args should not be a list of lists"
                                         | Accumulation.Required ->
-                                            // TODO: we need to preserve the ordering on these with respect to
-                                            // the explicitly passed `--foo=` positionals
+                                            // The condition that determines whether this looks like a flag that's mistakenly
+                                            // a conditional, which we should reject
+                                            let rejectFlagInPositional =
+                                                let includeFlagLike =
+                                                    match includeFlagLike with
+                                                    | None -> SynExpr.CreateConst false
+                                                    | Some i -> i
+
+                                                SynExpr.booleanAnd
+                                                    (SynExpr.applyFunction
+                                                        (SynExpr.createIdent "not")
+                                                        (SynExpr.paren includeFlagLike))
+                                                    (startsWithDashes (
+                                                        SynExpr.paren (
+                                                            SynExpr.applyFunction
+                                                                (SynExpr.createIdent "fst")
+                                                                (SynExpr.createIdent "x")
+                                                        )
+                                                    ))
+
                                             SynExpr.createIdent "positionals"
                                             |> SynExpr.pipeThroughFunction (
                                                 SynExpr.applyFunction
@@ -964,7 +987,21 @@ module internal ShibaGenerator =
                                                                     (SynPat.identWithArgs
                                                                         [ Ident.create "Choice1Of2" ]
                                                                         (SynArgPats.createNamed [ "x" ]))
-                                                                    (SynExpr.createIdent "x")
+                                                                    (SynExpr.ifThenElse
+                                                                        rejectFlagInPositional
+                                                                        (SynExpr.createIdent "x")
+                                                                        (SynExpr.sequential
+                                                                            [
+                                                                                SynExpr.callMethodArg
+                                                                                    "Add"
+                                                                                    (SynExpr.applyFunction
+                                                                                        (SynExpr.createIdent "fst")
+                                                                                        (SynExpr.createIdent "x")
+                                                                                     |> SynExpr.paren)
+                                                                                    (SynExpr.createIdent
+                                                                                        "outOfPlacePositionals")
+                                                                                (SynExpr.createIdent "x")
+                                                                            ]))
                                                                 SynMatchClause.create
                                                                     (SynPat.identWithArgs
                                                                         [ Ident.create "Choice2Of2" ]
@@ -1068,6 +1105,15 @@ module internal ShibaGenerator =
                                                 |> SynExpr.applyFunction (SynExpr.createLongIdent [ "List" ; "map" ])
                                             )
                                     | _ -> failwith "unexpected: positional arguments should be a list"
+
+                                [
+                                    SynExpr.callMethodArg
+                                        "Add"
+                                        leaf.HumanReadableArgForm
+                                        (SynExpr.createIdent "positionalConsumers")
+                                    // If any of the Choice1Of2 positional args look like flags,
+                                    // and `not includeFlagLike`, then store a parse error.
+                                    [ constructPositionalsList ] |> SynExpr.sequential
                                 ]
                                 |> SynExpr.sequential
                             | None ->
@@ -1179,7 +1225,36 @@ module internal ShibaGenerator =
                     |> List.singleton
                 )
 
-            instantiation
+            [
+                SynExpr.createIdent "outOfPlacePositionals"
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.createLongIdent [ "String" ; "concat" ]
+                    |> SynExpr.applyTo (SynExpr.CreateConst " ")
+                )
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.createLambda
+                        "x"
+                        (SynExpr.plus
+                            // TODO: if we have a positional consumer, point this out, but otherwise don't
+                            // TODO: print the help text here
+                            (SynExpr.CreateConst
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. ")
+                            (SynExpr.createIdent "x"))
+                )
+                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "errors" ; "Add" ])
+                |> SynExpr.ifThenElse
+                    (SynExpr.dotGet "Count" (SynExpr.createIdent "outOfPlacePositionals")
+                     |> SynExpr.greaterThan (SynExpr.CreateConst 0))
+                    (SynExpr.CreateConst ())
+
+                instantiation
+                |> SynExpr.ifThenElse
+                    (SynExpr.equals (SynExpr.dotGet "Count" (SynExpr.createIdent "errors")) (SynExpr.CreateConst 0))
+                    (SynExpr.createIdent "errors"
+                     |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
+                     |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+            ]
+            |> SynExpr.sequential
             |> SynExpr.ifThenElse
                 (SynExpr.lessThanOrEqual
                     (SynExpr.CreateConst 1)
@@ -1188,14 +1263,12 @@ module internal ShibaGenerator =
                  |> SynExpr.applyFunction (
                      SynExpr.applyFunction (SynExpr.createLongIdent [ "String" ; "concat" ]) (SynExpr.CreateConst ", ")
                  )
-                 |> SynExpr.plus (SynExpr.CreateConst "Multiple parsers consumed positional args: ")
+                 |> SynExpr.plus (
+                     SynExpr.CreateConst
+                         "Multiple parsers consumed positional args; this is an error in the application, not an error by the user: "
+                 )
                  |> SynExpr.paren
                  |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "List" ; "singleton" ])
-                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
-            |> SynExpr.ifThenElse
-                (SynExpr.equals (SynExpr.dotGet "Count" (SynExpr.createIdent "errors")) (SynExpr.CreateConst 0))
-                (SynExpr.createIdent "errors"
-                 |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
                  |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
             |> SynExpr.createLet assignVariables
             |> SynExpr.createLet
@@ -1212,6 +1285,13 @@ module internal ShibaGenerator =
                         (SynExpr.applyFunction
                             (SynExpr.typeApp [ SynType.string ] (SynExpr.createIdent "ResizeArray"))
                             (SynExpr.CreateConst ()))
+                    // TODO: we can optimise this away if we know already we're accepting all positionals,
+                    // although we can only guess this with heuristics in the generator
+                    SynBinding.basic
+                        [ Ident.create "outOfPlacePositionals" ]
+                        []
+                        (SynExpr.applyFunction (SynExpr.createIdent "ResizeArray") (SynExpr.CreateConst ()))
+                    |> SynBinding.withReturnAnnotation (SynType.app "ResizeArray" [ SynType.string ])
                 ]
             |> SynBinding.basic
                 [ Ident.create "this" ; Ident.create "Assemble_" ]
@@ -1765,15 +1845,7 @@ module internal ShibaGenerator =
 
             handleFailure
 
-        let argStartsWithDashes =
-            SynExpr.createIdent "arg"
-            |> SynExpr.callMethodArg
-                "StartsWith"
-                (SynExpr.tuple
-                    [
-                        SynExpr.CreateConst "--"
-                        SynExpr.createLongIdent [ "System" ; "StringComparison" ; "Ordinal" ]
-                    ])
+        let argStartsWithDashes = startsWithDashes (SynExpr.createIdent "arg")
 
         let processKey =
             SynExpr.ifThenElse
