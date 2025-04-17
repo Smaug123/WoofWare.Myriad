@@ -218,6 +218,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             let arg3 : string list =
+                positionalConsumers.Add (sprintf "--%s" "rest")
+
                 positionals
                 |> Seq.map (fun x ->
                     match x with
@@ -390,6 +392,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             let arg3 : int list =
+                positionalConsumers.Add (sprintf "--%s" "rest")
+
                 positionals
                 |> Seq.map (fun x ->
                     match x with
@@ -591,6 +595,8 @@ module internal ArgParseHelpers_ConsumePlugin =
             let arg6 : int option = this.OptionalThingWithNoDefault
 
             let arg7 : int list =
+                positionalConsumers.Add (sprintf "--%s" "positionals")
+
                 positionals
                 |> Seq.map (fun x ->
                     match x with
@@ -1727,6 +1733,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             let arg1 : Uri list =
+                positionalConsumers.Add (sprintf "--%s" "thing2")
+
                 positionals
                 |> Seq.map (fun x ->
                     match x with
@@ -1971,6 +1979,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             let arg1 : bool list =
+                positionalConsumers.Add (sprintf "--%s" "and-another")
+
                 positionals
                 |> Seq.map (fun x ->
                     match x with
@@ -2821,6 +2831,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             let arg1 : string list =
+                positionalConsumers.Add (sprintf "--%s" "grab-everything")
+
                 positionals
                 |> Seq.map (fun x ->
                     match x with
@@ -3034,6 +3046,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             let arg1 : int list =
+                positionalConsumers.Add (sprintf "--%s" "grab-everything")
+
                 positionals
                 |> Seq.map (fun x ->
                     match x with
@@ -3255,6 +3269,8 @@ module internal ArgParseHelpers_ConsumePlugin =
                     Unchecked.defaultof<_>
 
             let arg1 : string list =
+                positionalConsumers.Add (sprintf "--%s" "dont-grab-everything")
+
                 positionals
                 |> Seq.map (fun x ->
                     match x with
@@ -3479,11 +3495,8 @@ module PassThruArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_PassThru.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_PassThru.AwaitingKey args
@@ -3513,7 +3526,15 @@ module PassThruArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -3589,11 +3610,8 @@ module FlagsIntoPositionalArgs'ArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
@@ -3623,7 +3641,15 @@ module FlagsIntoPositionalArgs'ArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -3701,11 +3727,12 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+
+                                            go
+                                                (argNum_ + 1)
+                                                ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey
+                                                args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
 
@@ -3739,7 +3766,15 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -3816,11 +3851,8 @@ module FlagsIntoPositionalArgsIntArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
@@ -3850,7 +3882,15 @@ module FlagsIntoPositionalArgsIntArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -3928,11 +3968,8 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
@@ -3962,7 +3999,15 @@ module FlagsIntoPositionalArgsChoiceArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4038,11 +4083,8 @@ module FlagsIntoPositionalArgsArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_FlagsIntoPositionalArgs.AwaitingKey args
@@ -4072,7 +4114,15 @@ module FlagsIntoPositionalArgsArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4142,11 +4192,8 @@ module ManyLongFormsArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_ManyLongForms.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_ManyLongForms.AwaitingKey args
@@ -4176,7 +4223,15 @@ module ManyLongFormsArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4252,11 +4307,8 @@ module ContainsFlagDefaultValueArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_ContainsFlagDefaultValue.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_ContainsFlagDefaultValue.AwaitingKey args
@@ -4286,7 +4338,15 @@ module ContainsFlagDefaultValueArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4358,11 +4418,8 @@ module ContainsFlagEnvVarArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_ContainsFlagEnvVar.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_ContainsFlagEnvVar.AwaitingKey args
@@ -4392,7 +4449,15 @@ module ContainsFlagEnvVarArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4462,11 +4527,8 @@ module WithFlagDuArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_WithFlagDu.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_WithFlagDu.AwaitingKey args
@@ -4496,7 +4558,15 @@ module WithFlagDuArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4568,11 +4638,8 @@ module ContainsBoolEnvVarArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_ContainsBoolEnvVar.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_ContainsBoolEnvVar.AwaitingKey args
@@ -4602,7 +4669,15 @@ module ContainsBoolEnvVarArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4674,11 +4749,8 @@ module ChoicePositionalsArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_ChoicePositionals.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_ChoicePositionals.AwaitingKey args
@@ -4708,7 +4780,15 @@ module ChoicePositionalsArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4780,11 +4860,8 @@ module ParentRecordSelfPosArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_ParentRecordSelfPos.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_ParentRecordSelfPos.AwaitingKey args
@@ -4814,7 +4891,15 @@ module ParentRecordSelfPosArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4886,11 +4971,8 @@ module ParentRecordChildPosArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_ParentRecordChildPos.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_ParentRecordChildPos.AwaitingKey args
@@ -4920,7 +5002,15 @@ module ParentRecordChildPosArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -4990,11 +5080,8 @@ module ParentRecordArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_ParentRecord.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_ParentRecord.AwaitingKey args
@@ -5024,7 +5111,15 @@ module ParentRecordArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -5094,11 +5189,8 @@ module DatesAndTimesArgParse =
                                     | Error x ->
                                         match x with
                                         | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
+                                            positionals.Add (Choice1Of2 (arg, argNum_))
+                                            go (argNum_ + 1) ParseState_DatesAndTimes.AwaitingKey args
                                         | Some msg ->
                                             sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                             go (argNum_ + 1) ParseState_DatesAndTimes.AwaitingKey args
@@ -5128,7 +5220,15 @@ module DatesAndTimesArgParse =
             match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
             | Ok (result, posConsumer) ->
                 if positionals.Count > 0 && posConsumer.IsNone then
-                    failwith "TODO"
+                    positionals
+                    |> Seq.map (fun choiceValue ->
+                        match choiceValue with
+                        | Choice1Of2 (arg, _) -> arg
+                        | Choice2Of2 (arg, _) -> arg
+                    )
+                    |> String.concat " "
+                    |> sprintf "Parse error: The following arguments were not consumed: %s"
+                    |> failwith
                 else
                     result
             | Error e ->
@@ -5197,7 +5297,8 @@ module LoadsOfTypesNoPositionals =
                                 | Error x ->
                                     match x with
                                     | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                        positionals.Add (Choice1Of2 (arg, argNum_))
+                                        go (argNum_ + 1) ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                         go (argNum_ + 1) ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
@@ -5227,7 +5328,15 @@ module LoadsOfTypesNoPositionals =
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, posConsumer) ->
             if positionals.Count > 0 && posConsumer.IsNone then
-                failwith "TODO"
+                positionals
+                |> Seq.map (fun choiceValue ->
+                    match choiceValue with
+                    | Choice1Of2 (arg, _) -> arg
+                    | Choice2Of2 (arg, _) -> arg
+                )
+                |> String.concat " "
+                |> sprintf "Parse error: The following arguments were not consumed: %s"
+                |> failwith
             else
                 result
         | Error e ->
@@ -5293,7 +5402,8 @@ module LoadsOfTypes =
                                 | Error x ->
                                     match x with
                                     | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                        positionals.Add (Choice1Of2 (arg, argNum_))
+                                        go (argNum_ + 1) ParseState_LoadsOfTypes.AwaitingKey args
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                         go (argNum_ + 1) ParseState_LoadsOfTypes.AwaitingKey args
@@ -5323,7 +5433,15 @@ module LoadsOfTypes =
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, posConsumer) ->
             if positionals.Count > 0 && posConsumer.IsNone then
-                failwith "TODO"
+                positionals
+                |> Seq.map (fun choiceValue ->
+                    match choiceValue with
+                    | Choice1Of2 (arg, _) -> arg
+                    | Choice2Of2 (arg, _) -> arg
+                )
+                |> String.concat " "
+                |> sprintf "Parse error: The following arguments were not consumed: %s"
+                |> failwith
             else
                 result
         | Error e ->
@@ -5391,7 +5509,8 @@ module BasicWithIntPositionals =
                                 | Error x ->
                                     match x with
                                     | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                        positionals.Add (Choice1Of2 (arg, argNum_))
+                                        go (argNum_ + 1) ParseState_BasicWithIntPositionals.AwaitingKey args
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                         go (argNum_ + 1) ParseState_BasicWithIntPositionals.AwaitingKey args
@@ -5421,7 +5540,15 @@ module BasicWithIntPositionals =
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, posConsumer) ->
             if positionals.Count > 0 && posConsumer.IsNone then
-                failwith "TODO"
+                positionals
+                |> Seq.map (fun choiceValue ->
+                    match choiceValue with
+                    | Choice1Of2 (arg, _) -> arg
+                    | Choice2Of2 (arg, _) -> arg
+                )
+                |> String.concat " "
+                |> sprintf "Parse error: The following arguments were not consumed: %s"
+                |> failwith
             else
                 result
         | Error e ->
@@ -5487,7 +5614,8 @@ module Basic =
                                 | Error x ->
                                     match x with
                                     | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                        positionals.Add (Choice1Of2 (arg, argNum_))
+                                        go (argNum_ + 1) ParseState_Basic.AwaitingKey args
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                         go (argNum_ + 1) ParseState_Basic.AwaitingKey args
@@ -5517,7 +5645,15 @@ module Basic =
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, posConsumer) ->
             if positionals.Count > 0 && posConsumer.IsNone then
-                failwith "TODO"
+                positionals
+                |> Seq.map (fun choiceValue ->
+                    match choiceValue with
+                    | Choice1Of2 (arg, _) -> arg
+                    | Choice2Of2 (arg, _) -> arg
+                )
+                |> String.concat " "
+                |> sprintf "Parse error: The following arguments were not consumed: %s"
+                |> failwith
             else
                 result
         | Error e ->
@@ -5585,7 +5721,8 @@ module BasicNoPositionals =
                                 | Error x ->
                                     match x with
                                     | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
+                                        positionals.Add (Choice1Of2 (arg, argNum_))
+                                        go (argNum_ + 1) ParseState_BasicNoPositionals.AwaitingKey args
                                     | Some msg ->
                                         sprintf "%s (at arg %s)" msg arg |> errors_.Add
                                         go (argNum_ + 1) ParseState_BasicNoPositionals.AwaitingKey args
@@ -5615,7 +5752,15 @@ module BasicNoPositionals =
         match inProgress.Assemble_ getEnvironmentVariable (positionals |> Seq.toList) with
         | Ok (result, posConsumer) ->
             if positionals.Count > 0 && posConsumer.IsNone then
-                failwith "TODO"
+                positionals
+                |> Seq.map (fun choiceValue ->
+                    match choiceValue with
+                    | Choice1Of2 (arg, _) -> arg
+                    | Choice2Of2 (arg, _) -> arg
+                )
+                |> String.concat " "
+                |> sprintf "Parse error: The following arguments were not consumed: %s"
+                |> failwith
             else
                 result
         | Error e ->

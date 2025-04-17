@@ -79,7 +79,7 @@ module TestArgParser =
 
         exc.Message
         |> shouldEqual
-            """Unable to process supplied arg --non-existent. Help text follows.
+            """Parse error: The following arguments were not consumed: --non-existent. to process supplied arg --non-existent. Help text follows.
 --foo  int32 : This is a foo!
 --bar  string
 --baz  bool
@@ -692,7 +692,7 @@ Required argument '--exact' received no value"""
             )
 
         exc.Message
-        |> shouldEqual """Unable to process argument --b=false as key --b and value false"""
+        |> shouldEqual """Parse error: The following positional arguments were not consumed: --b=false --c hi --help"""
 
         let exc =
             Assert.Throws<exn> (fun () ->
@@ -703,4 +703,4 @@ Required argument '--exact' received no value"""
         // Again perhaps eccentric!
         // Again, we don't try to detect that the user has missed out the desired argument to `--a`.
         exc.Message
-        |> shouldEqual """Unable to process argument --c=hi as key --c and value hi"""
+        |> shouldEqual """Parse error: The following arguments were not consumed: --c=hi"""
