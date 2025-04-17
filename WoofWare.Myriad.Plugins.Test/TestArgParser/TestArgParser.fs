@@ -80,7 +80,7 @@ module TestArgParser =
         exc.Message
         |> shouldEqual
             """Errors during parse!
-Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. --non-existent"""
+Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--rest=` syntax, or place them after a trailing `--`. --non-existent"""
 
     [<Test>]
     let ``Can supply positional args with key`` () =
@@ -692,7 +692,7 @@ Required argument '--turn-it-on' received no value"""
         exc.Message
         |> shouldEqual
             """Errors during parse!
-Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. --b=false --c"""
+Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--dont-grab-everything=` syntax, or place them after a trailing `--`. --b=false --c"""
 
         let exc =
             Assert.Throws<exn> (fun () ->

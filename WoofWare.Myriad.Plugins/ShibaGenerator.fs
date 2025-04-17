@@ -1234,12 +1234,22 @@ module internal ShibaGenerator =
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.createLambda
                         "x"
-                        (SynExpr.plus
-                            // TODO: if we have a positional consumer, point this out, but otherwise don't
-                            // TODO: print the help text here
-                            (SynExpr.CreateConst
-                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. ")
-                            (SynExpr.createIdent "x"))
+                        (SynExpr.ifThenElse
+                            (SynExpr.equals
+                                (SynExpr.CreateConst 0)
+                                (SynExpr.dotGet "Count" (SynExpr.createIdent "outOfPlacePositionals")))
+                            ((SynExpr.createIdent "sprintf")
+                             |> SynExpr.applyTo (
+                                 SynExpr.CreateConst
+                                     "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                             )
+                             |> SynExpr.applyTo (
+                                 SynExpr.index (SynExpr.CreateConst 0) (SynExpr.createIdent "positionalConsumers")
+                             )
+                             |> SynExpr.applyTo (SynExpr.createIdent "x"))
+                            (SynExpr.plus
+                                (SynExpr.CreateConst "Unmatched args which look like they are meant to be flags. ")
+                                (SynExpr.createIdent "x")))
                 )
                 |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "errors" ; "Add" ])
                 |> SynExpr.ifThenElse

@@ -64,8 +64,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -256,8 +261,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -448,8 +458,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -684,8 +699,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -1062,8 +1082,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -1398,8 +1423,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -1591,8 +1621,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -1723,8 +1758,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -1877,8 +1917,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -1995,8 +2040,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -2154,8 +2204,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -2268,8 +2323,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -2364,8 +2424,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -2476,8 +2541,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -2625,8 +2695,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -2750,8 +2825,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -2886,8 +2966,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -3102,8 +3187,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -3220,8 +3310,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -3348,8 +3443,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -3470,8 +3570,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -3602,8 +3707,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
@@ -3718,8 +3828,13 @@ module internal ArgParseHelpers_ConsumePlugin =
                     outOfPlacePositionals
                     |> String.concat " "
                     |> (fun x ->
-                        "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. "
-                        + x
+                        if 0 = outOfPlacePositionals.Count then
+                            "Unmatched args which look like they are meant to be flags. " + x
+                        else
+                            sprintf
+                                "Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `%s=` syntax, or place them after a trailing `--`. %s"
+                                positionalConsumers.[0]
+                                x
                     )
                     |> errors.Add
                 else
