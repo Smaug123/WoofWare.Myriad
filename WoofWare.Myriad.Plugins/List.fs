@@ -21,3 +21,13 @@ module private List =
             | Some head :: tail -> go (head :: acc) tail
 
         go [] l
+
+    /// Return the first error encountered, or the entire list.
+    let allOkOrError<'ok, 'err> (l : Result<'ok, 'err> list) : Result<'ok list, 'err> =
+        let rec go acc l =
+            match l with
+            | [] -> Ok (List.rev acc)
+            | Error e :: _ -> Error e
+            | Ok o :: rest -> go (o :: acc) rest
+
+        go [] l

@@ -12,6 +12,7 @@
   <ItemGroup>
     <None Include="myriad.toml"/>
     <Compile Include="AssemblyInfo.fs" />
+    <!--
     <Compile Include="RecordFile.fs"/>
     <Compile Include="GeneratedRecord.fs">
       <MyriadFile>RecordFile.fs</MyriadFile>
@@ -66,10 +67,16 @@
     <Compile Include="ListCata.fs">
       <MyriadFile>List.fs</MyriadFile>
     </Compile>
+    -->
     <Compile Include="Args.fs" />
     <Compile Include="GeneratedArgs.fs">
       <MyriadFile>Args.fs</MyriadFile>
     </Compile>
+    <Compile Include="ArgsWithUnions.fs" />
+    <Compile Include="GeneratedArgsWithUnions.fs">
+      <MyriadFile>ArgsWithUnions.fs</MyriadFile>
+    </Compile>
+    <!--
     <None Include="swagger-gitea.json" />
     <Compile Include="GeneratedSwaggerGitea.fs">
       <MyriadFile>swagger-gitea.json</MyriadFile>
@@ -81,6 +88,7 @@
     <Compile Include="Generated2SwaggerGitea.fs">
       <MyriadFile>GeneratedSwaggerGitea.fs</MyriadFile>
     </Compile>
+    -->
   </ItemGroup>
 
   <ItemGroup>

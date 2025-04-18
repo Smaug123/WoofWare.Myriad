@@ -79,11 +79,8 @@ module TestArgParser =
 
         exc.Message
         |> shouldEqual
-            """Unable to process supplied arg --non-existent. Help text follows.
---foo  int32 : This is a foo!
---bar  string
---baz  bool
---rest  string (positional args) (can be repeated) : Here's where the rest of the args go"""
+            """Errors during parse!
+Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--rest=` syntax, or place them after a trailing `--`. --non-existent"""
 
     [<Test>]
     let ``Can supply positional args with key`` () =
@@ -318,8 +315,7 @@ Required argument '--baz' received no value"""
         exc.Message
         |> shouldEqual
             """Errors during parse!
-Input string was not in a correct format. (at arg --invariant-exact=23:59)
-Required argument '--invariant-exact' received no value"""
+Input string was not in a correct format. (at arg --invariant-exact=23:59)"""
 
         let exc =
             Assert.Throws<exn> (fun () ->
@@ -337,8 +333,7 @@ Required argument '--invariant-exact' received no value"""
         exc.Message
         |> shouldEqual
             """Errors during parse!
-Input string was not in a correct format. (at arg --exact=11:34)
-Required argument '--exact' received no value"""
+Input string was not in a correct format. (at arg --exact=11:34)"""
 
         count.Value |> shouldEqual 0
 
@@ -444,7 +439,7 @@ Required argument '--exact' received no value"""
         ]
         |> List.map TestCaseData
 
-    [<TestCaseSource(nameof (boolCases))>]
+    [<TestCaseSource(nameof boolCases)>]
     let ``Bool env vars can be populated`` (envValue : string, boolValue : bool) =
         let getEnvVar (s : string) =
             s |> shouldEqual "CONSUMEPLUGIN_THINGS"
@@ -604,7 +599,10 @@ Required argument '--exact' received no value"""
             )
 
         exc.Message
-        |> shouldEqual """Unable to process argument --do-the-thing=foo as key --do-the-thing and value foo"""
+        |> shouldEqual
+            """Errors during parse!
+Required argument '--do-something-else' received no value
+Required argument '--turn-it-on' received no value"""
 
     [<Test>]
     let ``Long-form args help text`` () =
@@ -692,7 +690,9 @@ Required argument '--exact' received no value"""
             )
 
         exc.Message
-        |> shouldEqual """Unable to process argument --b=false as key --b and value false"""
+        |> shouldEqual
+            """Errors during parse!
+Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--dont-grab-everything=` syntax, or place them after a trailing `--`. --b=false --c"""
 
         let exc =
             Assert.Throws<exn> (fun () ->
@@ -703,4 +703,6 @@ Required argument '--exact' received no value"""
         // Again perhaps eccentric!
         // Again, we don't try to detect that the user has missed out the desired argument to `--a`.
         exc.Message
-        |> shouldEqual """Unable to process argument --c=hi as key --c and value hi"""
+        |> shouldEqual
+            """Errors during parse!
+Unmatched args which look like they are meant to be flags. If you intended them as positional args, explicitly pass them with the `--my-arg-name=` syntax, or place them after a trailing `--`. --c=hi"""

@@ -235,3 +235,9 @@ type FlagsIntoPositionalArgs' =
         [<PositionalArgs false>]
         DontGrabEverything : string list
     }
+
+[<ArgParser true>]
+type PassThru =
+    {
+        A : ParentRecordChildPos
+    }
