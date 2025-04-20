@@ -48,7 +48,16 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Gym.jsonParse elt) |> List.ofSeq
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
+
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
+                        |> Seq.map (fun elt -> Gym.jsonParse elt)
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -81,6 +90,11 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
 
                     return GymAttendance.jsonParse jsonNode
                 }
@@ -116,6 +130,11 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
+
                     return GymAttendance.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -145,6 +164,11 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
 
                     return Member.jsonParse jsonNode
                 }
@@ -179,6 +203,11 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
+
                     return Gym.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -209,6 +238,11 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
+
                     return MemberActivityDto.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -238,6 +272,11 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
 
                     return UriThing.jsonParse jsonNode
                 }
@@ -294,6 +333,11 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
+
                     return
                         match jsonNode with
                         | null -> None
@@ -346,6 +390,11 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
+
                     return Sessions.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -386,6 +435,11 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
 
                     return Sessions.jsonParse jsonNode
                 }
@@ -878,6 +932,11 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
+
                     return
                         new RestEase.Response<_> (
                             responseString,
@@ -913,6 +972,11 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
 
                     return
                         new RestEase.Response<_> (
@@ -950,6 +1014,11 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
+
                     return
                         new RestEase.Response<_> (
                             responseString,
@@ -985,6 +1054,11 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        match jsonNode with
+                        | null -> raise (System.ArgumentNullException ())
+                        | v -> v
 
                     return
                         new RestEase.Response<_> (

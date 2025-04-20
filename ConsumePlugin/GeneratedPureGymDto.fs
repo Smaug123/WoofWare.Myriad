@@ -60,6 +60,7 @@ module GymOpeningHours =
                  )
              | v -> v)
                 .AsArray ()
+            |> Seq.cast<System.Text.Json.Nodes.JsonNode>
             |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> List.ofSeq
 
@@ -1038,6 +1039,7 @@ module Sessions =
                  )
              | v -> v)
                 .AsArray ()
+            |> Seq.cast<System.Text.Json.Nodes.JsonNode>
             |> Seq.map (fun elt -> Visit.jsonParse elt)
             |> List.ofSeq
 
