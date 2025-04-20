@@ -94,7 +94,6 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.cast<System.Text.Json.Nodes.JsonNode>
             |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> List.ofSeq
 
@@ -108,7 +107,6 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.cast<System.Text.Json.Nodes.JsonNode>
             |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> List.ofSeq
 
@@ -122,7 +120,6 @@ module JwtVaultAuthResponse =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.cast<System.Text.Json.Nodes.JsonNode>
             |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> List.ofSeq
 
@@ -499,11 +496,6 @@ module VaultClient =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return JwtSecretResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -539,11 +531,6 @@ module VaultClient =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return JwtVaultResponse.jsonParse jsonNode
                 }
@@ -603,11 +590,6 @@ module VaultClientNonExtensionMethod =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return JwtSecretResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -643,11 +625,6 @@ module VaultClientNonExtensionMethod =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return JwtVaultResponse.jsonParse jsonNode
                 }
@@ -710,11 +687,6 @@ module VaultClientExtensionMethodHttpClientExtension =
                             System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                             |> Async.AwaitTask
 
-                        let jsonNode =
-                            match jsonNode with
-                            | null -> raise (System.ArgumentNullException ())
-                            | v -> v
-
                         return JwtSecretResponse.jsonParse jsonNode
                     }
                     |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -750,11 +722,6 @@ module VaultClientExtensionMethodHttpClientExtension =
                         let! jsonNode =
                             System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                             |> Async.AwaitTask
-
-                        let jsonNode =
-                            match jsonNode with
-                            | null -> raise (System.ArgumentNullException ())
-                            | v -> v
 
                         return JwtVaultResponse.jsonParse jsonNode
                     }

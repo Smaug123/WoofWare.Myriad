@@ -11,10 +11,6 @@
 
   <ItemGroup>
     <None Include="myriad.toml"/>
-    <Compile Include="JsonParseNullness.fs" />
-    <Compile Include="GeneratedJsonParseNullness.fs">
-      <MyriadFile>JsonParseNullness.fs</MyriadFile>
-    </Compile>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="RecordFile.fs"/>
     <Compile Include="GeneratedRecord.fs">

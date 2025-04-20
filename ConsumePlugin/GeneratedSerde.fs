@@ -408,7 +408,6 @@ module InnerTypeWithBothJsonParseExtension =
 
                     let value =
                         (kvp.Value).AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Char> ())
                         |> List.ofSeq
 
@@ -677,7 +676,6 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
-                |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                 |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                 |> Array.ofSeq
 
@@ -691,7 +689,6 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
-                |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                 |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                 |> Array.ofSeq
 
@@ -717,7 +714,6 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
-                |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                 |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                 |> List.ofSeq
 

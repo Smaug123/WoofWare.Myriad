@@ -356,19 +356,3 @@ module internal AstHelper =
                 }
             )
         | _ -> failwithf "Failed to get record elements for type that was: %+A" repr
-
-    let raiseIfNull (variable : Ident) : SynExpr =
-        SynExpr.createMatch
-            (SynExpr.createIdent' variable)
-            [
-                SynMatchClause.create
-                    SynPat.createNull
-                    (SynExpr.applyFunction
-                        (SynExpr.createIdent "raise")
-                        (SynExpr.paren (
-                            SynExpr.applyFunction
-                                (SynExpr.createLongIdent [ "System" ; "ArgumentNullException" ])
-                                (SynExpr.CreateConst ())
-                        )))
-                SynMatchClause.create (SynPat.named "v") (SynExpr.createIdent "v")
-            ]

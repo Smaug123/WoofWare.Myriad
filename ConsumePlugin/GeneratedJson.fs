@@ -71,7 +71,6 @@ module JsonRecordType =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.cast<System.Text.Json.Nodes.JsonNode>
             |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
             |> Array.ofSeq
 
@@ -85,7 +84,6 @@ module JsonRecordType =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.cast<System.Text.Json.Nodes.JsonNode>
             |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
             |> Array.ofSeq
 
@@ -111,7 +109,6 @@ module JsonRecordType =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.cast<System.Text.Json.Nodes.JsonNode>
             |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
             |> List.ofSeq
 
@@ -204,15 +201,7 @@ module ToGetExtensionMethodJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ToGetExtensionMethod =
-            let arg_20 =
-                let v = node.["whiskey"]
-
-                System.Numerics.BigInteger.Parse (
-                    (match v with
-                     | null -> raise (System.ArgumentNullException ())
-                     | v -> v)
-                        .ToJsonString ()
-                )
+            let arg_20 = System.Numerics.BigInteger.Parse (node.["whiskey"].ToJsonString ())
 
             let arg_19 =
                 (match node.["victor"] with

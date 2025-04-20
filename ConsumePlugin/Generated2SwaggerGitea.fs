@@ -14652,7 +14652,6 @@ module AccessTokenJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -14960,7 +14959,6 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -14985,7 +14983,6 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -14995,7 +14992,6 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15015,7 +15011,6 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15025,7 +15020,6 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15090,7 +15084,6 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15100,7 +15093,6 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15486,7 +15478,6 @@ module CreateAccessTokenOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15542,7 +15533,6 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15567,7 +15557,6 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15577,7 +15566,6 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15597,7 +15585,6 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15607,7 +15594,6 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15667,7 +15653,6 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15677,7 +15662,6 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -15807,7 +15791,6 @@ module CreateEmailOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -16023,7 +16006,6 @@ module CreateIssueOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                     |> List.ofSeq
                     |> Some
@@ -16048,7 +16030,6 @@ module CreateIssueOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -16284,7 +16265,6 @@ module CreateOAuth2ApplicationOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -16428,7 +16408,6 @@ module CreatePullRequestOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                     |> List.ofSeq
                     |> Some
@@ -16458,7 +16437,6 @@ module CreatePullRequestOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -16967,7 +16945,6 @@ module CreateTeamOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17285,7 +17262,6 @@ module DeleteEmailOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17394,7 +17370,6 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17414,7 +17389,6 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17424,7 +17398,6 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17444,7 +17417,6 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17454,7 +17426,6 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17509,7 +17480,6 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17519,7 +17489,6 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17706,7 +17675,6 @@ module EditHookOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -17846,7 +17814,6 @@ module EditIssueOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -18099,7 +18066,6 @@ module EditPullRequestOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                     |> List.ofSeq
                     |> Some
@@ -18124,7 +18090,6 @@ module EditPullRequestOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -18336,7 +18301,6 @@ module EditTeamOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -18737,7 +18701,6 @@ module FileCommitResponseJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> CommitMeta.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -19089,7 +19052,6 @@ module GeneralUISettingsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -19099,7 +19061,6 @@ module GeneralUISettingsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -19491,7 +19452,6 @@ module GitTreeResponseJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> GitEntry.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -19608,7 +19568,6 @@ module HookJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -19847,7 +19806,6 @@ module IssueLabelsOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                     |> List.ofSeq
                     |> Some
@@ -20300,7 +20258,6 @@ module NodeInfoServicesJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -20310,7 +20267,6 @@ module NodeInfoServicesJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -20475,7 +20431,6 @@ module OAuth2ApplicationJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -20924,7 +20879,6 @@ module PullReviewRequestOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -20934,7 +20888,6 @@ module PullReviewRequestOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -21102,7 +21055,6 @@ module RepoTopicOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -21446,7 +21398,6 @@ module TeamJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -21537,7 +21488,6 @@ module TopicNameJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -21635,7 +21585,6 @@ module TransferRepoOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                     |> List.ofSeq
                     |> Some
@@ -22313,7 +22262,6 @@ module WikiCommitListJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> WikiCommit.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -22537,7 +22485,6 @@ module CommentJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> Attachment.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -22924,7 +22871,6 @@ module CreateHookOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -23011,7 +22957,6 @@ module CreatePullReviewOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> CreatePullReviewComment.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -23431,7 +23376,6 @@ module IssueTemplateJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -23451,7 +23395,6 @@ module IssueTemplateJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> IssueFormField.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -24258,7 +24201,6 @@ module ReleaseJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> Attachment.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -24439,12 +24381,7 @@ module RepoTransferJsonParseExtension =
             let arg_3 =
                 match node.["teams"] with
                 | null -> None
-                | v ->
-                    v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                    |> Seq.map (fun elt -> Team.jsonParse elt)
-                    |> List.ofSeq
-                    |> Some
+                | v -> v.AsArray () |> Seq.map (fun elt -> Team.jsonParse elt) |> List.ofSeq |> Some
 
             let arg_2 =
                 match node.["recipient"] with
@@ -24888,7 +24825,6 @@ module SearchResultsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> Repository.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -25014,7 +24950,6 @@ module CombinedStatusJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> CommitStatus.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -25101,7 +25036,6 @@ module CommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> CommitMeta.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -25116,7 +25050,6 @@ module CommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> CommitAffectedFiles.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -25433,12 +25366,7 @@ module IssueJsonParseExtension =
             let arg_12 =
                 match node.["labels"] with
                 | null -> None
-                | v ->
-                    v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                    |> Seq.map (fun elt -> Label.jsonParse elt)
-                    |> List.ofSeq
-                    |> Some
+                | v -> v.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq |> Some
 
             let arg_11 =
                 match node.["is_locked"] with
@@ -25483,12 +25411,7 @@ module IssueJsonParseExtension =
             let arg_3 =
                 match node.["assignees"] with
                 | null -> None
-                | v ->
-                    v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                    |> Seq.map (fun elt -> User.jsonParse elt)
-                    |> List.ofSeq
-                    |> Some
+                | v -> v.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq |> Some
 
             let arg_2 =
                 match node.["assignee"] with
@@ -25500,7 +25423,6 @@ module IssueJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> Attachment.jsonParse elt)
                     |> List.ofSeq
                     |> Some
@@ -25606,7 +25528,6 @@ module NodeInfoJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -25940,7 +25861,6 @@ module PayloadCommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -25950,7 +25870,6 @@ module PayloadCommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -25980,7 +25899,6 @@ module PayloadCommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -26106,12 +26024,7 @@ module PullRequestJsonParseExtension =
             let arg_15 =
                 match node.["labels"] with
                 | null -> None
-                | v ->
-                    v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                    |> Seq.map (fun elt -> Label.jsonParse elt)
-                    |> List.ofSeq
-                    |> Some
+                | v -> v.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq |> Some
 
             let arg_14 =
                 match node.["is_locked"] with
@@ -26171,12 +26084,7 @@ module PullRequestJsonParseExtension =
             let arg_3 =
                 match node.["assignees"] with
                 | null -> None
-                | v ->
-                    v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                    |> Seq.map (fun elt -> User.jsonParse elt)
-                    |> List.ofSeq
-                    |> Some
+                | v -> v.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq |> Some
 
             let arg_2 =
                 match node.["assignee"] with
@@ -26366,7 +26274,6 @@ module BranchJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                     |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                     |> List.ofSeq
                     |> Some
@@ -26755,11 +26662,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return ActivityPub.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -26844,16 +26746,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Cron.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Cron.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -26936,16 +26829,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Hook.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Hook.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -26994,11 +26878,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Hook.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -27040,11 +26919,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Hook.jsonParse jsonNode
                 }
@@ -27098,11 +26972,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Hook.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -27150,14 +27019,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Organization.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -27213,14 +27076,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                         |> List.ofSeq
                 }
@@ -27349,16 +27206,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -27406,11 +27254,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return User.jsonParse jsonNode
                 }
@@ -27510,11 +27353,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return User.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -27569,11 +27407,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return PublicKey.jsonParse jsonNode
                 }
@@ -27670,11 +27503,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Organization.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -27729,11 +27557,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Repository.jsonParse jsonNode
                 }
@@ -27890,11 +27713,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return NodeInfo.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -27963,14 +27781,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> NotificationThread.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -28031,14 +27843,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> NotificationThread.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -28078,11 +27884,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return NotificationCount.jsonParse jsonNode
                 }
@@ -28126,11 +27927,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return NotificationThread.jsonParse jsonNode
                 }
@@ -28182,11 +27978,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return NotificationThread.jsonParse jsonNode
                 }
@@ -28242,11 +28033,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Repository.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -28294,14 +28080,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Organization.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -28352,11 +28132,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Organization.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -28398,11 +28173,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Organization.jsonParse jsonNode
                 }
@@ -28492,11 +28262,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Organization.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -28549,16 +28314,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Hook.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Hook.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -28612,11 +28368,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Hook.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -28660,11 +28411,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Hook.jsonParse jsonNode
                 }
@@ -28760,11 +28506,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Hook.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -28817,16 +28558,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Label.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -28880,11 +28612,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Label.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -28928,11 +28655,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Label.jsonParse jsonNode
                 }
@@ -29028,11 +28750,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Label.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29085,16 +28802,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -29223,16 +28931,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -29404,14 +29103,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Repository.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -29467,11 +29160,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Repository.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29524,16 +29212,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Team.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Team.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -29586,11 +29265,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Team.jsonParse jsonNode
                 }
@@ -29714,16 +29388,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Package.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Package.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -29776,11 +29441,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Package.jsonParse jsonNode
                 }
@@ -29884,14 +29544,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> PackageFile.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -29991,16 +29645,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Issue.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Issue.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -30048,11 +29693,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Repository.jsonParse jsonNode
                 }
@@ -30152,11 +29792,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return SearchResults.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30200,11 +29835,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Repository.jsonParse jsonNode
                 }
@@ -30300,11 +29930,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Repository.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30390,16 +30015,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -30445,14 +30061,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> BranchProtection.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -30515,11 +30125,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return BranchProtection.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30566,11 +30171,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return BranchProtection.jsonParse jsonNode
                 }
@@ -30676,11 +30276,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return BranchProtection.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30735,16 +30330,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Branch.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Branch.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -30805,11 +30391,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Branch.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30856,11 +30437,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Branch.jsonParse jsonNode
                 }
@@ -30957,16 +30533,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -31152,11 +30719,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return RepoCollaboratorPermission.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31226,16 +30788,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Commit.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Commit.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -31296,11 +30849,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return CombinedStatus.jsonParse jsonNode
                 }
@@ -31370,14 +30918,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> CommitStatus.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -31431,14 +30973,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> ContentsResponse.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -31498,11 +31034,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return ContentsResponse.jsonParse jsonNode
                 }
@@ -31567,11 +31098,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return FileResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31634,11 +31160,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return FileDeleteResponse.jsonParse jsonNode
                 }
@@ -31703,11 +31224,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return FileResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31763,11 +31279,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return FileResponse.jsonParse jsonNode
                 }
@@ -31876,14 +31387,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Repository.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -31941,11 +31446,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Repository.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31993,11 +31493,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return GitBlobResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32044,11 +31539,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Commit.jsonParse jsonNode
                 }
@@ -32146,11 +31636,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Note.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32197,14 +31682,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Reference.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -32253,14 +31732,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Reference.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -32308,11 +31781,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return AnnotatedTag.jsonParse jsonNode
                 }
@@ -32379,11 +31847,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return GitTreeResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32438,16 +31901,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Hook.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Hook.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -32503,11 +31957,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Hook.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32552,16 +32001,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> GitHook.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> GitHook.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -32607,11 +32047,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return GitHook.jsonParse jsonNode
                 }
@@ -32717,11 +32152,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return GitHook.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32768,11 +32198,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Hook.jsonParse jsonNode
                 }
@@ -32878,11 +32303,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Hook.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32976,14 +32396,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> IssueTemplate.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -33075,16 +32489,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Issue.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Issue.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -33139,11 +32544,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Issue.jsonParse jsonNode
                 }
@@ -33211,16 +32611,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Comment.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Comment.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -33308,14 +32699,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Attachment.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -33373,11 +32758,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Attachment.jsonParse jsonNode
                 }
@@ -33498,11 +32878,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Attachment.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -33550,16 +32925,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Reaction.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Reaction.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -33662,11 +33028,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Issue.jsonParse jsonNode
                 }
@@ -33772,11 +33133,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Issue.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -33824,14 +33180,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Attachment.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -33889,11 +33239,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Attachment.jsonParse jsonNode
                 }
@@ -34014,11 +33359,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Attachment.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -34081,16 +33421,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Comment.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Comment.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -34152,11 +33483,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Comment.jsonParse jsonNode
                 }
@@ -34263,11 +33589,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return IssueDeadline.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -34315,16 +33636,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Label.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -34387,16 +33699,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Label.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -34500,16 +33803,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Label.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -34613,16 +33907,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Reaction.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Reaction.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -34864,16 +34149,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -34919,11 +34195,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return WatchInfo.jsonParse jsonNode
                 }
@@ -34993,14 +34264,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> TimelineComment.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -35073,14 +34338,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> TrackedTime.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -35144,11 +34403,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return TrackedTime.jsonParse jsonNode
                 }
@@ -35299,14 +34553,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> DeployKey.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -35364,11 +34612,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return DeployKey.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35415,11 +34658,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return DeployKey.jsonParse jsonNode
                 }
@@ -35516,16 +34754,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Label.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -35581,11 +34810,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Label.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35632,11 +34856,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Label.jsonParse jsonNode
                 }
@@ -35742,11 +34961,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Label.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35790,11 +35004,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return LanguageStatistics.jsonParse jsonNode
                 }
@@ -35915,14 +35124,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Milestone.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -35985,11 +35188,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Milestone.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36036,11 +35234,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Milestone.jsonParse jsonNode
                 }
@@ -36145,11 +35338,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Milestone.jsonParse jsonNode
                 }
@@ -36264,14 +35452,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> NotificationThread.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -36339,14 +35521,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> NotificationThread.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -36420,14 +35596,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> PullRequest.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -36490,11 +35660,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return PullRequest.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36541,11 +35706,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return PullRequest.jsonParse jsonNode
                 }
@@ -36609,11 +35769,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return PullRequest.jsonParse jsonNode
                 }
@@ -36733,16 +35888,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Commit.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Commit.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -36810,14 +35956,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> ChangedFile.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -37021,14 +36161,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> PullReview.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -37149,14 +36283,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> PullReview.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -37221,11 +36349,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return PullReview.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37273,11 +36396,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return PullReview.jsonParse jsonNode
                 }
@@ -37343,11 +36461,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return PullReview.jsonParse jsonNode
                 }
@@ -37439,14 +36552,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> PullReviewComment.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -37513,11 +36620,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return PullReview.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37565,11 +36667,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return PullReview.jsonParse jsonNode
                 }
@@ -37678,14 +36775,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> PushMirror.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -37747,11 +36838,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return PushMirror.jsonParse jsonNode
                 }
@@ -37839,11 +36925,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return PushMirror.jsonParse jsonNode
                 }
@@ -38008,16 +37089,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Release.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Release.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -38078,11 +37150,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Release.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38128,11 +37195,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Release.jsonParse jsonNode
                 }
@@ -38180,11 +37242,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Release.jsonParse jsonNode
                 }
@@ -38273,11 +37330,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Release.jsonParse jsonNode
                 }
@@ -38383,11 +37435,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Release.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38435,14 +37482,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Attachment.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -38500,11 +37541,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Attachment.jsonParse jsonNode
                 }
@@ -38625,11 +37661,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Attachment.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38674,16 +37705,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -38775,16 +37797,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -38852,14 +37865,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> CommitStatus.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -38924,11 +37931,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return CommitStatus.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38983,16 +37985,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -39037,11 +38030,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return WatchInfo.jsonParse jsonNode
                 }
@@ -39129,11 +38117,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return WatchInfo.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39188,16 +38171,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Tag.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Tag.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -39253,11 +38227,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Tag.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39304,11 +38273,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Tag.jsonParse jsonNode
                 }
@@ -39395,16 +38359,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Team.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Team.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -39450,11 +38405,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Team.jsonParse jsonNode
                 }
@@ -39607,14 +38557,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> TrackedTime.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -39663,14 +38607,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> TrackedTime.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -39725,11 +38663,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return TopicName.jsonParse jsonNode
                 }
@@ -39924,11 +38857,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Repository.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39975,11 +38903,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Repository.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40025,11 +38948,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Repository.jsonParse jsonNode
                 }
@@ -40092,11 +39010,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return WikiPage.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40143,11 +39056,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return WikiPage.jsonParse jsonNode
                 }
@@ -40253,11 +39161,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return WikiPage.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40312,14 +39215,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> WikiPageMetaData.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -40379,11 +39276,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return WikiCommitList.jsonParse jsonNode
                 }
@@ -40452,11 +39344,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Repository.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40499,11 +39386,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Repository.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40542,11 +39424,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return GeneralAPISettings.jsonParse jsonNode
                 }
@@ -40587,11 +39464,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return GeneralAttachmentSettings.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40631,11 +39503,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return GeneralRepoSettings.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40674,11 +39541,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return GeneralUISettings.jsonParse jsonNode
                 }
@@ -40754,11 +39616,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Team.jsonParse jsonNode
                 }
@@ -40848,11 +39705,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Team.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40905,16 +39757,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -40957,11 +39800,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return User.jsonParse jsonNode
                 }
@@ -41091,14 +39929,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Repository.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -41146,11 +39978,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return Repository.jsonParse jsonNode
                 }
@@ -41283,14 +40110,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> TopicResponse.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -41330,11 +40151,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return User.jsonParse jsonNode
                 }
@@ -41388,14 +40204,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> OAuth2Application.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -41448,11 +40258,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return OAuth2Application.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41495,11 +40300,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return OAuth2Application.jsonParse jsonNode
                 }
@@ -41593,11 +40393,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return OAuth2Application.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41637,16 +40432,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Email.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Email.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -41695,16 +40481,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Email.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Email.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -41796,16 +40573,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -41854,16 +40622,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -42095,14 +40854,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> PublicKey.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -42153,11 +40906,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return PublicKey.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42199,11 +40947,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return PublicKey.jsonParse jsonNode
                 }
@@ -42288,14 +41031,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Organization.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -42344,14 +41081,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Repository.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -42402,11 +41133,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return Repository.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42446,14 +41172,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> UserSettings.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -42504,14 +41224,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> UserSettings.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -42560,14 +41274,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Repository.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -42739,14 +41447,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> StopWatch.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -42800,14 +41502,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Repository.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -42856,16 +41552,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> Team.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> Team.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -42924,14 +41611,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> TrackedTime.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -43023,11 +41704,6 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return User.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43081,16 +41757,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -43143,16 +41810,7 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
-                    return
-                        jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
-                        |> Seq.map (fun elt -> User.jsonParse elt)
-                        |> List.ofSeq
+                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -43235,14 +41893,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> UserHeatmapData.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -43305,14 +41957,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> PublicKey.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -43367,14 +42013,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Organization.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -43421,11 +42061,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return OrganizationPermissions.jsonParse jsonNode
                 }
@@ -43480,14 +42115,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Repository.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -43542,14 +42171,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Repository.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -43604,14 +42227,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> Repository.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -43666,14 +42283,8 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
-
                     return
                         jsonNode.AsArray ()
-                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> AccessToken.jsonParse elt)
                         |> List.ofSeq
                 }
@@ -43729,11 +42340,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return AccessToken.jsonParse jsonNode
                 }
@@ -43813,11 +42419,6 @@ module Gitea =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
-
-                    let jsonNode =
-                        match jsonNode with
-                        | null -> raise (System.ArgumentNullException ())
-                        | v -> v
 
                     return ServerVersion.jsonParse jsonNode
                 }
