@@ -48,7 +48,14 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Gym.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Gym.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 

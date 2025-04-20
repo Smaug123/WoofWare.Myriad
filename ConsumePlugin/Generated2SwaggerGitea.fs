@@ -14652,7 +14652,11 @@ module AccessTokenJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -14959,7 +14963,11 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -14983,7 +14991,11 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -14992,7 +15004,11 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15011,7 +15027,11 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15020,7 +15040,11 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15084,7 +15108,11 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15093,7 +15121,11 @@ module BranchProtectionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15478,7 +15510,11 @@ module CreateAccessTokenOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15533,7 +15569,11 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15557,7 +15597,11 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15566,7 +15610,11 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15585,7 +15633,11 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15594,7 +15646,11 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15653,7 +15709,11 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15662,7 +15722,11 @@ module CreateBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -15791,7 +15855,11 @@ module CreateEmailOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -16006,7 +16074,11 @@ module CreateIssueOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -16030,7 +16102,11 @@ module CreateIssueOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -16265,7 +16341,11 @@ module CreateOAuth2ApplicationOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -16408,7 +16488,11 @@ module CreatePullRequestOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -16437,7 +16521,11 @@ module CreatePullRequestOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -16945,7 +17033,11 @@ module CreateTeamOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17262,7 +17354,11 @@ module DeleteEmailOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17370,7 +17466,11 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17389,7 +17489,11 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17398,7 +17502,11 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17417,7 +17525,11 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17426,7 +17538,11 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17480,7 +17596,11 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17489,7 +17609,11 @@ module EditBranchProtectionOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17675,7 +17799,11 @@ module EditHookOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -17814,7 +17942,11 @@ module EditIssueOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -18066,7 +18198,11 @@ module EditPullRequestOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -18090,7 +18226,11 @@ module EditPullRequestOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -18301,7 +18441,11 @@ module EditTeamOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -18701,7 +18845,11 @@ module FileCommitResponseJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> CommitMeta.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> CommitMeta.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -19052,7 +19200,11 @@ module GeneralUISettingsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -19061,7 +19213,11 @@ module GeneralUISettingsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -19452,7 +19608,11 @@ module GitTreeResponseJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> GitEntry.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> GitEntry.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -19568,7 +19728,11 @@ module HookJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -19806,7 +19970,11 @@ module IssueLabelsOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -20258,7 +20426,11 @@ module NodeInfoServicesJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -20267,7 +20439,11 @@ module NodeInfoServicesJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -20431,7 +20607,11 @@ module OAuth2ApplicationJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -20879,7 +21059,11 @@ module PullReviewRequestOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -20888,7 +21072,11 @@ module PullReviewRequestOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -21055,7 +21243,11 @@ module RepoTopicOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -21398,7 +21590,11 @@ module TeamJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -21488,7 +21684,11 @@ module TopicNameJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -21585,7 +21785,11 @@ module TransferRepoOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -22262,7 +22466,11 @@ module WikiCommitListJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> WikiCommit.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> WikiCommit.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -22485,7 +22693,11 @@ module CommentJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> Attachment.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> Attachment.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -22871,7 +23083,11 @@ module CreateHookOptionJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -22957,7 +23173,11 @@ module CreatePullReviewOptionsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> CreatePullReviewComment.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> CreatePullReviewComment.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -23376,7 +23596,11 @@ module IssueTemplateJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -23395,7 +23619,11 @@ module IssueTemplateJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> IssueFormField.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> IssueFormField.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -24201,7 +24429,11 @@ module ReleaseJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> Attachment.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> Attachment.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -24381,7 +24613,15 @@ module RepoTransferJsonParseExtension =
             let arg_3 =
                 match node.["teams"] with
                 | null -> None
-                | v -> v.AsArray () |> Seq.map (fun elt -> Team.jsonParse elt) |> List.ofSeq |> Some
+                | v ->
+                    v.AsArray ()
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> Team.jsonParse elt)
+                    )
+                    |> List.ofSeq
+                    |> Some
 
             let arg_2 =
                 match node.["recipient"] with
@@ -24825,7 +25065,11 @@ module SearchResultsJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> Repository.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> Repository.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -24950,7 +25194,11 @@ module CombinedStatusJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> CommitStatus.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> CommitStatus.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -25036,7 +25284,11 @@ module CommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> CommitMeta.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> CommitMeta.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -25050,7 +25302,11 @@ module CommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> CommitAffectedFiles.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> CommitAffectedFiles.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -25366,7 +25622,15 @@ module IssueJsonParseExtension =
             let arg_12 =
                 match node.["labels"] with
                 | null -> None
-                | v -> v.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq |> Some
+                | v ->
+                    v.AsArray ()
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> Label.jsonParse elt)
+                    )
+                    |> List.ofSeq
+                    |> Some
 
             let arg_11 =
                 match node.["is_locked"] with
@@ -25411,7 +25675,15 @@ module IssueJsonParseExtension =
             let arg_3 =
                 match node.["assignees"] with
                 | null -> None
-                | v -> v.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq |> Some
+                | v ->
+                    v.AsArray ()
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> User.jsonParse elt)
+                    )
+                    |> List.ofSeq
+                    |> Some
 
             let arg_2 =
                 match node.["assignee"] with
@@ -25423,7 +25695,11 @@ module IssueJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> Attachment.jsonParse elt)
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> Attachment.jsonParse elt)
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -25528,7 +25804,11 @@ module NodeInfoJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -25861,7 +26141,11 @@ module PayloadCommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -25870,7 +26154,11 @@ module PayloadCommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -25899,7 +26187,11 @@ module PayloadCommitJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -26024,7 +26316,15 @@ module PullRequestJsonParseExtension =
             let arg_15 =
                 match node.["labels"] with
                 | null -> None
-                | v -> v.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq |> Some
+                | v ->
+                    v.AsArray ()
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> Label.jsonParse elt)
+                    )
+                    |> List.ofSeq
+                    |> Some
 
             let arg_14 =
                 match node.["is_locked"] with
@@ -26084,7 +26384,15 @@ module PullRequestJsonParseExtension =
             let arg_3 =
                 match node.["assignees"] with
                 | null -> None
-                | v -> v.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq |> Some
+                | v ->
+                    v.AsArray ()
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> User.jsonParse elt)
+                    )
+                    |> List.ofSeq
+                    |> Some
 
             let arg_2 =
                 match node.["assignee"] with
@@ -26274,7 +26582,11 @@ module BranchJsonParseExtension =
                 | null -> None
                 | v ->
                     v.AsArray ()
-                    |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null -> raise (System.ArgumentNullException ())
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> List.ofSeq
                     |> Some
 
@@ -26746,7 +27058,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Cron.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Cron.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -26829,7 +27148,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Hook.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Hook.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -27021,7 +27347,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Organization.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Organization.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -27078,7 +27408,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> elt.AsValue().GetValue<System.String> ())
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -27206,7 +27540,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -27783,7 +28124,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> NotificationThread.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> NotificationThread.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -27845,7 +28190,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> NotificationThread.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> NotificationThread.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -28082,7 +28431,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Organization.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Organization.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -28314,7 +28667,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Hook.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Hook.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -28558,7 +28918,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Label.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -28802,7 +29169,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -28931,7 +29305,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -29105,7 +29486,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Repository.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Repository.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29212,7 +29597,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Team.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Team.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -29388,7 +29780,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Package.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Package.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -29546,7 +29945,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> PackageFile.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> PackageFile.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -29645,7 +30048,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Issue.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Issue.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -30015,7 +30425,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -30063,7 +30480,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> BranchProtection.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> BranchProtection.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30330,7 +30751,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Branch.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Branch.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -30533,7 +30961,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -30788,7 +31223,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Commit.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Commit.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -30920,7 +31362,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> CommitStatus.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> CommitStatus.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -30975,7 +31421,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> ContentsResponse.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> ContentsResponse.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31389,7 +31839,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Repository.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Repository.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31684,7 +32138,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Reference.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Reference.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31734,7 +32192,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Reference.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Reference.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -31901,7 +32363,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Hook.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Hook.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -32001,7 +32470,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> GitHook.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> GitHook.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -32398,7 +32874,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> IssueTemplate.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> IssueTemplate.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32489,7 +32969,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Issue.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Issue.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -32611,7 +33098,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Comment.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Comment.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -32701,7 +33195,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Attachment.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Attachment.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -32925,7 +33423,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Reaction.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Reaction.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -33182,7 +33687,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Attachment.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Attachment.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -33421,7 +33930,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Comment.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Comment.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -33636,7 +34152,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Label.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -33699,7 +34222,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Label.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -33803,7 +34333,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Label.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -33907,7 +34444,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Reaction.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Reaction.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -34149,7 +34693,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -34266,7 +34817,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> TimelineComment.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> TimelineComment.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -34340,7 +34895,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> TrackedTime.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> TrackedTime.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -34555,7 +35114,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> DeployKey.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> DeployKey.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -34754,7 +35317,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Label.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Label.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -35126,7 +35696,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Milestone.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Milestone.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35454,7 +36028,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> NotificationThread.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> NotificationThread.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35523,7 +36101,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> NotificationThread.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> NotificationThread.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35598,7 +36180,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> PullRequest.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> PullRequest.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -35888,7 +36474,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Commit.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Commit.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -35958,7 +36551,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> ChangedFile.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> ChangedFile.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36163,7 +36760,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> PullReview.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> PullReview.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36285,7 +36886,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> PullReview.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> PullReview.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36554,7 +37159,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> PullReviewComment.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> PullReviewComment.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -36777,7 +37386,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> PushMirror.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> PushMirror.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37089,7 +37702,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Release.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Release.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -37484,7 +38104,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Attachment.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Attachment.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37705,7 +38329,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -37797,7 +38428,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -37867,7 +38505,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> CommitStatus.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> CommitStatus.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -37985,7 +38627,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -38171,7 +38820,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Tag.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Tag.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -38359,7 +39015,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Team.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Team.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -38559,7 +39222,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> TrackedTime.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> TrackedTime.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -38609,7 +39276,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> TrackedTime.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> TrackedTime.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39217,7 +39888,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> WikiPageMetaData.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> WikiPageMetaData.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -39757,7 +40432,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -39931,7 +40613,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Repository.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Repository.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40112,7 +40798,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> TopicResponse.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> TopicResponse.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40206,7 +40896,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> OAuth2Application.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> OAuth2Application.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -40432,7 +41126,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Email.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Email.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -40481,7 +41182,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Email.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Email.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -40573,7 +41281,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -40622,7 +41337,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -40856,7 +41578,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> PublicKey.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> PublicKey.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41033,7 +41759,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Organization.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Organization.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41083,7 +41813,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Repository.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Repository.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41174,7 +41908,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> UserSettings.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> UserSettings.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41226,7 +41964,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> UserSettings.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> UserSettings.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41276,7 +42018,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Repository.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Repository.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41449,7 +42195,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> StopWatch.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> StopWatch.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41504,7 +42254,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Repository.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Repository.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41552,7 +42306,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> Team.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Team.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -41613,7 +42374,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> TrackedTime.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> TrackedTime.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41757,7 +42522,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -41810,7 +42582,14 @@ module Gitea =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
-                    return jsonNode.AsArray () |> Seq.map (fun elt -> User.jsonParse elt) |> List.ofSeq
+                    return
+                        jsonNode.AsArray ()
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> User.jsonParse elt)
+                        )
+                        |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -41895,7 +42674,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> UserHeatmapData.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> UserHeatmapData.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41959,7 +42742,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> PublicKey.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> PublicKey.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42015,7 +42802,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Organization.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Organization.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42117,7 +42908,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Repository.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Repository.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42173,7 +42968,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Repository.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Repository.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42229,7 +43028,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> Repository.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> Repository.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42285,7 +43088,11 @@ module Gitea =
 
                     return
                         jsonNode.AsArray ()
-                        |> Seq.map (fun elt -> AccessToken.jsonParse elt)
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> AccessToken.jsonParse elt)
+                        )
                         |> List.ofSeq
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))

@@ -1,5 +1,10 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 5.0.1
+
+We now enforce non-nullability on more types during JSON parse.
+We have always expected you to consume nullable types wrapped in an `option`, but now we enforce this in more cases by throwing `ArgumentNullException`.
+
 # WoofWare.Myriad.Plugins 3.0.1
 
 Semantics of `HttpClient`'s URI component composition changed:

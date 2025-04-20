@@ -26,7 +26,7 @@ module internal JsonParseGenerator =
             }
 
     /// (match {indexed} with | null -> raise (System.Collections.Generic.KeyNotFoundException ({propertyName} not found)) | v -> v)
-    let assertNotNull (propertyName : SynExpr) (indexed : SynExpr) =
+    let assertPropertyExists (propertyName : SynExpr) (indexed : SynExpr) =
         let raiseExpr =
             SynExpr.applyFunction
                 (SynExpr.createIdent "sprintf")
@@ -46,28 +46,42 @@ module internal JsonParseGenerator =
         |> SynExpr.createMatch indexed
         |> SynExpr.paren
 
+    let assertNotNull (body : SynExpr) (boundIdent : Ident) : SynExpr =
+        let raiseExpr =
+            SynExpr.CreateConst ()
+            |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "ArgumentNullException" ])
+            |> SynExpr.paren
+            |> SynExpr.applyFunction (SynExpr.createIdent "raise")
+
+        [
+            SynMatchClause.create SynPat.createNull raiseExpr
+            SynMatchClause.create (SynPat.namedI boundIdent) body
+        ]
+        |> SynExpr.createMatch (SynExpr.createIdent' boundIdent)
+        |> SynExpr.paren
+
     /// {node}.AsValue().GetValue<{typeName}> ()
-    /// If `propertyName` is Some, uses `assertNotNull {node}` instead of `{node}`.
+    /// If `propertyName` is Some, uses `assertPropertyExists {node}` instead of `{node}`.
     let asValueGetValue (propertyName : SynExpr option) (typeName : string) (node : SynExpr) : SynExpr =
         match propertyName with
         | None -> node
-        | Some propertyName -> assertNotNull propertyName node
+        | Some propertyName -> assertPropertyExists propertyName node
         |> SynExpr.callMethod "AsValue"
         |> SynExpr.callGenericMethod' "GetValue" typeName
 
     let asValueGetValueIdent (propertyName : SynExpr option) (typeName : LongIdent) (node : SynExpr) : SynExpr =
         match propertyName with
         | None -> node
-        | Some propertyName -> assertNotNull propertyName node
+        | Some propertyName -> assertPropertyExists propertyName node
         |> SynExpr.callMethod "AsValue"
         |> SynExpr.callGenericMethod (SynLongIdent.createS "GetValue") [ SynType.createLongIdent typeName ]
 
     /// {node}.AsObject()
-    /// If `propertyName` is Some, uses `assertNotNull {node}` instead of `{node}`.
+    /// If `propertyName` is Some, uses `assertPropertyExists {node}` instead of `{node}`.
     let asObject (propertyName : SynExpr option) (node : SynExpr) : SynExpr =
         match propertyName with
         | None -> node
-        | Some propertyName -> assertNotNull propertyName node
+        | Some propertyName -> assertPropertyExists propertyName node
         |> SynExpr.callMethod "AsObject"
 
     /// {type}.jsonParse {node}
@@ -77,8 +91,8 @@ module internal JsonParseGenerator =
 
     /// collectionType is e.g. "List"; we'll be calling `ofSeq` on it.
     /// body is the body of a lambda which takes a parameter `elt`.
-    /// {assertNotNull node}.AsArray()
-    /// |> Seq.map (fun elt -> {body})
+    /// {assertPropertyExists node}.AsArray()
+    /// |> Seq.map (fun elt -> {assertNotNull} {body})
     /// |> {collectionType}.ofSeq
     let asArrayMapped
         (propertyName : SynExpr option)
@@ -89,10 +103,12 @@ module internal JsonParseGenerator =
         =
         match propertyName with
         | None -> node
-        | Some propertyName -> assertNotNull propertyName node
+        | Some propertyName -> assertPropertyExists propertyName node
         |> SynExpr.callMethod "AsArray"
         |> SynExpr.pipeThroughFunction (
-            SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ]) (SynExpr.createLambda "elt" body)
+            SynExpr.applyFunction
+                (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                (SynExpr.createLambda "elt" (assertNotNull body (Ident.create "elt")))
         )
         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ collectionType ; "ofSeq" ])
 
@@ -177,27 +193,29 @@ module internal JsonParseGenerator =
         =
         // TODO: parsing format for DateTime etc
         match fieldType with
+        // Struct types
         | DateOnly ->
             node
             |> asValueGetValue propertyName "string"
             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "DateOnly" ; "Parse" ])
-        | Uri ->
-            node
-            |> asValueGetValue propertyName "string"
-            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Uri" ])
-        | Guid ->
-            node
-            |> asValueGetValue propertyName "string"
-            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Guid" ; "Parse" ])
         | DateTime ->
             node
             |> asValueGetValue propertyName "string"
             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "DateTime" ; "Parse" ])
+        | NumberType typeName -> parseNumberType options propertyName node typeName
+        | Guid ->
+            node
+            |> asValueGetValue propertyName "string"
+            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Guid" ; "Parse" ])
+        // Reference types
+        | Uri ->
+            node
+            |> asValueGetValue propertyName "string"
+            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Uri" ])
         | DateTimeOffset ->
             node
             |> asValueGetValue propertyName "string"
             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "DateTimeOffset" ; "Parse" ])
-        | NumberType typeName -> parseNumberType options propertyName node typeName
         | PrimitiveType typeName -> asValueGetValueIdent propertyName typeName node
         | OptionType ty ->
             let someClause =
@@ -291,7 +309,7 @@ module internal JsonParseGenerator =
 
             match propertyName with
             | None -> node
-            | Some propertyName -> assertNotNull propertyName node
+            | Some propertyName -> assertPropertyExists propertyName node
             |> typeJsonParse typeName
 
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
@@ -505,7 +523,7 @@ module internal JsonParseGenerator =
                     |> SynExpr.createLet
                         [
                             SynExpr.index (SynExpr.CreateConst "data") (SynExpr.createIdent "node")
-                            |> assertNotNull (SynExpr.CreateConst "data")
+                            |> assertPropertyExists (SynExpr.CreateConst "data")
                             |> SynBinding.basic [ Ident.create "node" ] []
                         ]
 
@@ -553,7 +571,7 @@ module internal JsonParseGenerator =
 
                 SynExpr.createIdent "node"
                 |> SynExpr.index property
-                |> assertNotNull property
+                |> assertPropertyExists property
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.createLambda "v" (SynExpr.callGenericMethod' "GetValue" "string" (SynExpr.createIdent "v"))
                 )
