@@ -183,10 +183,8 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                     (input.IntMeasureOption
                      |> (fun field ->
                          match field with
-                         | None -> null :> System.Text.Json.Nodes.JsonNode
-                         | Some field ->
-                             (System.Text.Json.Nodes.JsonValue.Create<int<measure>> field)
-                             :> System.Text.Json.Nodes.JsonNode
+                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int<measure>> field)
                      ))
                 )
 
@@ -196,9 +194,8 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                      |> (fun field ->
                          if field.HasValue then
                              System.Text.Json.Nodes.JsonValue.Create<int<measure>> field.Value
-                             :> System.Text.Json.Nodes.JsonNode
                          else
-                             null :> System.Text.Json.Nodes.JsonNode
+                             System.Text.Json.Nodes.JsonNode.op_Implicit null
                      ))
                 )
 
@@ -287,7 +284,7 @@ module FooJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
                          | Some field -> HeaderAndValue.toJsonNode field
                      ))
                 )
@@ -315,7 +312,7 @@ module CollectRemainingJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
                          | Some field -> HeaderAndValue.toJsonNode field
                      ))
                 )
@@ -408,6 +405,7 @@ module InnerTypeWithBothJsonParseExtension =
 
                     let value =
                         (kvp.Value).AsArray ()
+                        |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                         |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Char> ())
                         |> List.ofSeq
 
@@ -676,6 +674,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
+                |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                 |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                 |> Array.ofSeq
 
@@ -689,6 +688,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
+                |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                 |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
                 |> Array.ofSeq
 
@@ -714,6 +714,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
+                |> Seq.cast<System.Text.Json.Nodes.JsonNode>
                 |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
                 |> List.ofSeq
 
