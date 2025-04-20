@@ -78,7 +78,6 @@ module internal JsonParseGenerator =
     /// collectionType is e.g. "List"; we'll be calling `ofSeq` on it.
     /// body is the body of a lambda which takes a parameter `elt`.
     /// {assertNotNull node}.AsArray()
-    /// |> Seq.cast<JsonNode>
     /// |> Seq.map (fun elt -> {body})
     /// |> {collectionType}.ofSeq
     let asArrayMapped
@@ -92,13 +91,6 @@ module internal JsonParseGenerator =
         | None -> node
         | Some propertyName -> assertNotNull propertyName node
         |> SynExpr.callMethod "AsArray"
-        |> SynExpr.pipeThroughFunction (
-            SynExpr.createLongIdent [ "Seq" ; "cast" ]
-            |> SynExpr.typeApp
-                [
-                    SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
-                ]
-        )
         |> SynExpr.pipeThroughFunction (
             SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ]) (SynExpr.createLambda "elt" body)
         )
@@ -281,12 +273,10 @@ module internal JsonParseGenerator =
             )
             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Map" ; "ofSeq" ])
         | BigInt ->
-            AstHelper.raiseIfNull (Ident.create "v")
-            |> SynExpr.paren
+            node
             |> SynExpr.callMethod "ToJsonString"
             |> SynExpr.paren
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Numerics" ; "BigInteger" ; "Parse" ])
-            |> SynExpr.createLet [ SynBinding.basic [ Ident.create "v" ] [] node ]
         | Measure (_measure, primType) ->
             parseNumberType options propertyName node primType
             |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure primType)

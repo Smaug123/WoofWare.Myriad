@@ -18,7 +18,6 @@
     <Compile Include="TestJsonParse\TestJsonParse.fs" />
     <Compile Include="TestJsonParse\TestPureGymJson.fs" />
     <Compile Include="TestJsonParse\TestExtensionMethod.fs" />
-    <Compile Include="TestJsonParse\TestJsonNullability.fs" />
     <Compile Include="TestHttpClient\TestPureGymRestApi.fs" />
     <Compile Include="TestHttpClient\TestPathParam.fs" />
     <Compile Include="TestHttpClient\TestReturnTypes.fs" />

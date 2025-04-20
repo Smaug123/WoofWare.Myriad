@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
+open System.IO
 open System.Net.Http
 open Fantomas.FCS.Syntax
 open WoofWare.Whippet.Fantomas
@@ -12,6 +13,17 @@ type internal HttpClientGeneratorOutputSpec =
 [<RequireQualifiedAccess>]
 module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range
+
+    let outputFile = FileInfo "/tmp/output.txt"
+
+    // do
+    //     use _ = File.Create outputFile.FullName
+    //     ()
+
+    let log (line : string) =
+        // use w = outputFile.AppendText ()
+        // w.WriteLine line
+        ()
 
     [<RequireQualifiedAccess>]
     type PathSpec =
@@ -556,9 +568,6 @@ module internal HttpClientGenerator =
                     )
                 )
 
-            let jsonNodeNotNull =
-                Let ("jsonNode", AstHelper.raiseIfNull (Ident.create "jsonNode"))
-
             let setVariableHeaders =
                 variableHeaders
                 |> List.map (fun (headerName, callToGetValue) ->
@@ -633,7 +642,6 @@ module internal HttpClientGenerator =
                     yield responseString
                     yield responseStream
                     yield jsonNode
-                    yield jsonNodeNotNull
                 | String -> yield responseString
                 | Stream -> yield responseStream
                 | UnitType ->
@@ -642,7 +650,6 @@ module internal HttpClientGenerator =
                 | _ ->
                     yield responseStream
                     yield jsonNode
-                    yield jsonNodeNotNull
             ]
             |> SynExpr.createCompExpr "async" returnExpr
             |> SynExpr.startAsTask cancellationTokenArg
@@ -906,6 +913,10 @@ module internal HttpClientGenerator =
             else
                 "Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties."
             |> PreXmlDoc.create
+
+        let functionName = Ident.create "client"
+
+        let pattern = SynLongIdent.createS "make"
 
         let returnInfo = SynType.createLongIdent interfaceType.Name
 
