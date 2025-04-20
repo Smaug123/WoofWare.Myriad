@@ -408,7 +408,11 @@ module InnerTypeWithBothJsonParseExtension =
 
                     let value =
                         (kvp.Value).AsArray ()
-                        |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Char> ())
+                        |> Seq.map (fun elt ->
+                            (match elt with
+                             | null -> raise (System.ArgumentNullException ())
+                             | elt -> elt.AsValue().GetValue<System.Char> ())
+                        )
                         |> List.ofSeq
 
                     key, value
@@ -676,7 +680,11 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
-                |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
+                |> Seq.map (fun elt ->
+                    (match elt with
+                     | null -> raise (System.ArgumentNullException ())
+                     | elt -> elt.AsValue().GetValue<System.Int32> ())
+                )
                 |> Array.ofSeq
 
             let arg_4 =
@@ -689,7 +697,11 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
-                |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+                |> Seq.map (fun elt ->
+                    (match elt with
+                     | null -> raise (System.ArgumentNullException ())
+                     | elt -> elt.AsValue().GetValue<System.String> ())
+                )
                 |> Array.ofSeq
 
             let arg_3 =
@@ -714,7 +726,11 @@ module JsonRecordTypeWithBothJsonParseExtension =
                      )
                  | v -> v)
                     .AsArray ()
-                |> Seq.map (fun elt -> elt.AsValue().GetValue<System.Int32> ())
+                |> Seq.map (fun elt ->
+                    (match elt with
+                     | null -> raise (System.ArgumentNullException ())
+                     | elt -> elt.AsValue().GetValue<System.Int32> ())
+                )
                 |> List.ofSeq
 
             let arg_1 =

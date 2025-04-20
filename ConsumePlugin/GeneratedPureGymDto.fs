@@ -60,7 +60,11 @@ module GymOpeningHours =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.map (fun elt -> elt.AsValue().GetValue<System.String> ())
+            |> Seq.map (fun elt ->
+                (match elt with
+                 | null -> raise (System.ArgumentNullException ())
+                 | elt -> elt.AsValue().GetValue<System.String> ())
+            )
             |> List.ofSeq
 
         let arg_0 =
@@ -1038,7 +1042,11 @@ module Sessions =
                  )
              | v -> v)
                 .AsArray ()
-            |> Seq.map (fun elt -> Visit.jsonParse elt)
+            |> Seq.map (fun elt ->
+                (match elt with
+                 | null -> raise (System.ArgumentNullException ())
+                 | elt -> Visit.jsonParse elt)
+            )
             |> List.ofSeq
 
         let arg_0 =
