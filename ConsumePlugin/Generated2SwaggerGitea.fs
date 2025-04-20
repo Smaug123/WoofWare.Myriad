@@ -27,8 +27,9 @@ module APIErrorJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -37,8 +38,9 @@ module APIErrorJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -66,8 +68,9 @@ module AccessTokenJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -76,8 +79,9 @@ module AccessTokenJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -86,7 +90,7 @@ module AccessTokenJsonSerializeExtension =
                     (input.Scopes
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -97,6 +101,7 @@ module AccessTokenJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -105,8 +110,9 @@ module AccessTokenJsonSerializeExtension =
                     (input.Sha1
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -115,8 +121,9 @@ module AccessTokenJsonSerializeExtension =
                     (input.TokenLastEight
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -144,8 +151,9 @@ module ActivityPubJsonSerializeExtension =
                     (input.Context
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -173,8 +181,9 @@ module AddCollaboratorOptionJsonSerializeExtension =
                     (input.Permission
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -202,8 +211,9 @@ module AddTimeOptionJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -214,8 +224,9 @@ module AddTimeOptionJsonSerializeExtension =
                     (input.UserName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -243,8 +254,9 @@ module AnnotatedTagObjectJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -253,8 +265,9 @@ module AnnotatedTagObjectJsonSerializeExtension =
                     (input.Type
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -263,8 +276,9 @@ module AnnotatedTagObjectJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -292,8 +306,9 @@ module AttachmentJsonSerializeExtension =
                     (input.BrowserDownloadUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -302,8 +317,9 @@ module AttachmentJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -312,8 +328,9 @@ module AttachmentJsonSerializeExtension =
                     (input.DownloadCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -322,8 +339,9 @@ module AttachmentJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -332,8 +350,9 @@ module AttachmentJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -342,8 +361,9 @@ module AttachmentJsonSerializeExtension =
                     (input.Size
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -352,8 +372,9 @@ module AttachmentJsonSerializeExtension =
                     (input.Uuid
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -381,7 +402,7 @@ module BranchProtectionJsonSerializeExtension =
                     (input.ApprovalsWhitelistTeams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -392,6 +413,7 @@ module BranchProtectionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -400,7 +422,7 @@ module BranchProtectionJsonSerializeExtension =
                     (input.ApprovalsWhitelistUsername
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -411,6 +433,7 @@ module BranchProtectionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -419,8 +442,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.BlockOnOfficialReviewRequests
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -429,8 +453,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.BlockOnOutdatedBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -439,8 +464,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.BlockOnRejectedReviews
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -449,8 +475,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.BranchName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -459,8 +486,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -469,8 +497,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.DismissStaleApprovals
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -479,8 +508,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.EnableApprovalsWhitelist
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -489,8 +519,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.EnableMergeWhitelist
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -499,8 +530,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.EnablePush
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -509,8 +541,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.EnablePushWhitelist
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -519,8 +552,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.EnableStatusCheck
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -529,7 +563,7 @@ module BranchProtectionJsonSerializeExtension =
                     (input.MergeWhitelistTeams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -540,6 +574,7 @@ module BranchProtectionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -548,7 +583,7 @@ module BranchProtectionJsonSerializeExtension =
                     (input.MergeWhitelistUsernames
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -559,6 +594,7 @@ module BranchProtectionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -567,8 +603,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.ProtectedFilePatterns
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -577,8 +614,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.PushWhitelistDeployKeys
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -587,7 +625,7 @@ module BranchProtectionJsonSerializeExtension =
                     (input.PushWhitelistTeams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -598,6 +636,7 @@ module BranchProtectionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -606,7 +645,7 @@ module BranchProtectionJsonSerializeExtension =
                     (input.PushWhitelistUsernames
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -617,6 +656,7 @@ module BranchProtectionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -625,8 +665,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.RequireSignedCommits
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -635,8 +676,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.RequiredApprovals
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -645,8 +687,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.RuleName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -655,7 +698,7 @@ module BranchProtectionJsonSerializeExtension =
                     (input.StatusCheckContexts
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -666,6 +709,7 @@ module BranchProtectionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -674,8 +718,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.UnprotectedFilePatterns
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -684,8 +729,9 @@ module BranchProtectionJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -713,8 +759,9 @@ module ChangedFileJsonSerializeExtension =
                     (input.Additions
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -723,8 +770,9 @@ module ChangedFileJsonSerializeExtension =
                     (input.Changes
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -733,8 +781,9 @@ module ChangedFileJsonSerializeExtension =
                     (input.ContentsUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -743,8 +792,9 @@ module ChangedFileJsonSerializeExtension =
                     (input.Deletions
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -753,8 +803,9 @@ module ChangedFileJsonSerializeExtension =
                     (input.Filename
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -763,8 +814,9 @@ module ChangedFileJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -773,8 +825,9 @@ module ChangedFileJsonSerializeExtension =
                     (input.PreviousFilename
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -783,8 +836,9 @@ module ChangedFileJsonSerializeExtension =
                     (input.RawUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -793,8 +847,9 @@ module ChangedFileJsonSerializeExtension =
                     (input.Status
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -822,8 +877,9 @@ module CommitAffectedFilesJsonSerializeExtension =
                     (input.Filename
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -851,8 +907,9 @@ module CommitDateOptionsJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -861,8 +918,9 @@ module CommitDateOptionsJsonSerializeExtension =
                     (input.Committer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -890,8 +948,9 @@ module CommitMetaJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -900,8 +959,9 @@ module CommitMetaJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -910,8 +970,9 @@ module CommitMetaJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -939,8 +1000,9 @@ module CommitStatsJsonSerializeExtension =
                     (input.Additions
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -949,8 +1011,9 @@ module CommitStatsJsonSerializeExtension =
                     (input.Deletions
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -959,8 +1022,9 @@ module CommitStatsJsonSerializeExtension =
                     (input.Total
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -988,8 +1052,9 @@ module CommitUserJsonSerializeExtension =
                     (input.Date
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -998,8 +1063,9 @@ module CommitUserJsonSerializeExtension =
                     (input.Email
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1008,8 +1074,9 @@ module CommitUserJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1039,7 +1106,7 @@ module CreateAccessTokenOptionJsonSerializeExtension =
                     (input.Scopes
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1050,6 +1117,7 @@ module CreateAccessTokenOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1077,7 +1145,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.ApprovalsWhitelistTeams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1088,6 +1156,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1096,7 +1165,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.ApprovalsWhitelistUsername
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1107,6 +1176,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1115,8 +1185,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.BlockOnOfficialReviewRequests
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1125,8 +1196,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.BlockOnOutdatedBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1135,8 +1207,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.BlockOnRejectedReviews
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1145,8 +1218,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.BranchName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1155,8 +1229,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.DismissStaleApprovals
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1165,8 +1240,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.EnableApprovalsWhitelist
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1175,8 +1251,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.EnableMergeWhitelist
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1185,8 +1262,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.EnablePush
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1195,8 +1273,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.EnablePushWhitelist
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1205,8 +1284,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.EnableStatusCheck
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1215,7 +1295,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.MergeWhitelistTeams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1226,6 +1306,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1234,7 +1315,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.MergeWhitelistUsernames
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1245,6 +1326,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1253,8 +1335,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.ProtectedFilePatterns
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1263,8 +1346,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.PushWhitelistDeployKeys
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1273,7 +1357,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.PushWhitelistTeams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1284,6 +1368,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1292,7 +1377,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.PushWhitelistUsernames
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1303,6 +1388,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1311,8 +1397,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.RequireSignedCommits
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1321,8 +1408,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.RequiredApprovals
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1331,8 +1419,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.RuleName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1341,7 +1430,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.StatusCheckContexts
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1352,6 +1441,7 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1360,8 +1450,9 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                     (input.UnprotectedFilePatterns
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1391,8 +1482,9 @@ module CreateBranchRepoOptionJsonSerializeExtension =
                     (input.OldBranchName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1420,7 +1512,7 @@ module CreateEmailOptionJsonSerializeExtension =
                     (input.Emails
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1431,6 +1523,7 @@ module CreateEmailOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1458,8 +1551,9 @@ module CreateForkOptionJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1468,8 +1562,9 @@ module CreateForkOptionJsonSerializeExtension =
                     (input.Organization
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1502,8 +1597,9 @@ module CreateGPGKeyOptionJsonSerializeExtension =
                     (input.ArmoredSignature
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1571,8 +1667,9 @@ module CreateIssueOptionJsonSerializeExtension =
                     (input.Assignee
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1581,7 +1678,7 @@ module CreateIssueOptionJsonSerializeExtension =
                     (input.Assignees
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1592,6 +1689,7 @@ module CreateIssueOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1600,8 +1698,9 @@ module CreateIssueOptionJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1610,8 +1709,9 @@ module CreateIssueOptionJsonSerializeExtension =
                     (input.Closed
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1620,8 +1720,9 @@ module CreateIssueOptionJsonSerializeExtension =
                     (input.DueDate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1630,7 +1731,7 @@ module CreateIssueOptionJsonSerializeExtension =
                     (input.Labels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1641,6 +1742,7 @@ module CreateIssueOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1649,8 +1751,9 @@ module CreateIssueOptionJsonSerializeExtension =
                     (input.Milestone
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1659,8 +1762,9 @@ module CreateIssueOptionJsonSerializeExtension =
                     (input.Ref
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1692,8 +1796,9 @@ module CreateKeyOptionJsonSerializeExtension =
                     (input.ReadOnly
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1725,8 +1830,9 @@ module CreateLabelOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1735,8 +1841,9 @@ module CreateLabelOptionJsonSerializeExtension =
                     (input.Exclusive
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1766,8 +1873,9 @@ module CreateMilestoneOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1776,8 +1884,9 @@ module CreateMilestoneOptionJsonSerializeExtension =
                     (input.DueOn
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1786,8 +1895,9 @@ module CreateMilestoneOptionJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1796,8 +1906,9 @@ module CreateMilestoneOptionJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1825,8 +1936,9 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
                     (input.ConfidentialClient
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1835,8 +1947,9 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1845,7 +1958,7 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
                     (input.RedirectUris
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1856,6 +1969,7 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1883,8 +1997,9 @@ module CreateOrgOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1893,8 +2008,9 @@ module CreateOrgOptionJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1903,8 +2019,9 @@ module CreateOrgOptionJsonSerializeExtension =
                     (input.Location
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1913,8 +2030,9 @@ module CreateOrgOptionJsonSerializeExtension =
                     (input.RepoAdminChangeTeamAccess
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1925,8 +2043,9 @@ module CreateOrgOptionJsonSerializeExtension =
                     (input.Visibility
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1935,8 +2054,9 @@ module CreateOrgOptionJsonSerializeExtension =
                     (input.Website
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1964,8 +2084,9 @@ module CreatePullRequestOptionJsonSerializeExtension =
                     (input.Assignee
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1974,7 +2095,7 @@ module CreatePullRequestOptionJsonSerializeExtension =
                     (input.Assignees
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -1985,6 +2106,7 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -1993,8 +2115,9 @@ module CreatePullRequestOptionJsonSerializeExtension =
                     (input.Base
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2003,8 +2126,9 @@ module CreatePullRequestOptionJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2013,8 +2137,9 @@ module CreatePullRequestOptionJsonSerializeExtension =
                     (input.DueDate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2023,8 +2148,9 @@ module CreatePullRequestOptionJsonSerializeExtension =
                     (input.Head
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2033,7 +2159,7 @@ module CreatePullRequestOptionJsonSerializeExtension =
                     (input.Labels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -2044,6 +2170,7 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2052,8 +2179,9 @@ module CreatePullRequestOptionJsonSerializeExtension =
                     (input.Milestone
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2062,8 +2190,9 @@ module CreatePullRequestOptionJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2091,8 +2220,9 @@ module CreatePullReviewCommentJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2101,8 +2231,9 @@ module CreatePullReviewCommentJsonSerializeExtension =
                     (input.NewPosition
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2111,8 +2242,9 @@ module CreatePullReviewCommentJsonSerializeExtension =
                     (input.OldPosition
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2121,8 +2253,9 @@ module CreatePullReviewCommentJsonSerializeExtension =
                     (input.Path
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2150,8 +2283,9 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                     (input.Interval
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2160,8 +2294,9 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                     (input.RemoteAddress
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2170,8 +2305,9 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                     (input.RemotePassword
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2180,8 +2316,9 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                     (input.RemoteUsername
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2190,8 +2327,9 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                     (input.SyncOnCommit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2219,8 +2357,9 @@ module CreateReleaseOptionJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2229,8 +2368,9 @@ module CreateReleaseOptionJsonSerializeExtension =
                     (input.Draft
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2239,8 +2379,9 @@ module CreateReleaseOptionJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2249,8 +2390,9 @@ module CreateReleaseOptionJsonSerializeExtension =
                     (input.Prerelease
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2261,8 +2403,9 @@ module CreateReleaseOptionJsonSerializeExtension =
                     (input.TargetCommitish
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2290,8 +2433,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.AutoInit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2300,8 +2444,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.DefaultBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2310,8 +2455,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2320,8 +2466,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.Gitignores
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2330,8 +2477,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.IssueLabels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2340,8 +2488,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.License
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2352,8 +2501,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.Private
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2362,8 +2512,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.Readme
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2372,8 +2523,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.Template
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2382,8 +2534,9 @@ module CreateRepoOptionJsonSerializeExtension =
                     (input.TrustModel
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2411,8 +2564,9 @@ module CreateStatusOptionJsonSerializeExtension =
                     (input.Context
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2421,8 +2575,9 @@ module CreateStatusOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2431,8 +2586,9 @@ module CreateStatusOptionJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2441,8 +2597,9 @@ module CreateStatusOptionJsonSerializeExtension =
                     (input.TargetUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2470,8 +2627,9 @@ module CreateTagOptionJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2482,8 +2640,9 @@ module CreateTagOptionJsonSerializeExtension =
                     (input.Target
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2530,8 +2689,9 @@ module CreateTeamOptionJsonSerializeExtension =
                     (input.CanCreateOrgRepo
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2540,8 +2700,9 @@ module CreateTeamOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2550,8 +2711,9 @@ module CreateTeamOptionJsonSerializeExtension =
                     (input.IncludesAllRepositories
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2562,8 +2724,9 @@ module CreateTeamOptionJsonSerializeExtension =
                     (input.Permission
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2572,7 +2735,7 @@ module CreateTeamOptionJsonSerializeExtension =
                     (input.Units
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -2583,6 +2746,7 @@ module CreateTeamOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2591,7 +2755,7 @@ module CreateTeamOptionJsonSerializeExtension =
                     (input.UnitsMap
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Type1.toJsonNode field
                      ))
                 )
@@ -2620,8 +2784,9 @@ module CreateUserOptionJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2632,8 +2797,9 @@ module CreateUserOptionJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2642,8 +2808,9 @@ module CreateUserOptionJsonSerializeExtension =
                     (input.LoginName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2652,8 +2819,9 @@ module CreateUserOptionJsonSerializeExtension =
                     (input.MustChangePassword
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2664,8 +2832,9 @@ module CreateUserOptionJsonSerializeExtension =
                     (input.Restricted
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2674,8 +2843,9 @@ module CreateUserOptionJsonSerializeExtension =
                     (input.SendNotify
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2684,8 +2854,9 @@ module CreateUserOptionJsonSerializeExtension =
                     (input.SourceId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2696,8 +2867,9 @@ module CreateUserOptionJsonSerializeExtension =
                     (input.Visibility
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2725,8 +2897,9 @@ module CreateWikiPageOptionsJsonSerializeExtension =
                     (input.ContentBase64
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2735,8 +2908,9 @@ module CreateWikiPageOptionsJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2745,8 +2919,9 @@ module CreateWikiPageOptionsJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2774,8 +2949,9 @@ module CronJsonSerializeExtension =
                     (input.ExecTimes
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2784,8 +2960,9 @@ module CronJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2794,8 +2971,9 @@ module CronJsonSerializeExtension =
                     (input.Next
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2804,8 +2982,9 @@ module CronJsonSerializeExtension =
                     (input.Prev
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2814,8 +2993,9 @@ module CronJsonSerializeExtension =
                     (input.Schedule
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2843,7 +3023,7 @@ module DeleteEmailOptionJsonSerializeExtension =
                     (input.Emails
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -2854,6 +3034,7 @@ module DeleteEmailOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2881,8 +3062,9 @@ module DismissPullReviewOptionsJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2891,8 +3073,9 @@ module DismissPullReviewOptionsJsonSerializeExtension =
                     (input.Priors
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2920,8 +3103,9 @@ module EditAttachmentOptionsJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2949,7 +3133,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.ApprovalsWhitelistTeams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -2960,6 +3144,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2968,7 +3153,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.ApprovalsWhitelistUsername
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -2979,6 +3164,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2987,8 +3173,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.BlockOnOfficialReviewRequests
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -2997,8 +3184,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.BlockOnOutdatedBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3007,8 +3195,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.BlockOnRejectedReviews
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3017,8 +3206,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.DismissStaleApprovals
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3027,8 +3217,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.EnableApprovalsWhitelist
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3037,8 +3228,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.EnableMergeWhitelist
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3047,8 +3239,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.EnablePush
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3057,8 +3250,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.EnablePushWhitelist
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3067,8 +3261,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.EnableStatusCheck
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3077,7 +3272,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.MergeWhitelistTeams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -3088,6 +3283,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3096,7 +3292,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.MergeWhitelistUsernames
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -3107,6 +3303,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3115,8 +3312,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.ProtectedFilePatterns
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3125,8 +3323,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.PushWhitelistDeployKeys
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3135,7 +3334,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.PushWhitelistTeams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -3146,6 +3345,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3154,7 +3354,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.PushWhitelistUsernames
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -3165,6 +3365,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3173,8 +3374,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.RequireSignedCommits
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3183,8 +3385,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.RequiredApprovals
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3193,7 +3396,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.StatusCheckContexts
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -3204,6 +3407,7 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3212,8 +3416,9 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                     (input.UnprotectedFilePatterns
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3262,8 +3467,9 @@ module EditGitHookOptionJsonSerializeExtension =
                     (input.Content
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3310,8 +3516,9 @@ module EditHookOptionJsonSerializeExtension =
                     (input.Active
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3320,8 +3527,9 @@ module EditHookOptionJsonSerializeExtension =
                     (input.AuthorizationHeader
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3330,8 +3538,9 @@ module EditHookOptionJsonSerializeExtension =
                     (input.BranchFilter
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3340,7 +3549,7 @@ module EditHookOptionJsonSerializeExtension =
                     (input.Config
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Type2.toJsonNode field
                      ))
                 )
@@ -3350,7 +3559,7 @@ module EditHookOptionJsonSerializeExtension =
                     (input.Events
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -3361,6 +3570,7 @@ module EditHookOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3409,8 +3619,9 @@ module EditIssueOptionJsonSerializeExtension =
                     (input.Assignee
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3419,7 +3630,7 @@ module EditIssueOptionJsonSerializeExtension =
                     (input.Assignees
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -3430,6 +3641,7 @@ module EditIssueOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3438,8 +3650,9 @@ module EditIssueOptionJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3448,8 +3661,9 @@ module EditIssueOptionJsonSerializeExtension =
                     (input.DueDate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3458,8 +3672,9 @@ module EditIssueOptionJsonSerializeExtension =
                     (input.Milestone
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3468,8 +3683,9 @@ module EditIssueOptionJsonSerializeExtension =
                     (input.Ref
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3478,8 +3694,9 @@ module EditIssueOptionJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3488,8 +3705,9 @@ module EditIssueOptionJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3498,8 +3716,9 @@ module EditIssueOptionJsonSerializeExtension =
                     (input.UnsetDueDate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3527,8 +3746,9 @@ module EditLabelOptionJsonSerializeExtension =
                     (input.Color
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3537,8 +3757,9 @@ module EditLabelOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3547,8 +3768,9 @@ module EditLabelOptionJsonSerializeExtension =
                     (input.Exclusive
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3557,8 +3779,9 @@ module EditLabelOptionJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3586,8 +3809,9 @@ module EditMilestoneOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3596,8 +3820,9 @@ module EditMilestoneOptionJsonSerializeExtension =
                     (input.DueOn
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3606,8 +3831,9 @@ module EditMilestoneOptionJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3616,8 +3842,9 @@ module EditMilestoneOptionJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3645,8 +3872,9 @@ module EditOrgOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3655,8 +3883,9 @@ module EditOrgOptionJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3665,8 +3894,9 @@ module EditOrgOptionJsonSerializeExtension =
                     (input.Location
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3675,8 +3905,9 @@ module EditOrgOptionJsonSerializeExtension =
                     (input.RepoAdminChangeTeamAccess
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3685,8 +3916,9 @@ module EditOrgOptionJsonSerializeExtension =
                     (input.Visibility
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3695,8 +3927,9 @@ module EditOrgOptionJsonSerializeExtension =
                     (input.Website
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3724,8 +3957,9 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.AllowMaintainerEdit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3734,8 +3968,9 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.Assignee
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3744,7 +3979,7 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.Assignees
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -3755,6 +3990,7 @@ module EditPullRequestOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3763,8 +3999,9 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.Base
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3773,8 +4010,9 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3783,8 +4021,9 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.DueDate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3793,7 +4032,7 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.Labels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -3804,6 +4043,7 @@ module EditPullRequestOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3812,8 +4052,9 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.Milestone
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3822,8 +4063,9 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3832,8 +4074,9 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3842,8 +4085,9 @@ module EditPullRequestOptionJsonSerializeExtension =
                     (input.UnsetDueDate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3871,8 +4115,9 @@ module EditReactionOptionJsonSerializeExtension =
                     (input.Content
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3900,8 +4145,9 @@ module EditReleaseOptionJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3910,8 +4156,9 @@ module EditReleaseOptionJsonSerializeExtension =
                     (input.Draft
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3920,8 +4167,9 @@ module EditReleaseOptionJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3930,8 +4178,9 @@ module EditReleaseOptionJsonSerializeExtension =
                     (input.Prerelease
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3940,8 +4189,9 @@ module EditReleaseOptionJsonSerializeExtension =
                     (input.TagName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3950,8 +4200,9 @@ module EditReleaseOptionJsonSerializeExtension =
                     (input.TargetCommitish
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -3998,8 +4249,9 @@ module EditTeamOptionJsonSerializeExtension =
                     (input.CanCreateOrgRepo
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4008,8 +4260,9 @@ module EditTeamOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4018,8 +4271,9 @@ module EditTeamOptionJsonSerializeExtension =
                     (input.IncludesAllRepositories
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4030,8 +4284,9 @@ module EditTeamOptionJsonSerializeExtension =
                     (input.Permission
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4040,7 +4295,7 @@ module EditTeamOptionJsonSerializeExtension =
                     (input.Units
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -4051,6 +4306,7 @@ module EditTeamOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4059,7 +4315,7 @@ module EditTeamOptionJsonSerializeExtension =
                     (input.UnitsMap
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Type3.toJsonNode field
                      ))
                 )
@@ -4088,8 +4344,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.Active
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4098,8 +4355,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.Admin
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4108,8 +4366,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.AllowCreateOrganization
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4118,8 +4377,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.AllowGitHook
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4128,8 +4388,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.AllowImportLocal
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4138,8 +4399,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4148,8 +4410,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.Email
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4158,8 +4421,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4168,8 +4432,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.Location
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4180,8 +4445,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.MaxRepoCreation
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4190,8 +4456,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.MustChangePassword
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4200,8 +4467,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.Password
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4210,8 +4478,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.ProhibitLogin
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4220,8 +4489,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.Restricted
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4232,8 +4502,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.Visibility
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4242,8 +4513,9 @@ module EditUserOptionJsonSerializeExtension =
                     (input.Website
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4271,8 +4543,9 @@ module EmailJsonSerializeExtension =
                     (input.Email
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4281,8 +4554,9 @@ module EmailJsonSerializeExtension =
                     (input.Primary
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4291,8 +4565,9 @@ module EmailJsonSerializeExtension =
                     (input.Verified
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4320,8 +4595,9 @@ module ExternalTrackerJsonSerializeExtension =
                     (input.ExternalTrackerFormat
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4330,8 +4606,9 @@ module ExternalTrackerJsonSerializeExtension =
                     (input.ExternalTrackerRegexpPattern
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4340,8 +4617,9 @@ module ExternalTrackerJsonSerializeExtension =
                     (input.ExternalTrackerStyle
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4350,8 +4628,9 @@ module ExternalTrackerJsonSerializeExtension =
                     (input.ExternalTrackerUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4379,8 +4658,9 @@ module ExternalWikiJsonSerializeExtension =
                     (input.ExternalWikiUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4408,7 +4688,7 @@ module FileCommitResponseJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitUser.toJsonNode field
                      ))
                 )
@@ -4418,7 +4698,7 @@ module FileCommitResponseJsonSerializeExtension =
                     (input.Committer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitUser.toJsonNode field
                      ))
                 )
@@ -4428,8 +4708,9 @@ module FileCommitResponseJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4438,8 +4719,9 @@ module FileCommitResponseJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4448,8 +4730,9 @@ module FileCommitResponseJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4458,7 +4741,7 @@ module FileCommitResponseJsonSerializeExtension =
                     (input.Parents
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -4469,6 +4752,7 @@ module FileCommitResponseJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4477,8 +4761,9 @@ module FileCommitResponseJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4487,7 +4772,7 @@ module FileCommitResponseJsonSerializeExtension =
                     (input.Tree
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitMeta.toJsonNode field
                      ))
                 )
@@ -4497,8 +4782,9 @@ module FileCommitResponseJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4526,8 +4812,9 @@ module FileLinksResponseJsonSerializeExtension =
                     (input.Git
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4536,8 +4823,9 @@ module FileLinksResponseJsonSerializeExtension =
                     (input.Html
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4546,8 +4834,9 @@ module FileLinksResponseJsonSerializeExtension =
                     (input.Self
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4575,8 +4864,9 @@ module GPGKeyEmailJsonSerializeExtension =
                     (input.Email
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4585,8 +4875,9 @@ module GPGKeyEmailJsonSerializeExtension =
                     (input.Verified
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4614,8 +4905,9 @@ module GeneralAPISettingsJsonSerializeExtension =
                     (input.DefaultGitTreesPerPage
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4624,8 +4916,9 @@ module GeneralAPISettingsJsonSerializeExtension =
                     (input.DefaultMaxBlobSize
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4634,8 +4927,9 @@ module GeneralAPISettingsJsonSerializeExtension =
                     (input.DefaultPagingNum
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4644,8 +4938,9 @@ module GeneralAPISettingsJsonSerializeExtension =
                     (input.MaxResponseItems
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4673,8 +4968,9 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                     (input.AllowedTypes
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4683,8 +4979,9 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                     (input.Enabled
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4693,8 +4990,9 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                     (input.MaxFiles
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4703,8 +5001,9 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                     (input.MaxSize
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4732,8 +5031,9 @@ module GeneralRepoSettingsJsonSerializeExtension =
                     (input.HttpGitDisabled
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4742,8 +5042,9 @@ module GeneralRepoSettingsJsonSerializeExtension =
                     (input.LfsDisabled
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4752,8 +5053,9 @@ module GeneralRepoSettingsJsonSerializeExtension =
                     (input.MigrationsDisabled
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4762,8 +5064,9 @@ module GeneralRepoSettingsJsonSerializeExtension =
                     (input.MirrorsDisabled
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4772,8 +5075,9 @@ module GeneralRepoSettingsJsonSerializeExtension =
                     (input.StarsDisabled
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4782,8 +5086,9 @@ module GeneralRepoSettingsJsonSerializeExtension =
                     (input.TimeTrackingDisabled
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4811,7 +5116,7 @@ module GeneralUISettingsJsonSerializeExtension =
                     (input.AllowedReactions
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -4822,6 +5127,7 @@ module GeneralUISettingsJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4830,7 +5136,7 @@ module GeneralUISettingsJsonSerializeExtension =
                     (input.CustomEmojis
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -4841,6 +5147,7 @@ module GeneralUISettingsJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4849,8 +5156,9 @@ module GeneralUISettingsJsonSerializeExtension =
                     (input.DefaultTheme
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4878,8 +5186,9 @@ module GenerateRepoOptionJsonSerializeExtension =
                     (input.Avatar
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4888,8 +5197,9 @@ module GenerateRepoOptionJsonSerializeExtension =
                     (input.DefaultBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4898,8 +5208,9 @@ module GenerateRepoOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4908,8 +5219,9 @@ module GenerateRepoOptionJsonSerializeExtension =
                     (input.GitContent
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4918,8 +5230,9 @@ module GenerateRepoOptionJsonSerializeExtension =
                     (input.GitHooks
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4928,8 +5241,9 @@ module GenerateRepoOptionJsonSerializeExtension =
                     (input.Labels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4941,8 +5255,9 @@ module GenerateRepoOptionJsonSerializeExtension =
                     (input.Private
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4951,8 +5266,9 @@ module GenerateRepoOptionJsonSerializeExtension =
                     (input.Topics
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4961,8 +5277,9 @@ module GenerateRepoOptionJsonSerializeExtension =
                     (input.Webhooks
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -4990,8 +5307,9 @@ module GitBlobResponseJsonSerializeExtension =
                     (input.Content
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5000,8 +5318,9 @@ module GitBlobResponseJsonSerializeExtension =
                     (input.Encoding
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5010,8 +5329,9 @@ module GitBlobResponseJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5020,8 +5340,9 @@ module GitBlobResponseJsonSerializeExtension =
                     (input.Size
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5030,8 +5351,9 @@ module GitBlobResponseJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5059,8 +5381,9 @@ module GitEntryJsonSerializeExtension =
                     (input.Mode
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5069,8 +5392,9 @@ module GitEntryJsonSerializeExtension =
                     (input.Path
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5079,8 +5403,9 @@ module GitEntryJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5089,8 +5414,9 @@ module GitEntryJsonSerializeExtension =
                     (input.Size
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5099,8 +5425,9 @@ module GitEntryJsonSerializeExtension =
                     (input.Type
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5109,8 +5436,9 @@ module GitEntryJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5138,8 +5466,9 @@ module GitHookJsonSerializeExtension =
                     (input.Content
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5148,8 +5477,9 @@ module GitHookJsonSerializeExtension =
                     (input.IsActive
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5158,8 +5488,9 @@ module GitHookJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5187,8 +5518,9 @@ module GitObjectJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5197,8 +5529,9 @@ module GitObjectJsonSerializeExtension =
                     (input.Type
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5207,8 +5540,9 @@ module GitObjectJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5236,8 +5570,9 @@ module GitTreeResponseJsonSerializeExtension =
                     (input.Page
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5246,8 +5581,9 @@ module GitTreeResponseJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5256,8 +5592,9 @@ module GitTreeResponseJsonSerializeExtension =
                     (input.TotalCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5266,7 +5603,7 @@ module GitTreeResponseJsonSerializeExtension =
                     (input.Tree
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -5277,6 +5614,7 @@ module GitTreeResponseJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5285,8 +5623,9 @@ module GitTreeResponseJsonSerializeExtension =
                     (input.Truncated
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5295,8 +5634,9 @@ module GitTreeResponseJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5343,8 +5683,9 @@ module HookJsonSerializeExtension =
                     (input.Active
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5353,8 +5694,9 @@ module HookJsonSerializeExtension =
                     (input.AuthorizationHeader
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5363,7 +5705,7 @@ module HookJsonSerializeExtension =
                     (input.Config
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Type4.toJsonNode field
                      ))
                 )
@@ -5373,8 +5715,9 @@ module HookJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5383,7 +5726,7 @@ module HookJsonSerializeExtension =
                     (input.Events
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -5394,6 +5737,7 @@ module HookJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5402,8 +5746,9 @@ module HookJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5412,8 +5757,9 @@ module HookJsonSerializeExtension =
                     (input.Type
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5422,8 +5768,9 @@ module HookJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5451,8 +5798,9 @@ module IdentityJsonSerializeExtension =
                     (input.Email
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5461,8 +5809,9 @@ module IdentityJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5490,8 +5839,9 @@ module InternalTrackerJsonSerializeExtension =
                     (input.AllowOnlyContributorsToTrackTime
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5500,8 +5850,9 @@ module InternalTrackerJsonSerializeExtension =
                     (input.EnableIssueDependencies
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5510,8 +5861,9 @@ module InternalTrackerJsonSerializeExtension =
                     (input.EnableTimeTracker
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5539,8 +5891,9 @@ module IssueDeadlineJsonSerializeExtension =
                     (input.DueDate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5606,7 +5959,7 @@ module IssueLabelsOptionJsonSerializeExtension =
                     (input.Labels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -5617,6 +5970,7 @@ module IssueLabelsOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5644,8 +5998,9 @@ module LabelJsonSerializeExtension =
                     (input.Color
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5654,8 +6009,9 @@ module LabelJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5664,8 +6020,9 @@ module LabelJsonSerializeExtension =
                     (input.Exclusive
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5674,8 +6031,9 @@ module LabelJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5684,8 +6042,9 @@ module LabelJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5694,8 +6053,9 @@ module LabelJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5723,8 +6083,9 @@ module MarkdownOptionJsonSerializeExtension =
                     (input.Context
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5733,8 +6094,9 @@ module MarkdownOptionJsonSerializeExtension =
                     (input.Mode
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5743,8 +6105,9 @@ module MarkdownOptionJsonSerializeExtension =
                     (input.Text
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5753,8 +6116,9 @@ module MarkdownOptionJsonSerializeExtension =
                     (input.Wiki
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5784,8 +6148,9 @@ module MergePullRequestOptionJsonSerializeExtension =
                     (input.MergeCommitID
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5794,8 +6159,9 @@ module MergePullRequestOptionJsonSerializeExtension =
                     (input.MergeMessageField
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5804,8 +6170,9 @@ module MergePullRequestOptionJsonSerializeExtension =
                     (input.MergeTitleField
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5814,8 +6181,9 @@ module MergePullRequestOptionJsonSerializeExtension =
                     (input.DeleteBranchAfterMerge
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5824,8 +6192,9 @@ module MergePullRequestOptionJsonSerializeExtension =
                     (input.ForceMerge
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5834,8 +6203,9 @@ module MergePullRequestOptionJsonSerializeExtension =
                     (input.HeadCommitId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5844,8 +6214,9 @@ module MergePullRequestOptionJsonSerializeExtension =
                     (input.MergeWhenChecksSucceed
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5873,8 +6244,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.AuthPassword
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5883,8 +6255,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.AuthToken
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5893,8 +6266,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.AuthUsername
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5905,8 +6279,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5915,8 +6290,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Issues
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5925,8 +6301,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Labels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5935,8 +6312,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Lfs
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5945,8 +6323,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.LfsEndpoint
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5955,8 +6334,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Milestones
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5965,8 +6345,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Mirror
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5975,8 +6356,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.MirrorInterval
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5985,8 +6367,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Private
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -5995,8 +6378,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.PullRequests
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6005,8 +6389,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Releases
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6017,8 +6402,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.RepoOwner
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6027,8 +6413,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Service
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6037,8 +6424,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Uid
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6047,8 +6435,9 @@ module MigrateRepoOptionsJsonSerializeExtension =
                     (input.Wiki
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6095,7 +6484,7 @@ module NodeInfoServicesJsonSerializeExtension =
                     (input.Inbound
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -6106,6 +6495,7 @@ module NodeInfoServicesJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6114,7 +6504,7 @@ module NodeInfoServicesJsonSerializeExtension =
                     (input.Outbound
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -6125,6 +6515,7 @@ module NodeInfoServicesJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6152,8 +6543,9 @@ module NodeInfoSoftwareJsonSerializeExtension =
                     (input.Homepage
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6162,8 +6554,9 @@ module NodeInfoSoftwareJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6172,8 +6565,9 @@ module NodeInfoSoftwareJsonSerializeExtension =
                     (input.Repository
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6182,8 +6576,9 @@ module NodeInfoSoftwareJsonSerializeExtension =
                     (input.Version
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6211,8 +6606,9 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                     (input.ActiveHalfyear
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6221,8 +6617,9 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                     (input.ActiveMonth
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6231,8 +6628,9 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                     (input.Total
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6260,8 +6658,9 @@ module NotificationCountJsonSerializeExtension =
                     (input.New
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6289,8 +6688,9 @@ module OAuth2ApplicationJsonSerializeExtension =
                     (input.ClientId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6299,8 +6699,9 @@ module OAuth2ApplicationJsonSerializeExtension =
                     (input.ClientSecret
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6309,8 +6710,9 @@ module OAuth2ApplicationJsonSerializeExtension =
                     (input.ConfidentialClient
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6319,8 +6721,9 @@ module OAuth2ApplicationJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6329,8 +6732,9 @@ module OAuth2ApplicationJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6339,8 +6743,9 @@ module OAuth2ApplicationJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6349,7 +6754,7 @@ module OAuth2ApplicationJsonSerializeExtension =
                     (input.RedirectUris
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -6360,6 +6765,7 @@ module OAuth2ApplicationJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6387,8 +6793,9 @@ module OrganizationJsonSerializeExtension =
                     (input.AvatarUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6397,8 +6804,9 @@ module OrganizationJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6407,8 +6815,9 @@ module OrganizationJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6417,8 +6826,9 @@ module OrganizationJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6427,8 +6837,9 @@ module OrganizationJsonSerializeExtension =
                     (input.Location
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6437,8 +6848,9 @@ module OrganizationJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6447,8 +6859,9 @@ module OrganizationJsonSerializeExtension =
                     (input.RepoAdminChangeTeamAccess
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6457,8 +6870,9 @@ module OrganizationJsonSerializeExtension =
                     (input.Username
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6467,8 +6881,9 @@ module OrganizationJsonSerializeExtension =
                     (input.Visibility
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6477,8 +6892,9 @@ module OrganizationJsonSerializeExtension =
                     (input.Website
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6506,8 +6922,9 @@ module OrganizationPermissionsJsonSerializeExtension =
                     (input.CanCreateRepository
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6516,8 +6933,9 @@ module OrganizationPermissionsJsonSerializeExtension =
                     (input.CanRead
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6526,8 +6944,9 @@ module OrganizationPermissionsJsonSerializeExtension =
                     (input.CanWrite
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6536,8 +6955,9 @@ module OrganizationPermissionsJsonSerializeExtension =
                     (input.IsAdmin
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6546,8 +6966,9 @@ module OrganizationPermissionsJsonSerializeExtension =
                     (input.IsOwner
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6575,8 +6996,9 @@ module PackageFileJsonSerializeExtension =
                     (input.Size
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6585,8 +7007,9 @@ module PackageFileJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6595,8 +7018,9 @@ module PackageFileJsonSerializeExtension =
                     (input.Md5
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6605,8 +7029,9 @@ module PackageFileJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6615,8 +7040,9 @@ module PackageFileJsonSerializeExtension =
                     (input.Sha1
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6625,8 +7051,9 @@ module PackageFileJsonSerializeExtension =
                     (input.Sha256
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6635,8 +7062,9 @@ module PackageFileJsonSerializeExtension =
                     (input.Sha512
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6664,8 +7092,9 @@ module PayloadUserJsonSerializeExtension =
                     (input.Email
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6674,8 +7103,9 @@ module PayloadUserJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6684,8 +7114,9 @@ module PayloadUserJsonSerializeExtension =
                     (input.Username
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6713,8 +7144,9 @@ module PermissionJsonSerializeExtension =
                     (input.Admin
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6723,8 +7155,9 @@ module PermissionJsonSerializeExtension =
                     (input.Pull
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6733,8 +7166,9 @@ module PermissionJsonSerializeExtension =
                     (input.Push
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6762,8 +7196,9 @@ module PullRequestMetaJsonSerializeExtension =
                     (input.Merged
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6772,8 +7207,9 @@ module PullRequestMetaJsonSerializeExtension =
                     (input.MergedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6801,7 +7237,7 @@ module PullReviewRequestOptionsJsonSerializeExtension =
                     (input.Reviewers
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -6812,6 +7248,7 @@ module PullReviewRequestOptionsJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6820,7 +7257,7 @@ module PullReviewRequestOptionsJsonSerializeExtension =
                     (input.TeamReviewers
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -6831,6 +7268,7 @@ module PullReviewRequestOptionsJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6858,8 +7296,9 @@ module PushMirrorJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6868,8 +7307,9 @@ module PushMirrorJsonSerializeExtension =
                     (input.Interval
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6878,8 +7318,9 @@ module PushMirrorJsonSerializeExtension =
                     (input.LastError
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6888,8 +7329,9 @@ module PushMirrorJsonSerializeExtension =
                     (input.LastUpdate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6898,8 +7340,9 @@ module PushMirrorJsonSerializeExtension =
                     (input.RemoteAddress
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6908,8 +7351,9 @@ module PushMirrorJsonSerializeExtension =
                     (input.RemoteName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6918,8 +7362,9 @@ module PushMirrorJsonSerializeExtension =
                     (input.RepoName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6928,8 +7373,9 @@ module PushMirrorJsonSerializeExtension =
                     (input.SyncOnCommit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6957,7 +7403,7 @@ module ReferenceJsonSerializeExtension =
                     (input.Object
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> GitObject.toJsonNode field
                      ))
                 )
@@ -6967,8 +7413,9 @@ module ReferenceJsonSerializeExtension =
                     (input.Ref
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -6977,8 +7424,9 @@ module ReferenceJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7006,7 +7454,7 @@ module RepoTopicOptionsJsonSerializeExtension =
                     (input.Topics
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -7017,6 +7465,7 @@ module RepoTopicOptionsJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7044,8 +7493,9 @@ module RepositoryMetaJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7054,8 +7504,9 @@ module RepositoryMetaJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7064,8 +7515,9 @@ module RepositoryMetaJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7074,8 +7526,9 @@ module RepositoryMetaJsonSerializeExtension =
                     (input.Owner
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7103,8 +7556,9 @@ module ServerVersionJsonSerializeExtension =
                     (input.Version
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7132,8 +7586,9 @@ module StopWatchJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7142,8 +7597,9 @@ module StopWatchJsonSerializeExtension =
                     (input.Duration
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7152,8 +7608,9 @@ module StopWatchJsonSerializeExtension =
                     (input.IssueIndex
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7162,8 +7619,9 @@ module StopWatchJsonSerializeExtension =
                     (input.IssueTitle
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7172,8 +7630,9 @@ module StopWatchJsonSerializeExtension =
                     (input.RepoName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7182,8 +7641,9 @@ module StopWatchJsonSerializeExtension =
                     (input.RepoOwnerName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7192,8 +7652,9 @@ module StopWatchJsonSerializeExtension =
                     (input.Seconds
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7221,8 +7682,9 @@ module SubmitPullReviewOptionsJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7231,8 +7693,9 @@ module SubmitPullReviewOptionsJsonSerializeExtension =
                     (input.Event
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7260,7 +7723,7 @@ module TagJsonSerializeExtension =
                     (input.Commit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitMeta.toJsonNode field
                      ))
                 )
@@ -7270,8 +7733,9 @@ module TagJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7280,8 +7744,9 @@ module TagJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7290,8 +7755,9 @@ module TagJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7300,8 +7766,9 @@ module TagJsonSerializeExtension =
                     (input.TarballUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7310,8 +7777,9 @@ module TagJsonSerializeExtension =
                     (input.ZipballUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7358,8 +7826,9 @@ module TeamJsonSerializeExtension =
                     (input.CanCreateOrgRepo
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7368,8 +7837,9 @@ module TeamJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7378,8 +7848,9 @@ module TeamJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7388,8 +7859,9 @@ module TeamJsonSerializeExtension =
                     (input.IncludesAllRepositories
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7398,8 +7870,9 @@ module TeamJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7408,7 +7881,7 @@ module TeamJsonSerializeExtension =
                     (input.Organization
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Organization.toJsonNode field
                      ))
                 )
@@ -7418,8 +7891,9 @@ module TeamJsonSerializeExtension =
                     (input.Permission
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7428,7 +7902,7 @@ module TeamJsonSerializeExtension =
                     (input.Units
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -7439,6 +7913,7 @@ module TeamJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7447,7 +7922,7 @@ module TeamJsonSerializeExtension =
                     (input.UnitsMap
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Type8.toJsonNode field
                      ))
                 )
@@ -7476,7 +7951,7 @@ module TopicNameJsonSerializeExtension =
                     (input.Topics
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -7487,6 +7962,7 @@ module TopicNameJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7514,8 +7990,9 @@ module TopicResponseJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7524,8 +8001,9 @@ module TopicResponseJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7534,8 +8012,9 @@ module TopicResponseJsonSerializeExtension =
                     (input.RepoCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7544,8 +8023,9 @@ module TopicResponseJsonSerializeExtension =
                     (input.TopicName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7554,8 +8034,9 @@ module TopicResponseJsonSerializeExtension =
                     (input.Updated
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7585,7 +8066,7 @@ module TransferRepoOptionJsonSerializeExtension =
                     (input.TeamIds
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -7596,6 +8077,7 @@ module TransferRepoOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7623,7 +8105,7 @@ module UpdateFileOptionsJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Identity.toJsonNode field
                      ))
                 )
@@ -7633,8 +8115,9 @@ module UpdateFileOptionsJsonSerializeExtension =
                     (input.Branch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7643,7 +8126,7 @@ module UpdateFileOptionsJsonSerializeExtension =
                     (input.Committer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Identity.toJsonNode field
                      ))
                 )
@@ -7655,7 +8138,7 @@ module UpdateFileOptionsJsonSerializeExtension =
                     (input.Dates
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitDateOptions.toJsonNode field
                      ))
                 )
@@ -7665,8 +8148,9 @@ module UpdateFileOptionsJsonSerializeExtension =
                     (input.FromPath
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7675,8 +8159,9 @@ module UpdateFileOptionsJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7685,8 +8170,9 @@ module UpdateFileOptionsJsonSerializeExtension =
                     (input.NewBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7697,8 +8183,9 @@ module UpdateFileOptionsJsonSerializeExtension =
                     (input.Signoff
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7726,8 +8213,9 @@ module UserJsonSerializeExtension =
                     (input.Active
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7736,8 +8224,9 @@ module UserJsonSerializeExtension =
                     (input.AvatarUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7746,8 +8235,9 @@ module UserJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7756,8 +8246,9 @@ module UserJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7766,8 +8257,9 @@ module UserJsonSerializeExtension =
                     (input.Email
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7776,8 +8268,9 @@ module UserJsonSerializeExtension =
                     (input.FollowersCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7786,8 +8279,9 @@ module UserJsonSerializeExtension =
                     (input.FollowingCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7796,8 +8290,9 @@ module UserJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7806,8 +8301,9 @@ module UserJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7816,8 +8312,9 @@ module UserJsonSerializeExtension =
                     (input.IsAdmin
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7826,8 +8323,9 @@ module UserJsonSerializeExtension =
                     (input.Language
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7836,8 +8334,9 @@ module UserJsonSerializeExtension =
                     (input.LastLogin
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7846,8 +8345,9 @@ module UserJsonSerializeExtension =
                     (input.Location
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7856,8 +8356,9 @@ module UserJsonSerializeExtension =
                     (input.Login
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7866,8 +8367,9 @@ module UserJsonSerializeExtension =
                     (input.LoginName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7876,8 +8378,9 @@ module UserJsonSerializeExtension =
                     (input.ProhibitLogin
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7886,8 +8389,9 @@ module UserJsonSerializeExtension =
                     (input.Restricted
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7896,8 +8400,9 @@ module UserJsonSerializeExtension =
                     (input.StarredReposCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7906,8 +8411,9 @@ module UserJsonSerializeExtension =
                     (input.Visibility
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7916,8 +8422,9 @@ module UserJsonSerializeExtension =
                     (input.Website
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7945,8 +8452,9 @@ module UserHeatmapDataJsonSerializeExtension =
                     (input.Contributions
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7955,8 +8463,9 @@ module UserHeatmapDataJsonSerializeExtension =
                     (input.Timestamp
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7984,8 +8493,9 @@ module UserSettingsJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -7994,8 +8504,9 @@ module UserSettingsJsonSerializeExtension =
                     (input.DiffViewStyle
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8004,8 +8515,9 @@ module UserSettingsJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8014,8 +8526,9 @@ module UserSettingsJsonSerializeExtension =
                     (input.HideActivity
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8024,8 +8537,9 @@ module UserSettingsJsonSerializeExtension =
                     (input.HideEmail
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8034,8 +8548,9 @@ module UserSettingsJsonSerializeExtension =
                     (input.Language
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8044,8 +8559,9 @@ module UserSettingsJsonSerializeExtension =
                     (input.Location
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8054,8 +8570,9 @@ module UserSettingsJsonSerializeExtension =
                     (input.Theme
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8064,8 +8581,9 @@ module UserSettingsJsonSerializeExtension =
                     (input.Website
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8093,8 +8611,9 @@ module UserSettingsOptionsJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8103,8 +8622,9 @@ module UserSettingsOptionsJsonSerializeExtension =
                     (input.DiffViewStyle
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8113,8 +8633,9 @@ module UserSettingsOptionsJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8123,8 +8644,9 @@ module UserSettingsOptionsJsonSerializeExtension =
                     (input.HideActivity
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8133,8 +8655,9 @@ module UserSettingsOptionsJsonSerializeExtension =
                     (input.HideEmail
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8143,8 +8666,9 @@ module UserSettingsOptionsJsonSerializeExtension =
                     (input.Language
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8153,8 +8677,9 @@ module UserSettingsOptionsJsonSerializeExtension =
                     (input.Location
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8163,8 +8688,9 @@ module UserSettingsOptionsJsonSerializeExtension =
                     (input.Theme
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8173,8 +8699,9 @@ module UserSettingsOptionsJsonSerializeExtension =
                     (input.Website
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8202,8 +8729,9 @@ module WatchInfoJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8212,8 +8740,9 @@ module WatchInfoJsonSerializeExtension =
                     (input.Ignored
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8222,8 +8751,10 @@ module WatchInfoJsonSerializeExtension =
                     (input.Reason
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> ((fun value -> System.Text.Json.Nodes.JsonObject ()) field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             ((fun value -> System.Text.Json.Nodes.JsonObject ()) field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8232,8 +8763,9 @@ module WatchInfoJsonSerializeExtension =
                     (input.RepositoryUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8242,8 +8774,9 @@ module WatchInfoJsonSerializeExtension =
                     (input.Subscribed
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8252,8 +8785,9 @@ module WatchInfoJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8281,7 +8815,7 @@ module WikiCommitJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitUser.toJsonNode field
                      ))
                 )
@@ -8291,7 +8825,7 @@ module WikiCommitJsonSerializeExtension =
                     (input.Commiter
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitUser.toJsonNode field
                      ))
                 )
@@ -8301,8 +8835,9 @@ module WikiCommitJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8311,8 +8846,9 @@ module WikiCommitJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8340,7 +8876,7 @@ module WikiCommitListJsonSerializeExtension =
                     (input.Commits
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -8351,6 +8887,7 @@ module WikiCommitListJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8359,8 +8896,9 @@ module WikiCommitListJsonSerializeExtension =
                     (input.Count
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8388,8 +8926,9 @@ module WikiPageJsonSerializeExtension =
                     (input.CommitCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8398,8 +8937,9 @@ module WikiPageJsonSerializeExtension =
                     (input.ContentBase64
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8408,8 +8948,9 @@ module WikiPageJsonSerializeExtension =
                     (input.Footer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8418,8 +8959,9 @@ module WikiPageJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8428,7 +8970,7 @@ module WikiPageJsonSerializeExtension =
                     (input.LastCommit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> WikiCommit.toJsonNode field
                      ))
                 )
@@ -8438,8 +8980,9 @@ module WikiPageJsonSerializeExtension =
                     (input.Sidebar
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8448,8 +8991,9 @@ module WikiPageJsonSerializeExtension =
                     (input.SubUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8458,8 +9002,9 @@ module WikiPageJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8487,8 +9032,9 @@ module WikiPageMetaDataJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8497,7 +9043,7 @@ module WikiPageMetaDataJsonSerializeExtension =
                     (input.LastCommit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> WikiCommit.toJsonNode field
                      ))
                 )
@@ -8507,8 +9053,9 @@ module WikiPageMetaDataJsonSerializeExtension =
                     (input.SubUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8517,8 +9064,9 @@ module WikiPageMetaDataJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8546,7 +9094,7 @@ module CommentJsonSerializeExtension =
                     (input.Assets
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -8557,6 +9105,7 @@ module CommentJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8565,8 +9114,9 @@ module CommentJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8575,8 +9125,9 @@ module CommentJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8585,8 +9136,9 @@ module CommentJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8595,8 +9147,9 @@ module CommentJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8605,8 +9158,9 @@ module CommentJsonSerializeExtension =
                     (input.IssueUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8615,8 +9169,9 @@ module CommentJsonSerializeExtension =
                     (input.OriginalAuthor
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8625,8 +9180,9 @@ module CommentJsonSerializeExtension =
                     (input.OriginalAuthorId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8635,8 +9191,9 @@ module CommentJsonSerializeExtension =
                     (input.PullRequestUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8645,8 +9202,9 @@ module CommentJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8655,7 +9213,7 @@ module CommentJsonSerializeExtension =
                     (input.User
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -8684,8 +9242,9 @@ module CommitStatusJsonSerializeExtension =
                     (input.Context
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8694,8 +9253,9 @@ module CommitStatusJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8704,7 +9264,7 @@ module CommitStatusJsonSerializeExtension =
                     (input.Creator
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -8714,8 +9274,9 @@ module CommitStatusJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8724,8 +9285,9 @@ module CommitStatusJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8734,8 +9296,9 @@ module CommitStatusJsonSerializeExtension =
                     (input.Status
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8744,8 +9307,9 @@ module CommitStatusJsonSerializeExtension =
                     (input.TargetUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8754,8 +9318,9 @@ module CommitStatusJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8764,8 +9329,9 @@ module CommitStatusJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8793,7 +9359,7 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Links
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> FileLinksResponse.toJsonNode field
                      ))
                 )
@@ -8803,8 +9369,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Content
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8813,8 +9380,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.DownloadUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8823,8 +9391,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Encoding
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8833,8 +9402,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.GitUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8843,8 +9413,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8853,8 +9424,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.LastCommitSha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8863,8 +9435,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8873,8 +9446,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Path
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8883,8 +9457,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8893,8 +9468,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Size
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8903,8 +9479,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.SubmoduleGitUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8913,8 +9490,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Target
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8923,8 +9501,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Type
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8933,8 +9512,9 @@ module ContentsResponseJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8962,7 +9542,7 @@ module CreateFileOptionsJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Identity.toJsonNode field
                      ))
                 )
@@ -8972,8 +9552,9 @@ module CreateFileOptionsJsonSerializeExtension =
                     (input.Branch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -8982,7 +9563,7 @@ module CreateFileOptionsJsonSerializeExtension =
                     (input.Committer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Identity.toJsonNode field
                      ))
                 )
@@ -8994,7 +9575,7 @@ module CreateFileOptionsJsonSerializeExtension =
                     (input.Dates
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitDateOptions.toJsonNode field
                      ))
                 )
@@ -9004,8 +9585,9 @@ module CreateFileOptionsJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9014,8 +9596,9 @@ module CreateFileOptionsJsonSerializeExtension =
                     (input.NewBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9024,8 +9607,9 @@ module CreateFileOptionsJsonSerializeExtension =
                     (input.Signoff
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9053,8 +9637,9 @@ module CreateHookOptionJsonSerializeExtension =
                     (input.Active
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9063,8 +9648,9 @@ module CreateHookOptionJsonSerializeExtension =
                     (input.AuthorizationHeader
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9073,8 +9659,9 @@ module CreateHookOptionJsonSerializeExtension =
                     (input.BranchFilter
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9085,7 +9672,7 @@ module CreateHookOptionJsonSerializeExtension =
                     (input.Events
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -9096,6 +9683,7 @@ module CreateHookOptionJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9125,8 +9713,9 @@ module CreatePullReviewOptionsJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9135,7 +9724,7 @@ module CreatePullReviewOptionsJsonSerializeExtension =
                     (input.Comments
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -9146,6 +9735,7 @@ module CreatePullReviewOptionsJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9154,8 +9744,9 @@ module CreatePullReviewOptionsJsonSerializeExtension =
                     (input.CommitId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9164,8 +9755,9 @@ module CreatePullReviewOptionsJsonSerializeExtension =
                     (input.Event
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9193,7 +9785,7 @@ module DeleteFileOptionsJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Identity.toJsonNode field
                      ))
                 )
@@ -9203,8 +9795,9 @@ module DeleteFileOptionsJsonSerializeExtension =
                     (input.Branch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9213,7 +9806,7 @@ module DeleteFileOptionsJsonSerializeExtension =
                     (input.Committer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Identity.toJsonNode field
                      ))
                 )
@@ -9223,7 +9816,7 @@ module DeleteFileOptionsJsonSerializeExtension =
                     (input.Dates
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitDateOptions.toJsonNode field
                      ))
                 )
@@ -9233,8 +9826,9 @@ module DeleteFileOptionsJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9243,8 +9837,9 @@ module DeleteFileOptionsJsonSerializeExtension =
                     (input.NewBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9255,8 +9850,9 @@ module DeleteFileOptionsJsonSerializeExtension =
                     (input.Signoff
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9284,8 +9880,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.AllowManualMerge
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9294,8 +9891,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.AllowMergeCommits
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9304,8 +9902,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.AllowRebase
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9314,8 +9913,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.AllowRebaseExplicit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9324,8 +9924,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.AllowRebaseUpdate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9334,8 +9935,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.AllowSquashMerge
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9344,8 +9946,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.Archived
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9354,8 +9957,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.AutodetectManualMerge
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9364,8 +9968,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.DefaultAllowMaintainerEdit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9374,8 +9979,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.DefaultBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9384,8 +9990,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.DefaultDeleteBranchAfterMerge
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9394,8 +10001,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.DefaultMergeStyle
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9404,8 +10012,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9414,8 +10023,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.EnablePrune
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9424,7 +10034,7 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.ExternalTracker
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> ExternalTracker.toJsonNode field
                      ))
                 )
@@ -9434,7 +10044,7 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.ExternalWiki
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> ExternalWiki.toJsonNode field
                      ))
                 )
@@ -9444,8 +10054,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.HasIssues
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9454,8 +10065,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.HasProjects
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9464,8 +10076,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.HasPullRequests
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9474,8 +10087,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.HasWiki
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9484,8 +10098,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.IgnoreWhitespaceConflicts
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9494,7 +10109,7 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.InternalTracker
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> InternalTracker.toJsonNode field
                      ))
                 )
@@ -9504,8 +10119,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.MirrorInterval
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9514,8 +10130,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9524,8 +10141,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.Private
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9534,8 +10152,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.Template
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9544,8 +10163,9 @@ module EditRepoOptionJsonSerializeExtension =
                     (input.Website
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9573,7 +10193,7 @@ module IssueFormFieldJsonSerializeExtension =
                     (input.Attributes
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Type5.toJsonNode field
                      ))
                 )
@@ -9583,8 +10203,9 @@ module IssueFormFieldJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9593,8 +10214,9 @@ module IssueFormFieldJsonSerializeExtension =
                     (input.Type
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9603,7 +10225,7 @@ module IssueFormFieldJsonSerializeExtension =
                     (input.Validations
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Type6.toJsonNode field
                      ))
                 )
@@ -9632,8 +10254,9 @@ module IssueTemplateJsonSerializeExtension =
                     (input.About
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9642,7 +10265,7 @@ module IssueTemplateJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -9653,6 +10276,7 @@ module IssueTemplateJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9661,8 +10285,9 @@ module IssueTemplateJsonSerializeExtension =
                     (input.Content
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9671,8 +10296,9 @@ module IssueTemplateJsonSerializeExtension =
                     (input.FileName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9681,7 +10307,7 @@ module IssueTemplateJsonSerializeExtension =
                     (input.Labels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -9692,6 +10318,7 @@ module IssueTemplateJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9700,8 +10327,9 @@ module IssueTemplateJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9710,8 +10338,9 @@ module IssueTemplateJsonSerializeExtension =
                     (input.Ref
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9720,8 +10349,9 @@ module IssueTemplateJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9749,8 +10379,9 @@ module MilestoneJsonSerializeExtension =
                     (input.ClosedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9759,8 +10390,9 @@ module MilestoneJsonSerializeExtension =
                     (input.ClosedIssues
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9769,8 +10401,9 @@ module MilestoneJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9779,8 +10412,9 @@ module MilestoneJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9789,8 +10423,9 @@ module MilestoneJsonSerializeExtension =
                     (input.DueOn
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9799,8 +10434,9 @@ module MilestoneJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9809,8 +10445,9 @@ module MilestoneJsonSerializeExtension =
                     (input.OpenIssues
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9819,8 +10456,9 @@ module MilestoneJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9829,8 +10467,9 @@ module MilestoneJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9839,8 +10478,9 @@ module MilestoneJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9868,8 +10508,9 @@ module NodeInfoUsageJsonSerializeExtension =
                     (input.LocalComments
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9878,8 +10519,9 @@ module NodeInfoUsageJsonSerializeExtension =
                     (input.LocalPosts
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9888,7 +10530,7 @@ module NodeInfoUsageJsonSerializeExtension =
                     (input.Users
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> NodeInfoUsageUsers.toJsonNode field
                      ))
                 )
@@ -9917,8 +10559,9 @@ module NotificationSubjectJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9927,8 +10570,9 @@ module NotificationSubjectJsonSerializeExtension =
                     (input.LatestCommentHtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9937,8 +10581,9 @@ module NotificationSubjectJsonSerializeExtension =
                     (input.LatestCommentUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9947,8 +10592,9 @@ module NotificationSubjectJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9957,8 +10603,9 @@ module NotificationSubjectJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9967,8 +10614,9 @@ module NotificationSubjectJsonSerializeExtension =
                     (input.Type
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -9977,8 +10625,9 @@ module NotificationSubjectJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10006,8 +10655,9 @@ module PayloadCommitVerificationJsonSerializeExtension =
                     (input.Payload
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10016,8 +10666,9 @@ module PayloadCommitVerificationJsonSerializeExtension =
                     (input.Reason
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10026,8 +10677,9 @@ module PayloadCommitVerificationJsonSerializeExtension =
                     (input.Signature
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10036,7 +10688,7 @@ module PayloadCommitVerificationJsonSerializeExtension =
                     (input.Signer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PayloadUser.toJsonNode field
                      ))
                 )
@@ -10046,8 +10698,9 @@ module PayloadCommitVerificationJsonSerializeExtension =
                     (input.Verified
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10075,8 +10728,9 @@ module PublicKeyJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10085,8 +10739,9 @@ module PublicKeyJsonSerializeExtension =
                     (input.Fingerprint
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10095,8 +10750,9 @@ module PublicKeyJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10105,8 +10761,9 @@ module PublicKeyJsonSerializeExtension =
                     (input.Key
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10115,8 +10772,9 @@ module PublicKeyJsonSerializeExtension =
                     (input.KeyType
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10125,8 +10783,9 @@ module PublicKeyJsonSerializeExtension =
                     (input.ReadOnly
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10135,8 +10794,9 @@ module PublicKeyJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10145,8 +10805,9 @@ module PublicKeyJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10155,7 +10816,7 @@ module PublicKeyJsonSerializeExtension =
                     (input.User
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -10184,8 +10845,9 @@ module PullReviewJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10194,8 +10856,9 @@ module PullReviewJsonSerializeExtension =
                     (input.CommentsCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10204,8 +10867,9 @@ module PullReviewJsonSerializeExtension =
                     (input.CommitId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10214,8 +10878,9 @@ module PullReviewJsonSerializeExtension =
                     (input.Dismissed
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10224,8 +10889,9 @@ module PullReviewJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10234,8 +10900,9 @@ module PullReviewJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10244,8 +10911,9 @@ module PullReviewJsonSerializeExtension =
                     (input.Official
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10254,8 +10922,9 @@ module PullReviewJsonSerializeExtension =
                     (input.PullRequestUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10264,8 +10933,9 @@ module PullReviewJsonSerializeExtension =
                     (input.Stale
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10274,8 +10944,9 @@ module PullReviewJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10284,8 +10955,9 @@ module PullReviewJsonSerializeExtension =
                     (input.SubmittedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10294,7 +10966,7 @@ module PullReviewJsonSerializeExtension =
                     (input.Team
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Team.toJsonNode field
                      ))
                 )
@@ -10304,8 +10976,9 @@ module PullReviewJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10314,7 +10987,7 @@ module PullReviewJsonSerializeExtension =
                     (input.User
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -10343,8 +11016,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10353,8 +11027,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.CommitId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10363,8 +11038,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10373,8 +11049,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.DiffHunk
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10383,8 +11060,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10393,8 +11071,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10403,8 +11082,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.OriginalCommitId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10413,8 +11093,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.OriginalPosition
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10423,8 +11104,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.Path
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10433,8 +11115,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.Position
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10443,8 +11126,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.PullRequestReviewId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10453,8 +11137,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.PullRequestUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10463,7 +11148,7 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.Resolver
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -10473,8 +11158,9 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10483,7 +11169,7 @@ module PullReviewCommentJsonSerializeExtension =
                     (input.User
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -10512,8 +11198,9 @@ module ReactionJsonSerializeExtension =
                     (input.Content
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10522,8 +11209,9 @@ module ReactionJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10532,7 +11220,7 @@ module ReactionJsonSerializeExtension =
                     (input.User
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -10561,7 +11249,7 @@ module ReleaseJsonSerializeExtension =
                     (input.Assets
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -10572,6 +11260,7 @@ module ReleaseJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10580,7 +11269,7 @@ module ReleaseJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -10590,8 +11279,9 @@ module ReleaseJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10600,8 +11290,9 @@ module ReleaseJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10610,8 +11301,9 @@ module ReleaseJsonSerializeExtension =
                     (input.Draft
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10620,8 +11312,9 @@ module ReleaseJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10630,8 +11323,9 @@ module ReleaseJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10640,8 +11334,9 @@ module ReleaseJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10650,8 +11345,9 @@ module ReleaseJsonSerializeExtension =
                     (input.Prerelease
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10660,8 +11356,9 @@ module ReleaseJsonSerializeExtension =
                     (input.PublishedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10670,8 +11367,9 @@ module ReleaseJsonSerializeExtension =
                     (input.TagName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10680,8 +11378,9 @@ module ReleaseJsonSerializeExtension =
                     (input.TarballUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10690,8 +11389,9 @@ module ReleaseJsonSerializeExtension =
                     (input.TargetCommitish
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10700,8 +11400,9 @@ module ReleaseJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10710,8 +11411,9 @@ module ReleaseJsonSerializeExtension =
                     (input.ZipballUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10739,8 +11441,9 @@ module RepoCollaboratorPermissionJsonSerializeExtension =
                     (input.Permission
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10749,8 +11452,9 @@ module RepoCollaboratorPermissionJsonSerializeExtension =
                     (input.RoleName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10759,7 +11463,7 @@ module RepoCollaboratorPermissionJsonSerializeExtension =
                     (input.User
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -10788,7 +11492,7 @@ module RepoCommitJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitUser.toJsonNode field
                      ))
                 )
@@ -10798,7 +11502,7 @@ module RepoCommitJsonSerializeExtension =
                     (input.Committer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitUser.toJsonNode field
                      ))
                 )
@@ -10808,8 +11512,9 @@ module RepoCommitJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10818,7 +11523,7 @@ module RepoCommitJsonSerializeExtension =
                     (input.Tree
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitMeta.toJsonNode field
                      ))
                 )
@@ -10828,8 +11533,9 @@ module RepoCommitJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10838,7 +11544,7 @@ module RepoCommitJsonSerializeExtension =
                     (input.Verification
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PayloadCommitVerification.toJsonNode field
                      ))
                 )
@@ -10867,7 +11573,7 @@ module RepoTransferJsonSerializeExtension =
                     (input.Doer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -10877,7 +11583,7 @@ module RepoTransferJsonSerializeExtension =
                     (input.Recipient
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -10887,7 +11593,7 @@ module RepoTransferJsonSerializeExtension =
                     (input.Teams
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -10898,6 +11604,7 @@ module RepoTransferJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10925,8 +11632,9 @@ module RepositoryJsonSerializeExtension =
                     (input.AllowMergeCommits
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10935,8 +11643,9 @@ module RepositoryJsonSerializeExtension =
                     (input.AllowRebase
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10945,8 +11654,9 @@ module RepositoryJsonSerializeExtension =
                     (input.AllowRebaseExplicit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10955,8 +11665,9 @@ module RepositoryJsonSerializeExtension =
                     (input.AllowRebaseUpdate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10965,8 +11676,9 @@ module RepositoryJsonSerializeExtension =
                     (input.AllowSquashMerge
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10975,8 +11687,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Archived
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10985,8 +11698,9 @@ module RepositoryJsonSerializeExtension =
                     (input.AvatarUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -10995,8 +11709,9 @@ module RepositoryJsonSerializeExtension =
                     (input.CloneUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11005,8 +11720,9 @@ module RepositoryJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11015,8 +11731,9 @@ module RepositoryJsonSerializeExtension =
                     (input.DefaultAllowMaintainerEdit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11025,8 +11742,9 @@ module RepositoryJsonSerializeExtension =
                     (input.DefaultBranch
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11035,8 +11753,9 @@ module RepositoryJsonSerializeExtension =
                     (input.DefaultDeleteBranchAfterMerge
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11045,8 +11764,9 @@ module RepositoryJsonSerializeExtension =
                     (input.DefaultMergeStyle
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11055,8 +11775,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Description
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11065,8 +11786,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Empty
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11075,7 +11797,7 @@ module RepositoryJsonSerializeExtension =
                     (input.ExternalTracker
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> ExternalTracker.toJsonNode field
                      ))
                 )
@@ -11085,7 +11807,7 @@ module RepositoryJsonSerializeExtension =
                     (input.ExternalWiki
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> ExternalWiki.toJsonNode field
                      ))
                 )
@@ -11095,8 +11817,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Fork
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11105,8 +11828,9 @@ module RepositoryJsonSerializeExtension =
                     (input.ForksCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11115,8 +11839,9 @@ module RepositoryJsonSerializeExtension =
                     (input.FullName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11125,8 +11850,9 @@ module RepositoryJsonSerializeExtension =
                     (input.HasIssues
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11135,8 +11861,9 @@ module RepositoryJsonSerializeExtension =
                     (input.HasProjects
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11145,8 +11872,9 @@ module RepositoryJsonSerializeExtension =
                     (input.HasPullRequests
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11155,8 +11883,9 @@ module RepositoryJsonSerializeExtension =
                     (input.HasWiki
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11165,8 +11894,9 @@ module RepositoryJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11175,8 +11905,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11185,8 +11916,9 @@ module RepositoryJsonSerializeExtension =
                     (input.IgnoreWhitespaceConflicts
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11195,8 +11927,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Internal
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11205,7 +11938,7 @@ module RepositoryJsonSerializeExtension =
                     (input.InternalTracker
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> InternalTracker.toJsonNode field
                      ))
                 )
@@ -11215,8 +11948,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Language
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11225,8 +11959,9 @@ module RepositoryJsonSerializeExtension =
                     (input.LanguagesUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11235,8 +11970,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Link
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11245,8 +11981,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Mirror
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11255,8 +11992,9 @@ module RepositoryJsonSerializeExtension =
                     (input.MirrorInterval
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11265,8 +12003,9 @@ module RepositoryJsonSerializeExtension =
                     (input.MirrorUpdated
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11275,8 +12014,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11285,8 +12025,9 @@ module RepositoryJsonSerializeExtension =
                     (input.OpenIssuesCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11295,8 +12036,9 @@ module RepositoryJsonSerializeExtension =
                     (input.OpenPrCounter
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11305,8 +12047,9 @@ module RepositoryJsonSerializeExtension =
                     (input.OriginalUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11315,7 +12058,7 @@ module RepositoryJsonSerializeExtension =
                     (input.Owner
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -11325,7 +12068,7 @@ module RepositoryJsonSerializeExtension =
                     (input.Parent
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Repository.toJsonNode field
                      ))
                 )
@@ -11335,7 +12078,7 @@ module RepositoryJsonSerializeExtension =
                     (input.Permissions
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Permission.toJsonNode field
                      ))
                 )
@@ -11345,8 +12088,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Private
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11355,8 +12099,9 @@ module RepositoryJsonSerializeExtension =
                     (input.ReleaseCounter
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11365,7 +12110,7 @@ module RepositoryJsonSerializeExtension =
                     (input.RepoTransfer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> RepoTransfer.toJsonNode field
                      ))
                 )
@@ -11375,8 +12120,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Size
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11385,8 +12131,9 @@ module RepositoryJsonSerializeExtension =
                     (input.SshUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11395,8 +12142,9 @@ module RepositoryJsonSerializeExtension =
                     (input.StarsCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11405,8 +12153,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Template
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11415,8 +12164,9 @@ module RepositoryJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11425,8 +12175,9 @@ module RepositoryJsonSerializeExtension =
                     (input.WatchersCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11435,8 +12186,9 @@ module RepositoryJsonSerializeExtension =
                     (input.Website
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11464,7 +12216,7 @@ module SearchResultsJsonSerializeExtension =
                     (input.Data
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -11475,6 +12227,7 @@ module SearchResultsJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11483,8 +12236,9 @@ module SearchResultsJsonSerializeExtension =
                     (input.Ok
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11512,8 +12266,9 @@ module AnnotatedTagJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11522,7 +12277,7 @@ module AnnotatedTagJsonSerializeExtension =
                     (input.Object
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> AnnotatedTagObject.toJsonNode field
                      ))
                 )
@@ -11532,8 +12287,9 @@ module AnnotatedTagJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11542,8 +12298,9 @@ module AnnotatedTagJsonSerializeExtension =
                     (input.Tag
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11552,7 +12309,7 @@ module AnnotatedTagJsonSerializeExtension =
                     (input.Tagger
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitUser.toJsonNode field
                      ))
                 )
@@ -11562,8 +12319,9 @@ module AnnotatedTagJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11572,7 +12330,7 @@ module AnnotatedTagJsonSerializeExtension =
                     (input.Verification
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PayloadCommitVerification.toJsonNode field
                      ))
                 )
@@ -11601,8 +12359,9 @@ module CombinedStatusJsonSerializeExtension =
                     (input.CommitUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11611,7 +12370,7 @@ module CombinedStatusJsonSerializeExtension =
                     (input.Repository
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Repository.toJsonNode field
                      ))
                 )
@@ -11621,8 +12380,9 @@ module CombinedStatusJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11631,8 +12391,9 @@ module CombinedStatusJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11641,7 +12402,7 @@ module CombinedStatusJsonSerializeExtension =
                     (input.Statuses
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -11652,6 +12413,7 @@ module CombinedStatusJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11660,8 +12422,9 @@ module CombinedStatusJsonSerializeExtension =
                     (input.TotalCount
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11670,8 +12433,9 @@ module CombinedStatusJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11699,7 +12463,7 @@ module CommitJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -11709,7 +12473,7 @@ module CommitJsonSerializeExtension =
                     (input.Commit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> RepoCommit.toJsonNode field
                      ))
                 )
@@ -11719,7 +12483,7 @@ module CommitJsonSerializeExtension =
                     (input.Committer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -11729,8 +12493,9 @@ module CommitJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11739,7 +12504,7 @@ module CommitJsonSerializeExtension =
                     (input.Files
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -11750,6 +12515,7 @@ module CommitJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11758,8 +12524,9 @@ module CommitJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11768,7 +12535,7 @@ module CommitJsonSerializeExtension =
                     (input.Parents
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -11779,6 +12546,7 @@ module CommitJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11787,8 +12555,9 @@ module CommitJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11797,7 +12566,7 @@ module CommitJsonSerializeExtension =
                     (input.Stats
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> CommitStats.toJsonNode field
                      ))
                 )
@@ -11807,8 +12576,9 @@ module CommitJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11836,8 +12606,9 @@ module DeployKeyJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11846,8 +12617,9 @@ module DeployKeyJsonSerializeExtension =
                     (input.Fingerprint
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11856,8 +12628,9 @@ module DeployKeyJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11866,8 +12639,9 @@ module DeployKeyJsonSerializeExtension =
                     (input.Key
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11876,8 +12650,9 @@ module DeployKeyJsonSerializeExtension =
                     (input.KeyId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11886,8 +12661,9 @@ module DeployKeyJsonSerializeExtension =
                     (input.ReadOnly
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11896,7 +12672,7 @@ module DeployKeyJsonSerializeExtension =
                     (input.Repository
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Repository.toJsonNode field
                      ))
                 )
@@ -11906,8 +12682,9 @@ module DeployKeyJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11916,8 +12693,9 @@ module DeployKeyJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11945,7 +12723,7 @@ module FileDeleteResponseJsonSerializeExtension =
                     (input.Commit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> FileCommitResponse.toJsonNode field
                      ))
                 )
@@ -11955,8 +12733,10 @@ module FileDeleteResponseJsonSerializeExtension =
                     (input.Content
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> ((fun value -> System.Text.Json.Nodes.JsonObject ()) field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             ((fun value -> System.Text.Json.Nodes.JsonObject ()) field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -11965,7 +12745,7 @@ module FileDeleteResponseJsonSerializeExtension =
                     (input.Verification
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PayloadCommitVerification.toJsonNode field
                      ))
                 )
@@ -11994,7 +12774,7 @@ module FileResponseJsonSerializeExtension =
                     (input.Commit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> FileCommitResponse.toJsonNode field
                      ))
                 )
@@ -12004,7 +12784,7 @@ module FileResponseJsonSerializeExtension =
                     (input.Content
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> ContentsResponse.toJsonNode field
                      ))
                 )
@@ -12014,7 +12794,7 @@ module FileResponseJsonSerializeExtension =
                     (input.Verification
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PayloadCommitVerification.toJsonNode field
                      ))
                 )
@@ -12043,7 +12823,7 @@ module IssueJsonSerializeExtension =
                     (input.Assets
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -12054,6 +12834,7 @@ module IssueJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12062,7 +12843,7 @@ module IssueJsonSerializeExtension =
                     (input.Assignee
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -12072,7 +12853,7 @@ module IssueJsonSerializeExtension =
                     (input.Assignees
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -12083,6 +12864,7 @@ module IssueJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12091,8 +12873,9 @@ module IssueJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12101,8 +12884,9 @@ module IssueJsonSerializeExtension =
                     (input.ClosedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12111,8 +12895,9 @@ module IssueJsonSerializeExtension =
                     (input.Comments
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12121,8 +12906,9 @@ module IssueJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12131,8 +12917,9 @@ module IssueJsonSerializeExtension =
                     (input.DueDate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12141,8 +12928,9 @@ module IssueJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12151,8 +12939,9 @@ module IssueJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12161,8 +12950,9 @@ module IssueJsonSerializeExtension =
                     (input.IsLocked
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12171,7 +12961,7 @@ module IssueJsonSerializeExtension =
                     (input.Labels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -12182,6 +12972,7 @@ module IssueJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12190,7 +12981,7 @@ module IssueJsonSerializeExtension =
                     (input.Milestone
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Milestone.toJsonNode field
                      ))
                 )
@@ -12200,8 +12991,9 @@ module IssueJsonSerializeExtension =
                     (input.Number
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12210,8 +13002,9 @@ module IssueJsonSerializeExtension =
                     (input.OriginalAuthor
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12220,8 +13013,9 @@ module IssueJsonSerializeExtension =
                     (input.OriginalAuthorId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12230,7 +13024,7 @@ module IssueJsonSerializeExtension =
                     (input.PullRequest
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PullRequestMeta.toJsonNode field
                      ))
                 )
@@ -12240,8 +13034,9 @@ module IssueJsonSerializeExtension =
                     (input.Ref
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12250,7 +13045,7 @@ module IssueJsonSerializeExtension =
                     (input.Repository
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> RepositoryMeta.toJsonNode field
                      ))
                 )
@@ -12260,8 +13055,9 @@ module IssueJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12270,8 +13066,9 @@ module IssueJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12280,8 +13077,9 @@ module IssueJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12290,8 +13088,9 @@ module IssueJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12300,7 +13099,7 @@ module IssueJsonSerializeExtension =
                     (input.User
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -12329,7 +13128,7 @@ module NodeInfoJsonSerializeExtension =
                     (input.Metadata
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Type7.toJsonNode field
                      ))
                 )
@@ -12339,8 +13138,9 @@ module NodeInfoJsonSerializeExtension =
                     (input.OpenRegistrations
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12349,7 +13149,7 @@ module NodeInfoJsonSerializeExtension =
                     (input.Protocols
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -12360,6 +13160,7 @@ module NodeInfoJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12368,7 +13169,7 @@ module NodeInfoJsonSerializeExtension =
                     (input.Services
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> NodeInfoServices.toJsonNode field
                      ))
                 )
@@ -12378,7 +13179,7 @@ module NodeInfoJsonSerializeExtension =
                     (input.Software
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> NodeInfoSoftware.toJsonNode field
                      ))
                 )
@@ -12388,7 +13189,7 @@ module NodeInfoJsonSerializeExtension =
                     (input.Usage
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> NodeInfoUsage.toJsonNode field
                      ))
                 )
@@ -12398,8 +13199,9 @@ module NodeInfoJsonSerializeExtension =
                     (input.Version
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12427,7 +13229,7 @@ module NoteJsonSerializeExtension =
                     (input.Commit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Commit.toJsonNode field
                      ))
                 )
@@ -12437,8 +13239,9 @@ module NoteJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12466,8 +13269,9 @@ module NotificationThreadJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12476,8 +13280,9 @@ module NotificationThreadJsonSerializeExtension =
                     (input.Pinned
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12486,7 +13291,7 @@ module NotificationThreadJsonSerializeExtension =
                     (input.Repository
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Repository.toJsonNode field
                      ))
                 )
@@ -12496,7 +13301,7 @@ module NotificationThreadJsonSerializeExtension =
                     (input.Subject
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> NotificationSubject.toJsonNode field
                      ))
                 )
@@ -12506,8 +13311,9 @@ module NotificationThreadJsonSerializeExtension =
                     (input.Unread
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12516,8 +13322,9 @@ module NotificationThreadJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12526,8 +13333,9 @@ module NotificationThreadJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12555,8 +13363,9 @@ module PRBranchInfoJsonSerializeExtension =
                     (input.Label
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12565,8 +13374,9 @@ module PRBranchInfoJsonSerializeExtension =
                     (input.Ref
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12575,7 +13385,7 @@ module PRBranchInfoJsonSerializeExtension =
                     (input.Repo
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Repository.toJsonNode field
                      ))
                 )
@@ -12585,8 +13395,9 @@ module PRBranchInfoJsonSerializeExtension =
                     (input.RepoId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12595,8 +13406,9 @@ module PRBranchInfoJsonSerializeExtension =
                     (input.Sha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12624,8 +13436,9 @@ module PackageJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12634,7 +13447,7 @@ module PackageJsonSerializeExtension =
                     (input.Creator
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -12644,8 +13457,9 @@ module PackageJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12654,8 +13468,9 @@ module PackageJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12664,7 +13479,7 @@ module PackageJsonSerializeExtension =
                     (input.Owner
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -12674,7 +13489,7 @@ module PackageJsonSerializeExtension =
                     (input.Repository
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Repository.toJsonNode field
                      ))
                 )
@@ -12684,8 +13499,9 @@ module PackageJsonSerializeExtension =
                     (input.Type
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12694,8 +13510,9 @@ module PackageJsonSerializeExtension =
                     (input.Version
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12723,7 +13540,7 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Added
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -12734,6 +13551,7 @@ module PayloadCommitJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12742,7 +13560,7 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Author
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PayloadUser.toJsonNode field
                      ))
                 )
@@ -12752,7 +13570,7 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Committer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PayloadUser.toJsonNode field
                      ))
                 )
@@ -12762,8 +13580,9 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12772,8 +13591,9 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12782,7 +13602,7 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Modified
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -12793,6 +13613,7 @@ module PayloadCommitJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12801,7 +13622,7 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Removed
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -12812,6 +13633,7 @@ module PayloadCommitJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12820,8 +13642,9 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Timestamp
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12830,8 +13653,9 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12840,7 +13664,7 @@ module PayloadCommitJsonSerializeExtension =
                     (input.Verification
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PayloadCommitVerification.toJsonNode field
                      ))
                 )
@@ -12869,8 +13693,9 @@ module PullRequestJsonSerializeExtension =
                     (input.AllowMaintainerEdit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12879,7 +13704,7 @@ module PullRequestJsonSerializeExtension =
                     (input.Assignee
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -12889,7 +13714,7 @@ module PullRequestJsonSerializeExtension =
                     (input.Assignees
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -12900,6 +13725,7 @@ module PullRequestJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12908,7 +13734,7 @@ module PullRequestJsonSerializeExtension =
                     (input.Base
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PRBranchInfo.toJsonNode field
                      ))
                 )
@@ -12918,8 +13744,9 @@ module PullRequestJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12928,8 +13755,9 @@ module PullRequestJsonSerializeExtension =
                     (input.ClosedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12938,8 +13766,9 @@ module PullRequestJsonSerializeExtension =
                     (input.Comments
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12948,8 +13777,9 @@ module PullRequestJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12958,8 +13788,9 @@ module PullRequestJsonSerializeExtension =
                     (input.DiffUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12968,8 +13799,9 @@ module PullRequestJsonSerializeExtension =
                     (input.DueDate
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12978,7 +13810,7 @@ module PullRequestJsonSerializeExtension =
                     (input.Head
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PRBranchInfo.toJsonNode field
                      ))
                 )
@@ -12988,8 +13820,9 @@ module PullRequestJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -12998,8 +13831,9 @@ module PullRequestJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13008,8 +13842,9 @@ module PullRequestJsonSerializeExtension =
                     (input.IsLocked
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13018,7 +13853,7 @@ module PullRequestJsonSerializeExtension =
                     (input.Labels
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -13029,6 +13864,7 @@ module PullRequestJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13037,8 +13873,9 @@ module PullRequestJsonSerializeExtension =
                     (input.MergeBase
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13047,8 +13884,9 @@ module PullRequestJsonSerializeExtension =
                     (input.MergeCommitSha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13057,8 +13895,9 @@ module PullRequestJsonSerializeExtension =
                     (input.Mergeable
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13067,8 +13906,9 @@ module PullRequestJsonSerializeExtension =
                     (input.Merged
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13077,8 +13917,9 @@ module PullRequestJsonSerializeExtension =
                     (input.MergedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13087,7 +13928,7 @@ module PullRequestJsonSerializeExtension =
                     (input.MergedBy
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -13097,7 +13938,7 @@ module PullRequestJsonSerializeExtension =
                     (input.Milestone
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Milestone.toJsonNode field
                      ))
                 )
@@ -13107,8 +13948,9 @@ module PullRequestJsonSerializeExtension =
                     (input.Number
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13117,8 +13959,9 @@ module PullRequestJsonSerializeExtension =
                     (input.PatchUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13127,8 +13970,9 @@ module PullRequestJsonSerializeExtension =
                     (input.State
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13137,8 +13981,9 @@ module PullRequestJsonSerializeExtension =
                     (input.Title
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13147,8 +13992,9 @@ module PullRequestJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13157,8 +14003,9 @@ module PullRequestJsonSerializeExtension =
                     (input.Url
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13167,7 +14014,7 @@ module PullRequestJsonSerializeExtension =
                     (input.User
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -13196,8 +14043,9 @@ module TrackedTimeJsonSerializeExtension =
                     (input.Created
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13206,8 +14054,9 @@ module TrackedTimeJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13216,7 +14065,7 @@ module TrackedTimeJsonSerializeExtension =
                     (input.Issue
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Issue.toJsonNode field
                      ))
                 )
@@ -13226,8 +14075,9 @@ module TrackedTimeJsonSerializeExtension =
                     (input.IssueId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13236,8 +14086,9 @@ module TrackedTimeJsonSerializeExtension =
                     (input.Time
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13246,8 +14097,9 @@ module TrackedTimeJsonSerializeExtension =
                     (input.UserId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13256,8 +14108,9 @@ module TrackedTimeJsonSerializeExtension =
                     (input.UserName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13285,7 +14138,7 @@ module BranchJsonSerializeExtension =
                     (input.Commit
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> PayloadCommit.toJsonNode field
                      ))
                 )
@@ -13295,8 +14148,9 @@ module BranchJsonSerializeExtension =
                     (input.EffectiveBranchProtectionName
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13305,8 +14159,9 @@ module BranchJsonSerializeExtension =
                     (input.EnableStatusCheck
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13315,8 +14170,9 @@ module BranchJsonSerializeExtension =
                     (input.Name
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13325,8 +14181,9 @@ module BranchJsonSerializeExtension =
                     (input.Protected
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13335,8 +14192,9 @@ module BranchJsonSerializeExtension =
                     (input.RequiredApprovals
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13345,7 +14203,7 @@ module BranchJsonSerializeExtension =
                     (input.StatusCheckContexts
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field ->
                              ((fun field ->
                                  let arr = System.Text.Json.Nodes.JsonArray ()
@@ -13356,6 +14214,7 @@ module BranchJsonSerializeExtension =
                                  arr
                              )
                                  field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13364,8 +14223,9 @@ module BranchJsonSerializeExtension =
                     (input.UserCanMerge
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13374,8 +14234,9 @@ module BranchJsonSerializeExtension =
                     (input.UserCanPush
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13403,7 +14264,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.Assignee
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -13413,7 +14274,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.AssigneeTeam
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Team.toJsonNode field
                      ))
                 )
@@ -13423,8 +14284,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.Body
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13433,8 +14295,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.CreatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13443,7 +14306,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.DependentIssue
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Issue.toJsonNode field
                      ))
                 )
@@ -13453,8 +14316,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.HtmlUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13463,8 +14327,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.Id
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13473,8 +14338,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.IssueUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13483,7 +14349,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.Label
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Label.toJsonNode field
                      ))
                 )
@@ -13493,7 +14359,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.Milestone
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Milestone.toJsonNode field
                      ))
                 )
@@ -13503,8 +14369,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.NewRef
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13513,8 +14380,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.NewTitle
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13523,7 +14391,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.OldMilestone
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Milestone.toJsonNode field
                      ))
                 )
@@ -13533,8 +14401,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.OldProjectId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13543,8 +14412,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.OldRef
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13553,8 +14423,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.OldTitle
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13563,8 +14434,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.ProjectId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13573,8 +14445,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.PullRequestUrl
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13583,8 +14456,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.RefAction
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13593,7 +14467,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.RefComment
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Comment.toJsonNode field
                      ))
                 )
@@ -13603,8 +14477,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.RefCommitSha
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13613,7 +14488,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.RefIssue
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> Issue.toJsonNode field
                      ))
                 )
@@ -13623,8 +14498,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.RemovedAssignee
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<bool> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<bool> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13633,7 +14509,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.ResolveDoer
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )
@@ -13643,8 +14519,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.ReviewId
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13653,7 +14530,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.TrackedTime
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> TrackedTime.toJsonNode field
                      ))
                 )
@@ -13663,8 +14540,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.Type
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13673,8 +14551,9 @@ module TimelineCommentJsonSerializeExtension =
                     (input.UpdatedAt
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<string> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<string> field) :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -13683,7 +14562,7 @@ module TimelineCommentJsonSerializeExtension =
                     (input.User
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> User.toJsonNode field
                      ))
                 )

@@ -14,14 +14,13 @@ type internal JsonSerializeOutputSpec =
 module internal JsonSerializeGenerator =
     open Fantomas.FCS.Text.Range
 
+
     // The absolutely galaxy-brained implementation of JsonValue has `JsonValue.Parse "null"`
     // identically equal to null. We have to work around this later, but we might as well just
     // be efficient here and whip up the null directly.
     let private jsonNull () =
         SynExpr.createNull ()
-        |> SynExpr.applyFunction (
-            SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "op_Implicit" ]
-        )
+        |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
 
     /// Given `input.Ident`, for example, choose how to add it to the ambient `node`.
     /// The result is a line like `(fun ident -> InnerType.toJsonNode ident)` or `(fun ident -> JsonValue.Create ident)`.
@@ -56,6 +55,7 @@ module internal JsonSerializeGenerator =
             let inner, innerIsJsonNode = serializeNode ty
 
             SynExpr.applyFunction inner (SynExpr.createLongIdent [ "field" ; "Value" ])
+            |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
             |> SynExpr.ifThenElse (SynExpr.createLongIdent [ "field" ; "HasValue" ]) (jsonNull ())
             |> SynExpr.createLambda "field"
             |> fun e -> e, innerIsJsonNode
@@ -67,7 +67,12 @@ module internal JsonSerializeGenerator =
                 let inner, innerIsJsonNode = serializeNode ty
                 let target = SynExpr.applyFunction inner (SynExpr.createIdent "field")
 
-                if innerIsJsonNode then target else target |> SynExpr.paren
+                if innerIsJsonNode then
+                    target
+                else
+                    target
+                    |> SynExpr.paren
+                    |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
                 |> SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "field" ])
 
             [ noneClause ; someClause ]

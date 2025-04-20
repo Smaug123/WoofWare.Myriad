@@ -183,8 +183,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                     (input.IntMeasureOption
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
-                         | Some field -> (System.Text.Json.Nodes.JsonValue.Create<int<measure>> field)
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
+                         | Some field ->
+                             (System.Text.Json.Nodes.JsonValue.Create<int<measure>> field)
+                             :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -194,8 +196,9 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                      |> (fun field ->
                          if field.HasValue then
                              System.Text.Json.Nodes.JsonValue.Create<int<measure>> field.Value
+                             :> System.Text.Json.Nodes.JsonNode
                          else
-                             System.Text.Json.Nodes.JsonNode.op_Implicit null
+                             null :> System.Text.Json.Nodes.JsonNode
                      ))
                 )
 
@@ -284,7 +287,7 @@ module FooJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> HeaderAndValue.toJsonNode field
                      ))
                 )
@@ -312,7 +315,7 @@ module CollectRemainingJsonSerializeExtension =
                     (input.Message
                      |> (fun field ->
                          match field with
-                         | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                         | None -> null :> System.Text.Json.Nodes.JsonNode
                          | Some field -> HeaderAndValue.toJsonNode field
                      ))
                 )

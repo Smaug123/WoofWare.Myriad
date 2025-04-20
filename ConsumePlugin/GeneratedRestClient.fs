@@ -305,7 +305,7 @@ module PureGymApi =
                             foo
                             |> (fun field ->
                                 match field with
-                                | None -> System.Text.Json.Nodes.JsonNode.op_Implicit null
+                                | None -> null :> System.Text.Json.Nodes.JsonNode
                                 | Some field ->
                                     ((fun field ->
                                         let ret = System.Text.Json.Nodes.JsonObject ()
@@ -319,6 +319,7 @@ module PureGymApi =
                                         ret
                                     )
                                         field)
+                                    :> System.Text.Json.Nodes.JsonNode
                             )
                             |> (fun node -> if isNull node then "null" else node.ToJsonString ())
                         )
