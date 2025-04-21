@@ -198,7 +198,19 @@ and ObjectTypeDefinition =
                 |> Map.ofSeq
                 |> Some
 
-        let example = asObjOpt node "example"
+        let example =
+            match node.["example"] with
+            | null -> None
+            | :? JsonObject as o -> Some o
+            | :? JsonValue as s ->
+                // Gitea returns a stringified JSON object here, which from my limited reading is
+                // against the spec.
+                match JsonNode.Parse (s.GetValue<string> ()) with
+                | null ->
+                    // JSON null value; :shrug:
+                    None
+                | n -> n.AsObject () |> Some
+            | _ -> failwith "expected `example` key to be a JSON object"
 
         let required = asArrOpt'<string> node "required"
 
