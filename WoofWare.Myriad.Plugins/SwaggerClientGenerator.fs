@@ -1,7 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
 open System.Collections.Generic
-open System.IO
 open System.Threading
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Xml
@@ -19,6 +18,7 @@ type internal SwaggerClientConfig =
 type internal Produces =
     // TODO: this will cope with decoding JSON, plain text, etc
     | Produces of string
+    | OctetStream
 
 type internal Endpoint =
     {
@@ -47,16 +47,8 @@ type internal Types =
 
 [<RequireQualifiedAccess>]
 module internal SwaggerClientGenerator =
-    let outputFile = FileInfo "/tmp/output.txt"
 
-    // do
-    //     use _ = File.Create outputFile.FullName
-    //     ()
-
-    let log (line : string) =
-        // use w = outputFile.AppendText ()
-        // w.WriteLine line
-        ()
+    let internal log (_ : string) = ()
 
     let renderType (types : Types) (defn : Definition) : SynType option =
         match types.ByDefinition.TryGetValue defn with
@@ -477,6 +469,15 @@ module internal SwaggerClientGenerator =
                             (SynLongIdent.createS' [ "RestEase" ; "Header" ])
                             // Gitea, at least, starts with a `/`, which `Uri` then takes to indicate an absolute path.
                             (SynExpr.tuple [ SynExpr.CreateConst "Content-Type" ; SynExpr.CreateConst contentType ])
+                    | Produces.OctetStream ->
+                        SynAttribute.create
+                            (SynLongIdent.createS' [ "RestEase" ; "Header" ])
+                            // Gitea, at least, starts with a `/`, which `Uri` then takes to indicate an absolute path.
+                            (SynExpr.tuple
+                                [
+                                    SynExpr.CreateConst "Content-Type"
+                                    SynExpr.CreateConst "application/octet-stream"
+                                ])
                 ]
 
             returnType
@@ -512,6 +513,7 @@ module internal SwaggerClientGenerator =
         |> List.singleton
 
 open Myriad.Core
+open System.IO
 
 /// Myriad generator that stamps out an interface and class to access a Swagger-specified API.
 [<MyriadGenerator("swagger-client")>]
@@ -622,10 +624,11 @@ type SwaggerClientGenerator () =
 
                         let produces =
                             match endpoint.Produces with
-                            | None -> Produces "json"
+                            | None -> Produces.Produces "json"
                             | Some [] -> failwith $"API specified empty Produces: %s{path} (%O{method})"
-                            | Some [ MimeType "application/json" ] -> Produces "json"
-                            | Some [ MimeType (StartsWith "text/" t) ] -> Produces t
+                            | Some [ MimeType "application/octet-stream" ] -> Produces.OctetStream
+                            | Some [ MimeType "application/json" ] -> Produces.Produces "json"
+                            | Some [ MimeType (StartsWith "text/" t) ] -> Produces.Produces t
                             | Some [ MimeType s ] ->
                                 failwithf
                                     $"we don't support non-JSON Produces right now, got: %s{s} (%s{path} %O{method})"
