@@ -1,7 +1,6 @@
 namespace WoofWare.Myriad.Plugins
 
 open System
-open System.Runtime.InteropServices.ComTypes
 open System.Text
 open Fantomas.FCS.Syntax
 open WoofWare.Whippet.Fantomas
@@ -56,7 +55,7 @@ module internal JsonSerializeGenerator =
             match JsonNodeWithNullability.Identify ty with
             | JsonNodeWithNullability.Nullable ->
                 failwith
-                    $"We don't support nested nullable types, because we can't tell the difference between None and Some None: {SynType.toHumanReadableString ty}"
+                    $"We don't support nested nullable types, because we can't tell the difference between None and Some None: %s{SynType.toHumanReadableString ty}"
             | JsonNodeWithNullability.CannotBeNull ->
 
             let inner, innerIsJsonNode = serializeNodeNonNullable ty
@@ -72,7 +71,7 @@ module internal JsonSerializeGenerator =
             match JsonNodeWithNullability.Identify ty with
             | JsonNodeWithNullability.Nullable ->
                 failwith
-                    $"We don't support nested nullable types, because we can't tell the difference between None and Some None: {SynType.toHumanReadableString ty}"
+                    $"We don't support nested nullable types, because we can't tell the difference between None and Some None: %s{SynType.toHumanReadableString ty}"
             | JsonNodeWithNullability.CannotBeNull ->
 
             let noneClause = jsonNull () |> SynMatchClause.create (SynPat.named "None")
@@ -94,7 +93,7 @@ module internal JsonSerializeGenerator =
             |> SynExpr.createMatch (SynExpr.createIdent "field")
             |> SynExpr.createLambda "field"
             |> fun e -> e, true
-        | _ -> failwith $"Did not recognise type {SynType.toHumanReadableString fieldType} as nullable"
+        | _ -> failwith $"Did not recognise type %s{SynType.toHumanReadableString fieldType} as nullable"
 
     /// Given `input.Ident`, for example, choose how to add it to the ambient `node`.
     /// The result is a line like `(fun ident -> InnerType.toJsonNode ident)` or `(fun ident -> JsonValue.Create ident)`.
@@ -104,7 +103,7 @@ module internal JsonSerializeGenerator =
         match fieldType with
         | OptionType _
         | NullableType _ ->
-            failwith $"Tried to treat the type {SynType.toHumanReadableString fieldType} as non-nullable"
+            failwith $"Tried to treat the type %s{SynType.toHumanReadableString fieldType} as non-nullable"
         | DateOnly
         | DateTime
         | NumberType _
