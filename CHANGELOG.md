@@ -1,5 +1,12 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 6.0.1
+
+The `ArgParser` generator's type signatures have changed.
+The `parse'` method no longer takes `getEnvironmentVariable : string -> string`; it's now `getEnvironmentVariable : string -> string option`.
+This is to permit satisfying the `<Nullable>enable</Nullable>` compiler setting.
+If you're calling `parse'`, give it `Environment.GetEnvironmentVariable >> Option.ofObj` instead.
+
 # WoofWare.Myriad.Plugins 5.0.1
 
 We now enforce non-nullability on more types during JSON parse.

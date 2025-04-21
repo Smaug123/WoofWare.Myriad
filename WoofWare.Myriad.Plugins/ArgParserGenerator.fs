@@ -1396,7 +1396,7 @@ module internal ArgParserGenerator =
 
                             [
                                 SynMatchClause.create
-                                    SynPat.createNull
+                                    (SynPat.named "None")
                                     (SynExpr.sequential
                                         [
                                             errorMessage
@@ -1406,7 +1406,7 @@ module internal ArgParserGenerator =
                                             unchecked
                                         ])
 
-                                SynMatchClause.create (SynPat.named "x") parser
+                                SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "x" ]) parser
                             ]
                             |> SynExpr.createMatch result
                         | ArgumentDefaultSpec.FunctionCall name ->
@@ -1694,7 +1694,7 @@ module internal ArgParserGenerator =
                     [ Ident.create "parse'" ]
                     [
                         SynPat.named "getEnvironmentVariable"
-                        |> SynPat.annotateType (SynType.funFromDomain SynType.string SynType.string)
+                        |> SynPat.annotateType (SynType.funFromDomain SynType.string (SynType.option SynType.string))
                         argsParam
                     ]
                 |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ taggedType.Name ])
@@ -1708,7 +1708,12 @@ module internal ArgParserGenerator =
 
             let parse =
                 SynExpr.createLongIdent' parsePrimeCall
-                |> SynExpr.applyTo (SynExpr.createLongIdent [ "System" ; "Environment" ; "GetEnvironmentVariable" ])
+                |> SynExpr.applyTo (
+                    SynExpr.paren (
+                        SynExpr.createLongIdent [ "System" ; "Environment" ; "GetEnvironmentVariable" ]
+                        |> SynExpr.composeWith (SynExpr.createLongIdent [ "Option" ; "ofObj" ])
+                    )
+                )
                 |> SynExpr.applyTo (SynExpr.createIdent "args")
                 |> SynBinding.basic [ Ident.create "parse" ] [ argsParam ]
                 |> SynBinding.withReturnAnnotation (SynType.createLongIdent [ taggedType.Name ])
