@@ -68,7 +68,7 @@ module TestArgParser =
 
         let getEnvVar (_ : string) =
             Interlocked.Increment envCalls |> ignore<int>
-            ""
+            None
 
         let args = [ "--foo=3" ; "--non-existent" ; "--bar=4" ; "--baz=true" ]
 
@@ -91,7 +91,7 @@ module TestArgParser =
 
         let getEnvVar (_ : string) =
             Interlocked.Increment envCalls |> ignore<int>
-            ""
+            None
 
         let property (args : (int * bool) list) (afterDoubleDash : int list option) =
             let flatArgs =
@@ -127,7 +127,7 @@ module TestArgParser =
 
         let getEnvVar (_ : string) =
             Interlocked.Increment envCalls |> ignore<int>
-            ""
+            None
 
         let args = [ "--foo=3" ; "--rest" ; "7" ; "--bar=4" ; "--baz=true" ; "--rest=8" ]
 
@@ -150,7 +150,7 @@ module TestArgParser =
 
         let getEnvVar (_ : string) =
             Interlocked.Increment envCalls |> ignore<int>
-            ""
+            None
 
         let args = [ "--foo=3" ; "--foo" ; "9" ; "--bar=4" ; "--baz=true" ; "--baz=false" ]
 
@@ -171,7 +171,7 @@ Argument '--baz' was supplied multiple times: True and false"""
 
         let getEnvVar (_ : string) =
             Interlocked.Increment envCalls |> ignore<int>
-            ""
+            None
 
         let args = [ "--" ; "--foo=3" ; "--bar=4" ; "--baz=true" ]
 
@@ -191,7 +191,7 @@ Required argument '--baz' received no value"""
     let ``Help text`` () =
         let getEnvVar (s : string) =
             s |> shouldEqual "CONSUMEPLUGIN_THINGS"
-            "hi!"
+            Some "hi!"
 
         let exc =
             Assert.Throws<exn> (fun () -> Basic.parse' getEnvVar [ "--help" ] |> ignore<Basic>)
@@ -210,7 +210,7 @@ Required argument '--baz' received no value"""
 
         let getEnvVar (_ : string) =
             Interlocked.Increment envVars |> ignore<int>
-            ""
+            None
 
         let exc =
             Assert.Throws<exn> (fun () -> LoadsOfTypes.parse' getEnvVar [ "--help" ] |> ignore<LoadsOfTypes>)
@@ -236,7 +236,7 @@ Required argument '--baz' received no value"""
     let ``Default values`` () =
         let getEnvVar (s : string) =
             s |> shouldEqual "CONSUMEPLUGIN_THINGS"
-            "hi!"
+            Some "hi!"
 
         let args =
             [
@@ -264,7 +264,7 @@ Required argument '--baz' received no value"""
 
         let getEnvVar (_ : string) =
             Interlocked.Increment count |> ignore<int>
-            ""
+            None
 
         let exc =
             Assert.Throws<exn> (fun () -> DatesAndTimes.parse' getEnvVar [ "--help" ] |> ignore<DatesAndTimes>)
@@ -285,7 +285,7 @@ Required argument '--baz' received no value"""
 
         let getEnvVar (_ : string) =
             Interlocked.Increment count |> ignore<int>
-            ""
+            None
 
         let parsed =
             DatesAndTimes.parse'
@@ -448,7 +448,7 @@ Required argument '--exact' received no value"""
     let ``Bool env vars can be populated`` (envValue : string, boolValue : bool) =
         let getEnvVar (s : string) =
             s |> shouldEqual "CONSUMEPLUGIN_THINGS"
-            envValue
+            Some envValue
 
         ContainsBoolEnvVar.parse' getEnvVar []
         |> shouldEqual
@@ -470,7 +470,7 @@ Required argument '--exact' received no value"""
     let ``Flag DUs can be parsed from env var`` (envValue : string, boolValue : bool) =
         let getEnvVar (s : string) =
             s |> shouldEqual "CONSUMEPLUGIN_THINGS"
-            envValue
+            Some envValue
 
         let boolValue = if boolValue then DryRunMode.Dry else DryRunMode.Wet
 

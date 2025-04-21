@@ -23,7 +23,7 @@ module BasicNoPositionals =
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable : string -> string) (args : string list) : BasicNoPositionals =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : BasicNoPositionals =
         let ArgParser_errors = ResizeArray ()
 
         let helpText () =
@@ -223,7 +223,7 @@ module BasicNoPositionals =
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : BasicNoPositionals =
-        parse' System.Environment.GetEnvironmentVariable args
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -239,7 +239,7 @@ module Basic =
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable : string -> string) (args : string list) : Basic =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : Basic =
         let ArgParser_errors = ResizeArray ()
 
         let helpText () =
@@ -430,7 +430,7 @@ module Basic =
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : Basic =
-        parse' System.Environment.GetEnvironmentVariable args
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -446,7 +446,7 @@ module BasicWithIntPositionals =
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable : string -> string) (args : string list) : BasicWithIntPositionals =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : BasicWithIntPositionals =
         let ArgParser_errors = ResizeArray ()
 
         let helpText () =
@@ -633,7 +633,7 @@ module BasicWithIntPositionals =
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : BasicWithIntPositionals =
-        parse' System.Environment.GetEnvironmentVariable args
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -649,7 +649,7 @@ module LoadsOfTypes =
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypes =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : LoadsOfTypes =
         let ArgParser_errors = ResizeArray ()
 
         let helpText () =
@@ -1038,7 +1038,7 @@ module LoadsOfTypes =
             match arg_10 with
             | None ->
                 match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
-                | null ->
+                | None ->
                     sprintf
                         "No value was supplied for %s, nor was environment variable %s set"
                         (sprintf "--%s" "yet-another-optional-thing")
@@ -1046,7 +1046,7 @@ module LoadsOfTypes =
                     |> ArgParser_errors.Add
 
                     Unchecked.defaultof<_>
-                | x -> x |> (fun x -> x)
+                | Some x -> x |> (fun x -> x)
                 |> Choice2Of2
             | Some x -> Choice1Of2 x
 
@@ -1068,7 +1068,7 @@ module LoadsOfTypes =
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : LoadsOfTypes =
-        parse' System.Environment.GetEnvironmentVariable args
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -1084,7 +1084,7 @@ module LoadsOfTypesNoPositionals =
         /// Waiting to receive a value for the key we've already consumed
         | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable : string -> string) (args : string list) : LoadsOfTypesNoPositionals =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : LoadsOfTypesNoPositionals =
         let ArgParser_errors = ResizeArray ()
 
         let helpText () =
@@ -1476,7 +1476,7 @@ module LoadsOfTypesNoPositionals =
             match arg_9 with
             | None ->
                 match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
-                | null ->
+                | None ->
                     sprintf
                         "No value was supplied for %s, nor was environment variable %s set"
                         (sprintf "--%s" "yet-another-optional-thing")
@@ -1484,7 +1484,7 @@ module LoadsOfTypesNoPositionals =
                     |> ArgParser_errors.Add
 
                     Unchecked.defaultof<_>
-                | x -> x |> (fun x -> x)
+                | Some x -> x |> (fun x -> x)
                 |> Choice2Of2
             | Some x -> Choice1Of2 x
 
@@ -1505,7 +1505,7 @@ module LoadsOfTypesNoPositionals =
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : LoadsOfTypesNoPositionals =
-        parse' System.Environment.GetEnvironmentVariable args
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -1524,7 +1524,7 @@ module DatesAndTimesArgParse =
     /// Extension methods for argument parsing
     type DatesAndTimes with
 
-        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : DatesAndTimes =
+        static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : DatesAndTimes =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
@@ -1787,7 +1787,7 @@ module DatesAndTimesArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : DatesAndTimes =
-            DatesAndTimes.parse' System.Environment.GetEnvironmentVariable args
+            DatesAndTimes.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -1806,7 +1806,7 @@ module ParentRecordArgParse =
     /// Extension methods for argument parsing
     type ParentRecord with
 
-        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecord =
+        static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : ParentRecord =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
@@ -2016,7 +2016,7 @@ module ParentRecordArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ParentRecord =
-            ParentRecord.parse' System.Environment.GetEnvironmentVariable args
+            ParentRecord.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -2035,7 +2035,11 @@ module ParentRecordChildPosArgParse =
     /// Extension methods for argument parsing
     type ParentRecordChildPos with
 
-        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecordChildPos =
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : ParentRecordChildPos
+            =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
@@ -2209,7 +2213,7 @@ module ParentRecordChildPosArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ParentRecordChildPos =
-            ParentRecordChildPos.parse' System.Environment.GetEnvironmentVariable args
+            ParentRecordChildPos.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -2228,7 +2232,11 @@ module ParentRecordSelfPosArgParse =
     /// Extension methods for argument parsing
     type ParentRecordSelfPos with
 
-        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ParentRecordSelfPos =
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : ParentRecordSelfPos
+            =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
@@ -2388,7 +2396,7 @@ module ParentRecordSelfPosArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ParentRecordSelfPos =
-            ParentRecordSelfPos.parse' System.Environment.GetEnvironmentVariable args
+            ParentRecordSelfPos.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -2407,7 +2415,11 @@ module ChoicePositionalsArgParse =
     /// Extension methods for argument parsing
     type ChoicePositionals with
 
-        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ChoicePositionals =
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : ChoicePositionals
+            =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
@@ -2502,7 +2514,7 @@ module ChoicePositionalsArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ChoicePositionals =
-            ChoicePositionals.parse' System.Environment.GetEnvironmentVariable args
+            ChoicePositionals.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -2521,7 +2533,11 @@ module ContainsBoolEnvVarArgParse =
     /// Extension methods for argument parsing
     type ContainsBoolEnvVar with
 
-        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ContainsBoolEnvVar =
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : ContainsBoolEnvVar
+            =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
@@ -2653,7 +2669,7 @@ module ContainsBoolEnvVarArgParse =
                 match arg_0 with
                 | None ->
                     match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
-                    | null ->
+                    | None ->
                         sprintf
                             "No value was supplied for %s, nor was environment variable %s set"
                             (sprintf "--%s" "bool-var")
@@ -2661,7 +2677,7 @@ module ContainsBoolEnvVarArgParse =
                         |> ArgParser_errors.Add
 
                         Unchecked.defaultof<_>
-                    | x ->
+                    | Some x ->
                         if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
                             true
                         else if System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase) then
@@ -2679,7 +2695,7 @@ module ContainsBoolEnvVarArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ContainsBoolEnvVar =
-            ContainsBoolEnvVar.parse' System.Environment.GetEnvironmentVariable args
+            ContainsBoolEnvVar.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -2698,7 +2714,7 @@ module WithFlagDuArgParse =
     /// Extension methods for argument parsing
     type WithFlagDu with
 
-        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : WithFlagDu =
+        static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : WithFlagDu =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
@@ -2852,7 +2868,7 @@ module WithFlagDuArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : WithFlagDu =
-            WithFlagDu.parse' System.Environment.GetEnvironmentVariable args
+            WithFlagDu.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -2871,7 +2887,11 @@ module ContainsFlagEnvVarArgParse =
     /// Extension methods for argument parsing
     type ContainsFlagEnvVar with
 
-        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ContainsFlagEnvVar =
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : ContainsFlagEnvVar
+            =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
@@ -3018,7 +3038,7 @@ module ContainsFlagEnvVarArgParse =
                 match arg_0 with
                 | None ->
                     match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
-                    | null ->
+                    | None ->
                         sprintf
                             "No value was supplied for %s, nor was environment variable %s set"
                             (sprintf "--%s" "dry-run")
@@ -3026,7 +3046,7 @@ module ContainsFlagEnvVarArgParse =
                         |> ArgParser_errors.Add
 
                         Unchecked.defaultof<_>
-                    | x ->
+                    | Some x ->
                         if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
                             if true = Consts.FALSE then
                                 DryRunMode.Wet
@@ -3056,7 +3076,7 @@ module ContainsFlagEnvVarArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ContainsFlagEnvVar =
-            ContainsFlagEnvVar.parse' System.Environment.GetEnvironmentVariable args
+            ContainsFlagEnvVar.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -3076,7 +3096,7 @@ module ContainsFlagDefaultValueArgParse =
     type ContainsFlagDefaultValue with
 
         static member parse'
-            (getEnvironmentVariable : string -> string)
+            (getEnvironmentVariable : string -> string option)
             (args : string list)
             : ContainsFlagDefaultValue
             =
@@ -3239,7 +3259,7 @@ module ContainsFlagDefaultValueArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ContainsFlagDefaultValue =
-            ContainsFlagDefaultValue.parse' System.Environment.GetEnvironmentVariable args
+            ContainsFlagDefaultValue.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -3258,7 +3278,7 @@ module ManyLongFormsArgParse =
     /// Extension methods for argument parsing
     type ManyLongForms with
 
-        static member parse' (getEnvironmentVariable : string -> string) (args : string list) : ManyLongForms =
+        static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : ManyLongForms =
             let ArgParser_errors = ResizeArray ()
 
             let helpText () =
@@ -3504,7 +3524,7 @@ module ManyLongFormsArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ManyLongForms =
-            ManyLongForms.parse' System.Environment.GetEnvironmentVariable args
+            ManyLongForms.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -3524,7 +3544,7 @@ module FlagsIntoPositionalArgsArgParse =
     type FlagsIntoPositionalArgs with
 
         static member parse'
-            (getEnvironmentVariable : string -> string)
+            (getEnvironmentVariable : string -> string option)
             (args : string list)
             : FlagsIntoPositionalArgs
             =
@@ -3668,7 +3688,7 @@ module FlagsIntoPositionalArgsArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgs =
-            FlagsIntoPositionalArgs.parse' System.Environment.GetEnvironmentVariable args
+            FlagsIntoPositionalArgs.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -3688,7 +3708,7 @@ module FlagsIntoPositionalArgsChoiceArgParse =
     type FlagsIntoPositionalArgsChoice with
 
         static member parse'
-            (getEnvironmentVariable : string -> string)
+            (getEnvironmentVariable : string -> string option)
             (args : string list)
             : FlagsIntoPositionalArgsChoice
             =
@@ -3832,7 +3852,7 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgsChoice =
-            FlagsIntoPositionalArgsChoice.parse' System.Environment.GetEnvironmentVariable args
+            FlagsIntoPositionalArgsChoice.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -3852,7 +3872,7 @@ module FlagsIntoPositionalArgsIntArgParse =
     type FlagsIntoPositionalArgsInt with
 
         static member parse'
-            (getEnvironmentVariable : string -> string)
+            (getEnvironmentVariable : string -> string option)
             (args : string list)
             : FlagsIntoPositionalArgsInt
             =
@@ -3996,7 +4016,7 @@ module FlagsIntoPositionalArgsIntArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgsInt =
-            FlagsIntoPositionalArgsInt.parse' System.Environment.GetEnvironmentVariable args
+            FlagsIntoPositionalArgsInt.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -4016,7 +4036,7 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
     type FlagsIntoPositionalArgsIntChoice with
 
         static member parse'
-            (getEnvironmentVariable : string -> string)
+            (getEnvironmentVariable : string -> string option)
             (args : string list)
             : FlagsIntoPositionalArgsIntChoice
             =
@@ -4160,7 +4180,7 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgsIntChoice =
-            FlagsIntoPositionalArgsIntChoice.parse' System.Environment.GetEnvironmentVariable args
+            FlagsIntoPositionalArgsIntChoice.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System
@@ -4180,7 +4200,7 @@ module FlagsIntoPositionalArgs'ArgParse =
     type FlagsIntoPositionalArgs' with
 
         static member parse'
-            (getEnvironmentVariable : string -> string)
+            (getEnvironmentVariable : string -> string option)
             (args : string list)
             : FlagsIntoPositionalArgs'
             =
@@ -4324,4 +4344,4 @@ module FlagsIntoPositionalArgs'ArgParse =
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgs' =
-            FlagsIntoPositionalArgs'.parse' System.Environment.GetEnvironmentVariable args
+            FlagsIntoPositionalArgs'.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args

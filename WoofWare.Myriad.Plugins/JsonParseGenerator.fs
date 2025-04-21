@@ -46,7 +46,7 @@ module internal JsonParseGenerator =
         |> SynExpr.createMatch indexed
         |> SynExpr.paren
 
-    let assertNotNull (body : SynExpr) (boundIdent : Ident) : SynExpr =
+    let assertNotNull (boundIdent : Ident) (body : SynExpr) : SynExpr =
         let raiseExpr =
             SynExpr.CreateConst ()
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "ArgumentNullException" ])
@@ -108,7 +108,7 @@ module internal JsonParseGenerator =
         |> SynExpr.pipeThroughFunction (
             SynExpr.applyFunction
                 (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                (SynExpr.createLambda "elt" (assertNotNull body (Ident.create "elt")))
+                (SynExpr.createLambda "elt" (assertNotNull (Ident.create "elt") body))
         )
         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ collectionType ; "ofSeq" ])
 
