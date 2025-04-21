@@ -33,7 +33,7 @@ module internal JsonSerializeGenerator =
     // the JSON null value.
     let private jsonNull () = SynExpr.createIdent "None"
 
-    let assertNotNull (boundIdent : Ident) (body : SynExpr) : SynExpr =
+    let assertNotNull (boundIdent : Ident) (message : SynExpr) (body : SynExpr) : SynExpr =
         let raiseExpr =
             SynExpr.CreateConst ()
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "ArgumentNullException" ])
@@ -112,7 +112,11 @@ module internal JsonSerializeGenerator =
         | Guid
         | Uri ->
             // JsonValue.Create<type>
-            assertNotNull (Ident.create "field") (SynExpr.createIdent "field")
+            (SynExpr.createIdent "field")
+            |> assertNotNull
+                (Ident.create "field")
+                (SynExpr.CreateConst
+                    $"Expected type %s{SynType.toHumanReadableString fieldType} to be non-null, but received a null value when serialising")
             |> SynExpr.createLet
                 [
                     SynBinding.basic
@@ -218,7 +222,10 @@ module internal JsonSerializeGenerator =
                                 |> if keyTypeHasNonNullToString then
                                        id
                                    else
-                                       assertNotNull (Ident.create "key")
+                                       assertNotNull
+                                           (Ident.create "key")
+                                           (SynExpr.CreateConst
+                                               "A map key unexpectedly yielded null when we `ToString`'ed it. Map keys must yield non-null strings on `ToString`.")
 
                                 SynExpr.applyFunction
                                     (fst (

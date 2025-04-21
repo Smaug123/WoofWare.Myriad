@@ -618,7 +618,11 @@ module internal HttpClientGenerator =
                 | CannotBeNull ->
                     Let (
                         "jsonNode",
-                        JsonSerializeGenerator.assertNotNull (Ident.create "jsonNode") (SynExpr.createIdent "jsonNode")
+                        JsonSerializeGenerator.assertNotNull
+                            (Ident.create "jsonNode")
+                            (SynExpr.CreateConst
+                                $"Response from server was the JSON null object; expected a non-nullable type {SynType.toHumanReadableString info.TaskReturnType}")
+                            (SynExpr.createIdent "jsonNode")
                     )
 
             let setVariableHeaders =

@@ -82,6 +82,7 @@ module internal JsonParseGenerator =
     /// |> {collectionType}.ofSeq
     let asArrayMapped
         (propertyName : SynExpr option)
+        (elementType : SynType)
         (collectionType : string)
         (node : SynExpr)
         (body : SynExpr)
@@ -92,9 +93,20 @@ module internal JsonParseGenerator =
         | Some propertyName -> assertPropertyExists propertyName node
         |> SynExpr.callMethod "AsArray"
         |> SynExpr.pipeThroughFunction (
-            SynExpr.applyFunction
-                (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                (SynExpr.createLambda "elt" (JsonSerializeGenerator.assertNotNull (Ident.create "elt") body))
+            body
+            |> JsonSerializeGenerator.assertNotNull
+                (Ident.create "elt")
+                (match propertyName with
+                 | None ->
+                     SynExpr.CreateConst
+                         $"Expected element of array (element type %s{SynType.toHumanReadableString elementType}) to be non-null, but found a null element"
+                 | Some propertyName ->
+                     SynExpr.CreateConst
+                         $"Expected element of array (element type %s{SynType.toHumanReadableString elementType}) to be non-null, but found a null element, at %%s"
+                     |> SynExpr.applyFunction (SynExpr.createIdent "sprintf")
+                     |> SynExpr.applyTo propertyName)
+            |> SynExpr.createLambda "elt"
+            |> SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ])
         )
         |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ collectionType ; "ofSeq" ])
 
@@ -104,8 +116,10 @@ module internal JsonParseGenerator =
     /// fun kvp -> let key = {key(kvp)} in let value = {value(kvp)} in (key, value))
     /// The inputs will be fed with appropriate SynExprs to apply them to the `kvp.Key` and `kvp.Value` args.
     let dictionaryMapper
+        (propertyName : SynExpr option)
         (valueTypeIsNullable : bool)
         (key : SynExpr -> SynExpr)
+        (valueType : SynType)
         (value : SynExpr -> SynExpr)
         : SynExpr
         =
@@ -117,7 +131,21 @@ module internal JsonParseGenerator =
             if valueTypeIsNullable then
                 (value (SynExpr.createIdent "value"))
             else
-                JsonSerializeGenerator.assertNotNull (Ident.create "value") (value (SynExpr.createIdent "value"))
+                let errorMessage =
+                    match propertyName with
+                    | None ->
+                        SynExpr.CreateConst
+                            $"Expected dictionary value of type %s{SynType.toHumanReadableString valueType} to be non-null, but it was null"
+                    | Some propertyName ->
+                        SynExpr.CreateConst
+                            $"Expected dictionary value of type %s{SynType.toHumanReadableString valueType} to be non-null, but it was null, at key %%s"
+                        |> SynExpr.applyFunction (SynExpr.createIdent "sprintf")
+                        |> SynExpr.applyTo propertyName
+
+                JsonSerializeGenerator.assertNotNull
+                    (Ident.create "value")
+                    errorMessage
+                    (value (SynExpr.createIdent "value"))
 
         // No need to paren here, we're on the LHS of a `let`
         SynExpr.tupleNoParen [ SynExpr.createIdent "key" ; value ]
@@ -273,18 +301,18 @@ module internal JsonParseGenerator =
             match JsonNodeWithNullability.Identify ty with
             | CannotBeNull ->
                 parseNonNullableNode None options ty (SynExpr.createIdent "elt")
-                |> asArrayMapped propertyName "List" node
+                |> asArrayMapped propertyName ty "List" node
             | Nullable ->
                 parseNullableNode None options ty (SynExpr.createIdent "elt")
-                |> asArrayMapped propertyName "List" node
+                |> asArrayMapped propertyName ty "List" node
         | ArrayType ty ->
             match JsonNodeWithNullability.Identify ty with
             | CannotBeNull ->
                 parseNonNullableNode None options ty (SynExpr.createIdent "elt")
-                |> asArrayMapped propertyName "Array" node
+                |> asArrayMapped propertyName ty "Array" node
             | Nullable ->
                 parseNullableNode None options ty (SynExpr.createIdent "elt")
-                |> asArrayMapped propertyName "Array" node
+                |> asArrayMapped propertyName ty "Array" node
         | IDictionaryType (keyType, valueType) ->
             match JsonNodeWithNullability.Identify valueType with
             | CannotBeNull ->
@@ -293,7 +321,12 @@ module internal JsonParseGenerator =
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                        (dictionaryMapper false (parseKeyString keyType) (parseNonNullableNode None options valueType))
+                        (dictionaryMapper
+                            propertyName
+                            false
+                            (parseKeyString keyType)
+                            valueType
+                            (parseNonNullableNode None options valueType))
                 )
                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "dict")
             | Nullable ->
@@ -302,7 +335,12 @@ module internal JsonParseGenerator =
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                        (dictionaryMapper true (parseKeyString keyType) (parseNullableNode None options valueType))
+                        (dictionaryMapper
+                            propertyName
+                            true
+                            (parseKeyString keyType)
+                            valueType
+                            (parseNullableNode None options valueType))
                 )
                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "dict")
         | DictionaryType (keyType, valueType) ->
@@ -313,7 +351,12 @@ module internal JsonParseGenerator =
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                        (dictionaryMapper false (parseKeyString keyType) (parseNonNullableNode None options valueType))
+                        (dictionaryMapper
+                            propertyName
+                            false
+                            (parseKeyString keyType)
+                            valueType
+                            (parseNonNullableNode None options valueType))
                 )
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
@@ -329,7 +372,12 @@ module internal JsonParseGenerator =
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                        (dictionaryMapper true (parseKeyString keyType) (parseNullableNode None options valueType))
+                        (dictionaryMapper
+                            propertyName
+                            true
+                            (parseKeyString keyType)
+                            valueType
+                            (parseNullableNode None options valueType))
                 )
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
@@ -347,7 +395,12 @@ module internal JsonParseGenerator =
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                        (dictionaryMapper false (parseKeyString keyType) (parseNonNullableNode None options valueType))
+                        (dictionaryMapper
+                            propertyName
+                            false
+                            (parseKeyString keyType)
+                            valueType
+                            (parseNonNullableNode None options valueType))
                 )
                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "readOnlyDict")
             | Nullable ->
@@ -356,7 +409,12 @@ module internal JsonParseGenerator =
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                        (dictionaryMapper true (parseKeyString keyType) (parseNullableNode None options valueType))
+                        (dictionaryMapper
+                            propertyName
+                            true
+                            (parseKeyString keyType)
+                            valueType
+                            (parseNullableNode None options valueType))
                 )
                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "readOnlyDict")
         | MapType (keyType, valueType) ->
@@ -367,7 +425,12 @@ module internal JsonParseGenerator =
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                        (dictionaryMapper false (parseKeyString keyType) (parseNonNullableNode None options valueType))
+                        (dictionaryMapper
+                            propertyName
+                            false
+                            (parseKeyString keyType)
+                            valueType
+                            (parseNonNullableNode None options valueType))
                 )
                 |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Map" ; "ofSeq" ])
             | Nullable ->
@@ -376,7 +439,12 @@ module internal JsonParseGenerator =
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                        (dictionaryMapper true (parseKeyString keyType) (parseNullableNode None options valueType))
+                        (dictionaryMapper
+                            propertyName
+                            true
+                            (parseKeyString keyType)
+                            valueType
+                            (parseNullableNode None options valueType))
                 )
                 |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Map" ; "ofSeq" ])
         | BigInt ->
