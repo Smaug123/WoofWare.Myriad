@@ -23,7 +23,11 @@ module internal InternalTypeNotExtensionSerial =
                      let field = System.Text.Json.Nodes.JsonValue.Create<string> field
 
                      (match field with
-                      | null -> raise (System.ArgumentNullException ())
+                      | null ->
+                          raise (
+                              System.ArgumentNullException
+                                  "Expected type string to be non-null, but received a null value when serialising"
+                          )
                       | field -> field)
                  ))
             )
@@ -51,7 +55,11 @@ module internal InternalTypeExtensionJsonSerializeExtension =
                          let field = System.Text.Json.Nodes.JsonValue.Create<string> field
 
                          (match field with
-                          | null -> raise (System.ArgumentNullException ())
+                          | null ->
+                              raise (
+                                  System.ArgumentNullException
+                                      "Expected type string to be non-null, but received a null value when serialising"
+                              )
                           | field -> field)
                      ))
                 )
@@ -97,7 +105,11 @@ module JsonRecordType =
                 node.AsArray ()
                 |> Seq.map (fun elt ->
                     (match elt with
-                     | null -> raise (System.ArgumentNullException ())
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected element of array (element type int32) to be non-null, but found a null element"
+                         )
                      | elt -> elt.AsValue().GetValue<System.Int32> ())
                 )
                 |> Array.ofSeq
@@ -114,7 +126,11 @@ module JsonRecordType =
                 node.AsArray ()
                 |> Seq.map (fun elt ->
                     (match elt with
-                     | null -> raise (System.ArgumentNullException ())
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected element of array (element type string) to be non-null, but found a null element"
+                         )
                      | elt -> elt.AsValue().GetValue<System.String> ())
                 )
                 |> Array.ofSeq
@@ -141,7 +157,11 @@ module JsonRecordType =
                 node.AsArray ()
                 |> Seq.map (fun elt ->
                     (match elt with
-                     | null -> raise (System.ArgumentNullException ())
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected element of array (element type int32) to be non-null, but found a null element"
+                         )
                      | elt -> elt.AsValue().GetValue<System.Int32> ())
                 )
                 |> List.ofSeq

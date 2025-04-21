@@ -35,7 +35,7 @@ module internal JsonSerializeGenerator =
 
     let assertNotNull (boundIdent : Ident) (message : SynExpr) (body : SynExpr) : SynExpr =
         let raiseExpr =
-            SynExpr.CreateConst ()
+            message
             |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "ArgumentNullException" ])
             |> SynExpr.paren
             |> SynExpr.applyFunction (SynExpr.createIdent "raise")
