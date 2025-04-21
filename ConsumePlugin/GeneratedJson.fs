@@ -14,7 +14,20 @@ module internal InternalTypeNotExtensionSerial =
     /// Serialize to a JSON node
     let toJsonNode (input : InternalTypeNotExtensionSerial) : System.Text.Json.Nodes.JsonNode =
         let node = System.Text.Json.Nodes.JsonObject ()
-        do node.Add ((Literals.something), (input.InternalThing2 |> System.Text.Json.Nodes.JsonValue.Create<string>))
+
+        do
+            node.Add (
+                (Literals.something),
+                (input.InternalThing2
+                 |> (fun field ->
+                     let field = System.Text.Json.Nodes.JsonValue.Create<string> field
+
+                     (match field with
+                      | null -> raise (System.ArgumentNullException ())
+                      | field -> field)
+                 ))
+            )
+
         node :> _
 namespace ConsumePlugin
 
@@ -29,7 +42,20 @@ module internal InternalTypeExtensionJsonSerializeExtension =
         /// Serialize to a JSON node
         static member toJsonNode (input : InternalTypeExtension) : System.Text.Json.Nodes.JsonNode =
             let node = System.Text.Json.Nodes.JsonObject ()
-            do node.Add ((Literals.something), (input.ExternalThing |> System.Text.Json.Nodes.JsonValue.Create<string>))
+
+            do
+                node.Add (
+                    (Literals.something),
+                    (input.ExternalThing
+                     |> (fun field ->
+                         let field = System.Text.Json.Nodes.JsonValue.Create<string> field
+
+                         (match field with
+                          | null -> raise (System.ArgumentNullException ())
+                          | field -> field)
+                     ))
+                )
+
             node :> _
 
 namespace ConsumePlugin
@@ -40,16 +66,14 @@ module InnerType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerType =
         let arg_0 =
-            (match node.[(Literals.something)] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ((Literals.something))
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.[(Literals.something)] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ((Literals.something))
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         {
             Thing = arg_0
@@ -62,91 +86,85 @@ module JsonRecordType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordType =
         let arg_5 =
-            (match node.["f"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("f")
-                     )
-                 )
-             | v -> v)
-                .AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null -> raise (System.ArgumentNullException ())
-                 | elt -> elt.AsValue().GetValue<System.Int32> ())
-            )
-            |> Array.ofSeq
+            match node.["f"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("f")
+                    )
+                )
+            | Some node ->
+                node.AsArray ()
+                |> Seq.map (fun elt ->
+                    (match elt with
+                     | null -> raise (System.ArgumentNullException ())
+                     | elt -> elt.AsValue().GetValue<System.Int32> ())
+                )
+                |> Array.ofSeq
 
         let arg_4 =
-            (match node.["e"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("e")
-                     )
-                 )
-             | v -> v)
-                .AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null -> raise (System.ArgumentNullException ())
-                 | elt -> elt.AsValue().GetValue<System.String> ())
-            )
-            |> Array.ofSeq
+            match node.["e"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("e")
+                    )
+                )
+            | Some node ->
+                node.AsArray ()
+                |> Seq.map (fun elt ->
+                    (match elt with
+                     | null -> raise (System.ArgumentNullException ())
+                     | elt -> elt.AsValue().GetValue<System.String> ())
+                )
+                |> Array.ofSeq
 
         let arg_3 =
-            InnerType.jsonParse (
-                match node.["d"] with
-                | null ->
-                    raise (
-                        System.Collections.Generic.KeyNotFoundException (
-                            sprintf "Required key '%s' not found on JSON object" ("d")
-                        )
+            match node.["d"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("d")
                     )
-                | v -> v
-            )
+                )
+            | Some node -> InnerType.jsonParse node
 
         let arg_2 =
-            (match node.["hi"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("hi")
-                     )
-                 )
-             | v -> v)
-                .AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null -> raise (System.ArgumentNullException ())
-                 | elt -> elt.AsValue().GetValue<System.Int32> ())
-            )
-            |> List.ofSeq
+            match node.["hi"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("hi")
+                    )
+                )
+            | Some node ->
+                node.AsArray ()
+                |> Seq.map (fun elt ->
+                    (match elt with
+                     | null -> raise (System.ArgumentNullException ())
+                     | elt -> elt.AsValue().GetValue<System.Int32> ())
+                )
+                |> List.ofSeq
 
         let arg_1 =
-            (match node.["another-thing"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("another-thing")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.["another-thing"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("another-thing")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         let arg_0 =
-            (match node.["a"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("a")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Int32> ()
+            match node.["a"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("a")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.Int32> ()
 
         {
             A = arg_0
@@ -164,16 +182,14 @@ module internal InternalTypeNotExtension =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : InternalTypeNotExtension =
         let arg_0 =
-            (match node.[(Literals.something)] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ((Literals.something))
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.[(Literals.something)] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ((Literals.something))
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         {
             InternalThing = arg_0
@@ -189,16 +205,14 @@ module internal InternalTypeExtensionJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : InternalTypeExtension =
             let arg_0 =
-                (match node.[(Literals.something)] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ((Literals.something))
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.String> ()
+                match node.[(Literals.something)] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ((Literals.something))
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.String> ()
 
             {
                 ExternalThing = arg_0
@@ -213,248 +227,215 @@ module ToGetExtensionMethodJsonParseExtension =
 
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ToGetExtensionMethod =
-            let arg_20 = System.Numerics.BigInteger.Parse (node.["whiskey"].ToJsonString ())
+            let arg_20 =
+                match node.["whiskey"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("whiskey")
+                        )
+                    )
+                | Some node -> System.Numerics.BigInteger.Parse (node.ToJsonString ())
 
             let arg_19 =
-                (match node.["victor"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("victor")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Char> ()
+                match node.["victor"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("victor")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Char> ()
 
             let arg_18 =
-                (match node.["uniform"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("uniform")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Decimal> ()
+                match node.["uniform"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("uniform")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Decimal> ()
 
             let arg_17 =
-                (match node.["tango"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("tango")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.SByte> ()
+                match node.["tango"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("tango")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.SByte> ()
 
             let arg_16 =
-                (match node.["quebec"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("quebec")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Byte> ()
+                match node.["quebec"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("quebec")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Byte> ()
 
             let arg_15 =
-                (match node.["papa"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("papa")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Byte> ()
+                match node.["papa"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("papa")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Byte> ()
 
             let arg_14 =
-                (match node.["oscar"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("oscar")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.SByte> ()
+                match node.["oscar"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("oscar")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.SByte> ()
 
             let arg_13 =
-                (match node.["november"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("november")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.UInt16> ()
+                match node.["november"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("november")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.UInt16> ()
 
             let arg_12 =
-                (match node.["mike"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("mike")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Int16> ()
+                match node.["mike"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("mike")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Int16> ()
 
             let arg_11 =
-                (match node.["lima"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("lima")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.UInt32> ()
+                match node.["lima"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("lima")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.UInt32> ()
 
             let arg_10 =
-                (match node.["kilo"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("kilo")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Int32> ()
+                match node.["kilo"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("kilo")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Int32> ()
 
             let arg_9 =
-                (match node.["juliette"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("juliette")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.UInt32> ()
+                match node.["juliette"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("juliette")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.UInt32> ()
 
             let arg_8 =
-                (match node.["india"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("india")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Int32> ()
+                match node.["india"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("india")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Int32> ()
 
             let arg_7 =
-                (match node.["hotel"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("hotel")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.UInt64> ()
+                match node.["hotel"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("hotel")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.UInt64> ()
 
             let arg_6 =
-                (match node.["golf"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("golf")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Int64> ()
+                match node.["golf"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("golf")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Int64> ()
 
             let arg_5 =
-                (match node.["foxtrot"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("foxtrot")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Double> ()
+                match node.["foxtrot"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("foxtrot")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Double> ()
 
             let arg_4 =
-                (match node.["echo"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("echo")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Single> ()
+                match node.["echo"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("echo")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Single> ()
 
             let arg_3 =
-                (match node.["delta"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("delta")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Single> ()
+                match node.["delta"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("delta")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Single> ()
 
             let arg_2 =
-                (match node.["charlie"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("charlie")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.Double> ()
+                match node.["charlie"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("charlie")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.Double> ()
 
             let arg_1 =
-                (match node.["bravo"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("bravo")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<string> ()
-                |> System.Uri
+                match node.["bravo"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("bravo")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<string> () |> System.Uri
 
             let arg_0 =
-                (match node.["alpha"] with
-                 | null ->
-                     raise (
-                         System.Collections.Generic.KeyNotFoundException (
-                             sprintf "Required key '%s' not found on JSON object" ("alpha")
-                         )
-                     )
-                 | v -> v)
-                    .AsValue()
-                    .GetValue<System.String> ()
+                match node.["alpha"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("alpha")
+                        )
+                    )
+                | Some node -> node.AsValue().GetValue<System.String> ()
 
             {
                 Alpha = arg_0
