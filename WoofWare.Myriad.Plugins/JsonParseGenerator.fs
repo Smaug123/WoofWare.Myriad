@@ -11,6 +11,19 @@ type internal JsonParseOutputSpec =
         ExtensionMethods : bool
     }
 
+/// https://github.com/Smaug123/WoofWare.Myriad/issues/364
+/// The insane design of System.Text.Json is finally causing us to
+/// do vast amounts of coding rather than merely being very annoying.
+type internal JsonNodeWithNullability =
+    | CannotBeNull
+    | Nullable
+
+    static member Identify (ty : SynType) : JsonNodeWithNullability =
+        match ty with
+        | OptionType _
+        | NullableType _ -> JsonNodeWithNullability.Nullable
+        | _ -> JsonNodeWithNullability.CannotBeNull
+
 [<RequireQualifiedAccess>]
 module internal JsonParseGenerator =
     open Fantomas.FCS.Text.Range
@@ -181,10 +194,60 @@ module internal JsonParseGenerator =
                 ))
                 handler
 
+    let rec parseNullableNode
+        (propertyName : SynExpr option)
+        (options : JsonParseOption)
+        (fieldType : SynType)
+        (node : SynExpr)
+        : SynExpr
+        =
+        match fieldType with
+        | OptionType ty ->
+            match ty with
+            | OptionType _
+            | NullableType _ ->
+                failwith
+                    $"Nested nullable types are not supported, because we can't distinguish between None and Some None. {SynType.toHumanReadableString ty}"
+            | _ ->
+
+            let someClause =
+                parseNonNullableNode None options ty (SynExpr.createIdent "v")
+                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                |> SynMatchClause.create (SynPat.named "v")
+
+            [
+                SynMatchClause.create SynPat.createNull (SynExpr.createIdent "None")
+                someClause
+            ]
+            |> SynExpr.createMatch node
+        | NullableType ty ->
+            match ty with
+            | OptionType _
+            | NullableType _ ->
+                failwith
+                    $"Nested nullable types are not supported, because we can't distinguish between None and Some None. {SynType.toHumanReadableString ty}"
+            | _ ->
+
+            let someClause =
+                parseNonNullableNode None options ty (SynExpr.createIdent "v")
+                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Nullable" ])
+                |> SynMatchClause.create (SynPat.named "v")
+
+            [
+                SynMatchClause.create
+                    SynPat.createNull
+                    (SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Nullable" ]) (SynExpr.CreateConst ()))
+                someClause
+            ]
+            |> SynExpr.createMatch node
+        | _ ->
+            failwith
+                $"Encountered type {SynType.toHumanReadableString fieldType} which is expected to be nullable, but couldn't identify it"
+
     /// Given `node.["town"]`, for example, choose how to obtain a JSON value from it.
     /// The property name is used in error messages at runtime to show where a JSON
     /// parse error occurred; supply `None` to indicate "don't validate".
-    let rec parseNode
+    and parseNonNullableNode
         (propertyName : SynExpr option)
         (options : JsonParseOption)
         (fieldType : SynType)
@@ -193,6 +256,10 @@ module internal JsonParseGenerator =
         =
         // TODO: parsing format for DateTime etc
         match fieldType with
+        | OptionType _
+        | NullableType _ ->
+            failwith
+                $"Unexpectedly parsing nullable type {SynType.toHumanReadableString fieldType} as if it were non-nullable."
         // Struct types
         | DateOnly ->
             node
@@ -217,79 +284,116 @@ module internal JsonParseGenerator =
             |> asValueGetValue propertyName "string"
             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "DateTimeOffset" ; "Parse" ])
         | PrimitiveType typeName -> asValueGetValueIdent propertyName typeName node
-        | OptionType ty ->
-            let someClause =
-                parseNode None options ty (SynExpr.createIdent "v")
-                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
-                |> SynMatchClause.create (SynPat.named "v")
-
-            [
-                SynMatchClause.create SynPat.createNull (SynExpr.createIdent "None")
-                someClause
-            ]
-            |> SynExpr.createMatch node
-        | NullableType ty ->
-            let someClause =
-                parseNode None options ty (SynExpr.createIdent "v")
-                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Nullable" ])
-                |> SynMatchClause.create (SynPat.named "v")
-
-            [
-                SynMatchClause.create
-                    SynPat.createNull
-                    (SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Nullable" ]) (SynExpr.CreateConst ()))
-                someClause
-            ]
-            |> SynExpr.createMatch node
         | ListType ty ->
-            parseNode None options ty (SynExpr.createIdent "elt")
-            |> asArrayMapped propertyName "List" node
+            match JsonNodeWithNullability.Identify ty with
+            | CannotBeNull ->
+                parseNonNullableNode None options ty (SynExpr.createIdent "elt")
+                |> asArrayMapped propertyName "List" node
+            | Nullable ->
+                parseNullableNode None options ty (SynExpr.createIdent "elt")
+                |> asArrayMapped propertyName "List" node
         | ArrayType ty ->
-            parseNode None options ty (SynExpr.createIdent "elt")
-            |> asArrayMapped propertyName "Array" node
+            match JsonNodeWithNullability.Identify ty with
+            | CannotBeNull ->
+                parseNonNullableNode None options ty (SynExpr.createIdent "elt")
+                |> asArrayMapped propertyName "Array" node
+            | Nullable ->
+                parseNullableNode None options ty (SynExpr.createIdent "elt")
+                |> asArrayMapped propertyName "Array" node
         | IDictionaryType (keyType, valueType) ->
-            node
-            |> asObject propertyName
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.applyFunction
-                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                    (dictionaryMapper (parseKeyString keyType) (parseNode None options valueType))
-            )
-            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "dict")
+            match JsonNodeWithNullability.Identify valueType with
+            | CannotBeNull ->
+                node
+                |> asObject propertyName
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (dictionaryMapper (parseKeyString keyType) (parseNonNullableNode None options valueType))
+                )
+                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "dict")
+            | Nullable ->
+                node
+                |> asObject propertyName
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (dictionaryMapper (parseKeyString keyType) (parseNullableNode None options valueType))
+                )
+                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "dict")
         | DictionaryType (keyType, valueType) ->
-            node
-            |> asObject propertyName
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.applyFunction
-                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                    (dictionaryMapper (parseKeyString keyType) (parseNode None options valueType))
-            )
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.applyFunction
-                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                    (SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "KeyValuePair" ])
-            )
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "Dictionary" ]
-            )
+            match JsonNodeWithNullability.Identify valueType with
+            | CannotBeNull ->
+                node
+                |> asObject propertyName
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (dictionaryMapper (parseKeyString keyType) (parseNonNullableNode None options valueType))
+                )
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "KeyValuePair" ])
+                )
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "Dictionary" ]
+                )
+            | Nullable ->
+                node
+                |> asObject propertyName
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (dictionaryMapper (parseKeyString keyType) (parseNullableNode None options valueType))
+                )
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "KeyValuePair" ])
+                )
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.createLongIdent [ "System" ; "Collections" ; "Generic" ; "Dictionary" ]
+                )
         | IReadOnlyDictionaryType (keyType, valueType) ->
-            node
-            |> asObject propertyName
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.applyFunction
-                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                    (dictionaryMapper (parseKeyString keyType) (parseNode None options valueType))
-            )
-            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "readOnlyDict")
+            match JsonNodeWithNullability.Identify valueType with
+            | CannotBeNull ->
+                node
+                |> asObject propertyName
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (dictionaryMapper (parseKeyString keyType) (parseNonNullableNode None options valueType))
+                )
+                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "readOnlyDict")
+            | Nullable ->
+                node
+                |> asObject propertyName
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (dictionaryMapper (parseKeyString keyType) (parseNullableNode None options valueType))
+                )
+                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "readOnlyDict")
         | MapType (keyType, valueType) ->
-            node
-            |> asObject propertyName
-            |> SynExpr.pipeThroughFunction (
-                SynExpr.applyFunction
-                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                    (dictionaryMapper (parseKeyString keyType) (parseNode None options valueType))
-            )
-            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Map" ; "ofSeq" ])
+            match JsonNodeWithNullability.Identify valueType with
+            | CannotBeNull ->
+                node
+                |> asObject propertyName
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (dictionaryMapper (parseKeyString keyType) (parseNonNullableNode None options valueType))
+                )
+                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Map" ; "ofSeq" ])
+            | Nullable ->
+                node
+                |> asObject propertyName
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction
+                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                        (dictionaryMapper (parseKeyString keyType) (parseNullableNode None options valueType))
+                )
+                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Map" ; "ofSeq" ])
         | BigInt ->
             node
             |> SynExpr.callMethod "ToJsonString"
@@ -300,7 +404,7 @@ module internal JsonParseGenerator =
             |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure primType)
         | JsonNode -> node
         | UnitType -> SynExpr.CreateConst ()
-        | _ ->
+        | fieldType ->
             // Let's just hope that we've also got our own type annotation!
             let typeName =
                 match fieldType with
@@ -316,7 +420,10 @@ module internal JsonParseGenerator =
     /// The result of this function is the body of a let-binding (not including the LHS of that let-binding).
     let createParseRhs (options : JsonParseOption) (propertyName : SynExpr) (fieldType : SynType) : SynExpr =
         let objectToParse = SynExpr.createIdent "node" |> SynExpr.index propertyName
-        parseNode (Some propertyName) options fieldType objectToParse
+
+        match JsonNodeWithNullability.Identify fieldType with
+        | Nullable -> parseNullableNode (Some propertyName) options fieldType objectToParse
+        | CannotBeNull -> parseNonNullableNode (Some propertyName) options fieldType objectToParse
 
     let isJsonNumberHandling (literal : LongIdent) : bool =
         match List.rev literal |> List.map (fun ident -> ident.idText) with

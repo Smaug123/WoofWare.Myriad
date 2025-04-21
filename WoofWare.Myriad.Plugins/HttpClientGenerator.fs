@@ -1,6 +1,5 @@
 namespace WoofWare.Myriad.Plugins
 
-open System.IO
 open System.Net.Http
 open Fantomas.FCS.Syntax
 open WoofWare.Whippet.Fantomas
@@ -13,17 +12,6 @@ type internal HttpClientGeneratorOutputSpec =
 [<RequireQualifiedAccess>]
 module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range
-
-    let outputFile = FileInfo "/tmp/output.txt"
-
-    // do
-    //     use _ = File.Create outputFile.FullName
-    //     ()
-
-    let log (line : string) =
-        // use w = outputFile.AppendText ()
-        // w.WriteLine line
-        ()
 
     [<RequireQualifiedAccess>]
     type PathSpec =
@@ -409,30 +397,59 @@ module internal HttpClientGenerator =
             | String -> SynExpr.createIdent "responseString"
             | Stream -> SynExpr.createIdent "responseStream"
             | RestEaseResponseType contents ->
-                let deserialiser =
-                    JsonParseGenerator.parseNode
+                match JsonNodeWithNullability.Identify contents with
+                | CannotBeNull ->
+                    let deserialiser =
+                        JsonParseGenerator.parseNonNullableNode
+                            None
+                            JsonParseGenerator.JsonParseOption.None
+                            contents
+                            (SynExpr.createIdent "jsonNode")
+                        |> SynExpr.paren
+                        |> SynExpr.createThunk
+
+                    // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
+                    SynExpr.createNew
+                        (SynType.app' (SynType.createLongIdent' [ "RestEase" ; "Response" ]) [ SynType.Anon range0 ])
+                        (SynExpr.tupleNoParen
+                            [
+                                SynExpr.createIdent "responseString"
+                                SynExpr.createIdent "response"
+                                deserialiser
+                            ])
+                | Nullable ->
+                    let deserialiser =
+                        JsonParseGenerator.parseNullableNode
+                            None
+                            JsonParseGenerator.JsonParseOption.None
+                            contents
+                            (SynExpr.createIdent "jsonNode")
+                        |> SynExpr.paren
+                        |> SynExpr.createThunk
+
+                    // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
+                    SynExpr.createNew
+                        (SynType.app' (SynType.createLongIdent' [ "RestEase" ; "Response" ]) [ SynType.Anon range0 ])
+                        (SynExpr.tupleNoParen
+                            [
+                                SynExpr.createIdent "responseString"
+                                SynExpr.createIdent "response"
+                                deserialiser
+                            ])
+            | retType ->
+                match JsonNodeWithNullability.Identify retType with
+                | Nullable ->
+                    JsonParseGenerator.parseNullableNode
                         None
                         JsonParseGenerator.JsonParseOption.None
-                        contents
+                        retType
                         (SynExpr.createIdent "jsonNode")
-                    |> SynExpr.paren
-                    |> SynExpr.createThunk
-
-                // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
-                SynExpr.createNew
-                    (SynType.app' (SynType.createLongIdent' [ "RestEase" ; "Response" ]) [ SynType.Anon range0 ])
-                    (SynExpr.tupleNoParen
-                        [
-                            SynExpr.createIdent "responseString"
-                            SynExpr.createIdent "response"
-                            deserialiser
-                        ])
-            | retType ->
-                JsonParseGenerator.parseNode
-                    None
-                    JsonParseGenerator.JsonParseOption.None
-                    retType
-                    (SynExpr.createIdent "jsonNode")
+                | CannotBeNull ->
+                    JsonParseGenerator.parseNonNullableNode
+                        None
+                        JsonParseGenerator.JsonParseOption.None
+                        retType
+                        (SynExpr.createIdent "jsonNode")
 
         let contentTypeHeader, memberHeaders =
             info.Headers
