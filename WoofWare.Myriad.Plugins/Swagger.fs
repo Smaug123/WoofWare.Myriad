@@ -202,15 +202,10 @@ and ObjectTypeDefinition =
             match node.["example"] with
             | null -> None
             | :? JsonObject as o -> Some o
-            | :? JsonValue as s ->
-                // Gitea returns a stringified JSON object here, which from my limited reading is
-                // against the spec.
-                match JsonNode.Parse (s.GetValue<string> ()) with
-                | null ->
-                    // JSON null value; :shrug:
-                    None
-                | n -> n.AsObject () |> Some
-            | _ -> failwith "expected `example` key to be a JSON object"
+            | _ ->
+                // Gitea returns a stringified and malformed JSON object here.
+                // Don't throw; just omit.
+                None
 
         let required = asArrOpt'<string> node "required"
 
