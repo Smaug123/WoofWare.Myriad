@@ -1,6 +1,5 @@
 namespace WoofWare.Myriad.Plugins
 
-open System.IO
 open System.Net.Http
 open Fantomas.FCS.Syntax
 open WoofWare.Whippet.Fantomas
@@ -13,17 +12,6 @@ type internal HttpClientGeneratorOutputSpec =
 [<RequireQualifiedAccess>]
 module internal HttpClientGenerator =
     open Fantomas.FCS.Text.Range
-
-    let outputFile = FileInfo "/tmp/output.txt"
-
-    // do
-    //     use _ = File.Create outputFile.FullName
-    //     ()
-
-    let log (line : string) =
-        // use w = outputFile.AppendText ()
-        // w.WriteLine line
-        ()
 
     [<RequireQualifiedAccess>]
     type PathSpec =
@@ -409,30 +397,59 @@ module internal HttpClientGenerator =
             | String -> SynExpr.createIdent "responseString"
             | Stream -> SynExpr.createIdent "responseStream"
             | RestEaseResponseType contents ->
-                let deserialiser =
-                    JsonParseGenerator.parseNode
+                match JsonNodeWithNullability.Identify contents with
+                | CannotBeNull ->
+                    let deserialiser =
+                        JsonParseGenerator.parseNonNullableNode
+                            None
+                            JsonParseGenerator.JsonParseOption.None
+                            contents
+                            (SynExpr.createIdent "jsonNode")
+                        |> SynExpr.paren
+                        |> SynExpr.createThunk
+
+                    // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
+                    SynExpr.createNew
+                        (SynType.app' (SynType.createLongIdent' [ "RestEase" ; "Response" ]) [ SynType.Anon range0 ])
+                        (SynExpr.tupleNoParen
+                            [
+                                SynExpr.createIdent "responseString"
+                                SynExpr.createIdent "response"
+                                deserialiser
+                            ])
+                | Nullable ->
+                    let deserialiser =
+                        JsonParseGenerator.parseNullableNode
+                            None
+                            JsonParseGenerator.JsonParseOption.None
+                            contents
+                            (SynExpr.createIdent "jsonNode")
+                        |> SynExpr.paren
+                        |> SynExpr.createThunk
+
+                    // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
+                    SynExpr.createNew
+                        (SynType.app' (SynType.createLongIdent' [ "RestEase" ; "Response" ]) [ SynType.Anon range0 ])
+                        (SynExpr.tupleNoParen
+                            [
+                                SynExpr.createIdent "responseString"
+                                SynExpr.createIdent "response"
+                                deserialiser
+                            ])
+            | retType ->
+                match JsonNodeWithNullability.Identify retType with
+                | Nullable ->
+                    JsonParseGenerator.parseNullableNode
                         None
                         JsonParseGenerator.JsonParseOption.None
-                        contents
+                        retType
                         (SynExpr.createIdent "jsonNode")
-                    |> SynExpr.paren
-                    |> SynExpr.createThunk
-
-                // new RestEase.Response (content : string, response : HttpResponseMessage, deserialiser : unit -> 'T)
-                SynExpr.createNew
-                    (SynType.app' (SynType.createLongIdent' [ "RestEase" ; "Response" ]) [ SynType.Anon range0 ])
-                    (SynExpr.tupleNoParen
-                        [
-                            SynExpr.createIdent "responseString"
-                            SynExpr.createIdent "response"
-                            deserialiser
-                        ])
-            | retType ->
-                JsonParseGenerator.parseNode
-                    None
-                    JsonParseGenerator.JsonParseOption.None
-                    retType
-                    (SynExpr.createIdent "jsonNode")
+                | CannotBeNull ->
+                    JsonParseGenerator.parseNonNullableNode
+                        None
+                        JsonParseGenerator.JsonParseOption.None
+                        retType
+                        (SynExpr.createIdent "jsonNode")
 
         let contentTypeHeader, memberHeaders =
             info.Headers
@@ -505,23 +522,45 @@ module internal HttpClientGenerator =
                         )
                     ]
                 | BodyParamMethods.Serialise ty ->
+                    let isNullable =
+                        match JsonNodeWithNullability.Identify ty with
+                        | CannotBeNull -> false
+                        | Nullable -> true
+
                     [
                         Let (
                             "queryParams",
                             createStringContent (
                                 SynExpr.createIdent' bodyParamName
-                                |> SynExpr.pipeThroughFunction (fst (JsonSerializeGenerator.serializeNode ty))
+                                |> SynExpr.pipeThroughFunction (
+                                    fst (
+                                        (if isNullable then
+                                             JsonSerializeGenerator.serializeNodeNullable
+                                         else
+                                             JsonSerializeGenerator.serializeNodeNonNullable)
+                                            ty
+                                    )
+                                )
                                 |> SynExpr.pipeThroughFunction (
                                     SynExpr.createLambda
                                         "node"
-                                        (SynExpr.ifThenElse
-                                            (SynExpr.applyFunction
-                                                (SynExpr.createIdent "isNull")
-                                                (SynExpr.createIdent "node"))
-                                            (SynExpr.applyFunction
-                                                (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
-                                                (SynExpr.CreateConst ()))
-                                            (SynExpr.CreateConst "null"))
+                                        (if isNullable then
+                                             SynExpr.createMatch
+                                                 (SynExpr.createIdent "node")
+                                                 [
+                                                     SynMatchClause.create
+                                                         (SynPat.named "None")
+                                                         (SynExpr.CreateConst "null")
+                                                     SynMatchClause.create
+                                                         (SynPat.nameWithArgs "Some" [ SynPat.named "node" ])
+                                                         (SynExpr.applyFunction
+                                                             (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
+                                                             (SynExpr.CreateConst ()))
+                                                 ]
+                                         else
+                                             (SynExpr.applyFunction
+                                                 (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
+                                                 (SynExpr.CreateConst ())))
                                 )
                             )
                         )
@@ -567,6 +606,24 @@ module internal HttpClientGenerator =
                                 ])
                     )
                 )
+
+            let jsonNodeWithoutNull =
+                match JsonNodeWithNullability.Identify info.TaskReturnType with
+                | Nullable ->
+                    Let (
+                        "jsonNode",
+                        SynExpr.createIdent "jsonNode"
+                        |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Option" ; "ofObj" ])
+                    )
+                | CannotBeNull ->
+                    Let (
+                        "jsonNode",
+                        JsonSerializeGenerator.assertNotNull
+                            (Ident.create "jsonNode")
+                            (SynExpr.CreateConst
+                                $"Response from server was the JSON null object; expected a non-nullable type %s{SynType.toHumanReadableString info.TaskReturnType}")
+                            (SynExpr.createIdent "jsonNode")
+                    )
 
             let setVariableHeaders =
                 variableHeaders
@@ -642,6 +699,7 @@ module internal HttpClientGenerator =
                     yield responseString
                     yield responseStream
                     yield jsonNode
+                    yield jsonNodeWithoutNull
                 | String -> yield responseString
                 | Stream -> yield responseStream
                 | UnitType ->
@@ -650,6 +708,7 @@ module internal HttpClientGenerator =
                 | _ ->
                     yield responseStream
                     yield jsonNode
+                    yield jsonNodeWithoutNull
             ]
             |> SynExpr.createCompExpr "async" returnExpr
             |> SynExpr.startAsTask cancellationTokenArg

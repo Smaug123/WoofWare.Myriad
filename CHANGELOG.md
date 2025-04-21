@@ -1,5 +1,15 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 7.0.1
+
+All generators should now be compatible with `<Nullable>enable</Nullable>`.
+
+**Please test the results and let me know of unexpected failures.**
+There are a number of heuristics in this code, because:
+
+* `System.Text.Json.Nodes` is an unfathomably weird API which simply requires us to make educated guesses about whether a user-provided type is supposed to be nullable, despite this being irrelevant to the operation of `System.Text.Json`;
+* Some types (like `Uri` and `String`) have `ToString` methods which can't return `null`, but in general `Object.ToString` can of course return `null`, and as far as I can tell there is simply no way to know from the source alone whether a given type will have a nullable `ToString`.
+
 # WoofWare.Myriad.Plugins 6.0.1
 
 The `ArgParser` generator's type signatures have changed.

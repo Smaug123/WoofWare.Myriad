@@ -13,151 +13,147 @@ module JwtVaultAuthResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtVaultAuthResponse =
         let arg_10 =
-            (match node.["num_uses"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("num_uses")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Int32> ()
+            match node.["num_uses"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("num_uses")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.Int32> ()
 
         let arg_9 =
-            (match node.["orphan"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("orphan")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Boolean> ()
+            match node.["orphan"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("orphan")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.Boolean> ()
 
         let arg_8 =
-            (match node.["entity_id"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("entity_id")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.["entity_id"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("entity_id")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         let arg_7 =
-            (match node.["token_type"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("token_type")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.["token_type"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("token_type")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         let arg_6 =
-            (match node.["renewable"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("renewable")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Boolean> ()
+            match node.["renewable"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("renewable")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.Boolean> ()
 
         let arg_5 =
-            (match node.["lease_duration"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("lease_duration")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Int32> ()
+            match node.["lease_duration"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("lease_duration")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.Int32> ()
 
         let arg_4 =
-            (match node.["identity_policies"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("identity_policies")
-                     )
-                 )
-             | v -> v)
-                .AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null -> raise (System.ArgumentNullException ())
-                 | elt -> elt.AsValue().GetValue<System.String> ())
-            )
-            |> List.ofSeq
+            match node.["identity_policies"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("identity_policies")
+                    )
+                )
+            | Some node ->
+                node.AsArray ()
+                |> Seq.map (fun elt ->
+                    (match elt with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected element of array (element type string) to be non-null, but found a null element"
+                         )
+                     | elt -> elt.AsValue().GetValue<System.String> ())
+                )
+                |> List.ofSeq
 
         let arg_3 =
-            (match node.["token_policies"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("token_policies")
-                     )
-                 )
-             | v -> v)
-                .AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null -> raise (System.ArgumentNullException ())
-                 | elt -> elt.AsValue().GetValue<System.String> ())
-            )
-            |> List.ofSeq
+            match node.["token_policies"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("token_policies")
+                    )
+                )
+            | Some node ->
+                node.AsArray ()
+                |> Seq.map (fun elt ->
+                    (match elt with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected element of array (element type string) to be non-null, but found a null element"
+                         )
+                     | elt -> elt.AsValue().GetValue<System.String> ())
+                )
+                |> List.ofSeq
 
         let arg_2 =
-            (match node.["policies"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("policies")
-                     )
-                 )
-             | v -> v)
-                .AsArray ()
-            |> Seq.map (fun elt ->
-                (match elt with
-                 | null -> raise (System.ArgumentNullException ())
-                 | elt -> elt.AsValue().GetValue<System.String> ())
-            )
-            |> List.ofSeq
+            match node.["policies"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("policies")
+                    )
+                )
+            | Some node ->
+                node.AsArray ()
+                |> Seq.map (fun elt ->
+                    (match elt with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected element of array (element type string) to be non-null, but found a null element"
+                         )
+                     | elt -> elt.AsValue().GetValue<System.String> ())
+                )
+                |> List.ofSeq
 
         let arg_1 =
-            (match node.["accessor"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("accessor")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.["accessor"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("accessor")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         let arg_0 =
-            (match node.["client_token"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("client_token")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.["client_token"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("client_token")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         {
             ClientToken = arg_0
@@ -180,64 +176,54 @@ module JwtVaultResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtVaultResponse =
         let arg_4 =
-            JwtVaultAuthResponse.jsonParse (
-                match node.["auth"] with
-                | null ->
-                    raise (
-                        System.Collections.Generic.KeyNotFoundException (
-                            sprintf "Required key '%s' not found on JSON object" ("auth")
-                        )
+            match node.["auth"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("auth")
                     )
-                | v -> v
-            )
+                )
+            | Some node -> JwtVaultAuthResponse.jsonParse node
 
         let arg_3 =
-            (match node.["lease_duration"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("lease_duration")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Int32> ()
+            match node.["lease_duration"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("lease_duration")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.Int32> ()
 
         let arg_2 =
-            (match node.["renewable"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("renewable")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Boolean> ()
+            match node.["renewable"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("renewable")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.Boolean> ()
 
         let arg_1 =
-            (match node.["lease_id"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("lease_id")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.["lease_id"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("lease_id")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         let arg_0 =
-            (match node.["request_id"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("request_id")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.["request_id"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("request_id")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         {
             RequestId = arg_0
@@ -254,190 +240,246 @@ module JwtSecretResponse =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtSecretResponse =
         let arg_11 =
-            (match node.["data8"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("data8")
-                     )
-                 )
-             | v -> v)
-                .AsObject ()
-            |> Seq.map (fun kvp ->
-                let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<string> () |> System.Uri
-                key, value
-            )
-            |> Seq.map System.Collections.Generic.KeyValuePair
-            |> System.Collections.Generic.Dictionary
+            match node.["data8"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("data8")
+                    )
+                )
+            | Some node ->
+                node.AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = kvp.Value
+
+                    key,
+                    (match value with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected dictionary value of type URI to be non-null, but it was null"
+                         )
+                     | value -> value.AsValue().GetValue<string> () |> System.Uri)
+                )
+                |> Seq.map System.Collections.Generic.KeyValuePair
+                |> System.Collections.Generic.Dictionary
 
         let arg_10 =
-            (match node.["data7"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("data7")
-                     )
-                 )
-             | v -> v)
-                .AsObject ()
-            |> Seq.map (fun kvp ->
-                let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<System.Int32> ()
-                key, value
-            )
-            |> Map.ofSeq
+            match node.["data7"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("data7")
+                    )
+                )
+            | Some node ->
+                node.AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = kvp.Value
+
+                    key,
+                    (match value with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected dictionary value of type int32 to be non-null, but it was null"
+                         )
+                     | value -> value.AsValue().GetValue<System.Int32> ())
+                )
+                |> Map.ofSeq
 
         let arg_9 =
-            (match node.["data6"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("data6")
-                     )
-                 )
-             | v -> v)
-                .AsObject ()
-            |> Seq.map (fun kvp ->
-                let key = (kvp.Key) |> System.Uri
-                let value = (kvp.Value).AsValue().GetValue<System.String> ()
-                key, value
-            )
-            |> dict
+            match node.["data6"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("data6")
+                    )
+                )
+            | Some node ->
+                node.AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key) |> System.Uri
+                    let value = kvp.Value
+
+                    key,
+                    (match value with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected dictionary value of type string to be non-null, but it was null"
+                         )
+                     | value -> value.AsValue().GetValue<System.String> ())
+                )
+                |> dict
 
         let arg_8 =
-            (match node.["data5"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("data5")
-                     )
-                 )
-             | v -> v)
-                .AsObject ()
-            |> Seq.map (fun kvp ->
-                let key = (kvp.Key) |> System.Uri
-                let value = (kvp.Value).AsValue().GetValue<System.String> ()
-                key, value
-            )
-            |> readOnlyDict
+            match node.["data5"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("data5")
+                    )
+                )
+            | Some node ->
+                node.AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key) |> System.Uri
+                    let value = kvp.Value
+
+                    key,
+                    (match value with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected dictionary value of type string to be non-null, but it was null"
+                         )
+                     | value -> value.AsValue().GetValue<System.String> ())
+                )
+                |> readOnlyDict
 
         let arg_7 =
-            (match node.["data4"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("data4")
-                     )
-                 )
-             | v -> v)
-                .AsObject ()
-            |> Seq.map (fun kvp ->
-                let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<System.String> ()
-                key, value
-            )
-            |> Map.ofSeq
+            match node.["data4"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("data4")
+                    )
+                )
+            | Some node ->
+                node.AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = kvp.Value
+
+                    key,
+                    (match value with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected dictionary value of type string to be non-null, but it was null"
+                         )
+                     | value -> value.AsValue().GetValue<System.String> ())
+                )
+                |> Map.ofSeq
 
         let arg_6 =
-            (match node.["data3"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("data3")
-                     )
-                 )
-             | v -> v)
-                .AsObject ()
-            |> Seq.map (fun kvp ->
-                let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<System.String> ()
-                key, value
-            )
-            |> Seq.map System.Collections.Generic.KeyValuePair
-            |> System.Collections.Generic.Dictionary
+            match node.["data3"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("data3")
+                    )
+                )
+            | Some node ->
+                node.AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = kvp.Value
+
+                    key,
+                    (match value with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected dictionary value of type string to be non-null, but it was null"
+                         )
+                     | value -> value.AsValue().GetValue<System.String> ())
+                )
+                |> Seq.map System.Collections.Generic.KeyValuePair
+                |> System.Collections.Generic.Dictionary
 
         let arg_5 =
-            (match node.["data2"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("data2")
-                     )
-                 )
-             | v -> v)
-                .AsObject ()
-            |> Seq.map (fun kvp ->
-                let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<System.String> ()
-                key, value
-            )
-            |> dict
+            match node.["data2"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("data2")
+                    )
+                )
+            | Some node ->
+                node.AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = kvp.Value
+
+                    key,
+                    (match value with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected dictionary value of type string to be non-null, but it was null"
+                         )
+                     | value -> value.AsValue().GetValue<System.String> ())
+                )
+                |> dict
 
         let arg_4 =
-            (match node.["data"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("data")
-                     )
-                 )
-             | v -> v)
-                .AsObject ()
-            |> Seq.map (fun kvp ->
-                let key = (kvp.Key)
-                let value = (kvp.Value).AsValue().GetValue<System.String> ()
-                key, value
-            )
-            |> readOnlyDict
+            match node.["data"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("data")
+                    )
+                )
+            | Some node ->
+                node.AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = kvp.Value
+
+                    key,
+                    (match value with
+                     | null ->
+                         raise (
+                             System.ArgumentNullException
+                                 "Expected dictionary value of type string to be non-null, but it was null"
+                         )
+                     | value -> value.AsValue().GetValue<System.String> ())
+                )
+                |> readOnlyDict
 
         let arg_3 =
-            (match node.["lease_duration"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("lease_duration")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Int32> ()
+            match node.["lease_duration"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("lease_duration")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.Int32> ()
 
         let arg_2 =
-            (match node.["renewable"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("renewable")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.Boolean> ()
+            match node.["renewable"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("renewable")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.Boolean> ()
 
         let arg_1 =
-            (match node.["lease_id"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("lease_id")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.["lease_id"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("lease_id")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         let arg_0 =
-            (match node.["request_id"] with
-             | null ->
-                 raise (
-                     System.Collections.Generic.KeyNotFoundException (
-                         sprintf "Required key '%s' not found on JSON object" ("request_id")
-                     )
-                 )
-             | v -> v)
-                .AsValue()
-                .GetValue<System.String> ()
+            match node.["request_id"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("request_id")
+                    )
+                )
+            | Some node -> node.AsValue().GetValue<System.String> ()
 
         {
             RequestId = arg_0
@@ -508,6 +550,15 @@ module VaultClient =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type JwtSecretResponse"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return JwtSecretResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -543,6 +594,15 @@ module VaultClient =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type JwtVaultResponse"
+                             )
+                         | jsonNode -> jsonNode)
 
                     return JwtVaultResponse.jsonParse jsonNode
                 }
@@ -602,6 +662,15 @@ module VaultClientNonExtensionMethod =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type JwtSecretResponse"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return JwtSecretResponse.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -637,6 +706,15 @@ module VaultClientNonExtensionMethod =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type JwtVaultResponse"
+                             )
+                         | jsonNode -> jsonNode)
 
                     return JwtVaultResponse.jsonParse jsonNode
                 }
@@ -699,6 +777,15 @@ module VaultClientExtensionMethodHttpClientExtension =
                             System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                             |> Async.AwaitTask
 
+                        let jsonNode =
+                            (match jsonNode with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException
+                                         "Response from server was the JSON null object; expected a non-nullable type JwtSecretResponse"
+                                 )
+                             | jsonNode -> jsonNode)
+
                         return JwtSecretResponse.jsonParse jsonNode
                     }
                     |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -734,6 +821,15 @@ module VaultClientExtensionMethodHttpClientExtension =
                         let! jsonNode =
                             System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                             |> Async.AwaitTask
+
+                        let jsonNode =
+                            (match jsonNode with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException
+                                         "Response from server was the JSON null object; expected a non-nullable type JwtVaultResponse"
+                                 )
+                             | jsonNode -> jsonNode)
 
                         return JwtVaultResponse.jsonParse jsonNode
                     }

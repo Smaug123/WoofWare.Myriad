@@ -48,11 +48,24 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Gym list"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return
                         jsonNode.AsArray ()
                         |> Seq.map (fun elt ->
                             (match elt with
-                             | null -> raise (System.ArgumentNullException ())
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException
+                                         "Expected element of array (element type Gym) to be non-null, but found a null element"
+                                 )
                              | elt -> Gym.jsonParse elt)
                         )
                         |> List.ofSeq
@@ -89,6 +102,15 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type GymAttendance"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return GymAttendance.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -123,6 +145,15 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type GymAttendance"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return GymAttendance.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -152,6 +183,15 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Member"
+                             )
+                         | jsonNode -> jsonNode)
 
                     return Member.jsonParse jsonNode
                 }
@@ -186,6 +226,15 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Gym"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return Gym.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -215,6 +264,15 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type MemberActivityDto"
+                             )
+                         | jsonNode -> jsonNode)
 
                     return MemberActivityDto.jsonParse jsonNode
                 }
@@ -246,6 +304,15 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type UriThing"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return UriThing.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -273,23 +340,42 @@ module PureGymApi =
                             foo
                             |> (fun field ->
                                 match field with
-                                | None -> null :> System.Text.Json.Nodes.JsonNode
+                                | None -> None
                                 | Some field ->
-                                    ((fun field ->
-                                        let ret = System.Text.Json.Nodes.JsonObject ()
+                                    (field
+                                     |> (fun field ->
+                                         let ret = System.Text.Json.Nodes.JsonObject ()
 
-                                        for (KeyValue (key, value)) in field do
-                                            ret.Add (
-                                                key.ToString (),
-                                                System.Text.Json.Nodes.JsonValue.Create<string> value
-                                            )
+                                         for (KeyValue (key, value)) in field do
+                                             let key = key.ToString ()
 
-                                        ret
-                                    )
-                                        field)
+                                             ret.Add (
+                                                 key,
+                                                 (fun field ->
+                                                     let field =
+                                                         System.Text.Json.Nodes.JsonValue.Create<string> field
+
+                                                     (match field with
+                                                      | null ->
+                                                          raise (
+                                                              System.ArgumentNullException
+                                                                  "Expected type string to be non-null, but received a null value when serialising"
+                                                          )
+                                                      | field -> field)
+                                                 )
+                                                     value
+                                             )
+
+                                         ret
+                                     ))
                                     :> System.Text.Json.Nodes.JsonNode
+                                    |> Some
                             )
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun node ->
+                                match node with
+                                | None -> "null"
+                                | Some node -> node.ToJsonString ()
+                            )
                         )
 
                     do httpMessage.Content <- queryParams
@@ -301,15 +387,25 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode = jsonNode |> Option.ofObj
+
                     return
                         match jsonNode with
-                        | null -> None
-                        | v ->
+                        | None -> None
+                        | Some v ->
                             v.AsObject ()
                             |> Seq.map (fun kvp ->
                                 let key = (kvp.Key)
-                                let value = (kvp.Value).AsValue().GetValue<System.String> ()
-                                key, value
+                                let value = kvp.Value
+
+                                key,
+                                (match value with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException
+                                             "Expected dictionary value of type string to be non-null, but it was null"
+                                     )
+                                 | value -> value.AsValue().GetValue<System.String> ())
                             )
                             |> Map.ofSeq
                             |> Some
@@ -353,6 +449,15 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Sessions"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return Sessions.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -393,6 +498,15 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Sessions"
+                             )
+                         | jsonNode -> jsonNode)
 
                     return Sessions.jsonParse jsonNode
                 }
@@ -553,9 +667,7 @@ module PureGymApi =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            user
-                            |> PureGym.Member.toJsonNode
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
 
                     do httpMessage.Content <- queryParams
@@ -587,8 +699,18 @@ module PureGymApi =
                     let queryParams =
                         new System.Net.Http.StringContent (
                             user
-                            |> System.Text.Json.Nodes.JsonValue.Create<Uri>
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun field ->
+                                let field = System.Text.Json.Nodes.JsonValue.Create<Uri> field
+
+                                (match field with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException
+                                             "Expected type URI to be non-null, but received a null value when serialising"
+                                     )
+                                 | field -> field)
+                            )
+                            |> (fun node -> node.ToJsonString ())
                         )
 
                     do httpMessage.Content <- queryParams
@@ -620,8 +742,18 @@ module PureGymApi =
                     let queryParams =
                         new System.Net.Http.StringContent (
                             user
-                            |> System.Text.Json.Nodes.JsonValue.Create<int>
-                            |> (fun node -> if isNull node then "null" else node.ToJsonString ())
+                            |> (fun field ->
+                                let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+
+                                (match field with
+                                 | null ->
+                                     raise (
+                                         System.ArgumentNullException
+                                             "Expected type int32 to be non-null, but received a null value when serialising"
+                                     )
+                                 | field -> field)
+                            )
+                            |> (fun node -> node.ToJsonString ())
                         )
 
                     do httpMessage.Content <- queryParams
@@ -885,6 +1017,15 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Response<MemberActivityDto>"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return
                         new RestEase.Response<_> (
                             responseString,
@@ -920,6 +1061,15 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type RestEase.Response<MemberActivityDto>"
+                             )
+                         | jsonNode -> jsonNode)
 
                     return
                         new RestEase.Response<_> (
@@ -957,6 +1107,15 @@ module PureGymApi =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Response<MemberActivityDto>"
+                             )
+                         | jsonNode -> jsonNode)
+
                     return
                         new RestEase.Response<_> (
                             responseString,
@@ -992,6 +1151,15 @@ module PureGymApi =
                     let! jsonNode =
                         System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type RestEase.Response<MemberActivityDto>"
+                             )
+                         | jsonNode -> jsonNode)
 
                     return
                         new RestEase.Response<_> (

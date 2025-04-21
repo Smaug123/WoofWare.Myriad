@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <OtherFlags>--reflectionfree $(OtherFlags)</OtherFlags>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <MyriadSdkGenerator Include="$(MSBuildThisFileDirectory)..\WoofWare.Myriad.Plugins\bin\$(Configuration)\net6.0\WoofWare.Myriad.Plugins.dll"/>

@@ -10,24 +10,100 @@ type internal JsonSerializeOutputSpec =
         ExtensionMethods : bool
     }
 
+/// https://github.com/Smaug123/WoofWare.Myriad/issues/364
+/// The insane design of System.Text.Json is finally causing us to
+/// do vast amounts of coding rather than merely being very annoying.
+type internal JsonNodeWithNullability =
+    | CannotBeNull
+    | Nullable
+
+    static member Identify (ty : SynType) : JsonNodeWithNullability =
+        match ty with
+        | OptionType _
+        | NullableType _ -> JsonNodeWithNullability.Nullable
+        | _ -> JsonNodeWithNullability.CannotBeNull
+
 [<RequireQualifiedAccess>]
 module internal JsonSerializeGenerator =
     open Fantomas.FCS.Text.Range
 
 
     // The absolutely galaxy-brained implementation of JsonValue has `JsonValue.Parse "null"`
-    // identically equal to null. We have to work around this later, but we might as well just
-    // be efficient here and whip up the null directly.
-    let private jsonNull () =
-        SynExpr.createNull ()
-        |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+    // identically equal to null, so it's hard to use that type. We use `None` instead to represent
+    // the JSON null value.
+    let private jsonNull () = SynExpr.createIdent "None"
+
+    let assertNotNull (boundIdent : Ident) (message : SynExpr) (body : SynExpr) : SynExpr =
+        let raiseExpr =
+            message
+            |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "ArgumentNullException" ])
+            |> SynExpr.paren
+            |> SynExpr.applyFunction (SynExpr.createIdent "raise")
+
+        [
+            SynMatchClause.create SynPat.createNull raiseExpr
+            SynMatchClause.create (SynPat.namedI boundIdent) body
+        ]
+        |> SynExpr.createMatch (SynExpr.createIdent' boundIdent)
+        |> SynExpr.paren
+
+    /// The output of this will be an *optional* JsonNode.
+    let rec serializeNodeNullable (fieldType : SynType) : SynExpr * bool =
+        match fieldType with
+        | NullableType ty ->
+            // fun field -> if field.HasValue then {serializeNode ty} field.Value else JsonValue.Create null
+            match JsonNodeWithNullability.Identify ty with
+            | JsonNodeWithNullability.Nullable ->
+                failwith
+                    $"We don't support nested nullable types, because we can't tell the difference between None and Some None: %s{SynType.toHumanReadableString ty}"
+            | JsonNodeWithNullability.CannotBeNull ->
+
+            let inner, innerIsJsonNode = serializeNodeNonNullable ty
+
+            SynExpr.applyFunction inner (SynExpr.createLongIdent [ "field" ; "Value" ])
+            |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+            |> SynExpr.ifThenElse (SynExpr.createLongIdent [ "field" ; "HasValue" ]) (jsonNull ())
+            |> SynExpr.createLambda "field"
+            |> fun e -> e, innerIsJsonNode
+        | OptionType ty ->
+            // fun field -> match field with | None -> None | Some v -> {serializeNode ty} field |> Some
+            match JsonNodeWithNullability.Identify ty with
+            | JsonNodeWithNullability.Nullable ->
+                failwith
+                    $"We don't support nested nullable types, because we can't tell the difference between None and Some None: %s{SynType.toHumanReadableString ty}"
+            | JsonNodeWithNullability.CannotBeNull ->
+
+            let noneClause = jsonNull () |> SynMatchClause.create (SynPat.named "None")
+
+            let someClause =
+                let inner, innerIsJsonNode = serializeNodeNonNullable ty
+                let target = SynExpr.pipeThroughFunction inner (SynExpr.createIdent "field")
+
+                if innerIsJsonNode then
+                    target
+                else
+                    target
+                    |> SynExpr.paren
+                    |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                |> SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "field" ])
+
+            [ noneClause ; someClause ]
+            |> SynExpr.createMatch (SynExpr.createIdent "field")
+            |> SynExpr.createLambda "field"
+            |> fun e -> e, true
+        | _ -> failwith $"Did not recognise type %s{SynType.toHumanReadableString fieldType} as nullable"
 
     /// Given `input.Ident`, for example, choose how to add it to the ambient `node`.
     /// The result is a line like `(fun ident -> InnerType.toJsonNode ident)` or `(fun ident -> JsonValue.Create ident)`.
     /// Returns also a bool which is true if the resulting SynExpr represents something of type JsonNode.
-    let rec serializeNode (fieldType : SynType) : SynExpr * bool =
+    and serializeNodeNonNullable (fieldType : SynType) : SynExpr * bool =
         // TODO: serialization format for DateTime etc
         match fieldType with
+        | OptionType _
+        | NullableType _ ->
+            failwith $"Tried to treat the type %s{SynType.toHumanReadableString fieldType} as non-nullable"
         | DateOnly
         | DateTime
         | NumberType _
@@ -36,8 +112,21 @@ module internal JsonSerializeGenerator =
         | Guid
         | Uri ->
             // JsonValue.Create<type>
-            SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]
-            |> SynExpr.typeApp [ fieldType ]
+            (SynExpr.createIdent "field")
+            |> assertNotNull
+                (Ident.create "field")
+                (SynExpr.CreateConst
+                    $"Expected type %s{SynType.toHumanReadableString fieldType} to be non-null, but received a null value when serialising")
+            |> SynExpr.createLet
+                [
+                    SynBinding.basic
+                        [ Ident.create "field" ]
+                        []
+                        (SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonValue" ; "Create" ]
+                         |> SynExpr.typeApp [ fieldType ]
+                         |> SynExpr.applyTo (SynExpr.createIdent "field"))
+                ]
+            |> SynExpr.createLambda "field"
             |> fun e -> e, false
         | DateTimeOffset ->
             // fun field -> field.ToString("o") |> JsonValue.Create<string>
@@ -50,41 +139,17 @@ module internal JsonSerializeGenerator =
             |> SynExpr.pipeThroughFunction create
             |> SynExpr.createLambda "field"
             |> fun e -> e, false
-        | NullableType ty ->
-            // fun field -> if field.HasValue then {serializeNode ty} field.Value else JsonValue.Create null
-            let inner, innerIsJsonNode = serializeNode ty
-
-            SynExpr.applyFunction inner (SynExpr.createLongIdent [ "field" ; "Value" ])
-            |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
-            |> SynExpr.ifThenElse (SynExpr.createLongIdent [ "field" ; "HasValue" ]) (jsonNull ())
-            |> SynExpr.createLambda "field"
-            |> fun e -> e, innerIsJsonNode
-        | OptionType ty ->
-            // fun field -> match field with | None -> JsonValue.Create null | Some v -> {serializeNode ty} field
-            let noneClause = jsonNull () |> SynMatchClause.create (SynPat.named "None")
-
-            let someClause =
-                let inner, innerIsJsonNode = serializeNode ty
-                let target = SynExpr.applyFunction inner (SynExpr.createIdent "field")
-
-                if innerIsJsonNode then
-                    target
-                else
-                    target
-                    |> SynExpr.paren
-                    |> SynExpr.upcast' (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
-                |> SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "field" ])
-
-            [ noneClause ; someClause ]
-            |> SynExpr.createMatch (SynExpr.createIdent "field")
-            |> SynExpr.createLambda "field"
-            |> fun e -> e, true
         | ArrayType ty
         | ListType ty ->
             // fun field ->
             //     let arr = JsonArray ()
             //     for mem in field do arr.Add ({serializeNode} mem)
             //     arr
+            let isNullableChild =
+                match JsonNodeWithNullability.Identify ty with
+                | CannotBeNull -> false
+                | Nullable -> true
+
             [
                 SynExpr.ForEach (
                     DebugPointAtFor.Yes range0,
@@ -95,7 +160,17 @@ module internal JsonSerializeGenerator =
                     SynExpr.createIdent "field",
                     SynExpr.applyFunction
                         (SynExpr.createLongIdent [ "arr" ; "Add" ])
-                        (SynExpr.paren (SynExpr.applyFunction (fst (serializeNode ty)) (SynExpr.createIdent "mem"))),
+                        (SynExpr.paren (
+                            SynExpr.applyFunction
+                                (fst (
+                                    (if isNullableChild then
+                                         serializeNodeNullable
+                                     else
+                                         serializeNodeNonNullable)
+                                        ty
+                                ))
+                                (SynExpr.createIdent "mem")
+                        )),
                     range0
                 )
                 SynExpr.createIdent "arr"
@@ -109,15 +184,28 @@ module internal JsonSerializeGenerator =
                 ]
             |> SynExpr.createLambda "field"
             |> fun e -> e, false
-        | IDictionaryType (_keyType, valueType)
-        | DictionaryType (_keyType, valueType)
-        | IReadOnlyDictionaryType (_keyType, valueType)
-        | MapType (_keyType, valueType) ->
+        | IDictionaryType (keyType, valueType)
+        | DictionaryType (keyType, valueType)
+        | IReadOnlyDictionaryType (keyType, valueType)
+        | MapType (keyType, valueType) ->
             // fun field ->
             //    let ret = JsonObject ()
             //    for (KeyValue(key, value)) in field do
             //        ret.Add (key.ToString (), {serializeNode} value)
             //    ret
+            let isNullableValueField =
+                match JsonNodeWithNullability.Identify valueType with
+                | CannotBeNull -> false
+                | Nullable -> true
+
+            // TODO: this is a bit dubious, because user-defined types will
+            // by default have non-null ToString
+            let keyTypeHasNonNullToString =
+                match keyType with
+                | String
+                | Uri -> true
+                | _ -> false
+
             [
                 SynExpr.ForEach (
                     DebugPointAtFor.Yes range0,
@@ -130,10 +218,33 @@ module internal JsonSerializeGenerator =
                         (SynExpr.createLongIdent [ "ret" ; "Add" ])
                         (SynExpr.tuple
                             [
-                                SynExpr.createLongIdent [ "key" ; "ToString" ]
-                                |> SynExpr.applyTo (SynExpr.CreateConst ())
-                                SynExpr.applyFunction (fst (serializeNode valueType)) (SynExpr.createIdent "value")
-                            ]),
+                                SynExpr.createIdent "key"
+                                |> if keyTypeHasNonNullToString then
+                                       id
+                                   else
+                                       assertNotNull
+                                           (Ident.create "key")
+                                           (SynExpr.CreateConst
+                                               "A map key unexpectedly yielded null when we `ToString`'ed it. Map keys must yield non-null strings on `ToString`.")
+
+                                SynExpr.applyFunction
+                                    (fst (
+                                        (if isNullableValueField then
+                                             serializeNodeNullable
+                                         else
+                                             serializeNodeNonNullable)
+                                            valueType
+                                    ))
+                                    (SynExpr.createIdent "value")
+                            ])
+                    |> SynExpr.createLet
+                        [
+                            SynBinding.basic
+                                [ Ident.create "key" ]
+                                []
+                                (SynExpr.createLongIdent [ "key" ; "ToString" ]
+                                 |> SynExpr.applyTo (SynExpr.CreateConst ()))
+                        ],
                     range0
                 )
                 SynExpr.createIdent "ret"
@@ -166,13 +277,24 @@ module internal JsonSerializeGenerator =
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
     /// `node.Add ({propertyName}, {toJsonNode})`
     let createSerializeRhsRecord (propertyName : SynExpr) (fieldId : Ident) (fieldType : SynType) : SynExpr =
-        [
-            propertyName
-            SynExpr.pipeThroughFunction
-                (fst (serializeNode fieldType))
-                (SynExpr.createLongIdent' [ Ident.create "input" ; fieldId ])
-            |> SynExpr.paren
-        ]
+        let isNullableField =
+            match JsonNodeWithNullability.Identify fieldType with
+            | CannotBeNull -> false
+            | Nullable -> true
+
+        let serialised =
+            if isNullableField then
+                let value =
+                    serializeNodeNullable fieldType
+                    |> fst
+                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Option" ; "toObj" ])
+
+                SynExpr.pipeThroughFunction value (SynExpr.createLongIdent' [ Ident.create "input" ; fieldId ])
+            else
+                let value = serializeNodeNonNullable fieldType |> fst
+                SynExpr.pipeThroughFunction value (SynExpr.createLongIdent' [ Ident.create "input" ; fieldId ])
+
+        [ propertyName ; SynExpr.paren serialised ]
         |> SynExpr.tuple
         |> SynExpr.applyFunction (SynExpr.createLongIdent [ "node" ; "Add" ])
 
@@ -278,7 +400,10 @@ module internal JsonSerializeGenerator =
                     | DictionaryType (String, v) -> v
                     | _ -> failwith "Expected JsonExtensionData to be a Dictionary<string, something>"
 
-                let serialise = fst (serializeNode valType)
+                let serialise =
+                    match JsonNodeWithNullability.Identify valType with
+                    | CannotBeNull -> fst (serializeNodeNonNullable valType)
+                    | Nullable -> fst (serializeNodeNullable valType)
 
                 SynExpr.createIdent "node"
                 |> SynExpr.callMethodArg
@@ -343,7 +468,15 @@ module internal JsonSerializeGenerator =
                     let propertyName = getPropertyName (Option.get fieldData.Ident) fieldData.Attrs
 
                     let node =
-                        SynExpr.applyFunction (fst (serializeNode fieldData.Type)) (SynExpr.createIdent caseName)
+                        match JsonNodeWithNullability.Identify fieldData.Type with
+                        | CannotBeNull ->
+                            SynExpr.applyFunction
+                                (fst (serializeNodeNonNullable fieldData.Type))
+                                (SynExpr.createIdent caseName)
+                        | Nullable ->
+                            SynExpr.applyFunction
+                                (fst (serializeNodeNullable fieldData.Type))
+                                (SynExpr.createIdent caseName)
 
                     [ propertyName ; node ]
                     |> SynExpr.tuple
