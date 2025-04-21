@@ -192,7 +192,7 @@ module internal JsonParseGenerator =
             | OptionType _
             | NullableType _ ->
                 failwith
-                    $"Nested nullable types are not supported, because we can't distinguish between None and Some None. {SynType.toHumanReadableString ty}"
+                    $"Nested nullable types are not supported, because we can't distinguish between None and Some None. %s{SynType.toHumanReadableString ty}"
             | _ ->
 
             let someClause =
@@ -210,7 +210,7 @@ module internal JsonParseGenerator =
             | OptionType _
             | NullableType _ ->
                 failwith
-                    $"Nested nullable types are not supported, because we can't distinguish between None and Some None. {SynType.toHumanReadableString ty}"
+                    $"Nested nullable types are not supported, because we can't distinguish between None and Some None. %s{SynType.toHumanReadableString ty}"
             | _ ->
 
             let someClause =
@@ -227,7 +227,7 @@ module internal JsonParseGenerator =
             |> SynExpr.createMatch node
         | _ ->
             failwith
-                $"Encountered type {SynType.toHumanReadableString fieldType} which is expected to be nullable, but couldn't identify it"
+                $"Encountered type %s{SynType.toHumanReadableString fieldType} which is expected to be nullable, but couldn't identify it"
 
     /// Given `node.["town"]`, for example, choose how to obtain a JSON value from it.
     /// The property name is used in error messages at runtime to show where a JSON
@@ -244,7 +244,7 @@ module internal JsonParseGenerator =
         | OptionType _
         | NullableType _ ->
             failwith
-                $"Unexpectedly parsing nullable type {SynType.toHumanReadableString fieldType} as if it were non-nullable."
+                $"Unexpectedly parsing nullable type %s{SynType.toHumanReadableString fieldType} as if it were non-nullable."
         // Struct types
         | DateOnly ->
             node
