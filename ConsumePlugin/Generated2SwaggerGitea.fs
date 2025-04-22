@@ -41945,7 +41945,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -42394,7 +42394,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -43117,7 +43117,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -43439,7 +43439,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -43726,7 +43726,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -44013,7 +44013,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -45382,7 +45382,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -45790,7 +45790,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -47997,7 +47997,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -48164,7 +48164,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -48836,7 +48836,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -49125,7 +49125,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -49384,7 +49384,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -51242,7 +51242,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -51669,7 +51669,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -52174,7 +52174,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -54060,7 +54060,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -54319,7 +54319,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -56075,7 +56075,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -56713,7 +56713,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -57524,7 +57524,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 
@@ -58531,7 +58531,7 @@ module Gitea =
 
                     let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
-                            Method = System.Net.Http.HttpMethod.Post,
+                            Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
                         )
 

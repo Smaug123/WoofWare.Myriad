@@ -472,7 +472,7 @@ type HttpMethod =
         | HttpMethod.Get -> "Get"
         | HttpMethod.Post -> "Post"
         | HttpMethod.Delete -> "Delete"
-        | HttpMethod.Patch -> "Post"
+        | HttpMethod.Patch -> "Patch"
         | HttpMethod.Options -> "Options"
         | HttpMethod.Head -> "Head"
         | HttpMethod.Put -> "Put"
