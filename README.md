@@ -136,7 +136,7 @@ module InnerTypeWithBoth =
                         ret.Add (key.ToString (), System.Text.Json.Nodes.JsonValue.Create<Uri> value)
 
                     ret
-                ) input.Map
+                ) input.ReadOnlyDict
             )
 
         node
