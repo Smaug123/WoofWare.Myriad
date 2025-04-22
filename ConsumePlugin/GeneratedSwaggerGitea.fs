@@ -3423,7 +3423,7 @@ type IGitea =
         [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> Hook System.Threading.Tasks.Task
 
     /// Update a hook
-    [<RestEase.Post "admin/hooks/{id}">]
+    [<RestEase.Patch "admin/hooks/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract AdminEditHook :
         [<RestEase.Path "id">] id : int *
@@ -3494,7 +3494,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit an existing user
-    [<RestEase.Post "admin/users/{username}">]
+    [<RestEase.Patch "admin/users/{username}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract AdminEditUser :
         [<RestEase.Path "username">] username : string *
@@ -3601,7 +3601,7 @@ type IGitea =
             NotificationThread System.Threading.Tasks.Task
 
     /// Mark notification thread as read by ID
-    [<RestEase.Post "notifications/threads/{id}">]
+    [<RestEase.Patch "notifications/threads/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract NotifyReadThread :
         [<RestEase.Path "id">] id : string *
@@ -3649,7 +3649,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit an organization
-    [<RestEase.Post "orgs/{org}">]
+    [<RestEase.Patch "orgs/{org}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgEdit :
         [<RestEase.Path "org">] org : string *
@@ -3695,7 +3695,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Update a hook
-    [<RestEase.Post "orgs/{org}/hooks/{id}">]
+    [<RestEase.Patch "orgs/{org}/hooks/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgEditHook :
         [<RestEase.Path "org">] org : string *
@@ -3742,7 +3742,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Update a label
-    [<RestEase.Post "orgs/{org}/labels/{id}">]
+    [<RestEase.Patch "orgs/{org}/labels/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgEditLabel :
         [<RestEase.Path "org">] org : string *
@@ -3984,7 +3984,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit a repository's properties. Only fields that are set will be changed.
-    [<RestEase.Post "repos/{owner}/{repo}">]
+    [<RestEase.Patch "repos/{owner}/{repo}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract RepoEdit :
         [<RestEase.Path "owner">] owner : string *
@@ -4052,7 +4052,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit a branch protections for a repository. Only fields that are set will be changed
-    [<RestEase.Post "repos/{owner}/{repo}/branch_protections/{name}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/branch_protections/{name}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract RepoEditBranchProtection :
         [<RestEase.Path "owner">] owner : string *
@@ -4425,7 +4425,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit a Git hook in a repository
-    [<RestEase.Post "repos/{owner}/{repo}/hooks/git/{id}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/hooks/git/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract RepoEditGitHook :
         [<RestEase.Path "owner">] owner : string *
@@ -4456,7 +4456,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit a hook in a repository
-    [<RestEase.Post "repos/{owner}/{repo}/hooks/{id}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/hooks/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract RepoEditHook :
         [<RestEase.Path "owner">] owner : string *
@@ -4573,7 +4573,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit a comment attachment
-    [<RestEase.Post "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract IssueEditIssueCommentAttachment :
         [<RestEase.Path "owner">] owner : string *
@@ -4626,7 +4626,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit an issue. If using deadline only the date will be taken into account, and time of day ignored.
-    [<RestEase.Post "repos/{owner}/{repo}/issues/{index}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/issues/{index}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract IssueEditIssue :
         [<RestEase.Path "owner">] owner : string *
@@ -4669,7 +4669,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit an issue attachment
-    [<RestEase.Post "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract IssueEditIssueAttachment :
         [<RestEase.Path "owner">] owner : string *
@@ -4999,7 +4999,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Update a label
-    [<RestEase.Post "repos/{owner}/{repo}/labels/{id}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/labels/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract IssueEditLabel :
         [<RestEase.Path "owner">] owner : string *
@@ -5073,7 +5073,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Update a milestone
-    [<RestEase.Post "repos/{owner}/{repo}/milestones/{id}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/milestones/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract IssueEditMilestone :
         [<RestEase.Path "owner">] owner : string *
@@ -5157,7 +5157,7 @@ type IGitea =
             PullRequest System.Threading.Tasks.Task
 
     /// Update a pull request. If using deadline only the date will be taken into account, and time of day ignored.
-    [<RestEase.Post "repos/{owner}/{repo}/pulls/{index}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/pulls/{index}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract RepoEditPullRequest :
         [<RestEase.Path "owner">] owner : string *
@@ -5495,7 +5495,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Update a release
-    [<RestEase.Post "repos/{owner}/{repo}/releases/{id}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/releases/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract RepoEditRelease :
         [<RestEase.Path "owner">] owner : string *
@@ -5538,7 +5538,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit a release attachment
-    [<RestEase.Post "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract RepoEditReleaseAttachment :
         [<RestEase.Path "owner">] owner : string *
@@ -5845,7 +5845,7 @@ type IGitea =
             unit System.Threading.Tasks.Task
 
     /// Edit a wiki page
-    [<RestEase.Post "repos/{owner}/{repo}/wiki/page/{pageName}">]
+    [<RestEase.Patch "repos/{owner}/{repo}/wiki/page/{pageName}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract RepoEditWikiPage :
         [<RestEase.Path "owner">] owner : string *
@@ -5936,7 +5936,7 @@ type IGitea =
         [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
     /// Edit a team
-    [<RestEase.Post "teams/{id}">]
+    [<RestEase.Patch "teams/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgEditTeam :
         [<RestEase.Path "id">] id : int *
@@ -6066,7 +6066,7 @@ type IGitea =
         [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
     /// update an OAuth2 Application, this includes regenerating the client secret
-    [<RestEase.Post "user/applications/oauth2/{id}">]
+    [<RestEase.Patch "user/applications/oauth2/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract UserUpdateOAuth2Application :
         [<RestEase.Path "id">] id : int *
@@ -6204,7 +6204,7 @@ type IGitea =
     abstract GetUserSettings : ?ct : System.Threading.CancellationToken -> UserSettings list System.Threading.Tasks.Task
 
     /// Update user settings
-    [<RestEase.Post "user/settings">]
+    [<RestEase.Patch "user/settings">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract UpdateUserSettings :
         [<RestEase.Body>] body : UserSettingsOptions * ?ct : System.Threading.CancellationToken ->
