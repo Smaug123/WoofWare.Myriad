@@ -41,11 +41,12 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Raise pull request
-        uses: Smaug123/commit-action@cc25e6d80a796c49669dda4a0aa36c54c573983d
+        uses: Smaug123/commit-action@381ff62b6376206351dba06fc9d96d3036eb9d11
         id: cpr
         with:
             bearer-token: ${{ steps.generate-token.outputs.token }}
             pr-title: "Upgrade Nix flake and deps"
+            branch-name: "auto-pr"
 
       - name: Enable Pull Request Automerge
         if: ${{ steps.cpr.outputs.pull-request-number }}
