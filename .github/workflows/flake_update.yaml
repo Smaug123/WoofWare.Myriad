@@ -41,7 +41,7 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Raise pull request
-        uses: Smaug123/commit-action@381ff62b6376206351dba06fc9d96d3036eb9d11
+        uses: Smaug123/commit-action@9cc3df8efcf0a523442f10270f5ac27f8a37ba68
         id: cpr
         with:
             bearer-token: ${{ steps.generate-token.outputs.token }}
