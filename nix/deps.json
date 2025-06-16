@@ -1,8 +1,8 @@
 [
   {
     "pname": "ApiSurface",
-    "version": "4.1.20",
-    "hash": "sha256-koWgO9FC9ax+Ij56ug8kxeyknl0yhLqnNLOUdxtqqo4="
+    "version": "4.1.21",
+    "hash": "sha256-v2adBYoE9NZPaQR3u2qq9r/9PxAM/wqi2Uiky0xGq+E="
   },
   {
     "pname": "fantomas",
@@ -231,33 +231,33 @@
   },
   {
     "pname": "NuGet.Common",
-    "version": "6.13.2",
-    "hash": "sha256-ASLa/Jigg5Eop0ZrXPl98RW2rxnJRC7pbbxhuV74hFw="
+    "version": "6.14.0",
+    "hash": "sha256-jDOwt3veI1GSG8CfBnf2+dJxD3E/Nmlc+vHtD4J76Ms="
   },
   {
     "pname": "NuGet.Configuration",
-    "version": "6.13.2",
-    "hash": "sha256-z8VW1YdRDanyyRTDYRvRkSv/XPR3c/hMM1y8cNNjx0Y="
+    "version": "6.14.0",
+    "hash": "sha256-1PN9s6fhCw3wd2260U6hQ4vG3jIvcG8GIn1oQgxMXA0="
   },
   {
     "pname": "NuGet.Frameworks",
-    "version": "6.13.2",
-    "hash": "sha256-caDyc+WgYOo43AUTjtbP0MyvYDb6JweEKDdIul61Cac="
+    "version": "6.14.0",
+    "hash": "sha256-3ViM3R1ucQMEL2hQYsivT86kI6veMQK2xDsiAcFcVQk="
   },
   {
     "pname": "NuGet.Packaging",
-    "version": "6.13.2",
-    "hash": "sha256-lhO+SFwIYZ4aPHxIGm5ubkkE2a5Ve2xgtroRbNh7hpw="
+    "version": "6.14.0",
+    "hash": "sha256-Yafbnxs3maj55bJ1oKQiZ0QkntFUzXdhorL94YEUOhY="
   },
   {
     "pname": "NuGet.Protocol",
-    "version": "6.13.2",
-    "hash": "sha256-5lnAHHZjy7A4vgv65AeBAs64mSNpuoUjxW3HnrMpuzY="
+    "version": "6.14.0",
+    "hash": "sha256-uLDKfs+QN1MdnuQtTES8qfNzzsmYKM6XB9pwJc4G+eo="
   },
   {
     "pname": "NuGet.Versioning",
-    "version": "6.13.2",
-    "hash": "sha256-gmpyBpKnt+GHqgx/2uFKp+J2csbxEAy1E7WdVT117sw="
+    "version": "6.14.0",
+    "hash": "sha256-DqdOJgsphKxSvqB8b60zNPCaiLfbiu3WnUJ/90feLrY="
   },
   {
     "pname": "NUnit",
@@ -308,11 +308,6 @@
     "pname": "System.Formats.Asn1",
     "version": "6.0.0",
     "hash": "sha256-KaMHgIRBF7Nf3VwOo+gJS1DcD+41cJDPWFh+TDQ8ee8="
-  },
-  {
-    "pname": "System.Formats.Asn1",
-    "version": "8.0.1",
-    "hash": "sha256-may/Wg+esmm1N14kQTG4ESMBi+GQKPp0ZrrBo/o6OXM="
   },
   {
     "pname": "System.IO.Abstractions",
