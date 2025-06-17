@@ -11,7 +11,19 @@ type ExternalDocumentation =
         Url : Uri
     }
 
-type Schema = | Schema of unit
+    static member Parse (node : JsonObject) : ExternalDocumentation =
+        let description = asOpt<string> node "description"
+        let url = asString node "url" |> Uri
+
+        {
+            Description = description
+            Url = url
+        }
+
+type Schema =
+    | Schema of unit
+
+    static member Parse (_ : JsonObject) : Schema = failwith "TODO"
 
 type Example =
     {
@@ -21,6 +33,25 @@ type Example =
         Description : string option
         Value : Choice<JsonNode, Uri> option
     }
+
+    static member Parse (node : JsonObject) : Example =
+        let description = asOpt<string> node "description"
+        let summary = asOpt<string> node "summary"
+        let externalValue = asOpt<string> node "externalValue" |> Option.map Uri
+
+        let value =
+            match externalValue with
+            | Some u -> Choice2Of2 u |> Some
+            | None ->
+                match node.TryGetPropertyValue "value" with
+                | true, v -> Choice1Of2 v |> Some
+                | false, _ -> None
+
+        {
+            Summary = summary
+            Description = description
+            Value = value
+        }
 
 type Reference =
     {
@@ -38,6 +69,17 @@ type Tag =
         ExternalDocs : ExternalDocumentation option
     }
 
+    static member Parse (node : JsonObject) : Tag =
+        let name = asString node "name"
+        let description = asOpt<string> node "description"
+        let docs = asObjOpt node "externalDocs" |> Option.map ExternalDocumentation.Parse
+
+        {
+            Name = name
+            Description = description
+            ExternalDocs = docs
+        }
+
 type ServerVariable =
     {
         /// An enumeration of string values to be used if the substitution options are from a limited set.
@@ -48,6 +90,17 @@ type ServerVariable =
         /// An optional description for the server variable, possibly in CommonMark.
         Description : string option
     }
+
+    static member Parse (node : JsonObject) : ServerVariable =
+        let enum = asArrOpt'<string> node "enum"
+        let default' = asString node "default"
+        let description = asOpt<string> node "description"
+
+        {
+            Enum = enum
+            Default = default'
+            Description = description
+        }
 
 type Server =
     {
@@ -60,6 +113,25 @@ type Server =
         /// Used for substituting in the Url.
         Variables : Map<string, ServerVariable> option
     }
+
+    static member Parse (node : JsonObject) : Server =
+        let url = asString node "url" |> Uri
+        let description = asOpt<string> node "description"
+
+        let variables =
+            match node.TryGetPropertyValue "variables" with
+            | false, _ -> None
+            | true, o ->
+                o.AsObject ()
+                |> Seq.map (fun (KeyValue (k, v)) -> k, ServerVariable.Parse (v.AsObject ()))
+                |> Map.ofSeq
+                |> Some
+
+        {
+            Url = url
+            Description = description
+            Variables = variables
+        }
 
 type StringFormat =
     /// base64-encoded characters
@@ -102,6 +174,17 @@ type Contact =
         Email : string option
     }
 
+    static member Parse (node : JsonObject) : Contact =
+        let name = asOpt<string> node "name"
+        let url = asOpt<string> node "url" |> Option.map Uri
+        let email = asOpt<string> node "email"
+
+        {
+            Email = email
+            Url = url
+            Name = name
+        }
+
 type License =
     {
         /// The license name used for the API.
@@ -109,6 +192,15 @@ type License =
         /// A URL to the license used for the API.
         Url : Uri option
     }
+
+    static member Parse (node : JsonObject) : License =
+        let url = asOpt<string> node "url" |> Option.map Uri
+        let name = asString node "name"
+
+        {
+            Name = name
+            Url = url
+        }
 
 type OpenApiInfo =
     {
@@ -125,6 +217,23 @@ type OpenApiInfo =
         /// The version of the OpenAPI document (which is distinct from the OpenAPI Specification version or the API implementation version).
         Version : string
     }
+
+    static member Parse (node : JsonObject) : OpenApiInfo =
+        let title = asString node "title"
+        let version = asString node "version"
+        let desc = asOpt<string> node "description"
+        let termsOfService = asOpt<string> node "termsOfService" |> Option.map Uri
+        let contact = asObjOpt node "contact" |> Option.map Contact.Parse
+        let license = asObjOpt node "license" |> Option.map License.Parse
+
+        {
+            Title = title
+            Description = desc
+            TermsOfService = termsOfService
+            Contact = contact
+            License = license
+            Version = version
+        }
 
 type Encoding =
     {

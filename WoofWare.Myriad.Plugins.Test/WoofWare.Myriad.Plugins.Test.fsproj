@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Assembly.fs" />
     <Compile Include="HttpClient.fs"/>
     <Compile Include="PureGymDtos.fs"/>
     <Compile Include="TestJsonParse\TestJsonParse.fs" />
@@ -36,6 +37,16 @@
     <Compile Include="TestCataGenerator\TestMyList2.fs" />
     <Compile Include="TestArgParser\TestArgParser.fs" />
     <Compile Include="TestSwagger\TestSwaggerParse.fs" />
+    <Compile Include="TestSwagger\TestOpenApi3Parse.fs" />
+    <EmbeddedResource Include="TestSwagger\api-with-examples.json" />
+    <EmbeddedResource Include="TestSwagger\callback-example.json" />
+    <EmbeddedResource Include="TestSwagger\link-example.json" />
+    <EmbeddedResource Include="TestSwagger\non-oauth-scopes.json" />
+    <EmbeddedResource Include="TestSwagger\petstore.json" />
+    <EmbeddedResource Include="TestSwagger\petstore-expanded.json" />
+    <EmbeddedResource Include="TestSwagger\tictactoe.json" />
+    <EmbeddedResource Include="TestSwagger\uspto.json" />
+    <EmbeddedResource Include="TestSwagger\webhook-example.json" />
     <Compile Include="TestRemoveOptions.fs"/>
     <Compile Include="TestSurface.fs"/>
     <None Include="../.github/workflows/dotnet.yaml" />

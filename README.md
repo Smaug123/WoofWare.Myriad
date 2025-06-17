@@ -647,3 +647,7 @@ I'm hopefully going to get round to writing a more powerful source generation sy
   You should probably add these files to your [fantomasignore](https://github.com/fsprojects/fantomas/blob/a999b77ca5a024fbc3409955faac797e29b39d27/docs/docs/end-users/IgnoreFiles.md)
   if you use Fantomas to format your repo;
   the alternative is to manually reformat every time Myriad changes the generated files.
+
+# Licence
+
+The code is MIT-licenced, except for the Swagger API examples in WoofWare.Myriad.Plugins.Test, which are [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/), copyright 2023 by the OpenAPI Initiative, and obtained from https://learn.openapis.org/examples/ with no changes made.
