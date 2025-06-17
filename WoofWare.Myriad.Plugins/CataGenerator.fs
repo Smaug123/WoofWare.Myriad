@@ -1174,28 +1174,30 @@ module internal CataGenerator =
         ]
         |> SynModuleOrNamespace.createNamespace ns
 
-    /// This function comes from Myriad, and is therefore derived from an Apache 2.0-licenced work.
-    /// https://github.com/MoiraeSoftware/myriad/blob/3c9818faabf9d508c10c28d5ecd26e66fafb48a1/src/Myriad.Core/Ast.fs#L160
-    /// A copy of the Apache 2.0 licence is at ApacheLicence.txt.
+    /// For each namespace/module, grab the types which are defined in consecutive `and`-knots in that namespace/module,
+    /// and also return the fully-qualified namespace/module name alongside that group of types.
+    /// A given module LongIdent may show up many times in the output: once for each recursive knot.
+    // Function originally inspired by https://github.com/MoiraeSoftware/myriad/blob/3c9818faabf9d508c10c28d5ecd26e66fafb48a1/src/Myriad.Core/Ast.fs#L160
+    // but there's really only one reasonable implementation of this type signature and semantics.
     let groupedTypeDefns (ast : ParsedInput) : (LongIdent * SynTypeDefn list) list =
-        let rec extractTypes (moduleDecls : SynModuleDecl list) (ns : LongIdent) =
-            [
-                for moduleDecl in moduleDecls do
-                    match moduleDecl with
-                    | SynModuleDecl.Types (types, _) -> yield (ns, types)
-                    | SynModuleDecl.NestedModule (SynComponentInfo (_, _, _, longId, _, _, _, _), _, decls, _, _, _) ->
-                        let combined = longId |> List.append ns
-                        yield! (extractTypes decls combined)
-                    | _ -> ()
-            ]
+        let rec extractTypes (decls : SynModuleDecl list) (ns : LongIdent) =
+            decls
+            |> List.collect (fun moduleDecl ->
+                match moduleDecl with
+                | SynModuleDecl.Types (types, _) -> [ ns, types ]
+                | SynModuleDecl.NestedModule (SynComponentInfo (_, _, _, longId, _, _, _, _), _, decls, _, _, _) ->
+                    let combined = longId |> List.append ns
+                    extractTypes decls combined
+                | _ -> []
+            )
 
-        [
-            match ast with
-            | ParsedInput.ImplFile (ParsedImplFileInput (_, _, _, _, _, modules, _, _, _)) ->
-                for SynModuleOrNamespace (namespaceId, _, _, moduleDecls, _, _, _, _, _) in modules do
-                    yield! extractTypes moduleDecls namespaceId
-            | _ -> ()
-        ]
+        match ast with
+        | ParsedInput.ImplFile (ParsedImplFileInput (_, _, _, _, _, contents, _, _, _)) ->
+            contents
+            |> List.collect (fun (SynModuleOrNamespace (namespaceId, _, _, moduleDecls, _, _, _, _, _)) ->
+                extractTypes moduleDecls namespaceId
+            )
+        | _ -> []
 
 open Myriad.Core
 
