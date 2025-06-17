@@ -1,52 +1,7 @@
-namespace WoofWare.Myriad.Plugins
+module WoofWare.Myriad.Plugins.SwaggerV2
 
 open System
 open System.Text.Json.Nodes
-
-[<AutoOpen>]
-module internal JsonHelpers =
-    let inline asString (n : JsonNode) (key : string) : string =
-        match n.[key] with
-        | null -> failwith $"Expected node to have a key '%s{key}', but it did not: %s{n.ToJsonString ()}"
-        | s -> s.GetValue<string> ()
-
-    [<RequiresExplicitTypeArguments>]
-    let inline asOpt<'ret> (n : JsonNode) (key : string) : 'ret option =
-        match n.[key] with
-        | null -> None
-        | s -> s.GetValue<'ret> () |> Some
-
-    let inline asObj (n : JsonNode) (key : string) : JsonObject =
-        match n.[key] with
-        | null -> failwith $"Expected node to have a key '%s{key}', but it did not: %s{n.ToJsonString ()}"
-        | o -> o.AsObject ()
-
-    let inline asObjOpt (n : JsonNode) (key : string) : JsonObject option =
-        match n.[key] with
-        | null -> None
-        | o -> o.AsObject () |> Some
-
-    let inline asArr (n : JsonNode) (key : string) : JsonArray =
-        match n.[key] with
-        | null -> failwith $"Expected node to have a key '%s{key}', but it did not: %s{n.ToJsonString ()}"
-        | o -> o.AsArray ()
-
-    let inline asArrOpt (n : JsonNode) (key : string) : JsonArray option =
-        match n.[key] with
-        | null -> None
-        | o -> o.AsArray () |> Some
-
-    [<RequiresExplicitTypeArguments>]
-    let inline asArr'<'v> (n : JsonNode) (key : string) : 'v list =
-        match n.[key] with
-        | null -> failwith $"Expected node to have a key '%s{key}', but it did not: %s{n.ToJsonString ()}"
-        | o -> o.AsArray () |> Seq.map (fun v -> v.GetValue<'v> ()) |> Seq.toList
-
-    [<RequiresExplicitTypeArguments>]
-    let inline asArrOpt'<'v> (n : JsonNode) (key : string) : 'v list option =
-        match n.[key] with
-        | null -> None
-        | o -> o.AsArray () |> Seq.map (fun v -> v.GetValue<'v> ()) |> Seq.toList |> Some
 
 /// A MIME type, like "application/json"
 type MimeType =
@@ -434,71 +389,8 @@ type Response =
             Schema = schema
         }
 
-/// An HTTP method. This is System.Net.Http.HttpMethod, but
-/// a proper discriminated union.
-type HttpMethod =
-    /// HTTP Get
-    | Get
-    /// HTTP Post
-    | Post
-    /// HTTP Delete
-    | Delete
-    /// HTTP Patch
-    | Patch
-    /// HTTP Options
-    | Options
-    /// HTTP Head
-    | Head
-    /// HTTP Put
-    | Put
-    /// HTTP Trace
-    | Trace
-
-    /// Convert to the standard library's enum type.
-    member this.ToDotNet () : System.Net.Http.HttpMethod =
-        match this with
-        | HttpMethod.Get -> System.Net.Http.HttpMethod.Get
-        | HttpMethod.Post -> System.Net.Http.HttpMethod.Post
-        | HttpMethod.Delete -> System.Net.Http.HttpMethod.Delete
-        | HttpMethod.Patch -> System.Net.Http.HttpMethod.Patch
-        | HttpMethod.Options -> System.Net.Http.HttpMethod.Options
-        | HttpMethod.Head -> System.Net.Http.HttpMethod.Head
-        | HttpMethod.Put -> System.Net.Http.HttpMethod.Put
-        | HttpMethod.Trace -> System.Net.Http.HttpMethod.Trace
-
-    /// Human-readable string representation.
-    override this.ToString () : string =
-        match this with
-        | HttpMethod.Get -> "Get"
-        | HttpMethod.Post -> "Post"
-        | HttpMethod.Delete -> "Delete"
-        | HttpMethod.Patch -> "Patch"
-        | HttpMethod.Options -> "Options"
-        | HttpMethod.Head -> "Head"
-        | HttpMethod.Put -> "Put"
-        | HttpMethod.Trace -> "Trace"
-
-    /// Throws on invalid inputs.
-    static member Parse (s : string) : HttpMethod =
-        if String.Equals (s, "get", StringComparison.OrdinalIgnoreCase) then
-            HttpMethod.Get
-        elif String.Equals (s, "post", StringComparison.OrdinalIgnoreCase) then
-            HttpMethod.Post
-        elif String.Equals (s, "patch", StringComparison.OrdinalIgnoreCase) then
-            HttpMethod.Patch
-        elif String.Equals (s, "delete", StringComparison.OrdinalIgnoreCase) then
-            HttpMethod.Delete
-        elif String.Equals (s, "head", StringComparison.OrdinalIgnoreCase) then
-            HttpMethod.Head
-        elif String.Equals (s, "options", StringComparison.OrdinalIgnoreCase) then
-            HttpMethod.Options
-        elif String.Equals (s, "put", StringComparison.OrdinalIgnoreCase) then
-            HttpMethod.Put
-        else
-            failwith $"Unrecognised method: %s{s}"
-
 /// A Swagger API specification.
-type Swagger =
+type SwaggerV2 =
     {
         /// Global collection of MIME types which any endpoint expects to consume its inputs in.
         /// This may be overridden on any individual endpoint by that endpoint.
@@ -526,58 +418,63 @@ type Swagger =
         Responses : Map<string, Response>
     }
 
-[<RequireQualifiedAccess>]
-module Swagger =
-    /// Parse a JSON-schema-based specification of a Swagger 2.0 API and
-    /// build the strongly-typed version. Throws on invalid inputs.
-    let parse (s : string) : Swagger =
-        let node = JsonNode.Parse s
-        let consumes = asArr'<string> node "consumes" |> List.map MimeType
-        let produces = asArr'<string> node "produces" |> List.map MimeType
-        let schemes = asArr'<string> node "schemes" |> List.map Scheme
-        let swagger = asString node "swagger" |> Version.Parse
-        let info = asObj node "info" |> SwaggerInfo.Parse
-        let basePath = asString node "basePath"
+/// Parse a JSON-schema-based specification of a Swagger 2.0 API and
+/// build the strongly-typed version. Throws on invalid inputs; returns Error if the input is JSON but has a Swagger
+/// version that is not in the 2.0 series.
+let parse (s : string) : Result<SwaggerV2, JsonNode> =
+    let node = JsonNode.Parse s
+    let swagger = asString node "swagger" |> Version.Parse
 
-        let definitions =
-            asObj node "definitions"
-            |> Seq.map (fun (KeyValue (key, value)) ->
-                let value = value.AsObject ()
-                key, Definition.Parse value
-            )
-            |> Map.ofSeq
+    if swagger.Major <> 2 then
+        Error node
+    else
 
-        let paths =
-            asObj node "paths"
-            |> Seq.map (fun (KeyValue (key, value)) ->
-                let contents =
-                    value.AsObject ()
-                    |> Seq.map (fun (KeyValue (endpoint, contents)) ->
-                        let contents = contents.AsObject ()
-                        HttpMethod.Parse endpoint, SwaggerEndpoint.Parse contents
-                    )
-                    |> Map.ofSeq
+    let consumes = asArr'<string> node "consumes" |> List.map MimeType
+    let produces = asArr'<string> node "produces" |> List.map MimeType
+    let schemes = asArr'<string> node "schemes" |> List.map Scheme
+    let info = asObj node "info" |> SwaggerInfo.Parse
+    let basePath = asString node "basePath"
 
-                key, contents
-            )
-            |> Map.ofSeq
+    let definitions =
+        asObj node "definitions"
+        |> Seq.map (fun (KeyValue (key, value)) ->
+            let value = value.AsObject ()
+            key, Definition.Parse value
+        )
+        |> Map.ofSeq
 
-        let responses =
-            asObj node "responses"
-            |> Seq.map (fun (KeyValue (key, value)) ->
-                let value = value.AsObject ()
-                key, Response.Parse value
-            )
-            |> Map.ofSeq
+    let paths =
+        asObj node "paths"
+        |> Seq.map (fun (KeyValue (key, value)) ->
+            let contents =
+                value.AsObject ()
+                |> Seq.map (fun (KeyValue (endpoint, contents)) ->
+                    let contents = contents.AsObject ()
+                    HttpMethod.Parse endpoint, SwaggerEndpoint.Parse contents
+                )
+                |> Map.ofSeq
 
-        {
-            Consumes = consumes
-            Produces = produces
-            Schemes = schemes
-            Swagger = swagger
-            Info = info
-            BasePath = basePath
-            Paths = paths
-            Definitions = definitions
-            Responses = responses
-        }
+            key, contents
+        )
+        |> Map.ofSeq
+
+    let responses =
+        asObj node "responses"
+        |> Seq.map (fun (KeyValue (key, value)) ->
+            let value = value.AsObject ()
+            key, Response.Parse value
+        )
+        |> Map.ofSeq
+
+    {
+        Consumes = consumes
+        Produces = produces
+        Schemes = schemes
+        Swagger = swagger
+        Info = info
+        BasePath = basePath
+        Paths = paths
+        Definitions = definitions
+        Responses = responses
+    }
+    |> Ok
