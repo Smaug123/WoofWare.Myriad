@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="List.fs"/>
     <Compile Include="Text.fs" />
     <Compile Include="Measure.fs" />
@@ -41,7 +42,10 @@
     <Compile Include="HttpClientGenerator.fs"/>
     <Compile Include="CataGenerator.fs" />
     <Compile Include="ArgParserGenerator.fs" />
-    <Compile Include="Swagger.fs" />
+    <Compile Include="JsonHelpers.fs" />
+    <Compile Include="HttpMethod.fs" />
+    <Compile Include="SwaggerV2.fs" />
+    <Compile Include="OpenApi3.fs" />
     <Compile Include="SwaggerClientGenerator.fs" />
     <None Include="ApacheLicence.txt" />
     <EmbeddedResource Include="version.json"/>
