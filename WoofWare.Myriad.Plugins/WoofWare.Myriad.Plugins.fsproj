@@ -47,7 +47,6 @@
     <Compile Include="SwaggerV2.fs" />
     <Compile Include="OpenApi3.fs" />
     <Compile Include="SwaggerClientGenerator.fs" />
-    <None Include="ApacheLicence.txt" />
     <EmbeddedResource Include="version.json"/>
     <EmbeddedResource Include="SurfaceBaseline.txt"/>
     <None Include="..\README.md">
