@@ -3,7 +3,7 @@ namespace WoofWare.Myriad.Plugins.Test
 open System.Text.Json.Nodes
 open NUnit.Framework
 open FsUnitTyped
-open WoofWare.Myriad.Plugins
+open WoofWare.Myriad.Plugins.SwaggerV2
 
 [<TestFixture>]
 module TestSwaggerParse =

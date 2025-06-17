@@ -517,7 +517,7 @@ open System.IO
 
 [<RequireQualifiedAccess>]
 module internal SwaggerV2Generator =
-    let generate (contents : SwaggerV2.SwaggerV2) : Output =
+    let generate (pars : Map<string, string>) (contents : SwaggerV2.SwaggerV2) : Output =
         let scheme =
             let preferred = SwaggerV2.Scheme "https"
 
@@ -669,17 +669,6 @@ module internal SwaggerV2Generator =
             |> Seq.toList
 
         let config =
-            let pars = MyriadParamParser.render context.AdditionalParameters
-
-            let pars =
-                pars
-                |> Map.toSeq
-                |> Seq.map (fun (k, v) -> k.ToUpperInvariant (), v)
-                |> Map.ofSeq
-
-            if pars.IsEmpty then
-                failwith "No parameters given. You must supply the <ClassName /> parameter in <MyriadParams />."
-
             let createMock =
                 match Map.tryFind "GENERATEMOCKVISIBILITY" pars with
                 | None -> None
@@ -728,8 +717,19 @@ type SwaggerClientGenerator () =
         member _.ValidInputExtensions = [ ".json" ]
 
         member _.Generate (context : GeneratorContext) =
+            let pars = MyriadParamParser.render context.AdditionalParameters
+
+            let pars =
+                pars
+                |> Map.toSeq
+                |> Seq.map (fun (k, v) -> k.ToUpperInvariant (), v)
+                |> Map.ofSeq
+
+            if pars.IsEmpty then
+                failwith "No parameters given. You must supply the <ClassName /> parameter in <MyriadParams />."
+
             let contents = File.ReadAllText context.InputFilename |> SwaggerV2.parse
 
             match contents with
-            | Ok contents -> SwaggerV2Generator.generate contents
+            | Ok contents -> SwaggerV2Generator.generate pars contents
             | Error node -> failwith "Input was not a Swagger 2 spec"

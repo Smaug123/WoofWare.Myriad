@@ -1,4 +1,4 @@
-module WoofWare.Myriad.Plugins.SwaggerV2
+module internal WoofWare.Myriad.Plugins.SwaggerV2
 
 open System
 open System.Text.Json.Nodes
