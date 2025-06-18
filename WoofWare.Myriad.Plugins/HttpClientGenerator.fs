@@ -453,9 +453,10 @@ module internal HttpClientGenerator =
 
         let contentTypeHeader, memberHeaders =
             info.Headers
-            |> List.partition (fun (headerName, headerValue) ->
+            |> List.partition (fun (headerName, _headerValue) ->
                 match headerName |> SynExpr.stripOptionalParen with
-                | SynExpr.Const (SynConst.String ("Content-Type", _, _), _) -> true
+                | SynExpr.Const (SynConst.String (s, _, _), _) ->
+                    System.String.Equals (s, "Content-Type", System.StringComparison.OrdinalIgnoreCase)
                 | _ -> false
             )
 

@@ -203,3 +203,36 @@ type IApiWithHeaders2 =
     [<Get "endpoint/{param}">]
     abstract GetPathParam :
         [<WoofWare.Myriad.Plugins.RestEase.Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IClientWithJsonBody =
+    // As a POST request of a JSON-serialised body, we automatically set Content-Type: application/json.
+    [<Post "endpoint/{param}">]
+    abstract GetPathParam :
+        [<RestEase.Path "param">] parameter : string *
+        [<WoofWare.Myriad.Plugins.RestEase.Body>] mem : PureGym.Member *
+        ?ct : CancellationToken ->
+            Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IClientWithJsonBodyOverridden =
+    // As a POST request of a JSON-serialised body, we *would* automatically set Content-Type: application/json,
+    // but this method has overridden it.
+    [<Post "endpoint/{param}">]
+    [<Header("Content-Type", "application/ecmascript")>]
+    abstract GetPathParam :
+        [<RestEase.Path "param">] parameter : string *
+        [<WoofWare.Myriad.Plugins.RestEase.Body>] mem : PureGym.Member *
+        ?ct : CancellationToken ->
+            Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IClientWithStringBody =
+    // As a POST request of a bare string body, we don't override the Content-Type.
+    [<Post "endpoint/{param}">]
+    abstract GetPathParam :
+        [<RestEase.Path "param">] parameter : string *
+        [<WoofWare.Myriad.Plugins.RestEase.Body>] mem : string *
+        ?ct : CancellationToken ->
+            Task<string>
+
