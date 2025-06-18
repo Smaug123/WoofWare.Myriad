@@ -45,6 +45,11 @@
     "hash": "sha256-64Gub0qemmCoMa1tDus6TeTuB1+5sHfE6KD2j4o84mA="
   },
   {
+    "pname": "FSharp.SystemTextJson",
+    "version": "1.4.36",
+    "hash": "sha256-zZEhjP0mdc5E3fBPS4/lqD7sxoaoT5SOspP546RWYdc="
+  },
+  {
     "pname": "FsUnit",
     "version": "7.0.1",
     "hash": "sha256-K85CIdxMeFSHEKZk6heIXp/oFjWAn7dBILKrw49pJUY="
@@ -366,13 +371,28 @@
   },
   {
     "pname": "System.Text.Json",
+    "version": "6.0.10",
+    "hash": "sha256-UijYh0dxFjFinMPSTJob96oaRkNm+Wsa+7Ffg6mRnsc="
+  },
+  {
+    "pname": "System.Text.Json",
     "version": "8.0.5",
     "hash": "sha256-yKxo54w5odWT6nPruUVsaX53oPRe+gKzGvLnnxtwP68="
+  },
+  {
+    "pname": "System.Text.Json",
+    "version": "9.0.0",
+    "hash": "sha256-aM5Dh4okLnDv940zmoFAzRmqZre83uQBtGOImJpoIqk="
   },
   {
     "pname": "TypeEquality",
     "version": "0.3.0",
     "hash": "sha256-V50xAOzzyUJrY+MYPRxtnqW5MVeATXCes89wPprv1r4="
+  },
+  {
+    "pname": "WoofWare.Expect",
+    "version": "0.4.2",
+    "hash": "sha256-CaVcj9Fo0VSMgfKIukM9WHGufPWHDqMO1D4VYVdJKJk="
   },
   {
     "pname": "WoofWare.Whippet.Fantomas",
