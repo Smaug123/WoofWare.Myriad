@@ -462,7 +462,11 @@ module internal HttpClientGenerator =
 
         let contentTypeHeader =
             match contentTypeHeader with
-            | [] -> None
+            | [] ->
+                // Set application/json if we *know* we're sending JSON
+                match bodyParam with
+                | Some (BodyParamMethods.Serialise _, _) -> Some (SynExpr.CreateConst "application/json")
+                | _ -> None
             | [ _, ct ] -> Some (SynExpr.stripOptionalParen ct)
             | _ -> failwith "Unexpectedly got multiple Content-Type headers"
 

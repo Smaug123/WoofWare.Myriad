@@ -235,4 +235,3 @@ type IClientWithStringBody =
         [<WoofWare.Myriad.Plugins.RestEase.Body>] mem : string *
         ?ct : CancellationToken ->
             Task<string>
-

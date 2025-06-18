@@ -220,7 +220,7 @@ module TestVariableHeader =
         let result = api.GetPathParam ("param", pureGymMember) |> _.Result
 
         expect {
-            snapshot @"Content-Type: application/text; charset=utf-8"
+            snapshot @"Content-Type: application/ecmascript; charset=utf-8"
             return result
         }
 
@@ -256,6 +256,6 @@ module TestVariableHeader =
         let result = api.GetPathParam ("param", "hello!") |> _.Result
 
         expect {
-            snapshot @"Content-Type: application/text; charset=utf-8"
+            snapshot @"Content-Type: text/plain; charset=utf-8"
             return result
         }
