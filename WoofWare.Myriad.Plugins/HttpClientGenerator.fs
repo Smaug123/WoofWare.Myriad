@@ -453,15 +453,20 @@ module internal HttpClientGenerator =
 
         let contentTypeHeader, memberHeaders =
             info.Headers
-            |> List.partition (fun (headerName, headerValue) ->
+            |> List.partition (fun (headerName, _headerValue) ->
                 match headerName |> SynExpr.stripOptionalParen with
-                | SynExpr.Const (SynConst.String ("Content-Type", _, _), _) -> true
+                | SynExpr.Const (SynConst.String (s, _, _), _) ->
+                    System.String.Equals (s, "Content-Type", System.StringComparison.OrdinalIgnoreCase)
                 | _ -> false
             )
 
         let contentTypeHeader =
             match contentTypeHeader with
-            | [] -> None
+            | [] ->
+                // Set application/json if we *know* we're sending JSON
+                match bodyParam with
+                | Some (BodyParamMethods.Serialise _, _) -> Some (SynExpr.CreateConst "application/json")
+                | _ -> None
             | [ _, ct ] -> Some (SynExpr.stripOptionalParen ct)
             | _ -> failwith "Unexpectedly got multiple Content-Type headers"
 

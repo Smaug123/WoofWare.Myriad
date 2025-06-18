@@ -375,7 +375,9 @@ module PureGymApi =
                                 match node with
                                 | None -> "null"
                                 | Some node -> node.ToJsonString ()
-                            )
+                            ),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -667,7 +669,9 @@ module PureGymApi =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                            user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -710,7 +714,9 @@ module PureGymApi =
                                      )
                                  | field -> field)
                             )
-                            |> (fun node -> node.ToJsonString ())
+                            |> (fun node -> node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -753,7 +759,9 @@ module PureGymApi =
                                      )
                                  | field -> field)
                             )
-                            |> (fun node -> node.ToJsonString ())
+                            |> (fun node -> node.ToJsonString ()),
+                            null,
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
@@ -1794,6 +1802,177 @@ module ApiWithHeaders2 =
                     do httpMessage.Headers.Add ("X-Foo", this.SomeHeader.ToString ())
                     do httpMessage.Headers.Add ("Authorization", this.SomeOtherHeader.ToString ())
                     do httpMessage.Headers.Add ("Header-Name", "Header-Value")
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ClientWithJsonBody =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IClientWithJsonBody =
+        { new IClientWithJsonBody with
+            member _.GetPathParam (parameter : string, mem : PureGym.Member, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams =
+                        new System.Net.Http.StringContent (
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ()),
+                            null,
+                            "application/json"
+                        )
+
+                    do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ClientWithJsonBodyOverridden =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IClientWithJsonBodyOverridden =
+        { new IClientWithJsonBodyOverridden with
+            member _.GetPathParam (parameter : string, mem : PureGym.Member, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams =
+                        new System.Net.Http.StringContent (
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ()),
+                            null,
+                            "application/ecmascript"
+                        )
+
+                    do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ClientWithStringBody =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IClientWithStringBody =
+        { new IClientWithStringBody with
+            member _.GetPathParam (parameter : string, mem : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams = new System.Net.Http.StringContent (mem)
+                    do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
