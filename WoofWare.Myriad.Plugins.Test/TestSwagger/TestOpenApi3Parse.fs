@@ -10,8 +10,8 @@ open WoofWare.Expect
 module TestOpenApi3Parse =
     [<OneTimeSetUp>]
     let ``Prepare to bulk-update tests`` () =
-        GlobalBuilderConfig.enterBulkUpdateMode ()
-
+        // GlobalBuilderConfig.enterBulkUpdateMode ()
+        ()
 
     [<OneTimeTearDown>]
     let ``Update all tests`` () =
@@ -3454,6 +3454,7 @@ module TestOpenApi3Parse =
 
     [<Test>]
     let ``webhook example`` () =
+        // Webhooks aren't mentioned in the 3.0.0 spec so we have no information here.
         let resource =
             Assembly.getEmbeddedResource typeof<Dummy>.Assembly "webhook-example.json"
             |> JsonNode.Parse
