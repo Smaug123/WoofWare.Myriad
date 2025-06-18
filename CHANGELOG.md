@@ -1,5 +1,10 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 8.0.3
+
+The RestEase-style HTTP client generator now automatically adds the `application/json` content type header to requests which are POSTing a body that is known to be JSON-serialised.
+You can override this by setting the `[<RestEase.Header ("Content-Type", "desired content type")>]` header manually on any affected member.
+
 # WoofWare.Myriad.Plugins 7.0.1
 
 All generators should now be compatible with `<Nullable>enable</Nullable>`.
