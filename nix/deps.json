@@ -51,8 +51,8 @@
   },
   {
     "pname": "FsUnit",
-    "version": "7.0.1",
-    "hash": "sha256-K85CIdxMeFSHEKZk6heIXp/oFjWAn7dBILKrw49pJUY="
+    "version": "7.1.1",
+    "hash": "sha256-UMCEGKxQ4ytjmPuVpiNaAPbi3RQH9gqa61JJIUS/6hg="
   },
   {
     "pname": "Microsoft.ApplicationInsights",
