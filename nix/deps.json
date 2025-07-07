@@ -6,8 +6,8 @@
   },
   {
     "pname": "fantomas",
-    "version": "7.0.2",
-    "hash": "sha256-BAaENIm/ksTiXrUImRgKoIXTGIlgsX7ch6ayoFjhJXA="
+    "version": "7.0.3",
+    "hash": "sha256-0XlfV7SxXPDnk/CjkUesJSaH0cxlNHJ+Jj86zNUhkNA="
   },
   {
     "pname": "Fantomas.Core",
@@ -391,8 +391,8 @@
   },
   {
     "pname": "WoofWare.Expect",
-    "version": "0.4.5",
-    "hash": "sha256-fZSR3y283VkjqnIeucj59QB4t1R0WpYIIlP9G7N1mv4="
+    "version": "0.5.1",
+    "hash": "sha256-8qGvyC8tyrgrUKnhqh9YKjfqwUFl9Z/1Tm/Hfbf/BIs="
   },
   {
     "pname": "WoofWare.Whippet.Fantomas",
