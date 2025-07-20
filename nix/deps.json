@@ -41,8 +41,8 @@
   },
   {
     "pname": "FSharp.Core",
-    "version": "9.0.202",
-    "hash": "sha256-64Gub0qemmCoMa1tDus6TeTuB1+5sHfE6KD2j4o84mA="
+    "version": "9.0.300",
+    "hash": "sha256-eBGcd/OwlGuW2009Fb/ym813OWI9tHJXCY6oi4iGOyA="
   },
   {
     "pname": "FSharp.SystemTextJson",
