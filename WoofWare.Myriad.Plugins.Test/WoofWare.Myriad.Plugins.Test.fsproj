@@ -14,8 +14,8 @@
 
   <ItemGroup>
     <Compile Include="Assembly.fs" />
-    <Compile Include="HttpClient.fs"/>
-    <Compile Include="PureGymDtos.fs"/>
+    <Compile Include="HttpClient.fs" />
+    <Compile Include="PureGymDtos.fs" />
     <Compile Include="TestJsonParse\TestJsonParse.fs" />
     <Compile Include="TestJsonParse\TestPureGymJson.fs" />
     <Compile Include="TestJsonParse\TestExtensionMethod.fs" />
@@ -47,24 +47,24 @@
     <EmbeddedResource Include="TestSwagger\tictactoe.json" />
     <EmbeddedResource Include="TestSwagger\uspto.json" />
     <EmbeddedResource Include="TestSwagger\webhook-example.json" />
-    <Compile Include="TestRemoveOptions.fs"/>
-    <Compile Include="TestSurface.fs"/>
+    <Compile Include="TestRemoveOptions.fs" />
+    <Compile Include="TestSurface.fs" />
     <None Include="../.github/workflows/dotnet.yaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ApiSurface" Version="4.1.22"/>
-    <PackageReference Include="FsCheck" Version="3.3.0"/>
-    <PackageReference Include="FsUnit" Version="7.1.1"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
-    <PackageReference Include="NUnit" Version="4.3.2"/>
-    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0"/>
-    <PackageReference Include="WoofWare.Expect" Version="0.5.1" />
+    <PackageReference Include="ApiSurface" Version="4.1.22" />
+    <PackageReference Include="FsCheck" Version="3.3.0" />
+    <PackageReference Include="FsUnit" Version="7.1.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="NUnit" Version="4.3.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageReference Include="WoofWare.Expect" Version="0.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj"/>
-    <ProjectReference Include="..\ConsumePlugin\ConsumePlugin.fsproj"/>
+    <ProjectReference Include="..\WoofWare.Myriad.Plugins\WoofWare.Myriad.Plugins.fsproj" />
+    <ProjectReference Include="..\ConsumePlugin\ConsumePlugin.fsproj" />
   </ItemGroup>
 
 </Project>
