@@ -58,7 +58,7 @@
     <PackageReference Include="FsUnit" Version="7.1.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="NUnit" Version="4.3.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
     <PackageReference Include="WoofWare.Expect" Version="0.8.1" />
   </ItemGroup>
 
