@@ -1,8 +1,8 @@
 [
   {
     "pname": "ApiSurface",
-    "version": "4.1.22",
-    "hash": "sha256-voj9m3YmyJ95FAMLV4sWzQMod3Em0mTjzf0LBUUFOso="
+    "version": "5.0.1",
+    "hash": "sha256-0GMXEMFgWbbE2OGxW+6h4zGgQHg+IZy1aI13Dn97xSU="
   },
   {
     "pname": "fantomas",
@@ -153,11 +153,6 @@
     "pname": "Microsoft.NETCore.Platforms",
     "version": "1.1.1",
     "hash": "sha256-8hLiUKvy/YirCWlFwzdejD2Db3DaXhHxT7GSZx/znJg="
-  },
-  {
-    "pname": "Microsoft.NETCore.Platforms",
-    "version": "2.0.0",
-    "hash": "sha256-IEvBk6wUXSdyCnkj6tHahOJv290tVVT8tyemYcR0Yro="
   },
   {
     "pname": "Microsoft.NETCore.Targets",
@@ -325,16 +320,6 @@
     "hash": "sha256-KaMHgIRBF7Nf3VwOo+gJS1DcD+41cJDPWFh+TDQ8ee8="
   },
   {
-    "pname": "System.IO.Abstractions",
-    "version": "4.2.13",
-    "hash": "sha256-nkC/PiqE6+c1HJ2yTwg3x+qdBh844Z8n3ERWDW8k6Gg="
-  },
-  {
-    "pname": "System.IO.FileSystem.AccessControl",
-    "version": "4.5.0",
-    "hash": "sha256-ck44YBQ0M+2Im5dw0VjBgFD1s0XuY54cujrodjjSBL8="
-  },
-  {
     "pname": "System.Memory",
     "version": "4.5.5",
     "hash": "sha256-EPQ9o1Kin7KzGI5O3U3PUQAZTItSbk9h/i4rViN3WiI="
@@ -365,11 +350,6 @@
     "hash": "sha256-bEG1PnDp7uKYz/OgLOWs3RWwQSVYm+AnPwVmAmcgp2I="
   },
   {
-    "pname": "System.Security.AccessControl",
-    "version": "4.5.0",
-    "hash": "sha256-AFsKPb/nTk2/mqH/PYpaoI8PLsiKKimaXf+7Mb5VfPM="
-  },
-  {
     "pname": "System.Security.Cryptography.Pkcs",
     "version": "6.0.4",
     "hash": "sha256-2e0aRybote+OR66bHaNiYpF//4fCiaO3zbR2e9GABUI="
@@ -378,11 +358,6 @@
     "pname": "System.Security.Cryptography.ProtectedData",
     "version": "4.4.0",
     "hash": "sha256-Ri53QmFX8I8UH0x4PikQ1ZA07ZSnBUXStd5rBfGWFOE="
-  },
-  {
-    "pname": "System.Security.Principal.Windows",
-    "version": "4.5.0",
-    "hash": "sha256-BkUYNguz0e4NJp1kkW7aJBn3dyH9STwB5N8XqnlCsmY="
   },
   {
     "pname": "System.Text.Json",
