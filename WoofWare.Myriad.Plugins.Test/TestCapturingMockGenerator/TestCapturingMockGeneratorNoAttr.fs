@@ -1,12 +1,12 @@
 namespace WoofWare.Myriad.Plugins.Test
 
 open System
-open SomeNamespace
+open SomeNamespace.CapturingMock
 open NUnit.Framework
 open FsUnitTyped
 
 [<TestFixture>]
-module TestMockGeneratorNoAttr =
+module TestCapturingMockGeneratorNoAttr =
 
     [<Test>]
     let ``Example of use: IPublicType`` () =
