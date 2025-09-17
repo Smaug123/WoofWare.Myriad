@@ -15,6 +15,11 @@ WoofWare.Myriad.Plugins.ArgumentLongForm inherit System.Attribute
 WoofWare.Myriad.Plugins.ArgumentLongForm..ctor [constructor]: string
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute..ctor [constructor]: string
+WoofWare.Myriad.Plugins.GenerateCapturingMockAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.GenerateCapturingMockAttribute..ctor [constructor]: bool
+WoofWare.Myriad.Plugins.GenerateCapturingMockAttribute..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.GenerateCapturingMockAttribute.DefaultIsInternal [static property]: [read-only] bool
+WoofWare.Myriad.Plugins.GenerateCapturingMockAttribute.get_DefaultIsInternal [static method]: unit -> bool
 WoofWare.Myriad.Plugins.GenerateMockAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.GenerateMockAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.GenerateMockAttribute..ctor [constructor]: unit

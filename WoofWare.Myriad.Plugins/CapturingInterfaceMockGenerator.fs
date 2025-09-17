@@ -253,7 +253,7 @@ module internal CapturingInterfaceMockGenerator =
             let callsArrays =
                 fields
                 |> List.map (fun (_field, _, fieldName) ->
-                    let name = SynLongIdent.createS $"{fieldName}_Calls"
+                    let name = SynLongIdent.createS $"%s{fieldName}_Calls"
 
                     let init =
                         SynExpr.createIdent "ResizeArray" |> SynExpr.applyTo (SynExpr.CreateConst ())
