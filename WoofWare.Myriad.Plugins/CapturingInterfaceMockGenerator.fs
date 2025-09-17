@@ -41,7 +41,12 @@ module internal CapturingInterfaceMockGenerator =
             args
             |> List.mapi (fun i tupledArg ->
                 {
-                    SynFieldData.Ident = $"arg%i{i}" |> Ident.create |> Some
+                    SynFieldData.Ident =
+                        match tupledArg.Args with
+                        | [ arg ] -> arg.Id
+                        | _ -> None
+                        |> Option.defaultValue (Ident.create $"Arg%i{i}")
+                        |> Some
                     Attrs = []
                     Type =
                         tupledArg.Args
@@ -115,12 +120,7 @@ module internal CapturingInterfaceMockGenerator =
 
     /// Builds the record field for the mock object, and also if applicable a type representing a single call to
     /// that object (packaging up the args of the call).
-    let private constructMember
-        (spec : CapturingInterfaceMockOutputSpec)
-        (generics : SynTyparDecls option)
-        (mem : MemberInfo)
-        : SynField * CallField
-        =
+    let private constructMember (spec : CapturingInterfaceMockOutputSpec) (mem : MemberInfo) : SynField * CallField =
         let inputType = mem.Args |> List.map constructMemberSinglePlace
 
         let funcType = SynType.toFun inputType mem.ReturnType
@@ -179,11 +179,11 @@ module internal CapturingInterfaceMockGenerator =
         (name : string)
         (interfaceType : InterfaceType)
         (xmlDoc : PreXmlDoc)
-        : SynModuleDecl
+        : SynModuleDecl option * SynModuleDecl
         =
         let fields =
             interfaceType.Members
-            |> List.map (constructMember spec interfaceType.Generics)
+            |> List.map (constructMember spec)
             |> List.append (
                 interfaceType.Properties
                 |> List.map constructProperty
@@ -252,15 +252,11 @@ module internal CapturingInterfaceMockGenerator =
 
             let callsArrays =
                 fields
-                |> List.map (fun (_field, extraType, fieldName) ->
+                |> List.map (fun (_field, _, fieldName) ->
                     let name = SynLongIdent.createS $"{fieldName}_Calls"
 
                     let init =
-                        match extraType with
-                        | CallField.Original _ ->
-                            SynExpr.createIdent "ResizeArray" |> SynExpr.applyTo (SynExpr.CreateConst ())
-                        | CallField.ArgsObject _ ->
-                            SynExpr.createIdent "ResizeArray" |> SynExpr.applyTo (SynExpr.CreateConst ())
+                        SynExpr.createIdent "ResizeArray" |> SynExpr.applyTo (SynExpr.CreateConst ())
 
                     name, init
                 )
@@ -305,17 +301,19 @@ module internal CapturingInterfaceMockGenerator =
                                 Type = SynType.app "ResizeArray" [ ty ]
                             }
                             |> SynField.make
-                        | CallField.ArgsObject (name, _, generics) ->
+                        | CallField.ArgsObject (argsObjectName, _, generics) ->
                             {
                                 Attrs = []
                                 Ident = Some (fieldName + "_Calls" |> Ident.create)
                                 Type =
                                     match generics with
-                                    | None -> SynType.named name.idText
+                                    | None -> SynType.named argsObjectName.idText
                                     | Some generics ->
                                         generics.TyparDecls
                                         |> List.map (fun (SynTyparDecl.SynTyparDecl (_, typar)) -> SynType.var typar)
-                                        |> SynType.app name.idText
+                                        |> SynType.app' (
+                                            SynType.createLongIdent' [ $"%s{name}Calls" ; argsObjectName.idText ]
+                                        )
                                     |> List.singleton
                                     |> SynType.app "ResizeArray"
                             }
@@ -445,16 +443,25 @@ module internal CapturingInterfaceMockGenerator =
 
         let typeDecl = AstHelper.defineRecordType record
 
-        SynModuleDecl.Types (
-            [
-                for _, field, _ in fields do
-                    match field with
-                    | CallField.Original _ -> ()
-                    | CallField.ArgsObject (_, callType, _) -> yield callType
-                yield typeDecl
-            ],
-            range0
-        )
+        let callsModule =
+            fields
+            |> List.choose (fun (_, field, _) ->
+                match field with
+                | CallField.Original _ -> None
+                | CallField.ArgsObject (_, callType, _) -> Some callType
+            )
+            |> function
+                | [] -> None
+                | l ->
+                    SynModuleDecl.Types (l, range0)
+                    |> List.singleton
+                    |> SynModuleDecl.nestedModule (
+                        SynComponentInfo.create (Ident.create $"%s{name}Calls")
+                        |> SynComponentInfo.withAccessibility access
+                    )
+                    |> Some
+
+        (callsModule, SynModuleDecl.Types ([ typeDecl ], range0))
 
     let createRecord
         (namespaceId : LongIdent)
@@ -476,9 +483,15 @@ module internal CapturingInterfaceMockGenerator =
                     s
             |> fun s -> s + "Mock"
 
-        let typeDecl = createType spec name interfaceType docString
+        let callsTypes, typeDecl = createType spec name interfaceType docString
 
-        [ yield! opens |> List.map SynModuleDecl.openAny ; yield typeDecl ]
+        [
+            yield! opens |> List.map SynModuleDecl.openAny
+            match callsTypes with
+            | None -> ()
+            | Some c -> yield c
+            yield typeDecl
+        ]
         |> SynModuleOrNamespace.createNamespace namespaceId
 
 open Myriad.Core

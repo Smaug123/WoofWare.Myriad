@@ -163,63 +163,64 @@ namespace SomeNamespace.CapturingMock
 
 open System
 
-/// A single call to the Mem1 method
-type internal Mem1Call<'a> =
-    {
-        arg0 : int
-        arg1 : 'a
-    }
+module internal CurriedNoAttrMockCalls =
+    /// A single call to the Mem1 method
+    type internal Mem1Call<'a> =
+        {
+            Arg0 : int
+            Arg1 : 'a
+        }
 
-/// A single call to the Mem2 method
-type internal Mem2Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a
-    }
+    /// A single call to the Mem2 method
+    type internal Mem2Call<'a> =
+        {
+            Arg0 : int * string
+            Arg1 : 'a
+        }
 
-/// A single call to the Mem3 method
-type internal Mem3Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a
-    }
+    /// A single call to the Mem3 method
+    type internal Mem3Call<'a> =
+        {
+            Arg0 : int * string
+            Arg1 : 'a
+        }
 
-/// A single call to the Mem4 method
-type internal Mem4Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a * int
-    }
+    /// A single call to the Mem4 method
+    type internal Mem4Call<'a> =
+        {
+            Arg0 : int * string
+            Arg1 : 'a * int
+        }
 
-/// A single call to the Mem5 method
-type internal Mem5Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a * int
-    }
+    /// A single call to the Mem5 method
+    type internal Mem5Call<'a> =
+        {
+            Arg0 : int * string
+            Arg1 : 'a * int
+        }
 
-/// A single call to the Mem6 method
-type internal Mem6Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a * int
-    }
+    /// A single call to the Mem6 method
+    type internal Mem6Call<'a> =
+        {
+            Arg0 : int * string
+            Arg1 : 'a * int
+        }
 
 /// Mock record type for an interface
 type internal CurriedNoAttrMock<'a> =
     {
         Mem1 : int -> 'a -> string
-        Mem1_Calls : ResizeArray<Mem1Call<'a>>
+        Mem1_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem1Call<'a>>
         Mem2 : int * string -> 'a -> string
-        Mem2_Calls : ResizeArray<Mem2Call<'a>>
+        Mem2_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem2Call<'a>>
         Mem3 : (int * string) -> 'a -> string
-        Mem3_Calls : ResizeArray<Mem3Call<'a>>
+        Mem3_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem3Call<'a>>
         Mem4 : (int * string) -> ('a * int) -> string
-        Mem4_Calls : ResizeArray<Mem4Call<'a>>
+        Mem4_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem4Call<'a>>
         Mem5 : int * string -> ('a * int) -> string
-        Mem5_Calls : ResizeArray<Mem5Call<'a>>
+        Mem5_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem5Call<'a>>
         Mem6 : int * string -> 'a * int -> string
-        Mem6_Calls : ResizeArray<Mem6Call<'a>>
+        Mem6_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem6Call<'a>>
     }
 
     /// An implementation where every non-unit method throws.

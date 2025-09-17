@@ -5,7 +5,7 @@ open WoofWare.Myriad.Plugins
 
 [<GenerateCapturingMock>]
 type IPublicType =
-    abstract Mem1 : string * int -> string list
+    abstract Mem1 : foo : string * int -> string list
     abstract Mem2 : string -> int
     abstract Mem3 : x : int * ?ct : System.Threading.CancellationToken -> string
 
@@ -36,9 +36,9 @@ type VeryPublicType<'a, 'b> =
 
 [<GenerateCapturingMock>]
 type Curried<'a> =
-    abstract Mem1 : int -> 'a -> string
-    abstract Mem2 : int * string -> 'a -> string
-    abstract Mem3 : (int * string) -> 'a -> string
+    abstract Mem1 : bar : int -> 'a -> string
+    abstract Mem2 : int * string -> baz : 'a -> string
+    abstract Mem3 : quux : (int * string) -> flurb : 'a -> string
     abstract Mem4 : (int * string) -> ('a * int) -> string
     abstract Mem5 : x : int * string -> ('a * int) -> string
     abstract Mem6 : int * string -> y : 'a * int -> string

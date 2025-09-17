@@ -170,63 +170,64 @@ namespace SomeNamespace.CapturingMock
 open System
 open WoofWare.Myriad.Plugins
 
-/// A single call to the Mem1 method
-type internal Mem1Call<'a> =
-    {
-        arg0 : int
-        arg1 : 'a
-    }
+module internal CurriedMockCalls =
+    /// A single call to the Mem1 method
+    type internal Mem1Call<'a> =
+        {
+            bar : int
+            Arg1 : 'a
+        }
 
-/// A single call to the Mem2 method
-type internal Mem2Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a
-    }
+    /// A single call to the Mem2 method
+    type internal Mem2Call<'a> =
+        {
+            Arg0 : int * string
+            baz : 'a
+        }
 
-/// A single call to the Mem3 method
-type internal Mem3Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a
-    }
+    /// A single call to the Mem3 method
+    type internal Mem3Call<'a> =
+        {
+            quux : (int * string)
+            flurb : 'a
+        }
 
-/// A single call to the Mem4 method
-type internal Mem4Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a * int
-    }
+    /// A single call to the Mem4 method
+    type internal Mem4Call<'a> =
+        {
+            Arg0 : int * string
+            Arg1 : 'a * int
+        }
 
-/// A single call to the Mem5 method
-type internal Mem5Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a * int
-    }
+    /// A single call to the Mem5 method
+    type internal Mem5Call<'a> =
+        {
+            Arg0 : int * string
+            Arg1 : 'a * int
+        }
 
-/// A single call to the Mem6 method
-type internal Mem6Call<'a> =
-    {
-        arg0 : int * string
-        arg1 : 'a * int
-    }
+    /// A single call to the Mem6 method
+    type internal Mem6Call<'a> =
+        {
+            Arg0 : int * string
+            Arg1 : 'a * int
+        }
 
 /// Mock record type for an interface
 type internal CurriedMock<'a> =
     {
         Mem1 : int -> 'a -> string
-        Mem1_Calls : ResizeArray<Mem1Call<'a>>
+        Mem1_Calls : ResizeArray<CurriedMockCalls.Mem1Call<'a>>
         Mem2 : int * string -> 'a -> string
-        Mem2_Calls : ResizeArray<Mem2Call<'a>>
+        Mem2_Calls : ResizeArray<CurriedMockCalls.Mem2Call<'a>>
         Mem3 : (int * string) -> 'a -> string
-        Mem3_Calls : ResizeArray<Mem3Call<'a>>
+        Mem3_Calls : ResizeArray<CurriedMockCalls.Mem3Call<'a>>
         Mem4 : (int * string) -> ('a * int) -> string
-        Mem4_Calls : ResizeArray<Mem4Call<'a>>
+        Mem4_Calls : ResizeArray<CurriedMockCalls.Mem4Call<'a>>
         Mem5 : int * string -> ('a * int) -> string
-        Mem5_Calls : ResizeArray<Mem5Call<'a>>
+        Mem5_Calls : ResizeArray<CurriedMockCalls.Mem5Call<'a>>
         Mem6 : int * string -> 'a * int -> string
-        Mem6_Calls : ResizeArray<Mem6Call<'a>>
+        Mem6_Calls : ResizeArray<CurriedMockCalls.Mem6Call<'a>>
     }
 
     /// An implementation where every non-unit method throws.
@@ -249,7 +250,7 @@ type internal CurriedMock<'a> =
     interface Curried<'a> with
         member this.Mem1 arg_0_0 arg_1_0 = this.Mem1 (arg_0_0) (arg_1_0)
         member this.Mem2 (arg_0_0, arg_0_1) arg_1_0 = this.Mem2 (arg_0_0, arg_0_1) (arg_1_0)
-        member this.Mem3 ((arg_0_0, arg_0_1)) arg_1_0 = this.Mem3 (arg_0_0, arg_0_1) (arg_1_0)
+        member this.Mem3 arg_0_0 arg_1_0 = this.Mem3 (arg_0_0) (arg_1_0)
 
         member this.Mem4 ((arg_0_0, arg_0_1)) ((arg_1_0, arg_1_1)) =
             this.Mem4 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)

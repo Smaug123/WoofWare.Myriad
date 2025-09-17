@@ -6,7 +6,7 @@ open NUnit.Framework
 open FsUnitTyped
 
 [<TestFixture>]
-module TestMockGenerator =
+module TestCapturingMockGenerator =
 
     [<Test>]
     let ``Example of use: IPublicType`` () =
