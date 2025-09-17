@@ -47,3 +47,24 @@ module TestCapturingMockGenerator =
         mock.Mem1 (Some "hi") |> Async.RunSynchronously |> shouldEqual [| "hi" |]
 
         mock.Prop1 |> shouldEqual 44
+
+    [<Test>]
+    let ``Example of curried use`` () =
+        let mock =
+            { CurriedMock<string>.Empty () with
+                Mem1 =
+                    fun x y ->
+                        x |> shouldEqual 3
+                        y |> shouldEqual "hello"
+                        "it's me"
+            }
+
+        mock.Mem1 3 "hello" |> shouldEqual "it's me"
+
+        lock mock.Mem1_Calls (fun () -> Seq.toList mock.Mem1_Calls)
+        |> List.exactlyOne
+        |> shouldEqual
+            {
+                bar = 3
+                Arg1 = "hello"
+            }

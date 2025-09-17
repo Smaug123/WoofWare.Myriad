@@ -301,6 +301,10 @@ module internal CapturingInterfaceMockGenerator =
                                 Type = SynType.app "ResizeArray" [ ty ]
                             }
                             |> SynField.make
+                            |> SynField.withDocString (
+                                PreXmlDoc.create
+                                    "Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it."
+                            )
                         | CallField.ArgsObject (argsObjectName, _, generics) ->
                             {
                                 Attrs = []

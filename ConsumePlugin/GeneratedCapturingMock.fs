@@ -13,10 +13,13 @@ open WoofWare.Myriad.Plugins
 type internal PublicTypeMock =
     {
         Mem1 : string * int -> string list
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
         Mem3 : int * option<System.Threading.CancellationToken> -> string
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem3_Calls : ResizeArray<int * System.Threading.CancellationToken>
     }
 
@@ -44,10 +47,13 @@ open WoofWare.Myriad.Plugins
 type public PublicTypeInternalFalseMock =
     {
         Mem1 : string * int -> string list
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
         Mem3 : int * option<System.Threading.CancellationToken> -> string
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem3_Calls : ResizeArray<int * System.Threading.CancellationToken>
     }
 
@@ -75,8 +81,10 @@ open WoofWare.Myriad.Plugins
 type internal InternalTypeMock =
     {
         Mem1 : string * int -> unit
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
     }
 
@@ -101,8 +109,10 @@ open WoofWare.Myriad.Plugins
 type private PrivateTypeMock =
     {
         Mem1 : string * int -> unit
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
     }
 
@@ -127,8 +137,10 @@ open WoofWare.Myriad.Plugins
 type private PrivateTypeInternalFalseMock =
     {
         Mem1 : string * int -> unit
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
     }
 
@@ -153,6 +165,7 @@ open WoofWare.Myriad.Plugins
 type internal VeryPublicTypeMock<'a, 'b> =
     {
         Mem1 : 'a -> 'b
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<'a>
     }
 
@@ -271,8 +284,10 @@ type internal TypeWithInterfaceMock =
         /// Implementation of IDisposable.Dispose
         Dispose : unit -> unit
         Mem1 : string option -> string[] Async
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string option>
         Mem2 : unit -> string[] Async
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<unit>
     }
 
@@ -303,10 +318,13 @@ type internal TypeWithPropertiesMock =
         /// Implementation of IDisposable.Dispose
         Dispose : unit -> unit
         Prop1 : unit -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Prop1_Calls : ResizeArray<unit>
         Prop2 : unit -> unit Async
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Prop2_Calls : ResizeArray<unit>
         Mem1 : string option -> string[] Async
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string option>
     }
 

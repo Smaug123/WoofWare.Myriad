@@ -12,10 +12,13 @@ open System
 type internal PublicTypeNoAttrMock =
     {
         Mem1 : string * int -> string list
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
         Mem3 : int * option<System.Threading.CancellationToken> -> string
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem3_Calls : ResizeArray<int * System.Threading.CancellationToken>
     }
 
@@ -42,10 +45,13 @@ open System
 type public PublicTypeInternalFalseNoAttrMock =
     {
         Mem1 : string * int -> string list
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
         Mem3 : int * option<System.Threading.CancellationToken> -> string
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem3_Calls : ResizeArray<int * System.Threading.CancellationToken>
     }
 
@@ -72,8 +78,10 @@ open System
 type internal InternalTypeNoAttrMock =
     {
         Mem1 : string * int -> unit
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
     }
 
@@ -97,8 +105,10 @@ open System
 type private PrivateTypeNoAttrMock =
     {
         Mem1 : string * int -> unit
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
     }
 
@@ -122,8 +132,10 @@ open System
 type private PrivateTypeInternalFalseNoAttrMock =
     {
         Mem1 : string * int -> unit
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<string>
     }
 
@@ -147,6 +159,7 @@ open System
 type internal VeryPublicTypeNoAttrMock<'a, 'b> =
     {
         Mem1 : 'a -> 'b
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<'a>
     }
 
@@ -263,8 +276,10 @@ type internal TypeWithInterfaceNoAttrMock =
         /// Implementation of IDisposable.Dispose
         Dispose : unit -> unit
         Mem1 : string option -> string[] Async
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem1_Calls : ResizeArray<string option>
         Mem2 : unit -> string[] Async
+        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
         Mem2_Calls : ResizeArray<unit>
     }
 
