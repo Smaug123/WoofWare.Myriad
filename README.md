@@ -13,7 +13,7 @@ Currently implemented:
 * `JsonParse` (to stamp out `jsonParse : JsonNode -> 'T` methods).
 * `JsonSerialize` (to stamp out `toJsonNode : 'T -> JsonNode` methods).
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
-* `GenerateMock` (to stamp out a record type corresponding to an interface, like a compile-time [Foq](https://github.com/fsprojects/Foq)).
+* `GenerateMock` and `GenerateCapturingMock` (to stamp out a record type corresponding to an interface, like a compile-time [Foq](https://github.com/fsprojects/Foq)).
 * `ArgParser` (to stamp out a basic argument parser).
 * `SwaggerClient` (to stamp out an HTTP client for a Swagger API).
 * `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
@@ -440,9 +440,9 @@ There are also some design decisions:
   so arguments are forced to be tupled.
 * The `[<Optional>]` attribute is not supported and will probably not be supported, because I consider it to be cursed.
 
-## `GenerateMock`
+## `GenerateMock` and `GenerateCapturingMock`
 
-Takes a type like this:
+`GenerateMock` takes a type like this:
 
 ```fsharp
 [<GenerateMock>]
@@ -465,6 +465,48 @@ type internal PublicTypeMock =
         {
             Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
             Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+        }
+
+    interface IPublicType with
+        member this.Mem1 (arg0, arg1) = this.Mem1 (arg0, arg1)
+        member this.Mem2 (arg0) = this.Mem2 (arg0)
+```
+
+`GenerateCapturingMock` additionally captures the calls made to each function (except for `Dispose`).
+It takes a type like this:
+
+```fsharp
+[<GenerateCapturingMock>]
+type IPublicType =
+    abstract Mem1 : string * int -> string list
+    abstract Mem2 : baz : string -> unit -> int
+```
+
+and stamps out types like this:
+
+```fsharp
+module internal PublicTypeCalls =
+    type internal Mem2Call =
+        {
+            baz : string
+            Arg1 : unit
+        }
+
+/// Mock record type for an interface
+type internal PublicTypeMock =
+    {
+        Mem1 : string * int -> string list
+        Mem2 : string -> int
+        Mem2_Calls : ResizeArray<string * int>
+        Mem2_Calls : ResizeArray<PublicTypeCalls.Mem2Call>
+    }
+
+    static member Empty : PublicTypeMock =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem1_Calls = ResizeArray ()
+            Mem2_Calls = ResizeArray ()
         }
 
     interface IPublicType with
