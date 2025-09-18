@@ -50,7 +50,7 @@ module TestCapturingMockGenerator =
 
     [<Test>]
     let ``Example of curried use`` () =
-        let mock =
+        let mock' =
             { CurriedMock<string>.Empty () with
                 Mem1 =
                     fun x y ->
@@ -59,9 +59,11 @@ module TestCapturingMockGenerator =
                         "it's me"
             }
 
+        let mock = mock' :> Curried<_>
+
         mock.Mem1 3 "hello" |> shouldEqual "it's me"
 
-        lock mock.Mem1_Calls (fun () -> Seq.toList mock.Mem1_Calls)
+        lock mock'.Calls.Mem1 (fun () -> Seq.toList mock'.Calls.Mem1)
         |> List.exactlyOne
         |> shouldEqual
             {

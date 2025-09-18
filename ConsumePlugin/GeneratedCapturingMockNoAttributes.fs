@@ -8,174 +8,279 @@ namespace SomeNamespace.CapturingMock
 
 open System
 
+[<RequireQualifiedAccess>]
+module internal PublicTypeNoAttrMockCalls =
+    /// All the calls made to a PublicTypeNoAttrMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+            Mem3 : ResizeArray<int * System.Threading.CancellationToken option>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+                Mem3 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal PublicTypeNoAttrMock =
     {
+        Calls : PublicTypeNoAttrMockCalls.Calls
         Mem1 : string * int -> string list
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
-        Mem3 : int * option<System.Threading.CancellationToken> -> string
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem3_Calls : ResizeArray<int * System.Threading.CancellationToken>
+        Mem3 : int * System.Threading.CancellationToken option -> string
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : PublicTypeNoAttrMock =
         {
+            Calls = PublicTypeNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
             Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
-            Mem3_Calls = ResizeArray ()
         }
 
     interface IPublicTypeNoAttr with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
-        member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
+
+        member this.Mem3 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem3 (fun _ -> this.Calls.Mem3.Add (arg_0_0, arg_0_1))
+            this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace.CapturingMock
 
 open System
 
+[<RequireQualifiedAccess>]
+module public PublicTypeInternalFalseNoAttrMockCalls =
+    /// All the calls made to a PublicTypeInternalFalseNoAttrMock mock
+    type public Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+            Mem3 : ResizeArray<int * System.Threading.CancellationToken option>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+                Mem3 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type public PublicTypeInternalFalseNoAttrMock =
     {
+        Calls : PublicTypeInternalFalseNoAttrMockCalls.Calls
         Mem1 : string * int -> string list
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
-        Mem3 : int * option<System.Threading.CancellationToken> -> string
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem3_Calls : ResizeArray<int * System.Threading.CancellationToken>
+        Mem3 : int * System.Threading.CancellationToken option -> string
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : PublicTypeInternalFalseNoAttrMock =
         {
+            Calls = PublicTypeInternalFalseNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
             Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
-            Mem3_Calls = ResizeArray ()
         }
 
     interface IPublicTypeInternalFalseNoAttr with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
-        member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
+
+        member this.Mem3 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem3 (fun _ -> this.Calls.Mem3.Add (arg_0_0, arg_0_1))
+            this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace.CapturingMock
 
 open System
 
+[<RequireQualifiedAccess>]
+module internal InternalTypeNoAttrMockCalls =
+    /// All the calls made to a InternalTypeNoAttrMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal InternalTypeNoAttrMock =
     {
+        Calls : InternalTypeNoAttrMockCalls.Calls
         Mem1 : string * int -> unit
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : InternalTypeNoAttrMock =
         {
+            Calls = InternalTypeNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
         }
 
     interface InternalTypeNoAttr with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
 namespace SomeNamespace.CapturingMock
 
 open System
 
+[<RequireQualifiedAccess>]
+module internal PrivateTypeNoAttrMockCalls =
+    /// All the calls made to a PrivateTypeNoAttrMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type private PrivateTypeNoAttrMock =
     {
+        Calls : PrivateTypeNoAttrMockCalls.Calls
         Mem1 : string * int -> unit
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : PrivateTypeNoAttrMock =
         {
+            Calls = PrivateTypeNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
         }
 
     interface PrivateTypeNoAttr with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
 namespace SomeNamespace.CapturingMock
 
 open System
 
+[<RequireQualifiedAccess>]
+module internal PrivateTypeInternalFalseNoAttrMockCalls =
+    /// All the calls made to a PrivateTypeInternalFalseNoAttrMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type private PrivateTypeInternalFalseNoAttrMock =
     {
+        Calls : PrivateTypeInternalFalseNoAttrMockCalls.Calls
         Mem1 : string * int -> unit
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : PrivateTypeInternalFalseNoAttrMock =
         {
+            Calls = PrivateTypeInternalFalseNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
         }
 
     interface PrivateTypeInternalFalseNoAttr with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
 namespace SomeNamespace.CapturingMock
 
 open System
 
+[<RequireQualifiedAccess>]
+module internal VeryPublicTypeNoAttrMockCalls =
+    /// All the calls made to a VeryPublicTypeNoAttrMock mock
+    type internal Calls<'a, 'b> =
+        {
+            Mem1 : ResizeArray<'a>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls<'a, 'b> =
+            {
+                Mem1 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal VeryPublicTypeNoAttrMock<'a, 'b> =
     {
+        Calls : VeryPublicTypeNoAttrMockCalls.Calls<'a, 'b>
         Mem1 : 'a -> 'b
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<'a>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty () : VeryPublicTypeNoAttrMock<'a, 'b> =
         {
+            Calls = VeryPublicTypeNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-            Mem1_Calls = ResizeArray ()
         }
 
     interface VeryPublicTypeNoAttr<'a, 'b> with
-        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+        member this.Mem1 arg_0_0 =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0))
+            this.Mem1 (arg_0_0)
 namespace SomeNamespace.CapturingMock
 
 open System
 
+[<RequireQualifiedAccess>]
 module internal CurriedNoAttrMockCalls =
     /// A single call to the Mem1 method
     type internal Mem1Call<'a> =
@@ -219,83 +324,177 @@ module internal CurriedNoAttrMockCalls =
             Arg1 : 'a * int
         }
 
+    /// All the calls made to a CurriedNoAttrMock mock
+    type internal Calls<'a> =
+        {
+            Mem1 : ResizeArray<Mem1Call<'a>>
+            Mem2 : ResizeArray<Mem2Call<'a>>
+            Mem3 : ResizeArray<Mem3Call<'a>>
+            Mem4 : ResizeArray<Mem4Call<'a>>
+            Mem5 : ResizeArray<Mem5Call<'a>>
+            Mem6 : ResizeArray<Mem6Call<'a>>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls<'a> =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+                Mem3 = ResizeArray ()
+                Mem4 = ResizeArray ()
+                Mem5 = ResizeArray ()
+                Mem6 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal CurriedNoAttrMock<'a> =
     {
+        Calls : CurriedNoAttrMockCalls.Calls<'a>
         Mem1 : int -> 'a -> string
-        Mem1_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem1Call<'a>>
         Mem2 : int * string -> 'a -> string
-        Mem2_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem2Call<'a>>
         Mem3 : (int * string) -> 'a -> string
-        Mem3_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem3Call<'a>>
         Mem4 : (int * string) -> ('a * int) -> string
-        Mem4_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem4Call<'a>>
         Mem5 : int * string -> ('a * int) -> string
-        Mem5_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem5Call<'a>>
         Mem6 : int * string -> 'a * int -> string
-        Mem6_Calls : ResizeArray<CurriedNoAttrMockCalls.Mem6Call<'a>>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty () : CurriedNoAttrMock<'a> =
         {
+            Calls = CurriedNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
             Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
             Mem4 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem4"))
             Mem5 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem5"))
             Mem6 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem6"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
-            Mem3_Calls = ResizeArray ()
-            Mem4_Calls = ResizeArray ()
-            Mem5_Calls = ResizeArray ()
-            Mem6_Calls = ResizeArray ()
         }
 
     interface CurriedNoAttr<'a> with
-        member this.Mem1 arg_0_0 arg_1_0 = this.Mem1 (arg_0_0) (arg_1_0)
-        member this.Mem2 (arg_0_0, arg_0_1) arg_1_0 = this.Mem2 (arg_0_0, arg_0_1) (arg_1_0)
-        member this.Mem3 ((arg_0_0, arg_0_1)) arg_1_0 = this.Mem3 (arg_0_0, arg_0_1) (arg_1_0)
+        member this.Mem1 arg_0_0 arg_1_0 =
+            lock
+                this.Calls.Mem1
+                (fun _ ->
+                    this.Calls.Mem1.Add
+                        {
+                            Arg0 = arg_0_0
+                            Arg1 = arg_1_0
+                        }
+                )
+
+            this.Mem1 (arg_0_0) (arg_1_0)
+
+        member this.Mem2 (arg_0_0, arg_0_1) arg_1_0 =
+            lock
+                this.Calls.Mem2
+                (fun _ ->
+                    this.Calls.Mem2.Add
+                        {
+                            Arg0 = arg_0_0, arg_0_1
+                            Arg1 = arg_1_0
+                        }
+                )
+
+            this.Mem2 (arg_0_0, arg_0_1) (arg_1_0)
+
+        member this.Mem3 ((arg_0_0, arg_0_1)) arg_1_0 =
+            lock
+                this.Calls.Mem3
+                (fun _ ->
+                    this.Calls.Mem3.Add
+                        {
+                            Arg0 = arg_0_0, arg_0_1
+                            Arg1 = arg_1_0
+                        }
+                )
+
+            this.Mem3 (arg_0_0, arg_0_1) (arg_1_0)
 
         member this.Mem4 ((arg_0_0, arg_0_1)) ((arg_1_0, arg_1_1)) =
+            lock
+                this.Calls.Mem4
+                (fun _ ->
+                    this.Calls.Mem4.Add
+                        {
+                            Arg0 = arg_0_0, arg_0_1
+                            Arg1 = arg_1_0, arg_1_1
+                        }
+                )
+
             this.Mem4 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
 
         member this.Mem5 (arg_0_0, arg_0_1) ((arg_1_0, arg_1_1)) =
+            lock
+                this.Calls.Mem5
+                (fun _ ->
+                    this.Calls.Mem5.Add
+                        {
+                            Arg0 = arg_0_0, arg_0_1
+                            Arg1 = arg_1_0, arg_1_1
+                        }
+                )
+
             this.Mem5 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
 
         member this.Mem6 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1) =
+            lock
+                this.Calls.Mem6
+                (fun _ ->
+                    this.Calls.Mem6.Add
+                        {
+                            Arg0 = arg_0_0, arg_0_1
+                            Arg1 = arg_1_0, arg_1_1
+                        }
+                )
+
             this.Mem6 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
 namespace SomeNamespace.CapturingMock
 
 open System
 
+[<RequireQualifiedAccess>]
+module internal TypeWithInterfaceNoAttrMockCalls =
+    /// All the calls made to a TypeWithInterfaceNoAttrMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string option>
+            Mem2 : ResizeArray<unit>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal TypeWithInterfaceNoAttrMock =
     {
+        Calls : TypeWithInterfaceNoAttrMockCalls.Calls
         /// Implementation of IDisposable.Dispose
         Dispose : unit -> unit
         Mem1 : string option -> string[] Async
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string option>
         Mem2 : unit -> string[] Async
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<unit>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : TypeWithInterfaceNoAttrMock =
         {
+            Calls = TypeWithInterfaceNoAttrMockCalls.Calls.Empty ()
             Dispose = (fun () -> ())
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
         }
 
     interface TypeWithInterfaceNoAttr with
-        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
-        member this.Mem2 () = this.Mem2 (())
+        member this.Mem1 arg_0_0 =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0))
+            this.Mem1 (arg_0_0)
+
+        member this.Mem2 () =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (()))
+            this.Mem2 (())
 
     interface System.IDisposable with
         member this.Dispose () : unit = this.Dispose ()

@@ -9,180 +9,285 @@ namespace SomeNamespace.CapturingMock
 open System
 open WoofWare.Myriad.Plugins
 
+[<RequireQualifiedAccess>]
+module internal PublicTypeMockCalls =
+    /// All the calls made to a PublicTypeMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+            Mem3 : ResizeArray<int * System.Threading.CancellationToken option>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+                Mem3 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal PublicTypeMock =
     {
+        Calls : PublicTypeMockCalls.Calls
         Mem1 : string * int -> string list
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
-        Mem3 : int * option<System.Threading.CancellationToken> -> string
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem3_Calls : ResizeArray<int * System.Threading.CancellationToken>
+        Mem3 : int * System.Threading.CancellationToken option -> string
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : PublicTypeMock =
         {
+            Calls = PublicTypeMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
             Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
-            Mem3_Calls = ResizeArray ()
         }
 
     interface IPublicType with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
-        member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
+
+        member this.Mem3 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem3 (fun _ -> this.Calls.Mem3.Add (arg_0_0, arg_0_1))
+            this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace.CapturingMock
 
 open System
 open WoofWare.Myriad.Plugins
 
+[<RequireQualifiedAccess>]
+module public PublicTypeInternalFalseMockCalls =
+    /// All the calls made to a PublicTypeInternalFalseMock mock
+    type public Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+            Mem3 : ResizeArray<int * System.Threading.CancellationToken option>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+                Mem3 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type public PublicTypeInternalFalseMock =
     {
+        Calls : PublicTypeInternalFalseMockCalls.Calls
         Mem1 : string * int -> string list
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
-        Mem3 : int * option<System.Threading.CancellationToken> -> string
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem3_Calls : ResizeArray<int * System.Threading.CancellationToken>
+        Mem3 : int * System.Threading.CancellationToken option -> string
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : PublicTypeInternalFalseMock =
         {
+            Calls = PublicTypeInternalFalseMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
             Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
-            Mem3_Calls = ResizeArray ()
         }
 
     interface IPublicTypeInternalFalse with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
-        member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
+
+        member this.Mem3 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem3 (fun _ -> this.Calls.Mem3.Add (arg_0_0, arg_0_1))
+            this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace.CapturingMock
 
 open System
 open WoofWare.Myriad.Plugins
 
+[<RequireQualifiedAccess>]
+module internal InternalTypeMockCalls =
+    /// All the calls made to a InternalTypeMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal InternalTypeMock =
     {
+        Calls : InternalTypeMockCalls.Calls
         Mem1 : string * int -> unit
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : InternalTypeMock =
         {
+            Calls = InternalTypeMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
         }
 
     interface InternalType with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
 namespace SomeNamespace.CapturingMock
 
 open System
 open WoofWare.Myriad.Plugins
 
+[<RequireQualifiedAccess>]
+module internal PrivateTypeMockCalls =
+    /// All the calls made to a PrivateTypeMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type private PrivateTypeMock =
     {
+        Calls : PrivateTypeMockCalls.Calls
         Mem1 : string * int -> unit
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : PrivateTypeMock =
         {
+            Calls = PrivateTypeMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
         }
 
     interface PrivateType with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
 namespace SomeNamespace.CapturingMock
 
 open System
 open WoofWare.Myriad.Plugins
 
+[<RequireQualifiedAccess>]
+module internal PrivateTypeInternalFalseMockCalls =
+    /// All the calls made to a PrivateTypeInternalFalseMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string * int>
+            Mem2 : ResizeArray<string>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type private PrivateTypeInternalFalseMock =
     {
+        Calls : PrivateTypeInternalFalseMockCalls.Calls
         Mem1 : string * int -> unit
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string * int>
         Mem2 : string -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<string>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : PrivateTypeInternalFalseMock =
         {
+            Calls = PrivateTypeInternalFalseMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
         }
 
     interface PrivateTypeInternalFalse with
-        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0, arg_0_1))
+            this.Mem1 (arg_0_0, arg_0_1)
+
+        member this.Mem2 arg_0_0 =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (arg_0_0))
+            this.Mem2 (arg_0_0)
 namespace SomeNamespace.CapturingMock
 
 open System
 open WoofWare.Myriad.Plugins
 
+[<RequireQualifiedAccess>]
+module internal VeryPublicTypeMockCalls =
+    /// All the calls made to a VeryPublicTypeMock mock
+    type internal Calls<'a, 'b> =
+        {
+            Mem1 : ResizeArray<'a>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls<'a, 'b> =
+            {
+                Mem1 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal VeryPublicTypeMock<'a, 'b> =
     {
+        Calls : VeryPublicTypeMockCalls.Calls<'a, 'b>
         Mem1 : 'a -> 'b
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<'a>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty () : VeryPublicTypeMock<'a, 'b> =
         {
+            Calls = VeryPublicTypeMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-            Mem1_Calls = ResizeArray ()
         }
 
     interface VeryPublicType<'a, 'b> with
-        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+        member this.Mem1 arg_0_0 =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0))
+            this.Mem1 (arg_0_0)
 namespace SomeNamespace.CapturingMock
 
 open System
 open WoofWare.Myriad.Plugins
 
+[<RequireQualifiedAccess>]
 module internal CurriedMockCalls =
     /// A single call to the Mem1 method
     type internal Mem1Call<'a> =
@@ -226,84 +331,178 @@ module internal CurriedMockCalls =
             Arg1 : 'a * int
         }
 
+    /// All the calls made to a CurriedMock mock
+    type internal Calls<'a> =
+        {
+            Mem1 : ResizeArray<Mem1Call<'a>>
+            Mem2 : ResizeArray<Mem2Call<'a>>
+            Mem3 : ResizeArray<Mem3Call<'a>>
+            Mem4 : ResizeArray<Mem4Call<'a>>
+            Mem5 : ResizeArray<Mem5Call<'a>>
+            Mem6 : ResizeArray<Mem6Call<'a>>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls<'a> =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+                Mem3 = ResizeArray ()
+                Mem4 = ResizeArray ()
+                Mem5 = ResizeArray ()
+                Mem6 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal CurriedMock<'a> =
     {
+        Calls : CurriedMockCalls.Calls<'a>
         Mem1 : int -> 'a -> string
-        Mem1_Calls : ResizeArray<CurriedMockCalls.Mem1Call<'a>>
         Mem2 : int * string -> 'a -> string
-        Mem2_Calls : ResizeArray<CurriedMockCalls.Mem2Call<'a>>
         Mem3 : (int * string) -> 'a -> string
-        Mem3_Calls : ResizeArray<CurriedMockCalls.Mem3Call<'a>>
         Mem4 : (int * string) -> ('a * int) -> string
-        Mem4_Calls : ResizeArray<CurriedMockCalls.Mem4Call<'a>>
         Mem5 : int * string -> ('a * int) -> string
-        Mem5_Calls : ResizeArray<CurriedMockCalls.Mem5Call<'a>>
         Mem6 : int * string -> 'a * int -> string
-        Mem6_Calls : ResizeArray<CurriedMockCalls.Mem6Call<'a>>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty () : CurriedMock<'a> =
         {
+            Calls = CurriedMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
             Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
             Mem4 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem4"))
             Mem5 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem5"))
             Mem6 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem6"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
-            Mem3_Calls = ResizeArray ()
-            Mem4_Calls = ResizeArray ()
-            Mem5_Calls = ResizeArray ()
-            Mem6_Calls = ResizeArray ()
         }
 
     interface Curried<'a> with
-        member this.Mem1 arg_0_0 arg_1_0 = this.Mem1 (arg_0_0) (arg_1_0)
-        member this.Mem2 (arg_0_0, arg_0_1) arg_1_0 = this.Mem2 (arg_0_0, arg_0_1) (arg_1_0)
-        member this.Mem3 arg_0_0 arg_1_0 = this.Mem3 (arg_0_0) (arg_1_0)
+        member this.Mem1 arg_0_0 arg_1_0 =
+            lock
+                this.Calls.Mem1
+                (fun _ ->
+                    this.Calls.Mem1.Add
+                        {
+                            bar = arg_0_0
+                            Arg1 = arg_1_0
+                        }
+                )
+
+            this.Mem1 (arg_0_0) (arg_1_0)
+
+        member this.Mem2 (arg_0_0, arg_0_1) arg_1_0 =
+            lock
+                this.Calls.Mem2
+                (fun _ ->
+                    this.Calls.Mem2.Add
+                        {
+                            Arg0 = arg_0_0, arg_0_1
+                            baz = arg_1_0
+                        }
+                )
+
+            this.Mem2 (arg_0_0, arg_0_1) (arg_1_0)
+
+        member this.Mem3 arg_0_0 arg_1_0 =
+            lock
+                this.Calls.Mem3
+                (fun _ ->
+                    this.Calls.Mem3.Add
+                        {
+                            quux = arg_0_0
+                            flurb = arg_1_0
+                        }
+                )
+
+            this.Mem3 (arg_0_0) (arg_1_0)
 
         member this.Mem4 ((arg_0_0, arg_0_1)) ((arg_1_0, arg_1_1)) =
+            lock
+                this.Calls.Mem4
+                (fun _ ->
+                    this.Calls.Mem4.Add
+                        {
+                            Arg0 = arg_0_0, arg_0_1
+                            Arg1 = arg_1_0, arg_1_1
+                        }
+                )
+
             this.Mem4 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
 
         member this.Mem5 (arg_0_0, arg_0_1) ((arg_1_0, arg_1_1)) =
+            lock
+                this.Calls.Mem5
+                (fun _ ->
+                    this.Calls.Mem5.Add
+                        {
+                            Arg0 = arg_0_0, arg_0_1
+                            Arg1 = arg_1_0, arg_1_1
+                        }
+                )
+
             this.Mem5 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
 
         member this.Mem6 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1) =
+            lock
+                this.Calls.Mem6
+                (fun _ ->
+                    this.Calls.Mem6.Add
+                        {
+                            Arg0 = arg_0_0, arg_0_1
+                            Arg1 = arg_1_0, arg_1_1
+                        }
+                )
+
             this.Mem6 (arg_0_0, arg_0_1) (arg_1_0, arg_1_1)
 namespace SomeNamespace.CapturingMock
 
 open System
 open WoofWare.Myriad.Plugins
 
+[<RequireQualifiedAccess>]
+module internal TypeWithInterfaceMockCalls =
+    /// All the calls made to a TypeWithInterfaceMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string option>
+            Mem2 : ResizeArray<unit>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal TypeWithInterfaceMock =
     {
+        Calls : TypeWithInterfaceMockCalls.Calls
         /// Implementation of IDisposable.Dispose
         Dispose : unit -> unit
         Mem1 : string option -> string[] Async
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string option>
         Mem2 : unit -> string[] Async
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem2_Calls : ResizeArray<unit>
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : TypeWithInterfaceMock =
         {
+            Calls = TypeWithInterfaceMockCalls.Calls.Empty ()
             Dispose = (fun () -> ())
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-            Mem1_Calls = ResizeArray ()
-            Mem2_Calls = ResizeArray ()
         }
 
     interface TypeWithInterface with
-        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
-        member this.Mem2 () = this.Mem2 (())
+        member this.Mem1 arg_0_0 =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0))
+            this.Mem1 (arg_0_0)
+
+        member this.Mem2 () =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (()))
+            this.Mem2 (())
 
     interface System.IDisposable with
         member this.Dispose () : unit = this.Dispose ()
@@ -312,36 +511,50 @@ namespace SomeNamespace.CapturingMock
 open System
 open WoofWare.Myriad.Plugins
 
+[<RequireQualifiedAccess>]
+module internal TypeWithPropertiesMockCalls =
+    /// All the calls made to a TypeWithPropertiesMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string option>
+            Prop1 : ResizeArray<unit>
+            Prop2 : ResizeArray<unit>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Prop1 = ResizeArray ()
+                Prop2 = ResizeArray ()
+            }
+
 /// Mock record type for an interface
 type internal TypeWithPropertiesMock =
     {
+        Calls : TypeWithPropertiesMockCalls.Calls
         /// Implementation of IDisposable.Dispose
         Dispose : unit -> unit
-        Prop1 : unit -> int
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Prop1_Calls : ResizeArray<unit>
-        Prop2 : unit -> unit Async
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Prop2_Calls : ResizeArray<unit>
         Mem1 : string option -> string[] Async
-        /// Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it.
-        Mem1_Calls : ResizeArray<string option>
+        Prop1 : unit -> int
+        Prop2 : unit -> unit Async
     }
 
     /// An implementation where every non-unit method throws.
     static member Empty : TypeWithPropertiesMock =
         {
+            Calls = TypeWithPropertiesMockCalls.Calls.Empty ()
             Dispose = (fun () -> ())
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
             Prop1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Prop1"))
             Prop2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Prop2"))
-            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-            Prop1_Calls = ResizeArray ()
-            Prop2_Calls = ResizeArray ()
-            Mem1_Calls = ResizeArray ()
         }
 
     interface TypeWithProperties with
-        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+        member this.Mem1 arg_0_0 =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0))
+            this.Mem1 (arg_0_0)
+
         member this.Prop1 = this.Prop1 ()
         member this.Prop2 = this.Prop2 ()
 

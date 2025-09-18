@@ -50,7 +50,12 @@ module internal CapturingInterfaceMockGenerator =
                     Attrs = []
                     Type =
                         tupledArg.Args
-                        |> List.map (fun pi -> pi.Type)
+                        |> List.map (fun pi ->
+                            if pi.IsOptional then
+                                pi.Type |> SynType.appPostfix "option"
+                            else
+                                pi.Type
+                        )
                         |> SynType.tupleNoParen
                         |> Option.get
                 }
@@ -75,7 +80,7 @@ module internal CapturingInterfaceMockGenerator =
 
     let private buildType (x : ParameterInfo) : SynType =
         if x.IsOptional then
-            SynType.app "option" [ x.Type ]
+            SynType.appPostfix "option" x.Type
         else
             x.Type
 
@@ -139,7 +144,12 @@ module internal CapturingInterfaceMockGenerator =
             | [] -> failwith "expected args in member"
             | [ ty ] ->
                 ty.Args
-                |> List.map _.Type
+                |> List.map (fun pi ->
+                    if pi.IsOptional then
+                        SynType.appPostfix "option" pi.Type
+                    else
+                        pi.Type
+                )
                 |> SynType.tupleNoParen
                 |> Option.get
                 |> CallField.Original
@@ -214,8 +224,9 @@ module internal CapturingInterfaceMockGenerator =
                     | None -> failwith $"unexpectedly got a field with no identifier: %O{f}"
                     | Some idOpt -> idOpt.idText
 
-                f, extraType, fieldName
+                fieldName, (f, extraType)
             )
+            |> Map.ofList
 
         let failwithNotImplemented (fieldName : string) =
             let failString = SynExpr.CreateConst $"Unimplemented mock function: %s{fieldName}"
@@ -248,20 +259,16 @@ module internal CapturingInterfaceMockGenerator =
 
             let originalMembers =
                 fields
-                |> List.map (fun (_, _, fieldName) -> SynLongIdent.createS fieldName, failwithNotImplemented fieldName)
+                |> Map.toList
+                |> List.map (fun (fieldName, _) -> SynLongIdent.createS fieldName, failwithNotImplemented fieldName)
 
-            let callsArrays =
-                fields
-                |> List.map (fun (_field, _, fieldName) ->
-                    let name = SynLongIdent.createS $"%s{fieldName}_Calls"
+            let callsObject =
+                SynLongIdent.createS "Calls",
+                SynExpr.applyFunction
+                    (SynExpr.createLongIdent [ $"%s{name}Calls" ; "Calls" ; "Empty" ])
+                    (SynExpr.CreateConst ())
 
-                    let init =
-                        SynExpr.createIdent "ResizeArray" |> SynExpr.applyTo (SynExpr.CreateConst ())
-
-                    name, init
-                )
-
-            interfaceExtras @ originalMembers @ callsArrays
+            callsObject :: interfaceExtras @ originalMembers
 
         let staticMemberEmpty =
             SynBinding.basic
@@ -290,43 +297,109 @@ module internal CapturingInterfaceMockGenerator =
                     []
 
             let nonExtras =
+                fields |> Map.toSeq |> Seq.map (fun (_, (field, _)) -> field) |> Seq.toList
+
+            let calls =
+                let ty =
+                    match interfaceType.Generics with
+                    | None -> SynType.createLongIdent' [ $"%s{name}Calls" ; "Calls" ]
+                    | Some generics ->
+                        generics.TyparDecls
+                        |> List.map (fun (SynTyparDecl (_, typar)) -> SynType.var typar)
+                        |> SynType.app' (SynType.createLongIdent' [ $"%s{name}Calls" ; "Calls" ])
+
+                {
+                    Attrs = []
+                    Ident = Ident.create "Calls" |> Some
+                    Type = ty
+                }
+                |> SynField.make
+
+            calls :: extras @ nonExtras
+
+        let access =
+            match interfaceType.Accessibility, spec.IsInternal with
+            | Some (SynAccess.Public _), true
+            | None, true -> SynAccess.Internal range0
+            | Some (SynAccess.Public _), false -> SynAccess.Public range0
+            | None, false -> SynAccess.Public range0
+            | Some (SynAccess.Internal _), _ -> SynAccess.Internal range0
+            | Some (SynAccess.Private _), _ -> SynAccess.Private range0
+
+        let accessAtLeastInternal =
+            match access with
+            | SynAccess.Private _ -> SynAccess.Internal range0
+            | access -> access
+
+        let callsObject =
+            let fields' =
                 fields
-                |> List.collect (fun (field, callType, fieldName) ->
-                    let callField =
-                        match callType with
-                        | CallField.Original ty ->
-                            {
-                                Attrs = []
-                                Ident = Some (fieldName + "_Calls" |> Ident.create)
-                                Type = SynType.app "ResizeArray" [ ty ]
-                            }
-                            |> SynField.make
-                            |> SynField.withDocString (
-                                PreXmlDoc.create
-                                    "Additions to this ResizeArray are locked on itself. For maximum safety, lock on this field before reading it."
-                            )
-                        | CallField.ArgsObject (argsObjectName, _, generics) ->
-                            {
-                                Attrs = []
-                                Ident = Some (fieldName + "_Calls" |> Ident.create)
-                                Type =
-                                    match generics with
-                                    | None -> SynType.named argsObjectName.idText
-                                    | Some generics ->
-                                        generics.TyparDecls
-                                        |> List.map (fun (SynTyparDecl.SynTyparDecl (_, typar)) -> SynType.var typar)
-                                        |> SynType.app' (
-                                            SynType.createLongIdent' [ $"%s{name}Calls" ; argsObjectName.idText ]
-                                        )
-                                    |> List.singleton
-                                    |> SynType.app "ResizeArray"
-                            }
-                            |> SynField.make
-
-                    [ field ; callField ]
+                |> Map.toSeq
+                |> Seq.map (fun (fieldName, (_, callType)) ->
+                    match callType with
+                    | CallField.Original ty ->
+                        {
+                            Attrs = []
+                            Ident = Some (fieldName |> Ident.create)
+                            Type = SynType.app "ResizeArray" [ ty ]
+                        }
+                        |> SynField.make
+                    | CallField.ArgsObject (argsObjectName, _, generics) ->
+                        {
+                            Attrs = []
+                            Ident = Some (fieldName |> Ident.create)
+                            Type =
+                                match generics with
+                                | None -> SynType.named argsObjectName.idText
+                                | Some generics ->
+                                    generics.TyparDecls
+                                    |> List.map (fun (SynTyparDecl.SynTyparDecl (_, typar)) -> SynType.var typar)
+                                    |> SynType.app' (SynType.createLongIdent' [ argsObjectName.idText ])
+                                |> List.singleton
+                                |> SynType.app "ResizeArray"
+                        }
+                        |> SynField.make
                 )
+                |> Seq.toList
 
-            extras @ nonExtras
+            let emptyMember =
+                let returnType =
+                    match interfaceType.Generics with
+                    | None -> SynType.named "Calls"
+                    | Some generics ->
+                        let generics =
+                            match generics with
+                            | SynTyparDecls.PostfixList (decls = decls)
+                            | SynTyparDecls.PrefixList (decls = decls) -> decls
+                            | SynTyparDecls.SinglePrefix (decl = decl) -> [ decl ]
+                            |> List.map (fun (SynTyparDecl.SynTyparDecl (_, typar)) -> SynType.var typar)
+
+                        SynType.app "Calls" generics
+
+                fields
+                |> Map.toSeq
+                |> Seq.map (fun (name, _) ->
+                    SynLongIdent.createS name,
+                    SynExpr.applyFunction (SynExpr.createIdent "ResizeArray") (SynExpr.CreateConst ())
+                )
+                |> Seq.toList
+                |> SynExpr.createRecord None
+                |> SynBinding.basic [ Ident.create "Empty" ] [ SynPat.unit ]
+                |> SynBinding.withXmlDoc (PreXmlDoc.create "A fresh calls object which has not yet had any calls made.")
+                |> SynBinding.withReturnAnnotation returnType
+                |> SynMemberDefn.staticMember
+
+            {
+                RecordType.Name = Ident.create "Calls"
+                Fields = fields'
+                Members = Some [ emptyMember ]
+                XmlDoc = PreXmlDoc.create $"All the calls made to a %s{name} mock" |> Some
+                Generics = interfaceType.Generics
+                TypeAccessibility = Some accessAtLeastInternal
+                ImplAccessibility = None
+                Attributes = [ SynAttribute.requireQualifiedAccess ]
+            }
+            |> AstHelper.defineRecordType
 
         let interfaceMembers =
             let members =
@@ -350,28 +423,65 @@ module internal CapturingInterfaceMockGenerator =
                             |> fun i -> if tupledArgs.HasParen then SynPat.paren i else i
                         )
 
-                    let body =
-                        let tuples =
+                    let body, addToCalls =
+                        let tupleContents =
                             memberInfo.Args
                             |> List.mapi (fun i args ->
                                 args.Args
                                 |> List.mapi (fun j arg ->
                                     match arg.Type with
-                                    | UnitType -> SynExpr.CreateConst ()
-                                    | _ -> SynExpr.createIdent $"arg_%i{i}_%i{j}"
+                                    | UnitType -> SynExpr.CreateConst (), arg.Id
+                                    | _ -> SynExpr.createIdent $"arg_%i{i}_%i{j}", arg.Id
                                 )
-                                |> SynExpr.tuple
                             )
+
+                        let tuples = tupleContents |> List.map (List.map fst >> SynExpr.tuple)
 
                         match tuples |> List.rev with
                         | [] -> failwith "expected args but got none"
                         | last :: rest ->
 
-                        (last, rest)
-                        ||> List.fold SynExpr.applyTo
-                        |> SynExpr.applyFunction (
-                            SynExpr.createLongIdent' [ Ident.create "this" ; memberInfo.Identifier ]
-                        )
+                        let tuples = (last, rest) ||> List.fold SynExpr.applyTo
+
+                        let body =
+                            tuples
+                            |> SynExpr.applyFunction (
+                                SynExpr.createLongIdent' [ Ident.create "this" ; memberInfo.Identifier ]
+                            )
+
+                        let addToCalls =
+                            match Map.tryFind memberInfo.Identifier.idText fields with
+                            | None ->
+                                failwith
+                                    $"unexpectedly looking up a nonexistent field %s{memberInfo.Identifier.idText}"
+                            | Some (_, result) ->
+                                match result with
+                                | CallField.Original _ -> tuples
+                                | CallField.ArgsObject _ ->
+                                    tupleContents
+                                    |> List.mapi (fun i fields ->
+                                        match fields with
+                                        | [ contents, Some ident ] -> SynLongIdent.create [ ident ], contents
+                                        | [ contents, None ] -> SynLongIdent.createS $"Arg%i{i}", contents
+                                        | _ ->
+                                            SynLongIdent.createS $"Arg%i{i}",
+                                            SynExpr.tupleNoParen (fields |> List.map fst)
+                                    )
+                                    |> SynExpr.createRecord None
+                            |> SynExpr.applyFunction (
+                                SynExpr.createLongIdent [ "this" ; "Calls" ; memberInfo.Identifier.idText ; "Add" ]
+                            )
+                            |> SynExpr.createLambda "_"
+                            |> SynExpr.applyFunction (
+                                SynExpr.createIdent "lock"
+                                |> SynExpr.applyTo (
+                                    SynExpr.createLongIdent [ "this" ; "Calls" ; memberInfo.Identifier.idText ]
+                                )
+                            )
+
+                        body, addToCalls
+
+                    let body = [ addToCalls ; body ] |> SynExpr.sequential
 
                     SynBinding.basic [ Ident.create "this" ; memberInfo.Identifier ] headArgs body
                     |> SynMemberDefn.memberImplementation
@@ -402,15 +512,6 @@ module internal CapturingInterfaceMockGenerator =
                     SynType.app' baseName generics
 
             SynMemberDefn.Interface (interfaceName, Some range0, Some (members @ properties), range0)
-
-        let access =
-            match interfaceType.Accessibility, spec.IsInternal with
-            | Some (SynAccess.Public _), true
-            | None, true -> SynAccess.Internal range0
-            | Some (SynAccess.Public _), false -> SynAccess.Public range0
-            | None, false -> SynAccess.Public range0
-            | Some (SynAccess.Internal _), _ -> SynAccess.Internal range0
-            | Some (SynAccess.Private _), _ -> SynAccess.Private range0
 
         let extraInterfaces =
             inherits
@@ -448,22 +549,23 @@ module internal CapturingInterfaceMockGenerator =
         let typeDecl = AstHelper.defineRecordType record
 
         let callsModule =
-            fields
-            |> List.choose (fun (_, field, _) ->
-                match field with
-                | CallField.Original _ -> None
-                | CallField.ArgsObject (_, callType, _) -> Some callType
+            let types =
+                fields
+                |> Map.toSeq
+                |> Seq.choose (fun (_, (_, field)) ->
+                    match field with
+                    | CallField.Original _ -> None
+                    | CallField.ArgsObject (_, callType, _) -> Some (SynModuleDecl.Types ([ callType ], range0))
+                )
+                |> Seq.toList
+
+            types @ [ SynModuleDecl.Types ([ callsObject ], range0) ]
+            |> SynModuleDecl.nestedModule (
+                SynComponentInfo.create (Ident.create $"%s{name}Calls")
+                |> SynComponentInfo.withAccessibility accessAtLeastInternal
+                |> SynComponentInfo.addAttributes [ SynAttribute.requireQualifiedAccess ]
             )
-            |> function
-                | [] -> None
-                | l ->
-                    SynModuleDecl.Types (l, range0)
-                    |> List.singleton
-                    |> SynModuleDecl.nestedModule (
-                        SynComponentInfo.create (Ident.create $"%s{name}Calls")
-                        |> SynComponentInfo.withAccessibility access
-                    )
-                    |> Some
+            |> Some
 
         (callsModule, SynModuleDecl.Types ([ typeDecl ], range0))
 
