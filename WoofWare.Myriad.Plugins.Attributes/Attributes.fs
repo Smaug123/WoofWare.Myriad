@@ -32,7 +32,11 @@ type GenerateMockAttribute (isInternal : bool) =
 /// record update syntax to easily specify partially-implemented mock objects.
 /// You may optionally specify `isInternal = false` to get a mock with the public visibility modifier.
 ///
-/// The default implementation of each field captures all calls made to it, which can then be accessed later.
+/// The default implementation of each field throws.
+///
+/// The generated interface methods capture all calls made to them, before passing through to the relevant
+/// field of the mock record; the calls can be accessed later through the `Calls` field of the generated
+/// mock record.
 type GenerateCapturingMockAttribute (isInternal : bool) =
     inherit Attribute ()
     /// The default value of `isInternal`, the optional argument to the GenerateCapturingMockAttribute constructor.
