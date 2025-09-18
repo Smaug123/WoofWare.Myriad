@@ -13,7 +13,7 @@ Currently implemented:
 * `JsonParse` (to stamp out `jsonParse : JsonNode -> 'T` methods).
 * `JsonSerialize` (to stamp out `toJsonNode : 'T -> JsonNode` methods).
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
-* `GenerateMock` (to stamp out a record type corresponding to an interface, like a compile-time [Foq](https://github.com/fsprojects/Foq)).
+* `GenerateMock` and `GenerateCapturingMock` (to stamp out a record type corresponding to an interface, like a compile-time [Foq](https://github.com/fsprojects/Foq)).
 * `ArgParser` (to stamp out a basic argument parser).
 * `SwaggerClient` (to stamp out an HTTP client for a Swagger API).
 * `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
@@ -440,9 +440,9 @@ There are also some design decisions:
   so arguments are forced to be tupled.
 * The `[<Optional>]` attribute is not supported and will probably not be supported, because I consider it to be cursed.
 
-## `GenerateMock`
+## `GenerateMock` and `GenerateCapturingMock`
 
-Takes a type like this:
+`GenerateMock` takes a type like this:
 
 ```fsharp
 [<GenerateMock>]
@@ -472,6 +472,59 @@ type internal PublicTypeMock =
         member this.Mem2 (arg0) = this.Mem2 (arg0)
 ```
 
+`GenerateCapturingMock` additionally captures the calls made to each function (except for `Dispose`).
+It takes a type like this:
+
+```fsharp
+[<GenerateCapturingMock>]
+type IPublicType =
+    abstract Mem1 : string * int -> thing : bool -> string list
+    abstract Mem2 : baz : string -> unit -> int
+```
+
+and stamps out types like this:
+
+```fsharp
+[<RequireQualifiedAccess>]
+module internal PublicTypeCalls =
+    type internal Mem1Call =
+        {
+            Arg0 : string * int
+            thing : bool
+        }
+
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<Mem1Call>
+            Mem2 : ResizeArray<string>
+        }
+
+        static member Empty () = { Mem1 = ResizeArray () ; Mem2 = ResizeArray () }
+
+/// Mock record type for an interface
+type internal PublicTypeMock =
+    {
+        Mem1 : string * int -> bool -> string list
+        Mem2 : string -> int
+        Calls : PublicTypeCalls.Calls
+    }
+
+    static member Empty : PublicTypeMock =
+        {
+            Mem1 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Mem2 = (fun x -> raise (System.NotImplementedException "Unimplemented mock function"))
+            Calls = PublicTypeMockCalls.Calls.Empty ()
+        }
+
+    interface IPublicType with
+        member this.Mem1 (arg0, arg1) =
+            lock this.Calls.Mem1 (fun () -> this.Calls.Mem1.Add { Arg0 = arg0 ; thing = arg1 })
+            this.Mem1 (arg0, arg1)
+        member this.Mem2 (arg0) =
+            lock this.Calls.Mem2 (fun () -> this.Calls.Mem2.Add arg0)
+            this.Mem2 (arg0)
+```
+
 ### What's the point?
 
 Reflective mocking libraries like [Foq](https://github.com/fsprojects/Foq) in my experience are a rich source of flaky tests.
@@ -482,6 +535,36 @@ thereby allowing the programmer to use F#'s record-update syntax.
 ### Features
 
 * You may supply an `isInternal : bool` argument to the attribute. By default, we make the resulting record type at most internal (never public), since this is intended only to be used in tests; but you can instead make it public with `[<GenerateMock false>]`.
+
+### Gotchas (GenerateCapturingMock)
+
+We use the same name for the record field as the implementing interface member:
+
+```fsharp
+type FooMock =
+    {
+        Field : string -> unit
+    }
+    interface IFoo with
+        member _.Field x = ...
+```
+
+If you have an object of type `FooMock` in scope, you'll get the *record field*, not the *interface member*.
+You need to cast it to `IFoo` before using it (or pass it into a function which takes an `IFoo`):
+
+```fsharp
+let thing = FooMock.Empty () // of type FooMock
+thing.Field "hello" // the wrong one! bypasses the IFoo implementation which captures calls
+
+// correct:
+let thing' = FooMock.Empty ()
+let thing = thing' :> IFoo
+thing.Field "hello" // the right one: this call does get recorded in the mock, because this is the interface member
+
+// also correct, but beware because it leaves the chance of the above footgun lying around for later:
+let thing = FooMock.Empty () // of type FooMock
+doTheThing thing // where doTheThing : IFoo -> unit
+```
 
 ## `CreateCatamorphism`
 

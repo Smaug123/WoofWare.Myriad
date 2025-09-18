@@ -1,5 +1,9 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 8.1.1
+
+Adds `GenerateCapturingMock`, which is `GenerateMock` but additionally records the calls made to each function.
+
 # WoofWare.Myriad.Plugins 8.0.3
 
 The RestEase-style HTTP client generator now automatically adds the `application/json` content type header to requests which are POSTing a body that is known to be JSON-serialised.

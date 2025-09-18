@@ -30,6 +30,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="List.fs"/>
+    <Compile Include="Tuple.fs" />
     <Compile Include="Text.fs" />
     <Compile Include="Measure.fs" />
     <Compile Include="AstHelper.fs" />
@@ -37,6 +38,7 @@
     <Compile Include="RemoveOptionsGenerator.fs"/>
     <Compile Include="MyriadParamParser.fs" />
     <Compile Include="InterfaceMockGenerator.fs"/>
+    <Compile Include="CapturingInterfaceMockGenerator.fs" />
     <Compile Include="JsonSerializeGenerator.fs"/>
     <Compile Include="JsonParseGenerator.fs"/>
     <Compile Include="HttpClientGenerator.fs"/>

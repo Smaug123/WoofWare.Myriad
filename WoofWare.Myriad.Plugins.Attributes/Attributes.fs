@@ -14,6 +14,9 @@ type RemoveOptionsAttribute () =
 /// but where each method is represented as a record field, so you can use
 /// record update syntax to easily specify partially-implemented mock objects.
 /// You may optionally specify `isInternal = false` to get a mock with the public visibility modifier.
+///
+/// The default implementation of each field throws (except for default implementations of IDisposable, which are
+/// no-ops).
 type GenerateMockAttribute (isInternal : bool) =
     inherit Attribute ()
     /// The default value of `isInternal`, the optional argument to the GenerateMockAttribute constructor.
@@ -21,6 +24,26 @@ type GenerateMockAttribute (isInternal : bool) =
 
     /// Shorthand for the "isExtensionMethod = false" constructor; see documentation there for details.
     new () = GenerateMockAttribute GenerateMockAttribute.DefaultIsInternal
+
+/// Attribute indicating an interface type for which the "Generate Capturing Mock" Myriad
+/// generator should apply during build.
+/// This generator creates a record which implements the interface,
+/// but where each method is represented as a record field, so you can use
+/// record update syntax to easily specify partially-implemented mock objects.
+/// You may optionally specify `isInternal = false` to get a mock with the public visibility modifier.
+///
+/// The default implementation of each field throws.
+///
+/// The generated interface methods capture all calls made to them, before passing through to the relevant
+/// field of the mock record; the calls can be accessed later through the `Calls` field of the generated
+/// mock record.
+type GenerateCapturingMockAttribute (isInternal : bool) =
+    inherit Attribute ()
+    /// The default value of `isInternal`, the optional argument to the GenerateCapturingMockAttribute constructor.
+    static member DefaultIsInternal = true
+
+    /// Shorthand for the "isExtensionMethod = false" constructor; see documentation there for details.
+    new () = GenerateCapturingMockAttribute GenerateCapturingMockAttribute.DefaultIsInternal
 
 /// Attribute indicating a record type to which the "Add JSON serializer" Myriad
 /// generator should apply during build.
