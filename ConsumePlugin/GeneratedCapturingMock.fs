@@ -37,7 +37,7 @@ type internal PublicTypeMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : PublicTypeMock =
+    static member Empty () : PublicTypeMock =
         {
             Calls = PublicTypeMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -90,7 +90,7 @@ type public PublicTypeInternalFalseMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : PublicTypeInternalFalseMock =
+    static member Empty () : PublicTypeInternalFalseMock =
         {
             Calls = PublicTypeInternalFalseMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -140,7 +140,7 @@ type internal InternalTypeMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : InternalTypeMock =
+    static member Empty () : InternalTypeMock =
         {
             Calls = InternalTypeMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -185,7 +185,7 @@ type private PrivateTypeMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : PrivateTypeMock =
+    static member Empty () : PrivateTypeMock =
         {
             Calls = PrivateTypeMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -230,7 +230,7 @@ type private PrivateTypeInternalFalseMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : PrivateTypeInternalFalseMock =
+    static member Empty () : PrivateTypeInternalFalseMock =
         {
             Calls = PrivateTypeInternalFalseMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -487,7 +487,7 @@ type internal TypeWithInterfaceMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : TypeWithInterfaceMock =
+    static member Empty () : TypeWithInterfaceMock =
         {
             Calls = TypeWithInterfaceMockCalls.Calls.Empty ()
             Dispose = (fun () -> ())
@@ -541,7 +541,7 @@ type internal TypeWithPropertiesMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : TypeWithPropertiesMock =
+    static member Empty () : TypeWithPropertiesMock =
         {
             Calls = TypeWithPropertiesMockCalls.Calls.Empty ()
             Dispose = (fun () -> ())

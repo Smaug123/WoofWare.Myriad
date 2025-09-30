@@ -11,7 +11,7 @@ module TestCapturingMockGenerator =
     [<Test>]
     let ``Example of use: IPublicType`` () =
         let mock : IPublicType =
-            { PublicTypeMock.Empty with
+            { PublicTypeMock.Empty () with
                 Mem1 = fun (s, count) -> List.replicate count s
             }
             :> _
@@ -38,7 +38,7 @@ module TestCapturingMockGenerator =
     [<Test>]
     let ``Example of use: properties`` () =
         let mock : TypeWithProperties =
-            { TypeWithPropertiesMock.Empty with
+            { TypeWithPropertiesMock.Empty () with
                 Mem1 = fun i -> async { return Option.toArray i }
                 Prop1 = fun () -> 44
             }

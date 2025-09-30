@@ -36,7 +36,7 @@ type internal PublicTypeNoAttrMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : PublicTypeNoAttrMock =
+    static member Empty () : PublicTypeNoAttrMock =
         {
             Calls = PublicTypeNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -88,7 +88,7 @@ type public PublicTypeInternalFalseNoAttrMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : PublicTypeInternalFalseNoAttrMock =
+    static member Empty () : PublicTypeInternalFalseNoAttrMock =
         {
             Calls = PublicTypeInternalFalseNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -137,7 +137,7 @@ type internal InternalTypeNoAttrMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : InternalTypeNoAttrMock =
+    static member Empty () : InternalTypeNoAttrMock =
         {
             Calls = InternalTypeNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -181,7 +181,7 @@ type private PrivateTypeNoAttrMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : PrivateTypeNoAttrMock =
+    static member Empty () : PrivateTypeNoAttrMock =
         {
             Calls = PrivateTypeNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -225,7 +225,7 @@ type private PrivateTypeInternalFalseNoAttrMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : PrivateTypeInternalFalseNoAttrMock =
+    static member Empty () : PrivateTypeInternalFalseNoAttrMock =
         {
             Calls = PrivateTypeInternalFalseNoAttrMockCalls.Calls.Empty ()
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -479,7 +479,7 @@ type internal TypeWithInterfaceNoAttrMock =
     }
 
     /// An implementation where every non-unit method throws.
-    static member Empty : TypeWithInterfaceNoAttrMock =
+    static member Empty () : TypeWithInterfaceNoAttrMock =
         {
             Calls = TypeWithInterfaceNoAttrMockCalls.Calls.Empty ()
             Dispose = (fun () -> ())
