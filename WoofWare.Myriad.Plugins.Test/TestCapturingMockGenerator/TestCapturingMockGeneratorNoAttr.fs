@@ -11,7 +11,7 @@ module TestCapturingMockGeneratorNoAttr =
     [<Test>]
     let ``Example of use: IPublicType`` () =
         let mock : IPublicTypeNoAttr =
-            { PublicTypeNoAttrMock.Empty with
+            { PublicTypeNoAttrMock.Empty () with
                 Mem1 = fun (s, count) -> List.replicate count s
             }
             :> _

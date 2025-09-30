@@ -273,10 +273,7 @@ module internal CapturingInterfaceMockGenerator =
         let staticMemberEmpty =
             SynBinding.basic
                 [ Ident.create "Empty" ]
-                (if interfaceType.Generics.IsNone then
-                     []
-                 else
-                     [ SynPat.unit ])
+                [ SynPat.unit ]
                 (SynExpr.createRecord None emptyRecordFieldInstantiations)
             |> SynBinding.withXmlDoc (PreXmlDoc.create "An implementation where every non-unit method throws.")
             |> SynBinding.withReturnAnnotation constructorReturnType
