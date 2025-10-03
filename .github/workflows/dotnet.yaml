@@ -301,12 +301,17 @@ jobs:
       - name: Identify `dotnet`
         id: dotnet-identify
         run: nix develop --command bash -c 'echo "dotnet=$(which dotnet)" >> $GITHUB_OUTPUT'
+      - name: Obtain NuGet key
+        uses: NuGet/login@d22cc5f58ff5b88bf9bd452535b4335137e24544
+        id: login
+        with:
+            user: ${{ secrets.NUGET_USER }}
       - name: Publish to NuGet
         id: publish-success
         uses: G-Research/common-actions/publish-nuget@2b7dc49cb14f3344fbe6019c14a31165e258c059
         with:
           package-name: WoofWare.Myriad.Plugins.Attributes
-          nuget-key: ${{ secrets.NUGET_API_KEY }}
+          nuget-key: ${{ steps.login.outputs.NUGET_API_KEY }}
           nupkg-dir: packed/
           dotnet: ${{ steps.dotnet-identify.outputs.dotnet }}
 
@@ -334,12 +339,17 @@ jobs:
       - name: Identify `dotnet`
         id: dotnet-identify
         run: nix develop --command bash -c 'echo "dotnet=$(which dotnet)" >> $GITHUB_OUTPUT'
+      - name: Obtain NuGet key
+        uses: NuGet/login@d22cc5f58ff5b88bf9bd452535b4335137e24544
+        id: login
+        with:
+            user: ${{ secrets.NUGET_USER }}
       - name: Publish to NuGet
         id: publish-success
         uses: G-Research/common-actions/publish-nuget@2b7dc49cb14f3344fbe6019c14a31165e258c059
         with:
           package-name: WoofWare.Myriad.Plugins
-          nuget-key: ${{ secrets.NUGET_API_KEY }}
+          nuget-key: ${{ steps.login.outputs.NUGET_API_KEY }}
           nupkg-dir: packed/
           dotnet: ${{ steps.dotnet-identify.outputs.dotnet }}
 
