@@ -1,8 +1,8 @@
 [
   {
     "pname": "ApiSurface",
-    "version": "5.0.1",
-    "hash": "sha256-0GMXEMFgWbbE2OGxW+6h4zGgQHg+IZy1aI13Dn97xSU="
+    "version": "5.0.2",
+    "hash": "sha256-zcq1H1ccQzsZQf4kolzoOBSbyz07skihgPAvQ9Jri+E="
   },
   {
     "pname": "fantomas",
@@ -61,8 +61,8 @@
   },
   {
     "pname": "Microsoft.ApplicationInsights",
-    "version": "2.22.0",
-    "hash": "sha256-mUQ63atpT00r49ca50uZu2YCiLg3yd6r3HzTryqcuEA="
+    "version": "2.23.0",
+    "hash": "sha256-5sf3bg7CZZjHseK+F3foOchEhmVeioePxMZVvS6Rjb0="
   },
   {
     "pname": "Microsoft.AspNetCore.App.Ref",
@@ -91,13 +91,13 @@
   },
   {
     "pname": "Microsoft.CodeCoverage",
-    "version": "17.14.1",
-    "hash": "sha256-f8QytG8GvRoP47rO2KEmnDLxIpyesaq26TFjDdW40Gs="
+    "version": "18.0.0",
+    "hash": "sha256-1RNxheCYASMusDC48BXtaO3MhnInw15JVfjfLM1VMGA="
   },
   {
     "pname": "Microsoft.NET.Test.Sdk",
-    "version": "17.14.1",
-    "hash": "sha256-mZUzDFvFp7x1nKrcnRd0hhbNu5g8EQYt8SKnRgdhT/A="
+    "version": "18.0.0",
+    "hash": "sha256-9iW+9mvMeZgDXwSoR08bnvRNsN4jT8OVWcjq3lcE+cs="
   },
   {
     "pname": "Microsoft.NETCore.App.Host.linux-arm64",
@@ -166,43 +166,48 @@
   },
   {
     "pname": "Microsoft.Testing.Extensions.Telemetry",
-    "version": "1.5.3",
-    "hash": "sha256-bIXwPSa3jkr2b6xINOqMUs6/uj/r4oVFM7xq3uVIZDU="
+    "version": "1.9.0",
+    "hash": "sha256-JT91ThKLEyoRS/8ZJqZwlSTT7ofC2QhNqPFI3pYmMaw="
   },
   {
     "pname": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-    "version": "1.5.3",
-    "hash": "sha256-IfMRfcyaIKEMRtx326ICKtinDBEfGw/Sv8ZHawJ96Yc="
+    "version": "1.9.0",
+    "hash": "sha256-oscZOEKw7gM6eRdDrOS3x+CwqIvXWRmfmi0ugCxBRw0="
   },
   {
     "pname": "Microsoft.Testing.Extensions.VSTestBridge",
-    "version": "1.5.3",
-    "hash": "sha256-XpM/yFjhLSsuzyDV+xKubs4V1zVVYiV05E0+N4S1h0g="
+    "version": "1.9.0",
+    "hash": "sha256-CadXLWD093sUDaWhnppzD9LvpxSRqqt93ZEOFiIAPyw="
   },
   {
     "pname": "Microsoft.Testing.Platform",
-    "version": "1.5.3",
-    "hash": "sha256-y61Iih6w5D79dmrj2V675mcaeIiHoj1HSa1FRit2BLM="
+    "version": "1.9.0",
+    "hash": "sha256-6nzjoYbJOh7v/GB7d+TDuM0l/xglCshFX6KWjg7+cFI="
   },
   {
     "pname": "Microsoft.Testing.Platform.MSBuild",
-    "version": "1.5.3",
-    "hash": "sha256-YspvjE5Jfi587TAfsvfDVJXNrFOkx1B3y1CKV6m7YLY="
+    "version": "1.9.0",
+    "hash": "sha256-/bileP4b+9RZp8yjgS6eynXwc2mohyyzf6p/0LZJd8I="
+  },
+  {
+    "pname": "Microsoft.TestPlatform.AdapterUtilities",
+    "version": "17.13.0",
+    "hash": "sha256-Vr+3Tad/h/nk7f/5HMExn3HvCGFCarehFAzJSfCBaOc="
   },
   {
     "pname": "Microsoft.TestPlatform.ObjectModel",
-    "version": "17.12.0",
-    "hash": "sha256-3XBHBSuCxggAIlHXmKNQNlPqMqwFlM952Av6RrLw1/w="
+    "version": "17.13.0",
+    "hash": "sha256-6S0fjfj8vA+h6dJVNwLi6oZhYDO/I/6hBZaq2VTW+Uk="
   },
   {
     "pname": "Microsoft.TestPlatform.ObjectModel",
-    "version": "17.14.1",
-    "hash": "sha256-QMf6O+w0IT+16Mrzo7wn+N20f3L1/mDhs/qjmEo1rYs="
+    "version": "18.0.0",
+    "hash": "sha256-O/ivHdoIO+q1n0byJ9OZO4quOqACOD3K3Qm00wfhuZk="
   },
   {
     "pname": "Microsoft.TestPlatform.TestHost",
-    "version": "17.14.1",
-    "hash": "sha256-1cxHWcvHRD7orQ3EEEPPxVGEkTpxom1/zoICC9SInJs="
+    "version": "18.0.0",
+    "hash": "sha256-qAIX2Rqxrnh1xaYRjCbkkvvMm407oyKihqyVjURX5wY="
   },
   {
     "pname": "Myriad.Core",
@@ -271,8 +276,8 @@
   },
   {
     "pname": "NUnit3TestAdapter",
-    "version": "5.0.0",
-    "hash": "sha256-7jZM4qAbIzne3AcdFfMbvbgogqpxvVe6q2S7Ls8xQy0="
+    "version": "5.2.0",
+    "hash": "sha256-ybTutL4VkX/fq61mS+O3Ruh+adic4fpv+MKgQ0IZvGg="
   },
   {
     "pname": "RestEase",
@@ -376,13 +381,13 @@
   },
   {
     "pname": "TypeEquality",
-    "version": "0.3.0",
-    "hash": "sha256-V50xAOzzyUJrY+MYPRxtnqW5MVeATXCes89wPprv1r4="
+    "version": "0.4.2",
+    "hash": "sha256-YxK6BGHjcuP76j5BbTDi814jxGqOevQSgS00IJcjZSA="
   },
   {
     "pname": "WoofWare.Expect",
-    "version": "0.8.2",
-    "hash": "sha256-iqt4FPkUr24/4dnRfh7P5nPNNlaPzaItP6/yrGRrQyo="
+    "version": "0.8.3",
+    "hash": "sha256-Fc4xpqXjD2hMnaR9kxYiXi/Kxhy6T1QA5Xe2XjTM/t8="
   },
   {
     "pname": "WoofWare.Whippet.Fantomas",
