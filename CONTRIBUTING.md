@@ -44,7 +44,7 @@ git config blame.ignoreRevsFile .git-blame-ignore-revs
 ## Dependencies
 
 I try to keep this repository's dependencies as few as possible, because (for example) any consumer of the source generator will also consume this project via the attributes.
-When adding dependencies, you will need to `nix run .#fetchDeps` to obtain a new copy of [the dependency lockfile](./nix/deps.nix).
+When adding dependencies, you will need to `nix run .#fetchDeps` to obtain a new copy of [the dependency lockfile](./nix/deps.json).
 
 ## Branch strategy
 
