@@ -31,8 +31,8 @@
   },
   {
     "pname": "fsharp-analyzers",
-    "version": "0.32.1",
-    "hash": "sha256-le6rPnAF7cKGBZ2w8H2u9glK+6rT2ZjiAVnrkH2IhrM="
+    "version": "0.33.1",
+    "hash": "sha256-vYXvqnf3en487svFv3CmNl24SolwMYzu6zKKGXNxSu8="
   },
   {
     "pname": "FSharp.Core",
@@ -391,7 +391,7 @@
   },
   {
     "pname": "WoofWare.Whippet.Fantomas",
-    "version": "0.6.3",
-    "hash": "sha256-FkW/HtVp8/HE2k6d7yFpnJcnP3FNNe9kGlkoIWmNgDw="
+    "version": "0.6.4",
+    "hash": "sha256-ScZ7EEcxLvXyam2ZVqDK58QlK3RcePWghzRvtLLLdZI="
   }
 ]
