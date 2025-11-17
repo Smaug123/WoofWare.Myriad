@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageDownload Include="WoofWare.FSharpAnalyzers" Version="[0.2.1]" />
-    <PackageDownload Include="G-Research.FSharp.Analyzers" Version="[0.19.0]" />
+    <PackageDownload Include="WoofWare.FSharpAnalyzers" Version="[0.2.2]" />
+    <PackageDownload Include="G-Research.FSharp.Analyzers" Version="[0.20.0]" />
   </ItemGroup>
 
 </Project>
