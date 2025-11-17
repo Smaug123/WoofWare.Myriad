@@ -1,8 +1,8 @@
 [
   {
     "pname": "ApiSurface",
-    "version": "5.0.2",
-    "hash": "sha256-zcq1H1ccQzsZQf4kolzoOBSbyz07skihgPAvQ9Jri+E="
+    "version": "5.0.3",
+    "hash": "sha256-uU5mqLL6zMt17oPYMzhB57ryYC6O6FzSjmdTFg7LvNo="
   },
   {
     "pname": "fantomas",
@@ -31,8 +31,8 @@
   },
   {
     "pname": "fsharp-analyzers",
-    "version": "0.33.1",
-    "hash": "sha256-vYXvqnf3en487svFv3CmNl24SolwMYzu6zKKGXNxSu8="
+    "version": "0.34.1",
+    "hash": "sha256-Y6PzfVGob2EgX29ZhZIde5EhiZ28Y1+U2pJ6ybIsHV0="
   },
   {
     "pname": "FSharp.Core",
@@ -91,13 +91,13 @@
   },
   {
     "pname": "Microsoft.CodeCoverage",
-    "version": "18.0.0",
-    "hash": "sha256-1RNxheCYASMusDC48BXtaO3MhnInw15JVfjfLM1VMGA="
+    "version": "18.0.1",
+    "hash": "sha256-G6y5iyHZ3R2shlLCW/uTusio/UqcnWT79X+UAbxvDQY="
   },
   {
     "pname": "Microsoft.NET.Test.Sdk",
-    "version": "18.0.0",
-    "hash": "sha256-9iW+9mvMeZgDXwSoR08bnvRNsN4jT8OVWcjq3lcE+cs="
+    "version": "18.0.1",
+    "hash": "sha256-0c3/rp9di0w7E5UmfRh6Prrm3Aeyi8NOj5bm2i6jAh0="
   },
   {
     "pname": "Microsoft.NETCore.App.Host.linux-arm64",
@@ -201,13 +201,13 @@
   },
   {
     "pname": "Microsoft.TestPlatform.ObjectModel",
-    "version": "18.0.0",
-    "hash": "sha256-O/ivHdoIO+q1n0byJ9OZO4quOqACOD3K3Qm00wfhuZk="
+    "version": "18.0.1",
+    "hash": "sha256-oJbS7SZ46RzyOQ+gCysW7qJRy7V8RlQVa5d8uajb91M="
   },
   {
     "pname": "Microsoft.TestPlatform.TestHost",
-    "version": "18.0.0",
-    "hash": "sha256-qAIX2Rqxrnh1xaYRjCbkkvvMm407oyKihqyVjURX5wY="
+    "version": "18.0.1",
+    "hash": "sha256-OXYf5vg4piDr10ve0bZ2ZSb+nb3yOiHayJV3cu5sMV4="
   },
   {
     "pname": "Myriad.Core",
