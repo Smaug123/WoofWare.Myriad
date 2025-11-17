@@ -89,6 +89,13 @@
     <Compile Include="GeneratedArgs.fs">
       <MyriadFile>Args.fs</MyriadFile>
     </Compile>
+    <!-- Not compiled, because by design they *don't* compile. That makes them very hard to test in an automated way! -->
+    <None Include="ArgParserConflictTests.fs" />
+    <!-- To run the conflict tests:
+    <Compile Include="GeneratedArgParserConflictTests.fs">
+      <MyriadFile>ArgParserConflictTests.fs</MyriadFile>
+    </Compile>
+    -->
     <None Include="swagger-gitea.json" />
     <Compile Include="GeneratedSwaggerGitea.fs">
       <MyriadFile>swagger-gitea.json</MyriadFile>

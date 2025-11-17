@@ -72,6 +72,8 @@ type private ParseFunction<'acc> =
         /// and choices and so on.
         TargetType : SynType
         Accumulation : 'acc
+        /// If true, this boolean/flag field accepts --no- prefix for negation (has [<ArgumentNegateWithPrefix>])
+        AcceptsNegation : bool
     }
 
     /// A SynExpr of type `string` which we can display to the user at generated-program runtime to display all
@@ -222,8 +224,8 @@ module private ParseTree =
             nonPos @ nonPos2, Some pos
 
         |> fun (nonPos, pos) ->
-            let duplicateArgs =
-                // This is best-effort. We can't necessarily detect all SynExprs here, but usually it'll be strings.
+            // Extract all arg form strings for validation
+            let allArgForms =
                 Option.toList (pos |> Option.map _.ArgForm) @ (nonPos |> List.map _.ArgForm)
                 |> Seq.concat
                 |> Seq.choose (fun expr ->
@@ -232,14 +234,57 @@ module private ParseTree =
                     | _ -> None
                 )
                 |> List.ofSeq
+
+            // Check for direct duplicates
+            let duplicateArgs =
+                allArgForms
                 |> List.groupBy id
                 |> List.choose (fun (key, v) -> if v.Length > 1 then Some key else None)
 
             match duplicateArgs with
-            | [] -> nonPos, pos
-            | dups ->
+            | dups when not dups.IsEmpty ->
                 let dups = dups |> String.concat " "
                 failwith $"Duplicate args detected! %s{dups}"
+            | _ ->
+
+            // Check for --no- prefix conflicts
+            // Build a map of arg names that have AcceptsNegation=true
+            let negatedForms =
+                nonPos
+                |> List.filter _.AcceptsNegation
+                |> List.collect (fun pf ->
+                    pf.ArgForm
+                    |> List.choose (fun expr ->
+                        match expr |> SynExpr.stripOptionalParen with
+                        | SynExpr.Const (SynConst.String (s, _, _), _) -> Some (pf.FieldName.idText, s)
+                        | _ -> None
+                    )
+                )
+                |> List.map (fun (fieldName, argForm) -> $"no-%s{argForm}", fieldName)
+                |> Map.ofList
+
+            // Check if any existing arg form conflicts with a --no- variant
+            let conflicts =
+                allArgForms
+                |> List.choose (fun argForm ->
+                    match negatedForms.TryFind argForm with
+                    | Some fieldWithNegation -> Some (argForm, fieldWithNegation)
+                    | None -> None
+                )
+
+            match conflicts with
+            | [] -> ()
+            | conflicts ->
+                let conflictMessages =
+                    conflicts
+                    |> List.map (fun (argForm, fieldWithNegation) ->
+                        $"Argument name conflict: '--%s{argForm}' collides with the --no- variant of field '%s{fieldWithNegation}' (which has [<ArgumentNegateWithPrefix>])"
+                    )
+                    |> String.concat "\n"
+
+                failwith $"Conflicting argument names detected:\n%s{conflictMessages}"
+
+            nonPos, pos
 
     /// Build the return value.
     let rec instantiate<'a> (tree : ParseTree<'a>) : SynExpr =
@@ -615,6 +660,7 @@ module internal ArgParserGenerator =
                             ArgForm = longForms
                             Help = helpText
                             BoolCases = isBoolLike
+                            AcceptsNegation = false
                         }
                         |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
                     | Accumulation.List Accumulation.Required ->
@@ -627,6 +673,7 @@ module internal ArgParserGenerator =
                             ArgForm = longForms
                             Help = helpText
                             BoolCases = isBoolLike
+                            AcceptsNegation = false
                         }
                         |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
                     | Accumulation.Choice _
@@ -651,6 +698,27 @@ module internal ArgParserGenerator =
                             Some (Choice2Of2 ())
                         | parseTy -> identifyAsFlag flagDus parseTy |> Option.map Choice1Of2
 
+                    let hasNegateAttr =
+                        attrs
+                        |> List.exists (fun attr ->
+                            match attr.TypeName with
+                            | SynLongIdent.SynLongIdent (ident, _, _) ->
+                                match (List.last ident).idText with
+                                | "ArgumentNegateWithPrefixAttribute"
+                                | "ArgumentNegateWithPrefix" -> true
+                                | _ -> false
+                        )
+
+                    let acceptsNegation =
+                        if hasNegateAttr then
+                            match isBoolLike with
+                            | Some _ -> true
+                            | None ->
+                                failwith
+                                    $"[<ArgumentNegateWithPrefix>] can only be applied to boolean or flag DU fields, but was applied to field %s{ident.idText} of type %O{fieldType}"
+                        else
+                            false
+
                     {
                         FieldName = ident
                         Parser = parser
@@ -660,6 +728,7 @@ module internal ArgParserGenerator =
                         ArgForm = longForms
                         Help = helpText
                         BoolCases = isBoolLike
+                        AcceptsNegation = acceptsNegation
                     }
                     |> fun t -> ParseTree.NonPositionalLeaf (t, Teq.refl)
                     |> ParseTreeCrate.make
