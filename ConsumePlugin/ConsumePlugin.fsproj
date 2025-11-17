@@ -89,6 +89,10 @@
     <Compile Include="GeneratedArgs.fs">
       <MyriadFile>Args.fs</MyriadFile>
     </Compile>
+    <Compile Include="ArgParserNegationTests.fs" />
+    <Compile Include="GeneratedArgParserNegationTests.fs">
+      <MyriadFile>ArgParserNegationTests.fs</MyriadFile>
+    </Compile>
     <!-- Not compiled, because by design they *don't* compile. That makes them very hard to test in an automated way! -->
     <None Include="ArgParserConflictTests.fs" />
     <!-- To run the conflict tests:

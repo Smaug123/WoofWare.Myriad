@@ -79,11 +79,31 @@ type private ParseFunction<'acc> =
     /// A SynExpr of type `string` which we can display to the user at generated-program runtime to display all
     /// the ways they can refer to this arg.
     member arg.HumanReadableArgForm : SynExpr =
-        let formatString = List.replicate arg.ArgForm.Length "--%s" |> String.concat " / "
+        if arg.AcceptsNegation then
+            // Include both standard and --no- variants
+            // E.g., "--foo / --bar / --no-foo / --no-bar"
+            let standardFormatString =
+                List.replicate arg.ArgForm.Length "--%s" |> String.concat " / "
 
-        (SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst formatString), arg.ArgForm)
-        ||> List.fold SynExpr.applyFunction
-        |> SynExpr.paren
+            let negatedFormatString =
+                List.replicate arg.ArgForm.Length "--no-%s" |> String.concat " / "
+
+            let combinedFormatString = standardFormatString + " / " + negatedFormatString
+
+            // Apply all arg forms twice (once for standard, once for negated)
+            let allArgForms = arg.ArgForm @ arg.ArgForm
+
+            (SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst combinedFormatString),
+             allArgForms)
+            ||> List.fold SynExpr.applyFunction
+            |> SynExpr.paren
+        else
+            // Standard behavior: just --foo / --bar
+            let formatString = List.replicate arg.ArgForm.Length "--%s" |> String.concat " / "
+
+            (SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst formatString), arg.ArgForm)
+            ||> List.fold SynExpr.applyFunction
+            |> SynExpr.paren
 
 [<RequireQualifiedAccess>]
 type private ChoicePositional =
@@ -842,6 +862,37 @@ module internal ArgParserGenerator =
         )
         |> SynBinding.basic [ Ident.create "helpText" ] [ SynPat.unit ]
 
+    /// Helper to create a negated parser for boolean/flag fields.
+    /// Returns a SynExpr that represents: string -> (negated bool or negated flag DU)
+    /// For booleans: `fun x -> not (Boolean.Parse x)`
+    /// For flag DUs: `fun x -> FlagDu.FromBoolean flagDu (not (Boolean.Parse x))`
+    let private createNegatedParser (arg : ParseFunction<'acc>) : SynExpr =
+        match arg.BoolCases with
+        | None -> failwith $"LOGIC ERROR: createNegatedParser called on non-boolean field %s{arg.FieldName.idText}"
+        | Some (Choice2Of2 ()) ->
+            // Boolean: parse and negate
+            // fun x -> not (System.Boolean.Parse x)
+            let parseExpr =
+                SynExpr.createIdent "x"
+                |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Boolean" ; "Parse" ])
+                |> SynExpr.paren
+
+            parseExpr
+            |> SynExpr.applyFunction (SynExpr.createIdent "not")
+            |> SynExpr.createLambda "x"
+        | Some (Choice1Of2 flagDu) ->
+            // Flag DU: parse as bool, negate, then convert to flag DU
+            // fun x -> x |> System.Boolean.Parse |> not |> FlagDu.FromBoolean flagDu
+            let parseExpr =
+                SynExpr.createIdent "x"
+                |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Boolean" ; "Parse" ])
+                |> SynExpr.paren
+
+            parseExpr
+            |> SynExpr.applyFunction (SynExpr.createIdent "not")
+            |> FlagDu.FromBoolean flagDu
+            |> SynExpr.createLambda "x"
+
     /// `let processKeyValue (key : string) (value : string) : Result<unit, string option> = ...`
     /// Returns a possible error.
     /// A parse failure might not be fatal (e.g. maybe the input was optionally of arity 0, and we failed to do
@@ -855,109 +906,209 @@ module internal ArgParserGenerator =
         let args =
             args
             |> List.map (fun arg ->
-                match arg.Accumulation with
-                | Accumulation.Required
-                | Accumulation.Choice _
-                | Accumulation.Optional ->
-                    let multipleErrorMessage =
-                        SynExpr.createIdent "sprintf"
-                        |> SynExpr.applyTo (SynExpr.CreateConst "Argument '%s' was supplied multiple times: %s and %s")
-                        |> SynExpr.applyTo arg.HumanReadableArgForm
-                        |> SynExpr.applyTo (SynExpr.createIdent "x" |> SynExpr.callMethod "ToString" |> SynExpr.paren)
-                        |> SynExpr.applyTo (
-                            SynExpr.createIdent "value" |> SynExpr.callMethod "ToString" |> SynExpr.paren
-                        )
+                let assignmentExpr =
+                    match arg.Accumulation with
+                    | Accumulation.Required
+                    | Accumulation.Choice _
+                    | Accumulation.Optional ->
+                        let multipleErrorMessage =
+                            SynExpr.createIdent "sprintf"
+                            |> SynExpr.applyTo (
+                                SynExpr.CreateConst "Argument '%s' was supplied multiple times: %s and %s"
+                            )
+                            |> SynExpr.applyTo arg.HumanReadableArgForm
+                            |> SynExpr.applyTo (
+                                SynExpr.createIdent "x" |> SynExpr.callMethod "ToString" |> SynExpr.paren
+                            )
+                            |> SynExpr.applyTo (
+                                SynExpr.createIdent "value" |> SynExpr.callMethod "ToString" |> SynExpr.paren
+                            )
 
-                    let performAssignment =
+                        let performAssignment =
+                            [
+                                SynExpr.createIdent "value"
+                                |> SynExpr.pipeThroughFunction arg.Parser
+                                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                                |> SynExpr.assign (SynLongIdent.createI arg.TargetVariable)
+
+                                SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                            ]
+                            |> SynExpr.sequential
+
+                        [
+                            SynMatchClause.create
+                                (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
+                                (SynExpr.sequential
+                                    [
+                                        multipleErrorMessage
+                                        |> SynExpr.pipeThroughFunction (
+                                            SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
+                                        )
+                                        SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                                    ])
+                            SynMatchClause.create
+                                (SynPat.named "None")
+                                (SynExpr.pipeThroughTryWith
+                                    SynPat.anon
+                                    (SynExpr.createLongIdent [ "exc" ; "Message" ]
+                                     |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                                     |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+                                    performAssignment)
+                        ]
+                        |> SynExpr.createMatch (SynExpr.createIdent' arg.TargetVariable)
+                    | Accumulation.List (Accumulation.List _)
+                    | Accumulation.List Accumulation.Optional
+                    | Accumulation.List (Accumulation.Choice _) ->
+                        failwith
+                            "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists."
+                    | Accumulation.List Accumulation.Required ->
                         [
                             SynExpr.createIdent "value"
                             |> SynExpr.pipeThroughFunction arg.Parser
-                            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
-                            |> SynExpr.assign (SynLongIdent.createI arg.TargetVariable)
-
-                            SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.createLongIdent' [ arg.TargetVariable ; Ident.create "Add" ]
+                            )
+                            SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
                         ]
                         |> SynExpr.sequential
 
-                    [
-                        SynMatchClause.create
-                            (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
-                            (SynExpr.sequential
-                                [
-                                    multipleErrorMessage
-                                    |> SynExpr.pipeThroughFunction (
-                                        SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
-                                    )
-                                    SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
-                                ])
-                        SynMatchClause.create
-                            (SynPat.named "None")
-                            (SynExpr.pipeThroughTryWith
-                                SynPat.anon
-                                (SynExpr.createLongIdent [ "exc" ; "Message" ]
-                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
-                                 |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
-                                performAssignment)
-                    ]
-                    |> SynExpr.createMatch (SynExpr.createIdent' arg.TargetVariable)
-                | Accumulation.List (Accumulation.List _)
-                | Accumulation.List Accumulation.Optional
-                | Accumulation.List (Accumulation.Choice _) ->
-                    failwith
-                        "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists."
-                | Accumulation.List Accumulation.Required ->
-                    [
-                        SynExpr.createIdent "value"
-                        |> SynExpr.pipeThroughFunction arg.Parser
-                        |> SynExpr.pipeThroughFunction (
-                            SynExpr.createLongIdent' [ arg.TargetVariable ; Ident.create "Add" ]
-                        )
-                        SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
-                    ]
-                    |> SynExpr.sequential
-                |> fun expr -> arg.ArgForm, expr
+                // Return (argForms, assignmentExpr), argMetadata
+                (arg.ArgForm, assignmentExpr), Some arg
             )
 
         let posArg =
             match pos with
             | None -> []
             | Some pos ->
-                [
-                    SynExpr.createIdent "value"
-                    |> SynExpr.pipeThroughFunction pos.Parser
-                    |> fun p ->
-                        match pos.Accumulation with
-                        | ChoicePositional.Choice _ ->
-                            p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
-                        | ChoicePositional.Normal _ -> p
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.createLongIdent' [ pos.TargetVariable ; Ident.create "Add" ]
-                    )
-                    SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
-                ]
-                |> SynExpr.sequential
-                |> fun expr -> pos.ArgForm, expr
-                |> List.singleton
+                let posExpr =
+                    [
+                        SynExpr.createIdent "value"
+                        |> SynExpr.pipeThroughFunction pos.Parser
+                        |> fun p ->
+                            match pos.Accumulation with
+                            | ChoicePositional.Choice _ ->
+                                p |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Choice1Of2")
+                            | ChoicePositional.Normal _ -> p
+                        |> SynExpr.pipeThroughFunction (
+                            SynExpr.createLongIdent' [ pos.TargetVariable ; Ident.create "Add" ]
+                        )
+                        SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
+                    ]
+                    |> SynExpr.sequential
+
+                // Positional args don't support negation, so metadata is None
+                [ (pos.ArgForm, posExpr), None ]
 
         (SynExpr.applyFunction (SynExpr.createIdent "Error") (SynExpr.createIdent "None"), posArg @ args)
-        ||> List.fold (fun finalBranch (argForm, arg) ->
+        ||> List.fold (fun finalBranch ((argForm, arg), argMetadata) ->
             (finalBranch, argForm)
             ||> List.fold (fun finalBranch argForm ->
-                arg
-                |> SynExpr.ifThenElse
-                    (SynExpr.applyFunction
-                        (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
-                        (SynExpr.tuple
+                // Standard match: --argForm
+                let standardMatch =
+                    arg
+                    |> SynExpr.ifThenElse
+                        (SynExpr.applyFunction
+                            (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                            (SynExpr.tuple
+                                [
+                                    SynExpr.createIdent "key"
+                                    SynExpr.applyFunction
+                                        (SynExpr.applyFunction
+                                            (SynExpr.createIdent "sprintf")
+                                            (SynExpr.CreateConst "--%s"))
+                                        argForm
+                                    SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                                ]))
+                        finalBranch
+
+                // If this arg accepts negation, also match --no-argForm
+                match argMetadata with
+                | None -> standardMatch
+                | Some (parseFn : ParseFunctionNonPositional) when parseFn.AcceptsNegation ->
+                    // Create negated assignment (same structure as `arg` but with negated parser)
+                    let negatedParser = createNegatedParser parseFn
+
+                    let negatedArg =
+                        match parseFn.Accumulation with
+                        | Accumulation.Required
+                        | Accumulation.Choice _
+                        | Accumulation.Optional ->
+                            let multipleErrorMessage =
+                                SynExpr.createIdent "sprintf"
+                                |> SynExpr.applyTo (
+                                    SynExpr.CreateConst "Argument '%s' was supplied multiple times: %s and %s"
+                                )
+                                |> SynExpr.applyTo parseFn.HumanReadableArgForm
+                                |> SynExpr.applyTo (
+                                    SynExpr.createIdent "x" |> SynExpr.callMethod "ToString" |> SynExpr.paren
+                                )
+                                |> SynExpr.applyTo (
+                                    SynExpr.createIdent "value" |> SynExpr.callMethod "ToString" |> SynExpr.paren
+                                )
+
+                            let performNegatedAssignment =
+                                [
+                                    SynExpr.createIdent "value"
+                                    |> SynExpr.pipeThroughFunction negatedParser
+                                    |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                                    |> SynExpr.assign (SynLongIdent.createI parseFn.TargetVariable)
+
+                                    SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                                ]
+                                |> SynExpr.sequential
+
                             [
-                                SynExpr.createIdent "key"
-                                SynExpr.applyFunction
-                                    (SynExpr.applyFunction
-                                        (SynExpr.createIdent "sprintf")
-                                        (SynExpr.CreateConst "--%s"))
-                                    argForm
-                                SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
-                            ]))
-                    finalBranch
+                                SynMatchClause.create
+                                    (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
+                                    (SynExpr.sequential
+                                        [
+                                            multipleErrorMessage
+                                            |> SynExpr.pipeThroughFunction (
+                                                SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
+                                            )
+                                            SynExpr.applyFunction (SynExpr.createIdent "Ok") (SynExpr.CreateConst ())
+                                        ])
+                                SynMatchClause.create
+                                    (SynPat.named "None")
+                                    (SynExpr.pipeThroughTryWith
+                                        SynPat.anon
+                                        (SynExpr.createLongIdent [ "exc" ; "Message" ]
+                                         |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
+                                         |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Error"))
+                                        performNegatedAssignment)
+                            ]
+                            |> SynExpr.createMatch (SynExpr.createIdent' parseFn.TargetVariable)
+                        | Accumulation.List Accumulation.Required ->
+                            [
+                                SynExpr.createIdent "value"
+                                |> SynExpr.pipeThroughFunction negatedParser
+                                |> SynExpr.pipeThroughFunction (
+                                    SynExpr.createLongIdent' [ parseFn.TargetVariable ; Ident.create "Add" ]
+                                )
+                                SynExpr.CreateConst () |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Ok")
+                            ]
+                            |> SynExpr.sequential
+                        | _ ->
+                            failwith
+                                "WoofWare.Myriad invariant violated: unexpected accumulation type for negated arg"
+
+                    // Match --no-argForm
+                    negatedArg
+                    |> SynExpr.ifThenElse
+                        (SynExpr.applyFunction
+                            (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                            (SynExpr.tuple
+                                [
+                                    SynExpr.createIdent "key"
+                                    SynExpr.applyFunction
+                                        (SynExpr.applyFunction
+                                            (SynExpr.createIdent "sprintf")
+                                            (SynExpr.CreateConst "--no-%s"))
+                                        argForm
+                                    SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                                ]))
+                        standardMatch
+                | Some _ -> standardMatch
             )
         )
         |> SynBinding.basic
@@ -977,6 +1128,34 @@ module internal ArgParserGenerator =
             ]
             |> PreXmlDoc.create'
         )
+
+    /// Try to extract a constant bool value from a SynExpr.
+    /// Returns Some true/false if the expr is a constant bool, None otherwise.
+    let private tryGetConstBool (expr : SynExpr) : bool option =
+        match expr |> SynExpr.stripOptionalParen with
+        | SynExpr.Const (SynConst.Bool v, _) -> Some v
+        | _ -> None
+
+    /// Helper to get the "false" case for a boolean/flag field.
+    /// For booleans: `false`
+    /// For flag DUs: the case marked with [<ArgumentFlag false>]
+    let private getFalseCase (flag : ParseFunction<'a>) : SynExpr =
+        match flag.BoolCases with
+        | None -> failwith $"LOGIC ERROR: getFalseCase called on non-boolean field %s{flag.FieldName.idText}"
+        | Some (Choice2Of2 ()) ->
+            // Boolean: return false
+            SynExpr.CreateConst false
+        | Some (Choice1Of2 flagDu) ->
+            // Flag DU: return the case associated with false
+            // Check which case has false as its arg
+            match tryGetConstBool flagDu.Case1Arg, tryGetConstBool flagDu.Case2Arg with
+            | Some false, _ -> SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case1Name ]
+            | _, Some false -> SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case2Name ]
+            | Some true, _ -> SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case2Name ]
+            | _, Some true -> SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case1Name ]
+            | None, None ->
+                // Can't determine at compile time, use FlagDu.FromBoolean with false
+                FlagDu.FromBoolean flagDu (SynExpr.CreateConst false)
 
     /// `let setFlagValue (key : string) : bool = ...`
     /// The second member of the `flags` list tuple is the constant "true" with which we will interpret the
@@ -1018,21 +1197,72 @@ module internal ArgParserGenerator =
 
             (finalExpr, flag.ArgForm)
             ||> List.fold (fun finalExpr argForm ->
-                SynExpr.ifThenElse
-                    (SynExpr.applyFunction
-                        (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
-                        (SynExpr.tuple
-                            [
-                                SynExpr.createIdent "key"
-                                SynExpr.applyFunction
-                                    (SynExpr.applyFunction
-                                        (SynExpr.createIdent "sprintf")
-                                        (SynExpr.CreateConst "--%s"))
-                                    argForm
-                                SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
-                            ]))
-                    finalExpr
-                    matchFlag
+                // Standard match: --argForm sets to trueCase
+                let standardMatch =
+                    SynExpr.ifThenElse
+                        (SynExpr.applyFunction
+                            (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                            (SynExpr.tuple
+                                [
+                                    SynExpr.createIdent "key"
+                                    SynExpr.applyFunction
+                                        (SynExpr.applyFunction
+                                            (SynExpr.createIdent "sprintf")
+                                            (SynExpr.CreateConst "--%s"))
+                                        argForm
+                                    SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                                ]))
+                        finalExpr
+                        matchFlag
+
+                // If this flag accepts negation, also match --no-argForm sets to falseCase
+                if flag.AcceptsNegation then
+                    let falseCase = getFalseCase flag
+
+                    let matchNegatedFlag =
+                        [
+                            SynMatchClause.create
+                                (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
+                                // This is an error, but it's one we can gracefully report at the end.
+                                (SynExpr.sequential
+                                    [
+                                        multipleErrorMessage
+                                        |> SynExpr.pipeThroughFunction (
+                                            SynExpr.dotGet "Add" (SynExpr.createIdent' argParseErrors)
+                                        )
+                                        SynExpr.CreateConst true
+                                    ])
+
+                            SynMatchClause.create
+                                (SynPat.named "None")
+                                ([
+                                    SynExpr.assign
+                                        (SynLongIdent.createI flag.TargetVariable)
+                                        (SynExpr.pipeThroughFunction (SynExpr.createIdent "Some") falseCase)
+                                    SynExpr.CreateConst true
+                                 ]
+                                 |> SynExpr.sequential)
+                        ]
+                        |> SynExpr.createMatch (SynExpr.createIdent' flag.TargetVariable)
+
+                    // Match --no-argForm
+                    SynExpr.ifThenElse
+                        (SynExpr.applyFunction
+                            (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                            (SynExpr.tuple
+                                [
+                                    SynExpr.createIdent "key"
+                                    SynExpr.applyFunction
+                                        (SynExpr.applyFunction
+                                            (SynExpr.createIdent "sprintf")
+                                            (SynExpr.CreateConst "--no-%s"))
+                                        argForm
+                                    SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                                ]))
+                        standardMatch
+                        matchNegatedFlag
+                else
+                    standardMatch
             )
         )
         |> SynBinding.basic [ Ident.create "setFlagValue" ] [ SynPat.annotateType SynType.string (SynPat.named "key") ]
