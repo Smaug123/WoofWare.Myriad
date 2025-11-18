@@ -680,6 +680,7 @@ module internal ArgParserGenerator =
 
     /// let helpText : string = ...
     let private helpText
+        (typeHelp : SynExpr option)
         (typeName : Ident)
         (positional : ParseFunctionPositional option)
         (args : ParseFunctionNonPositional list)
@@ -761,12 +762,24 @@ module internal ArgParserGenerator =
             |> SynExpr.applyTo helpText
             |> SynExpr.paren
 
-        args
-        |> List.map (toPrintable describeNonPositional)
-        |> fun l ->
-            match positional with
-            | None -> l
-            | Some pos -> l @ [ toPrintable describePositional pos ]
+        let fieldHelp =
+            args
+            |> List.map (toPrintable describeNonPositional)
+            |> fun l ->
+                match positional with
+                | None -> l
+                | Some pos -> l @ [ toPrintable describePositional pos ]
+
+        let allHelp =
+            match typeHelp with
+            | Some helpExpr ->
+                // Prepend type help, followed by blank line, then field help
+                [ helpExpr ; SynExpr.CreateConst "" ] @ fieldHelp
+            | None ->
+                // No type help, just field help
+                fieldHelp
+
+        allHelp
         |> SynExpr.listLiteral
         |> SynExpr.pipeThroughFunction (
             SynExpr.applyFunction (SynExpr.createLongIdent [ "String" ; "concat" ]) (SynExpr.CreateConst @"\n")
@@ -1261,6 +1274,7 @@ module internal ArgParserGenerator =
 
     /// Takes a single argument, `args : string list`, and returns something of the type indicated by `recordType`.
     let createRecordParse
+        (typeHelpText : SynExpr option)
         (parseState : Ident)
         (flagDus : FlagDu list)
         (ambientRecords : RecordType list)
@@ -1327,7 +1341,7 @@ module internal ArgParserGenerator =
             |> SynExpr.applyTo (SynExpr.CreateConst ())
             |> SynBinding.basic [ argParseErrors ] []
 
-        let helpText = helpText recordType.Name pos nonPos
+        let helpText = helpText typeHelpText recordType.Name pos nonPos
 
         let bindings = errorCollection :: helpText :: bindings
 
@@ -1624,14 +1638,25 @@ module internal ArgParserGenerator =
                 | _ -> None
             )
 
-        let taggedType =
+        let taggedType, typeHelpText =
             match taggedType with
-            | SynTypeDefn.SynTypeDefn (sci,
+            | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,
                                        SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access, fields, _), _),
                                        smd,
                                        _,
                                        _,
-                                       _) -> RecordType.OfRecord sci smd access fields
+                                       _) ->
+                let typeHelp =
+                    attrs
+                    |> SynAttributes.toAttrs
+                    |> List.tryPick (fun a ->
+                        match (List.last a.TypeName.LongIdent).idText with
+                        | "ArgumentHelpTextAttribute"
+                        | "ArgumentHelpText" -> Some a.ArgExpr
+                        | _ -> None
+                    )
+
+                RecordType.OfRecord sci smd access fields, typeHelp
             | _ -> failwith "[<ArgParser>] currently only supports being placed on records."
 
         let modAttrs, modName =
@@ -1689,7 +1714,7 @@ module internal ArgParserGenerator =
                 |> SynPat.annotateType (SynType.appPostfix "list" SynType.string)
 
             let parsePrime =
-                createRecordParse parseStateIdent flagDus allRecordTypes taggedType
+                createRecordParse typeHelpText parseStateIdent flagDus allRecordTypes taggedType
                 |> SynBinding.basic
                     [ Ident.create "parse'" ]
                     [

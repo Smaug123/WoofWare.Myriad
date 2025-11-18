@@ -444,7 +444,7 @@ Required argument '--exact' received no value"""
         ]
         |> List.map TestCaseData
 
-    [<TestCaseSource(nameof (boolCases))>]
+    [<TestCaseSource(nameof boolCases)>]
     let ``Bool env vars can be populated`` (envValue : string, boolValue : bool) =
         let getEnvVar (s : string) =
             s |> shouldEqual "CONSUMEPLUGIN_THINGS"
@@ -704,3 +704,87 @@ Required argument '--exact' received no value"""
         // Again, we don't try to detect that the user has missed out the desired argument to `--a`.
         exc.Message
         |> shouldEqual """Unable to process argument --c=hi as key --c and value hi"""
+
+    [<Test>]
+    let ``Type-level help text appears in help output`` () =
+        let getEnvVar (_ : string) = None
+
+        let exc =
+            Assert.Throws<exn> (fun () -> WithTypeHelp.parse' getEnvVar [ "--help" ] |> ignore<WithTypeHelp>)
+
+        exc.Message
+        |> shouldContainText
+            "Parse command-line arguments for a basic configuration. This help text appears before the argument list."
+
+        exc.Message
+        |> shouldContainText "--config-file  string : The configuration file path"
+
+        exc.Message |> shouldContainText "--verbose  bool : Enable verbose output"
+        exc.Message |> shouldContainText "--port  int32"
+
+    [<Test>]
+    let ``Type-level help text appears before field help`` () =
+        let getEnvVar (_ : string) = None
+
+        let exc =
+            Assert.Throws<exn> (fun () -> WithTypeHelp.parse' getEnvVar [ "--help" ] |> ignore<WithTypeHelp>)
+
+        // Verify that the type help appears before the field help
+        let typeHelpIndex =
+            exc.Message.IndexOf "Parse command-line arguments for a basic configuration"
+
+        let fieldHelpIndex = exc.Message.IndexOf "--config-file"
+
+        typeHelpIndex |> shouldBeSmallerThan fieldHelpIndex
+
+    [<Test>]
+    let ``Multiline type-level help text works`` () =
+        let getEnvVar (_ : string) = None
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                WithMultilineTypeHelp.parse' getEnvVar [ "--help" ]
+                |> ignore<WithMultilineTypeHelp>
+            )
+
+        exc.Message |> shouldContainText "This is a multiline help text example."
+
+        exc.Message
+        |> shouldContainText "It spans multiple lines to test that multiline strings work correctly."
+
+        exc.Message
+        |> shouldContainText "You can use this to provide detailed documentation for your argument parser."
+
+        exc.Message |> shouldContainText "--input-file  string : Input file to process"
+        exc.Message |> shouldContainText "--output-dir  string : Output directory"
+        exc.Message |> shouldContainText "--force  bool"
+
+    [<Test>]
+    let ``Type-level help text appears in error messages`` () =
+        let getEnvVar (_ : string) = None
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                WithTypeHelp.parse' getEnvVar [ "--unknown-arg" ; "value" ]
+                |> ignore<WithTypeHelp>
+            )
+
+        // Verify that the type help appears in error messages too
+        exc.Message
+        |> shouldContainText
+            "Parse command-line arguments for a basic configuration. This help text appears before the argument list."
+
+        exc.Message |> shouldContainText "--config-file"
+
+    [<Test>]
+    let ``Types without type-level help still work`` () =
+        let getEnvVar (_ : string) = None
+
+        let exc =
+            Assert.Throws<exn> (fun () -> Basic.parse' getEnvVar [ "--help" ] |> ignore<Basic>)
+
+        // Should not contain any type-level help, just the field help
+        exc.Message |> shouldContainText "--foo  int32 : This is a foo!"
+        exc.Message |> shouldContainText "--bar  string"
+        // Make sure there's no extra blank line at the beginning
+        exc.Message.StartsWith '\n' |> shouldEqual false
