@@ -70,3 +70,62 @@ module TestCapturingMockGenerator =
                 bar = 3
                 Arg1 = "hello"
             }
+
+    [<Test>]
+    let ``Example of use: IAsyncDisposable`` () =
+        let mock' =
+            { TypeWithAsyncDisposableMock.Empty () with
+                Mem1 = fun i -> async { return Option.toArray i }
+            }
+
+        let mock = mock' :> TypeWithAsyncDisposable
+
+        mock.Mem1 (Some "hi") |> Async.RunSynchronously |> shouldEqual [| "hi" |]
+        mock.Mem2 () |> Async.RunSynchronously |> shouldEqual [||]
+
+        // Test that DisposeAsync returns a completed ValueTask
+        let asyncDisposable = mock :> IAsyncDisposable
+        let valueTask = asyncDisposable.DisposeAsync ()
+        valueTask.IsCompleted |> shouldEqual true
+
+        // Verify calls were captured
+        lock mock'.Calls.Mem1 (fun () -> Seq.toList mock'.Calls.Mem1)
+        |> List.exactlyOne
+        |> shouldEqual (Some "hi")
+
+        lock mock'.Calls.Mem2 (fun () -> Seq.toList mock'.Calls.Mem2)
+        |> List.exactlyOne
+        |> shouldEqual ()
+
+    [<Test>]
+    let ``Example of use: Both IDisposable and IAsyncDisposable`` () =
+        let mutable disposed = false
+        let mutable disposedAsync = false
+
+        let mock' =
+            { TypeWithBothDisposablesMock.Empty () with
+                Dispose = fun () -> disposed <- true
+                DisposeAsync =
+                    fun () ->
+                        disposedAsync <- true
+                        System.Threading.Tasks.ValueTask ()
+                Mem1 = fun s -> s.Length
+            }
+
+        let mock = mock' :> TypeWithBothDisposables
+
+        mock.Mem1 "hello" |> shouldEqual 5
+        mock.Mem1 "world" |> shouldEqual 5
+
+        // Test IDisposable.Dispose
+        (mock :> IDisposable).Dispose ()
+        disposed |> shouldEqual true
+
+        // Test IAsyncDisposable.DisposeAsync
+        let valueTask = (mock :> IAsyncDisposable).DisposeAsync ()
+        valueTask.IsCompleted |> shouldEqual true
+        disposedAsync |> shouldEqual true
+
+        // Verify calls were captured
+        lock mock'.Calls.Mem1 (fun () -> Seq.toList mock'.Calls.Mem1)
+        |> shouldEqual [ "hello" ; "world" ]
