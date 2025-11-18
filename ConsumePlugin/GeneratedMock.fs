@@ -237,3 +237,62 @@ type internal TypeWithPropertiesMock =
 
     interface System.IDisposable with
         member this.Dispose () : unit = this.Dispose ()
+namespace SomeNamespace
+
+open System
+open WoofWare.Myriad.Plugins
+
+/// Mock record type for an interface
+type internal TypeWithAsyncDisposableMock =
+    {
+        /// Implementation of IAsyncDisposable.DisposeAsync
+        DisposeAsync : unit -> System.Threading.Tasks.ValueTask
+        Mem1 : string option -> string[] Async
+        Mem2 : unit -> string[] Async
+    }
+
+    /// An implementation where every method throws.
+    static member Empty : TypeWithAsyncDisposableMock =
+        {
+            DisposeAsync = (fun () -> (System.Threading.Tasks.ValueTask ()))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+        }
+
+    interface TypeWithAsyncDisposable with
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+        member this.Mem2 () = this.Mem2 (())
+
+    interface System.IAsyncDisposable with
+        member this.DisposeAsync () : System.Threading.Tasks.ValueTask = this.DisposeAsync ()
+namespace SomeNamespace
+
+open System
+open WoofWare.Myriad.Plugins
+
+/// Mock record type for an interface
+type internal TypeWithBothDisposablesMock =
+    {
+        /// Implementation of IDisposable.Dispose
+        Dispose : unit -> unit
+        /// Implementation of IAsyncDisposable.DisposeAsync
+        DisposeAsync : unit -> System.Threading.Tasks.ValueTask
+        Mem1 : string -> int
+    }
+
+    /// An implementation where every method throws.
+    static member Empty : TypeWithBothDisposablesMock =
+        {
+            Dispose = (fun () -> ())
+            DisposeAsync = (fun () -> (System.Threading.Tasks.ValueTask ()))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+        }
+
+    interface TypeWithBothDisposables with
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+
+    interface System.IDisposable with
+        member this.Dispose () : unit = this.Dispose ()
+
+    interface System.IAsyncDisposable with
+        member this.DisposeAsync () : System.Threading.Tasks.ValueTask = this.DisposeAsync ()

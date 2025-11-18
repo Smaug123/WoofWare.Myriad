@@ -55,3 +55,15 @@ type TypeWithProperties =
     abstract Mem1 : string option -> string[] Async
     abstract Prop1 : int
     abstract Prop2 : unit Async
+
+[<GenerateCapturingMock>]
+type TypeWithAsyncDisposable =
+    inherit IAsyncDisposable
+    abstract Mem1 : string option -> string[] Async
+    abstract Mem2 : unit -> string[] Async
+
+[<GenerateCapturingMock>]
+type TypeWithBothDisposables =
+    inherit IDisposable
+    inherit IAsyncDisposable
+    abstract Mem1 : string -> int

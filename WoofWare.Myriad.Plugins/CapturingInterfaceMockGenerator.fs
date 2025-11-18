@@ -19,7 +19,9 @@ module internal CapturingInterfaceMockGenerator =
     open Fantomas.FCS.Text.Range
 
     [<RequireQualifiedAccess>]
-    type private KnownInheritance = | IDisposable
+    type private KnownInheritance =
+        | IDisposable
+        | IAsyncDisposable
 
     /// Expects the input `args` list to have more than one element.
     let private createTypeForArgs
@@ -209,6 +211,8 @@ module internal CapturingInterfaceMockGenerator =
                     | [] -> failwith "Unexpected empty identifier in inheritance declaration"
                     | [ "IDisposable" ]
                     | [ "System" ; "IDisposable" ] -> KnownInheritance.IDisposable
+                    | [ "IAsyncDisposable" ]
+                    | [ "System" ; "IAsyncDisposable" ] -> KnownInheritance.IAsyncDisposable
                     | _ -> failwithf $"Unrecognised inheritance identifier: %+A{name}"
                 | x -> failwithf $"Unrecognised type in inheritance: %+A{x}"
             )
@@ -250,12 +254,26 @@ module internal CapturingInterfaceMockGenerator =
 
         let emptyRecordFieldInstantiations =
             let interfaceExtras =
-                if inherits.Contains KnownInheritance.IDisposable then
-                    let unitFun = SynExpr.createThunk (SynExpr.CreateConst ())
+                let disposable =
+                    if inherits.Contains KnownInheritance.IDisposable then
+                        let unitFun = SynExpr.createThunk (SynExpr.CreateConst ())
+                        [ SynLongIdent.createS "Dispose", unitFun ]
+                    else
+                        []
 
-                    [ SynLongIdent.createS "Dispose", unitFun ]
-                else
-                    []
+                let asyncDisposable =
+                    if inherits.Contains KnownInheritance.IAsyncDisposable then
+                        let valueTaskCtor =
+                            SynExpr.createLongIdent [ "System" ; "Threading" ; "Tasks" ; "ValueTask" ]
+                            |> SynExpr.applyTo (SynExpr.CreateConst ())
+                            |> SynExpr.paren
+                            |> SynExpr.createLambda "()"
+
+                        [ SynLongIdent.createS "DisposeAsync", valueTaskCtor ]
+                    else
+                        []
+
+                disposable @ asyncDisposable
 
             let originalMembers =
                 fields
@@ -281,17 +299,36 @@ module internal CapturingInterfaceMockGenerator =
 
         let recordFields =
             let extras =
-                if inherits.Contains KnownInheritance.IDisposable then
-                    {
-                        Attrs = []
-                        Ident = Some (Ident.create "Dispose")
-                        Type = SynType.funFromDomain SynType.unit SynType.unit
-                    }
-                    |> SynField.make
-                    |> SynField.withDocString (PreXmlDoc.create "Implementation of IDisposable.Dispose")
-                    |> List.singleton
-                else
-                    []
+                let disposable =
+                    if inherits.Contains KnownInheritance.IDisposable then
+                        {
+                            Attrs = []
+                            Ident = Some (Ident.create "Dispose")
+                            Type = SynType.funFromDomain SynType.unit SynType.unit
+                        }
+                        |> SynField.make
+                        |> SynField.withDocString (PreXmlDoc.create "Implementation of IDisposable.Dispose")
+                        |> List.singleton
+                    else
+                        []
+
+                let asyncDisposable =
+                    if inherits.Contains KnownInheritance.IAsyncDisposable then
+                        {
+                            Attrs = []
+                            Ident = Some (Ident.create "DisposeAsync")
+                            Type =
+                                SynType.funFromDomain
+                                    SynType.unit
+                                    (SynType.createLongIdent' [ "System" ; "Threading" ; "Tasks" ; "ValueTask" ])
+                        }
+                        |> SynField.make
+                        |> SynField.withDocString (PreXmlDoc.create "Implementation of IAsyncDisposable.DisposeAsync")
+                        |> List.singleton
+                    else
+                        []
+
+                disposable @ asyncDisposable
 
             let nonExtras =
                 fields |> Map.toSeq |> Seq.map (fun (_, (field, _)) -> field) |> Seq.toList
@@ -524,6 +561,23 @@ module internal CapturingInterfaceMockGenerator =
 
                     SynMemberDefn.Interface (
                         SynType.createLongIdent' [ "System" ; "IDisposable" ],
+                        Some range0,
+                        Some [ mem ],
+                        range0
+                    )
+
+                | KnownInheritance.IAsyncDisposable ->
+                    let mem =
+                        SynExpr.createLongIdent [ "this" ; "DisposeAsync" ]
+                        |> SynExpr.applyTo (SynExpr.CreateConst ())
+                        |> SynBinding.basic [ Ident.create "this" ; Ident.create "DisposeAsync" ] [ SynPat.unit ]
+                        |> SynBinding.withReturnAnnotation (
+                            SynType.createLongIdent' [ "System" ; "Threading" ; "Tasks" ; "ValueTask" ]
+                        )
+                        |> SynMemberDefn.memberImplementation
+
+                    SynMemberDefn.Interface (
+                        SynType.createLongIdent' [ "System" ; "IAsyncDisposable" ],
                         Some range0,
                         Some [ mem ],
                         range0
