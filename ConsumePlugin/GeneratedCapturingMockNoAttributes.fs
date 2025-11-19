@@ -35,7 +35,7 @@ type internal PublicTypeNoAttrMock =
         Mem3 : int * System.Threading.CancellationToken option -> string
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-unit non-disposal method throws.
     static member Empty () : PublicTypeNoAttrMock =
         {
             Calls = PublicTypeNoAttrMockCalls.Calls.Empty ()
@@ -87,7 +87,7 @@ type public PublicTypeInternalFalseNoAttrMock =
         Mem3 : int * System.Threading.CancellationToken option -> string
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-unit non-disposal method throws.
     static member Empty () : PublicTypeInternalFalseNoAttrMock =
         {
             Calls = PublicTypeInternalFalseNoAttrMockCalls.Calls.Empty ()
@@ -136,7 +136,7 @@ type internal InternalTypeNoAttrMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-unit non-disposal method throws.
     static member Empty () : InternalTypeNoAttrMock =
         {
             Calls = InternalTypeNoAttrMockCalls.Calls.Empty ()
@@ -180,7 +180,7 @@ type private PrivateTypeNoAttrMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-unit non-disposal method throws.
     static member Empty () : PrivateTypeNoAttrMock =
         {
             Calls = PrivateTypeNoAttrMockCalls.Calls.Empty ()
@@ -224,7 +224,7 @@ type private PrivateTypeInternalFalseNoAttrMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-unit non-disposal method throws.
     static member Empty () : PrivateTypeInternalFalseNoAttrMock =
         {
             Calls = PrivateTypeInternalFalseNoAttrMockCalls.Calls.Empty ()
@@ -265,7 +265,7 @@ type internal VeryPublicTypeNoAttrMock<'a, 'b> =
         Mem1 : 'a -> 'b
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-unit non-disposal method throws.
     static member Empty () : VeryPublicTypeNoAttrMock<'a, 'b> =
         {
             Calls = VeryPublicTypeNoAttrMockCalls.Calls.Empty ()
@@ -358,7 +358,7 @@ type internal CurriedNoAttrMock<'a> =
         Mem6 : int * string -> 'a * int -> string
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-unit non-disposal method throws.
     static member Empty () : CurriedNoAttrMock<'a> =
         {
             Calls = CurriedNoAttrMockCalls.Calls.Empty ()
@@ -478,7 +478,7 @@ type internal TypeWithInterfaceNoAttrMock =
         Mem2 : unit -> string[] Async
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-unit non-disposal method throws.
     static member Empty () : TypeWithInterfaceNoAttrMock =
         {
             Calls = TypeWithInterfaceNoAttrMockCalls.Calls.Empty ()

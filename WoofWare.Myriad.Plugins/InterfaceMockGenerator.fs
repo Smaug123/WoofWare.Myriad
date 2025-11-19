@@ -108,7 +108,7 @@ module internal InterfaceMockGenerator =
                  else
                      [ SynPat.unit ])
                 (SynExpr.createRecord None constructorFields)
-            |> SynBinding.withXmlDoc (PreXmlDoc.create "An implementation where every method throws.")
+            |> SynBinding.withXmlDoc (PreXmlDoc.create "An implementation where every non-disposal method throws.")
             |> SynBinding.withReturnAnnotation constructorReturnType
             |> SynMemberDefn.staticMember
 

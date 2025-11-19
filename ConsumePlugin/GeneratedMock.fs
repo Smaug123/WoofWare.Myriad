@@ -16,7 +16,7 @@ type internal PublicTypeMock =
         Mem3 : int * option<System.Threading.CancellationToken> -> string
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : PublicTypeMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -41,7 +41,7 @@ type public PublicTypeInternalFalseMock =
         Mem3 : int * option<System.Threading.CancellationToken> -> string
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : PublicTypeInternalFalseMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -65,7 +65,7 @@ type internal InternalTypeMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : InternalTypeMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -87,7 +87,7 @@ type private PrivateTypeMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : PrivateTypeMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -109,7 +109,7 @@ type private PrivateTypeInternalFalseMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : PrivateTypeInternalFalseMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -130,7 +130,7 @@ type internal VeryPublicTypeMock<'a, 'b> =
         Mem1 : 'a -> 'b
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : VeryPublicTypeMock<'a, 'b> =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -154,7 +154,7 @@ type internal CurriedMock<'a> =
         Mem6 : int * string -> 'a * int -> string
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : CurriedMock<'a> =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -192,7 +192,7 @@ type internal TypeWithInterfaceMock =
         Mem2 : unit -> string[] Async
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : TypeWithInterfaceMock =
         {
             Dispose = (fun () -> ())
@@ -221,7 +221,7 @@ type internal TypeWithPropertiesMock =
         Mem1 : string option -> string[] Async
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : TypeWithPropertiesMock =
         {
             Dispose = (fun () -> ())
@@ -251,7 +251,7 @@ type internal TypeWithAsyncDisposableMock =
         Mem2 : unit -> string[] Async
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : TypeWithAsyncDisposableMock =
         {
             DisposeAsync = (fun () -> (System.Threading.Tasks.ValueTask ()))
@@ -280,7 +280,7 @@ type internal TypeWithBothDisposablesMock =
         Mem1 : string -> int
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : TypeWithBothDisposablesMock =
         {
             Dispose = (fun () -> ())
