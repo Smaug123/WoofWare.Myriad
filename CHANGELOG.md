@@ -1,5 +1,16 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 9.1.1, WoofWare.Myriad.Plugins.Attributes 3.8.1
+
+Adds the `[<ArgumentNegateWithPrefix>]` attribute, which can be placed on a boolean or flag-valued field when using the `ArgParser` generator.
+This causes the boolean to be specifiable with the `--no-` prefix to negate its value.
+(For example, `Foo : bool` is normally specified as `--foo`; this new attribute lets the user additionally give `--no-foo` to get the same semantics as `--foo=false`.)
+
+# WoofWare.Myriad.Plugins 9.0.1
+
+Converts the `static member Empty` field on each generated mock (from `GeneratedMock`) into a function, so as to permit the `GeneratedCapturingMock` to have the same signature.
+(`GeneratedCapturingMock` contains mutable state, so must be created afresh each time.)
+
 # WoofWare.Myriad.Plugins 8.1.1
 
 Adds `GenerateCapturingMock`, which is `GenerateMock` but additionally records the calls made to each function.

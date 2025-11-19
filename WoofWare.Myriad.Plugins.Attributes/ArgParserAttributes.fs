@@ -102,3 +102,24 @@ type ArgumentFlagAttribute (flagValue : bool) =
 [<AttributeUsage(AttributeTargets.Field, AllowMultiple = true)>]
 type ArgumentLongForm (s : string) =
     inherit Attribute ()
+
+/// Attribute indicating that this boolean or flag field should accept `--no-` prefix for negation.
+/// When this attribute is present on a boolean or flag DU field, the generated parser will accept
+/// both --field-name and --no-field-name as argument forms.
+///
+/// For boolean fields:
+///   --field-name (or --field-name=true) sets the value to true
+///   --no-field-name (or --no-field-name=true) sets the value to false
+///   --field-name=false sets the value to false
+///   --no-field-name=false sets the value to true
+///
+/// For flag DU fields with [<ArgumentFlag>]:
+///   --field-name (or --field-name=true) sets to the case marked with [<ArgumentFlag true>]
+///   --no-field-name (or --no-field-name=true) sets to the case marked with [<ArgumentFlag false>]
+///   --field-name=false sets to the [<ArgumentFlag false>] case
+///   --no-field-name=false sets to the [<ArgumentFlag true>] case
+///
+/// This attribute can only be applied to bool fields or flag DU fields (two-case DUs with [<ArgumentFlag>]).
+[<AttributeUsage(AttributeTargets.Field, AllowMultiple = false)>]
+type ArgumentNegateWithPrefixAttribute () =
+    inherit Attribute ()
