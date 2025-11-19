@@ -13,6 +13,8 @@ WoofWare.Myriad.Plugins.ArgumentHelpTextAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.ArgumentHelpTextAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.ArgumentLongForm inherit System.Attribute
 WoofWare.Myriad.Plugins.ArgumentLongForm..ctor [constructor]: string
+WoofWare.Myriad.Plugins.ArgumentNegateWithPrefixAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.ArgumentNegateWithPrefixAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.GenerateCapturingMockAttribute inherit System.Attribute
