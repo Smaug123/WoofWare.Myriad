@@ -72,10 +72,11 @@ module TestCapturingMockGenerator =
             }
 
     [<Test>]
-    let ``Example of use: IAsyncDisposable`` () =
+    let ``Example of use IAsyncDisposable`` () =
         let mock' =
             { TypeWithAsyncDisposableMock.Empty () with
                 Mem1 = fun i -> async { return Option.toArray i }
+                Mem2 = fun () -> async { return [||] }
             }
 
         let mock = mock' :> TypeWithAsyncDisposable
