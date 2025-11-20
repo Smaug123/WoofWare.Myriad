@@ -293,9 +293,7 @@ module internal CapturingInterfaceMockGenerator =
                 [ Ident.create "Empty" ]
                 [ SynPat.unit ]
                 (SynExpr.createRecord None emptyRecordFieldInstantiations)
-            |> SynBinding.withXmlDoc (
-                PreXmlDoc.create "An implementation where every non-unit non-disposal method throws."
-            )
+            |> SynBinding.withXmlDoc (PreXmlDoc.create "An implementation where every non-disposal method throws.")
             |> SynBinding.withReturnAnnotation constructorReturnType
             |> SynMemberDefn.staticMember
 
