@@ -36,7 +36,7 @@ type internal PublicTypeMock =
         Mem3 : int * System.Threading.CancellationToken option -> string
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : PublicTypeMock =
         {
             Calls = PublicTypeMockCalls.Calls.Empty ()
@@ -89,7 +89,7 @@ type public PublicTypeInternalFalseMock =
         Mem3 : int * System.Threading.CancellationToken option -> string
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : PublicTypeInternalFalseMock =
         {
             Calls = PublicTypeInternalFalseMockCalls.Calls.Empty ()
@@ -139,7 +139,7 @@ type internal InternalTypeMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : InternalTypeMock =
         {
             Calls = InternalTypeMockCalls.Calls.Empty ()
@@ -184,7 +184,7 @@ type private PrivateTypeMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : PrivateTypeMock =
         {
             Calls = PrivateTypeMockCalls.Calls.Empty ()
@@ -229,7 +229,7 @@ type private PrivateTypeInternalFalseMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : PrivateTypeInternalFalseMock =
         {
             Calls = PrivateTypeInternalFalseMockCalls.Calls.Empty ()
@@ -271,7 +271,7 @@ type internal VeryPublicTypeMock<'a, 'b> =
         Mem1 : 'a -> 'b
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : VeryPublicTypeMock<'a, 'b> =
         {
             Calls = VeryPublicTypeMockCalls.Calls.Empty ()
@@ -365,7 +365,7 @@ type internal CurriedMock<'a> =
         Mem6 : int * string -> 'a * int -> string
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : CurriedMock<'a> =
         {
             Calls = CurriedMockCalls.Calls.Empty ()
@@ -486,7 +486,7 @@ type internal TypeWithInterfaceMock =
         Mem2 : unit -> string[] Async
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : TypeWithInterfaceMock =
         {
             Calls = TypeWithInterfaceMockCalls.Calls.Empty ()
@@ -540,7 +540,7 @@ type internal TypeWithPropertiesMock =
         Prop2 : unit -> unit Async
     }
 
-    /// An implementation where every non-unit method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : TypeWithPropertiesMock =
         {
             Calls = TypeWithPropertiesMockCalls.Calls.Empty ()
@@ -560,3 +560,103 @@ type internal TypeWithPropertiesMock =
 
     interface System.IDisposable with
         member this.Dispose () : unit = this.Dispose ()
+namespace SomeNamespace.CapturingMock
+
+open System
+open WoofWare.Myriad.Plugins
+
+[<RequireQualifiedAccess>]
+module internal TypeWithAsyncDisposableMockCalls =
+    /// All the calls made to a TypeWithAsyncDisposableMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string option>
+            Mem2 : ResizeArray<unit>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+                Mem2 = ResizeArray ()
+            }
+
+/// Mock record type for an interface
+type internal TypeWithAsyncDisposableMock =
+    {
+        Calls : TypeWithAsyncDisposableMockCalls.Calls
+        /// Implementation of IAsyncDisposable.DisposeAsync
+        DisposeAsync : unit -> System.Threading.Tasks.ValueTask
+        Mem1 : string option -> string[] Async
+        Mem2 : unit -> string[] Async
+    }
+
+    /// An implementation where every non-disposal method throws.
+    static member Empty () : TypeWithAsyncDisposableMock =
+        {
+            Calls = TypeWithAsyncDisposableMockCalls.Calls.Empty ()
+            DisposeAsync = (fun () -> (System.Threading.Tasks.ValueTask ()))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+        }
+
+    interface TypeWithAsyncDisposable with
+        member this.Mem1 arg_0_0 =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0))
+            this.Mem1 (arg_0_0)
+
+        member this.Mem2 () =
+            lock this.Calls.Mem2 (fun _ -> this.Calls.Mem2.Add (()))
+            this.Mem2 (())
+
+    interface System.IAsyncDisposable with
+        member this.DisposeAsync () : System.Threading.Tasks.ValueTask = this.DisposeAsync ()
+namespace SomeNamespace.CapturingMock
+
+open System
+open WoofWare.Myriad.Plugins
+
+[<RequireQualifiedAccess>]
+module internal TypeWithBothDisposablesMockCalls =
+    /// All the calls made to a TypeWithBothDisposablesMock mock
+    type internal Calls =
+        {
+            Mem1 : ResizeArray<string>
+        }
+
+        /// A fresh calls object which has not yet had any calls made.
+        static member Empty () : Calls =
+            {
+                Mem1 = ResizeArray ()
+            }
+
+/// Mock record type for an interface
+type internal TypeWithBothDisposablesMock =
+    {
+        Calls : TypeWithBothDisposablesMockCalls.Calls
+        /// Implementation of IDisposable.Dispose
+        Dispose : unit -> unit
+        /// Implementation of IAsyncDisposable.DisposeAsync
+        DisposeAsync : unit -> System.Threading.Tasks.ValueTask
+        Mem1 : string -> int
+    }
+
+    /// An implementation where every non-disposal method throws.
+    static member Empty () : TypeWithBothDisposablesMock =
+        {
+            Calls = TypeWithBothDisposablesMockCalls.Calls.Empty ()
+            Dispose = (fun () -> ())
+            DisposeAsync = (fun () -> (System.Threading.Tasks.ValueTask ()))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+        }
+
+    interface TypeWithBothDisposables with
+        member this.Mem1 arg_0_0 =
+            lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0))
+            this.Mem1 (arg_0_0)
+
+    interface System.IDisposable with
+        member this.Dispose () : unit = this.Dispose ()
+
+    interface System.IAsyncDisposable with
+        member this.DisposeAsync () : System.Threading.Tasks.ValueTask = this.DisposeAsync ()

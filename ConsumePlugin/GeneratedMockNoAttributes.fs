@@ -15,7 +15,7 @@ type internal PublicTypeNoAttrMock =
         Mem3 : int * option<System.Threading.CancellationToken> -> string
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : PublicTypeNoAttrMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -39,7 +39,7 @@ type public PublicTypeInternalFalseNoAttrMock =
         Mem3 : int * option<System.Threading.CancellationToken> -> string
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : PublicTypeInternalFalseNoAttrMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -62,7 +62,7 @@ type internal InternalTypeNoAttrMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : InternalTypeNoAttrMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -83,7 +83,7 @@ type private PrivateTypeNoAttrMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : PrivateTypeNoAttrMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -104,7 +104,7 @@ type private PrivateTypeInternalFalseNoAttrMock =
         Mem2 : string -> int
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : PrivateTypeInternalFalseNoAttrMock =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -124,7 +124,7 @@ type internal VeryPublicTypeNoAttrMock<'a, 'b> =
         Mem1 : 'a -> 'b
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : VeryPublicTypeNoAttrMock<'a, 'b> =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -147,7 +147,7 @@ type internal CurriedNoAttrMock<'a> =
         Mem6 : int * string -> 'a * int -> string
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty () : CurriedNoAttrMock<'a> =
         {
             Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
@@ -184,7 +184,7 @@ type internal TypeWithInterfaceNoAttrMock =
         Mem2 : unit -> string[] Async
     }
 
-    /// An implementation where every method throws.
+    /// An implementation where every non-disposal method throws.
     static member Empty : TypeWithInterfaceNoAttrMock =
         {
             Dispose = (fun () -> ())
