@@ -47,3 +47,45 @@ module TestMockGenerator =
         mock.Mem1 (Some "hi") |> Async.RunSynchronously |> shouldEqual [| "hi" |]
 
         mock.Prop1 |> shouldEqual 44
+
+    [<Test>]
+    let ``Example of use: IAsyncDisposable`` () =
+        let mock : TypeWithAsyncDisposable =
+            { TypeWithAsyncDisposableMock.Empty with
+                Mem1 = fun i -> async { return Option.toArray i }
+            }
+            :> _
+
+        mock.Mem1 (Some "hi") |> Async.RunSynchronously |> shouldEqual [| "hi" |]
+
+        // Test that DisposeAsync returns a completed ValueTask
+        let asyncDisposable = mock :> IAsyncDisposable
+        let valueTask = asyncDisposable.DisposeAsync ()
+        valueTask.IsCompleted |> shouldEqual true
+
+    [<Test>]
+    let ``Example of use: Both IDisposable and IAsyncDisposable`` () =
+        let mutable disposed = false
+        let mutable disposedAsync = false
+
+        let mock : TypeWithBothDisposables =
+            { TypeWithBothDisposablesMock.Empty with
+                Dispose = fun () -> disposed <- true
+                DisposeAsync =
+                    fun () ->
+                        disposedAsync <- true
+                        System.Threading.Tasks.ValueTask ()
+                Mem1 = fun s -> s.Length
+            }
+            :> _
+
+        mock.Mem1 "hello" |> shouldEqual 5
+
+        // Test IDisposable.Dispose
+        (mock :> IDisposable).Dispose ()
+        disposed |> shouldEqual true
+
+        // Test IAsyncDisposable.DisposeAsync
+        let valueTask = (mock :> IAsyncDisposable).DisposeAsync ()
+        valueTask.IsCompleted |> shouldEqual true
+        disposedAsync |> shouldEqual true

@@ -9,7 +9,6 @@
       I have not yet seen a single instance where I care about this warning
     -->
     <NoWarn>$(NoWarn),NU1903</NoWarn>
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <ItemGroup>
