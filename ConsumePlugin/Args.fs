@@ -235,3 +235,27 @@ type FlagsIntoPositionalArgs' =
         [<PositionalArgs false>]
         DontGrabEverything : string list
     }
+
+[<ArgParser>]
+[<ArgumentHelpText "Parse command-line arguments for a basic configuration. This help text appears before the argument list.">]
+type WithTypeHelp =
+    {
+        [<ArgumentHelpText "The configuration file path">]
+        ConfigFile : string
+        [<ArgumentHelpText "Enable verbose output">]
+        Verbose : bool
+        Port : int
+    }
+
+[<ArgParser>]
+[<ArgumentHelpText "This is a multiline help text example.
+It spans multiple lines to test that multiline strings work correctly.
+You can use this to provide detailed documentation for your argument parser.">]
+type WithMultilineTypeHelp =
+    {
+        [<ArgumentHelpText "Input file to process">]
+        InputFile : string
+        [<ArgumentHelpText "Output directory">]
+        OutputDir : string
+        Force : bool
+    }
