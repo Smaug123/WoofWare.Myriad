@@ -386,8 +386,8 @@
   },
   {
     "pname": "WoofWare.Expect",
-    "version": "0.8.4",
-    "hash": "sha256-UI7f2nt4g4Gg1Ke/IChrA4fpVOYAChXpvR6zkKfkmzE="
+    "version": "0.8.5",
+    "hash": "sha256-rMlkk1osadQYwxmb0KAHqsB51hinTf7NzI0zyovpx04="
   },
   {
     "pname": "WoofWare.NUnitTestRunner",
