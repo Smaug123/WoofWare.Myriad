@@ -1,11 +1,14 @@
 namespace WoofWare.Myriad.Plugins
 
+open System
+
 type internal DesiredGenerator =
     | InterfaceMock of isInternal : bool option
     | CapturingInterfaceMock of isInternal : bool option
     | JsonParse of extensionMethod : bool option
     | JsonSerialize of extensionMethod : bool option
     | HttpClient of extensionMethod : bool option
+    | CreateCatamorphism of typeName : string
 
     static member Parse (s : string) =
         match s with
@@ -24,4 +27,10 @@ type internal DesiredGenerator =
         | "HttpClient" -> DesiredGenerator.HttpClient None
         | "HttpClient(true)" -> DesiredGenerator.HttpClient (Some true)
         | "HttpClient(false)" -> DesiredGenerator.HttpClient (Some false)
-        | _ -> failwith $"Failed to parse as a generator specification: %s{s}"
+        | _ ->
+            let prefix = "CreateCatamorphism("
+
+            if s.StartsWith (prefix, StringComparison.Ordinal) && s.EndsWith ')' then
+                DesiredGenerator.CreateCatamorphism (s.Substring (prefix.Length, s.Length - prefix.Length - 1))
+            else
+                failwith $"Failed to parse as a generator specification: %s{s}"

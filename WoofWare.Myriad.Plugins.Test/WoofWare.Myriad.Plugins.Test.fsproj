@@ -32,6 +32,7 @@
     <Compile Include="TestCapturingMockGenerator\TestCapturingMockGeneratorNoAttr.fs" />
     <Compile Include="TestJsonSerialize\TestJsonSerde.fs" />
     <Compile Include="TestCataGenerator\TestCataGenerator.fs" />
+    <Compile Include="TestCataGenerator\TestCataGeneratorNoAttr.fs" />
     <Compile Include="TestCataGenerator\TestDirectory.fs" />
     <Compile Include="TestCataGenerator\TestGift.fs" />
     <Compile Include="TestCataGenerator\TestMyList.fs" />
