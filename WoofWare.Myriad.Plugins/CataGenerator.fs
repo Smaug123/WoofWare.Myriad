@@ -1209,6 +1209,10 @@ type CreateCatamorphismGenerator () =
         member _.ValidInputExtensions = [ ".fs" ]
 
         member _.Generate (context : GeneratorContext) =
+            let targetedTypes =
+                MyriadParamParser.render context.AdditionalParameters
+                |> Map.map (fun _ v -> v.Split '!' |> Array.toList |> List.map DesiredGenerator.Parse)
+
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
@@ -1218,17 +1222,26 @@ type CreateCatamorphismGenerator () =
 
             let namespaceAndTypes =
                 types
-                |> List.choose (fun (ns, types) ->
-                    let typeWithAttr =
-                        types
-                        |> List.tryPick (fun ty ->
-                            match SynTypeDefn.getAttribute typeof<CreateCatamorphismAttribute>.Name ty with
-                            | None -> None
-                            | Some attr -> Some (attr.ArgExpr, ty)
-                        )
+                |> List.collect (fun (ns, types) ->
+                    types
+                    |> List.choose (fun typeDef ->
+                        match SynTypeDefn.getAttribute typeof<CreateCatamorphismAttribute>.Name typeDef with
+                        | None ->
+                            let name = SynTypeDefn.getName typeDef |> List.map _.idText |> String.concat "."
 
-                    match typeWithAttr with
-                    | Some taggedType ->
+                            match Map.tryFind name targetedTypes with
+                            | Some desired ->
+                                desired
+                                |> List.tryPick (fun generator ->
+                                    match generator with
+                                    | DesiredGenerator.CreateCatamorphism cataOutputName ->
+                                        Some (SynExpr.CreateConst cataOutputName, typeDef)
+                                    | _ -> None
+                                )
+                            | None -> None
+                        | Some attr -> Some (attr.ArgExpr, typeDef)
+                    )
+                    |> List.map (fun (typeName, taggedType) ->
                         let unions, records, others =
                             (([], [], []), types)
                             ||> List.fold (fun
@@ -1246,8 +1259,8 @@ type CreateCatamorphismGenerator () =
                             failwith
                                 $"Error: all types recursively defined together with a CreateCatamorphism type must be discriminated unions or records. %+A{others}"
 
-                        Some (ns, taggedType, unions, records)
-                    | _ -> None
+                        (ns, (typeName, taggedType), unions, records)
+                    )
                 )
 
             let modules =

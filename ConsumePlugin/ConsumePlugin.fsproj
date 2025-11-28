@@ -77,6 +77,13 @@
     <Compile Include="GeneratedCatamorphism.fs">
       <MyriadFile>Catamorphism.fs</MyriadFile>
     </Compile>
+    <Compile Include="CatamorphismNoAttribute.fs" />
+    <Compile Include="GeneratedCatamorphismNoAttribute.fs">
+      <MyriadFile>CatamorphismNoAttribute.fs</MyriadFile>
+      <MyriadParams>
+        <TreeNoAttr>CreateCatamorphism(TreeNoAttrCata)</TreeNoAttr>
+      </MyriadParams>
+    </Compile>
     <Compile Include="FSharpForFunAndProfitCata.fs" />
     <Compile Include="GeneratedFileSystem.fs">
       <MyriadFile>FSharpForFunAndProfitCata.fs</MyriadFile>
