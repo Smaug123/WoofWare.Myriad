@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="ConsumePlugin/ConsumePlugin.fsproj" />
+  <Project Path="WoofWare.Myriad.Plugins.Attributes/Test/WoofWare.Myriad.Plugins.Attributes.Test.fsproj" />
+  <Project Path="WoofWare.Myriad.Plugins.Attributes/WoofWare.Myriad.Plugins.Attributes.fsproj" />
+  <Project Path="WoofWare.Myriad.Plugins.Test/WoofWare.Myriad.Plugins.Test.fsproj" />
+  <Project Path="WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj" />
+</Solution>
