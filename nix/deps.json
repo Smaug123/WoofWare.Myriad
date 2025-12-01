@@ -391,12 +391,12 @@
   },
   {
     "pname": "WoofWare.NUnitTestRunner",
-    "version": "0.3.9",
-    "hash": "sha256-+QVx5NYdY1JZoMcWfJRwFgvEj2dBxWlJU0mu1Hmnlhs="
+    "version": "0.3.10",
+    "hash": "sha256-SvLLK9nZq/yMEcUoLx08Zw+0Z/lj02zebrBa6ATb2ug="
   },
   {
     "pname": "WoofWare.Whippet.Fantomas",
-    "version": "0.6.4",
-    "hash": "sha256-ScZ7EEcxLvXyam2ZVqDK58QlK3RcePWghzRvtLLLdZI="
+    "version": "0.7.1",
+    "hash": "sha256-Y9H42NjZx238Y73FaoPraJ9JqCOf5+2MAFetjPNlNXY="
   }
 ]
