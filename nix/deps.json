@@ -6,8 +6,8 @@
   },
   {
     "pname": "fantomas",
-    "version": "7.0.3",
-    "hash": "sha256-0XlfV7SxXPDnk/CjkUesJSaH0cxlNHJ+Jj86zNUhkNA="
+    "version": "7.0.5",
+    "hash": "sha256-fseS0ORahl/iK/uZmGOooTmrny8YL1KEwNNq27VxLj0="
   },
   {
     "pname": "Fantomas.Core",
@@ -95,6 +95,11 @@
     "hash": "sha256-G6y5iyHZ3R2shlLCW/uTusio/UqcnWT79X+UAbxvDQY="
   },
   {
+    "pname": "Microsoft.Extensions.DependencyModel",
+    "version": "10.0.0",
+    "hash": "sha256-oCcIjmwH8H0n9bT3wQBWdotMvYuoiazfiKrXAs2bLiI="
+  },
+  {
     "pname": "Microsoft.NET.Test.Sdk",
     "version": "18.0.1",
     "hash": "sha256-0c3/rp9di0w7E5UmfRh6Prrm3Aeyi8NOj5bm2i6jAh0="
@@ -166,38 +171,33 @@
   },
   {
     "pname": "Microsoft.Testing.Extensions.Telemetry",
-    "version": "1.9.0",
-    "hash": "sha256-JT91ThKLEyoRS/8ZJqZwlSTT7ofC2QhNqPFI3pYmMaw="
+    "version": "2.0.2",
+    "hash": "sha256-8f23W3125L2ZAExRVwvXSft3a93k+pSb/0CZV0HlFi4="
   },
   {
     "pname": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-    "version": "1.9.0",
-    "hash": "sha256-oscZOEKw7gM6eRdDrOS3x+CwqIvXWRmfmi0ugCxBRw0="
+    "version": "2.0.2",
+    "hash": "sha256-ePhFIkoWZVt79Tkhu62MxYyIheFMBhf1NUbIimZIZ9c="
   },
   {
     "pname": "Microsoft.Testing.Extensions.VSTestBridge",
-    "version": "1.9.0",
-    "hash": "sha256-CadXLWD093sUDaWhnppzD9LvpxSRqqt93ZEOFiIAPyw="
+    "version": "2.0.2",
+    "hash": "sha256-odn6fZO7yaPs3EaEUr12GraVH5anp0r/BabJpJl8q/c="
   },
   {
     "pname": "Microsoft.Testing.Platform",
-    "version": "1.9.0",
-    "hash": "sha256-6nzjoYbJOh7v/GB7d+TDuM0l/xglCshFX6KWjg7+cFI="
+    "version": "2.0.2",
+    "hash": "sha256-K8B4tQaYslm+njUQ59nyvh4f4UgrbOo6DQgO9Hwt0aY="
   },
   {
     "pname": "Microsoft.Testing.Platform.MSBuild",
-    "version": "1.9.0",
-    "hash": "sha256-/bileP4b+9RZp8yjgS6eynXwc2mohyyzf6p/0LZJd8I="
+    "version": "2.0.2",
+    "hash": "sha256-RbL2Ie/sQx07hffiao8ScR+yMyYqI8astlC0/uf3bzM="
   },
   {
     "pname": "Microsoft.TestPlatform.AdapterUtilities",
-    "version": "17.13.0",
-    "hash": "sha256-Vr+3Tad/h/nk7f/5HMExn3HvCGFCarehFAzJSfCBaOc="
-  },
-  {
-    "pname": "Microsoft.TestPlatform.ObjectModel",
-    "version": "17.13.0",
-    "hash": "sha256-6S0fjfj8vA+h6dJVNwLi6oZhYDO/I/6hBZaq2VTW+Uk="
+    "version": "18.0.1",
+    "hash": "sha256-LE5xsyc75ERflV/EA4A4DV+ja2LAb0KR/DPinAG+AgI="
   },
   {
     "pname": "Microsoft.TestPlatform.ObjectModel",
@@ -276,8 +276,8 @@
   },
   {
     "pname": "NUnit3TestAdapter",
-    "version": "5.2.0",
-    "hash": "sha256-ybTutL4VkX/fq61mS+O3Ruh+adic4fpv+MKgQ0IZvGg="
+    "version": "6.0.0",
+    "hash": "sha256-ujYTRiPaJO3u5juijXBg88BMnYMNH43PkGDkiiHQ4rY="
   },
   {
     "pname": "RestEase",
@@ -325,6 +325,11 @@
     "hash": "sha256-KaMHgIRBF7Nf3VwOo+gJS1DcD+41cJDPWFh+TDQ8ee8="
   },
   {
+    "pname": "System.IO.Pipelines",
+    "version": "10.0.0",
+    "hash": "sha256-0aeIxLFEBn9BoCa93UVNikdlqgPl3B1nmYCLQ9Yu9Ak="
+  },
+  {
     "pname": "System.Memory",
     "version": "4.5.5",
     "hash": "sha256-EPQ9o1Kin7KzGI5O3U3PUQAZTItSbk9h/i4rViN3WiI="
@@ -363,6 +368,16 @@
     "pname": "System.Security.Cryptography.ProtectedData",
     "version": "4.4.0",
     "hash": "sha256-Ri53QmFX8I8UH0x4PikQ1ZA07ZSnBUXStd5rBfGWFOE="
+  },
+  {
+    "pname": "System.Text.Encodings.Web",
+    "version": "10.0.0",
+    "hash": "sha256-OrsgqAPfEjjo+CzzrAzkKTXNv3VXw2dm3Wpn+uRHCM8="
+  },
+  {
+    "pname": "System.Text.Json",
+    "version": "10.0.0",
+    "hash": "sha256-ZyAMIT3yQDJazYAObAlXmScGshGD9MVZgYmLqHyICq0="
   },
   {
     "pname": "System.Text.Json",
