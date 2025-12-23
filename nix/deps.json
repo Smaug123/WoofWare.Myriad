@@ -95,11 +95,6 @@
     "hash": "sha256-G6y5iyHZ3R2shlLCW/uTusio/UqcnWT79X+UAbxvDQY="
   },
   {
-    "pname": "Microsoft.Extensions.DependencyModel",
-    "version": "10.0.0",
-    "hash": "sha256-oCcIjmwH8H0n9bT3wQBWdotMvYuoiazfiKrXAs2bLiI="
-  },
-  {
     "pname": "Microsoft.NET.Test.Sdk",
     "version": "18.0.1",
     "hash": "sha256-0c3/rp9di0w7E5UmfRh6Prrm3Aeyi8NOj5bm2i6jAh0="
@@ -276,8 +271,8 @@
   },
   {
     "pname": "NUnit3TestAdapter",
-    "version": "6.0.0",
-    "hash": "sha256-ujYTRiPaJO3u5juijXBg88BMnYMNH43PkGDkiiHQ4rY="
+    "version": "6.0.1",
+    "hash": "sha256-EaNIFhALww05XZAS92VGu6/OFrYfJb1llpLazRJQL2I="
   },
   {
     "pname": "RestEase",
@@ -325,11 +320,6 @@
     "hash": "sha256-KaMHgIRBF7Nf3VwOo+gJS1DcD+41cJDPWFh+TDQ8ee8="
   },
   {
-    "pname": "System.IO.Pipelines",
-    "version": "10.0.0",
-    "hash": "sha256-0aeIxLFEBn9BoCa93UVNikdlqgPl3B1nmYCLQ9Yu9Ak="
-  },
-  {
     "pname": "System.Memory",
     "version": "4.5.5",
     "hash": "sha256-EPQ9o1Kin7KzGI5O3U3PUQAZTItSbk9h/i4rViN3WiI="
@@ -368,16 +358,6 @@
     "pname": "System.Security.Cryptography.ProtectedData",
     "version": "4.4.0",
     "hash": "sha256-Ri53QmFX8I8UH0x4PikQ1ZA07ZSnBUXStd5rBfGWFOE="
-  },
-  {
-    "pname": "System.Text.Encodings.Web",
-    "version": "10.0.0",
-    "hash": "sha256-OrsgqAPfEjjo+CzzrAzkKTXNv3VXw2dm3Wpn+uRHCM8="
-  },
-  {
-    "pname": "System.Text.Json",
-    "version": "10.0.0",
-    "hash": "sha256-ZyAMIT3yQDJazYAObAlXmScGshGD9MVZgYmLqHyICq0="
   },
   {
     "pname": "System.Text.Json",
