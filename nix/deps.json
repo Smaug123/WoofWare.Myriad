@@ -271,8 +271,8 @@
   },
   {
     "pname": "NUnit3TestAdapter",
-    "version": "6.0.1",
-    "hash": "sha256-EaNIFhALww05XZAS92VGu6/OFrYfJb1llpLazRJQL2I="
+    "version": "6.1.0",
+    "hash": "sha256-ApKCpMldOi4NIHU+1FedlqvpkLmgIs1hnBSy02tzv5s="
   },
   {
     "pname": "RestEase",
