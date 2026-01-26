@@ -58,8 +58,10 @@ jobs:
         run: nix develop --command dotnet restore analyzers/analyzers.fsproj
       - name: Build project
         run: nix develop --command dotnet build ./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj
-      - name: Run analyzers
-        run: nix run .#fsharp-analyzers -- --project ./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj --analyzers-path ./.analyzerpackages/g-research.fsharp.analyzers/*/ --verbosity detailed --report ./analysis.sarif --treat-as-error GRA-STRING-001 GRA-STRING-002 GRA-STRING-003 GRA-UNIONCASE-001 GRA-INTERPOLATED-001 GRA-TYPE-ANNOTATE-001 GRA-VIRTUALCALL-001 GRA-IMMUTABLECOLLECTIONEQUALITY-001 GRA-JSONOPTS-001 GRA-LOGARGFUNCFULLAPP-001 GRA-DISPBEFOREASYNC-001 --exclude-analyzers PartialAppAnalyzer
+      - name: Run analyzers (G-Research)
+        run: nix run .#fsharp-analyzers -- --project ./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj --analyzers-path ./.analyzerpackages/g-research.fsharp.analyzers/*/ --verbosity detailed --report ./gr-analysis.sarif --treat-as-error GRA-STRING-001 GRA-STRING-002 GRA-STRING-003 GRA-UNIONCASE-001 GRA-INTERPOLATED-001 GRA-TYPE-ANNOTATE-001 GRA-VIRTUALCALL-001 GRA-IMMUTABLECOLLECTIONEQUALITY-001 GRA-JSONOPTS-001 GRA-LOGARGFUNCFULLAPP-001 GRA-DISPBEFOREASYNC-001 --exclude-analyzers PartialAppAnalyzer
+      - name: Run analyzers (WoofWare)
+        run: nix run .#fsharp-analyzers -- --project ./WoofWare.Myriad.Plugins/WoofWare.Myriad.Plugins.fsproj --analyzers-path ./.analyzerpackages/woofware.fsharpanalyzers/*/ --verbosity detailed --report ./woofware-analysis.sarif
 
   build-nix:
     runs-on: ubuntu-latest
