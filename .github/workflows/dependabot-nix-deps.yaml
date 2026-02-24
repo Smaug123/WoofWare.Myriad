@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
+name: Update Nix deps for Dependabot PRs
+
+on:
+  pull_request_target:
+    paths:
+      - '**/*.fsproj'
+      - '**/Directory.Packages.props'
+
+jobs:
+  update-nix-deps:
+    # Only run on Dependabot PRs
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build fetch-deps
+        run: nix build ".#default.fetch-deps"
+
+      - name: Run fetch-deps
+        run: |
+          set -o pipefail
+          ./result nix/deps.json
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          if git diff --quiet nix/deps.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add nix/deps.json
+          git commit -m "Update nix/deps.json for Dependabot changes"
+          git push
