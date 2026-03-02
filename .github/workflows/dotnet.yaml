@@ -167,12 +167,12 @@ jobs:
     - name: Pack
       run: nix develop --command dotnet pack --configuration Release
     - name: Upload NuGet artifact (plugin)
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: nuget-package-plugin
         path: WoofWare.Myriad.Plugins/bin/Release/WoofWare.Myriad.Plugins.*.nupkg
     - name: Upload NuGet artifact (attributes)
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: nuget-package-attribute
         path: WoofWare.Myriad.Plugins.Attributes/bin/Release/WoofWare.Myriad.Plugins.Attributes.*.nupkg
