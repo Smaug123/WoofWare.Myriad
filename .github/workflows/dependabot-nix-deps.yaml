@@ -30,6 +30,12 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           fetch-depth: 0
 
+      - name: Get GitHub App bot user ID
+        id: get-user-id
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: echo "user-id=$(gh api "/users/${{ steps.generate-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
         with:
@@ -55,8 +61,8 @@ jobs:
       - name: Commit and push
         if: steps.git-check.outputs.changed == 'true'
         run: |
-          git config user.name "deps-updater[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "${{ steps.generate-token.outputs.app-slug }}[bot]"
+          git config user.email "${{ steps.get-user-id.outputs.user-id }}+${{ steps.generate-token.outputs.app-slug }}[bot]@users.noreply.github.com"
           git add nix/deps.json
           git commit -m "Update nix/deps.json for Dependabot changes"
           git push
