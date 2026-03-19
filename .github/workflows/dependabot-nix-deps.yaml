@@ -2,7 +2,7 @@
 name: Update Nix deps for Dependabot PRs
 
 on:
-  pull_request_target:
+  pull_request:
     paths:
       - '**/*.fsproj'
       - '**/Directory.Packages.props'
@@ -13,15 +13,28 @@ jobs:
     if: github.actor == 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
+      - name: Create token
+        id: generate-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.DEPS_UPDATER_CLIENT_APP_ID }}
+          private-key: ${{ secrets.DEPS_UPDATER_PRIVATE_KEY }}
+
       - name: Check out repository
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.generate-token.outputs.token }}
           fetch-depth: 0
+
+      - name: Get GitHub App bot user ID
+        id: get-user-id
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: echo "user-id=$(gh api '/users/${{ steps.generate-token.outputs.app-slug }}[bot]' --jq .id)" >> "$GITHUB_OUTPUT"
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
@@ -48,8 +61,8 @@ jobs:
       - name: Commit and push
         if: steps.git-check.outputs.changed == 'true'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "${{ steps.generate-token.outputs.app-slug }}[bot]"
+          git config user.email "${{ steps.get-user-id.outputs.user-id }}+${{ steps.generate-token.outputs.app-slug }}[bot]@users.noreply.github.com"
           git add nix/deps.json
           git commit -m "Update nix/deps.json for Dependabot changes"
           git push
