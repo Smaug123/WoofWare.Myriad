@@ -34,7 +34,7 @@ jobs:
         id: get-user-id
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
-        run: echo "user-id=$(gh api "/users/${{ steps.generate-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        run: echo "user-id=$(gh api '/users/${{ steps.generate-token.outputs.app-slug }}[bot]' --jq .id)" >> "$GITHUB_OUTPUT"
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
