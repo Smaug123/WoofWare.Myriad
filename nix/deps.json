@@ -95,6 +95,11 @@
     "hash": "sha256-fqKglbYvEb/77+rmUvLyLZSwROM1P9OW03Ub307WYZ8="
   },
   {
+    "pname": "Microsoft.Extensions.DependencyModel",
+    "version": "8.0.2",
+    "hash": "sha256-PyuO/MyCR9JtYqpA1l/nXGh+WLKCq34QuAXN9qNza9Q="
+  },
+  {
     "pname": "Microsoft.NET.Test.Sdk",
     "version": "18.3.0",
     "hash": "sha256-o2bILLF5i+XUoi8xZYgolU3CxLTdql5R/tEVWVnKFPU="
@@ -166,33 +171,28 @@
   },
   {
     "pname": "Microsoft.Testing.Extensions.Telemetry",
-    "version": "2.0.2",
-    "hash": "sha256-8f23W3125L2ZAExRVwvXSft3a93k+pSb/0CZV0HlFi4="
+    "version": "2.1.0",
+    "hash": "sha256-SawLiz1fB3QbkkyEVloEj8UpQTAIZR7U9FZfqwCkGr0="
   },
   {
     "pname": "Microsoft.Testing.Extensions.TrxReport.Abstractions",
-    "version": "2.0.2",
-    "hash": "sha256-ePhFIkoWZVt79Tkhu62MxYyIheFMBhf1NUbIimZIZ9c="
+    "version": "2.1.0",
+    "hash": "sha256-X54qc4Ey+3hm0e5eCY1R2me8b4zGrWzjesm9fGJWXys="
   },
   {
     "pname": "Microsoft.Testing.Extensions.VSTestBridge",
-    "version": "2.0.2",
-    "hash": "sha256-odn6fZO7yaPs3EaEUr12GraVH5anp0r/BabJpJl8q/c="
+    "version": "2.1.0",
+    "hash": "sha256-2m14uEmuEELn4Ci/CZNpKjhlnzq9vYvhgeiM03DZj7A="
   },
   {
     "pname": "Microsoft.Testing.Platform",
-    "version": "2.0.2",
-    "hash": "sha256-K8B4tQaYslm+njUQ59nyvh4f4UgrbOo6DQgO9Hwt0aY="
+    "version": "2.1.0",
+    "hash": "sha256-CbR0j0Dh65cMccO7L6ppx4b5iiXjqxjjfC9A85HeLuM="
   },
   {
     "pname": "Microsoft.Testing.Platform.MSBuild",
-    "version": "2.0.2",
-    "hash": "sha256-RbL2Ie/sQx07hffiao8ScR+yMyYqI8astlC0/uf3bzM="
-  },
-  {
-    "pname": "Microsoft.TestPlatform.AdapterUtilities",
-    "version": "18.0.1",
-    "hash": "sha256-LE5xsyc75ERflV/EA4A4DV+ja2LAb0KR/DPinAG+AgI="
+    "version": "2.1.0",
+    "hash": "sha256-6T2tBSokr5/oiwqKASk18BieKqkIzDbYX32j1Hl1z1g="
   },
   {
     "pname": "Microsoft.TestPlatform.ObjectModel",
@@ -276,8 +276,8 @@
   },
   {
     "pname": "NUnit3TestAdapter",
-    "version": "6.1.0",
-    "hash": "sha256-ApKCpMldOi4NIHU+1FedlqvpkLmgIs1hnBSy02tzv5s="
+    "version": "6.2.0",
+    "hash": "sha256-sKQjvF/qlEgfrCKHt1OzT+QZdtPt4RBBZd2f0oD1ldg="
   },
   {
     "pname": "RestEase",
