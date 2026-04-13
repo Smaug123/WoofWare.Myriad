@@ -59,7 +59,7 @@
     <PackageReference Include="ApiSurface" Version="5.0.5" />
     <PackageReference Include="FsCheck" Version="3.3.2" />
     <PackageReference Include="FsUnit" Version="7.1.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
     <PackageReference Include="NUnit" Version="4.5.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
     <PackageReference Include="WoofWare.Expect" Version="0.8.5" />
