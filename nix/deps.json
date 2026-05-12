@@ -216,8 +216,8 @@
   },
   {
     "pname": "Myriad.Sdk",
-    "version": "0.8.3",
-    "hash": "sha256-7O397WKhskKOvE3MkJT37BvxorDWngDR6gTUogtDZ2M="
+    "version": "0.85.0",
+    "hash": "sha256-F+B8IRwkkKY+CgVhrT4OuIFqqBbF+PR6jlywrCD4Fmg="
   },
   {
     "pname": "Nerdbank.GitVersioning",
