@@ -35,7 +35,7 @@ module PureGymApi =
                             System.Uri (("v1/gyms/"), System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -43,6 +43,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -89,7 +90,7 @@ module PureGymApi =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -97,6 +98,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -132,7 +134,7 @@ module PureGymApi =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -140,6 +142,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -171,7 +174,7 @@ module PureGymApi =
                             System.Uri ("v1/member", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -179,6 +182,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -213,7 +217,7 @@ module PureGymApi =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -221,6 +225,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -252,7 +257,7 @@ module PureGymApi =
                             System.Uri ("v1/member/activity", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -260,6 +265,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -291,7 +297,7 @@ module PureGymApi =
                             System.Uri ("some/url", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -299,6 +305,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -330,7 +337,7 @@ module PureGymApi =
                             System.Uri ("some/url", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -384,6 +391,7 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -438,7 +446,7 @@ module PureGymApi =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -446,6 +454,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -488,7 +497,7 @@ module PureGymApi =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -496,6 +505,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -527,7 +537,7 @@ module PureGymApi =
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -537,6 +547,7 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -581,7 +592,7 @@ module PureGymApi =
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -608,7 +619,7 @@ module PureGymApi =
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -635,7 +646,7 @@ module PureGymApi =
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -662,7 +673,7 @@ module PureGymApi =
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -678,6 +689,7 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -695,7 +707,7 @@ module PureGymApi =
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -723,6 +735,7 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -740,7 +753,7 @@ module PureGymApi =
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -768,6 +781,7 @@ module PureGymApi =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -794,6 +808,7 @@ module PureGymApi =
                     do httpMessage.Content <- user
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -815,7 +830,7 @@ module PureGymApi =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -823,6 +838,7 @@ module PureGymApi =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -840,7 +856,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -865,7 +881,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -890,7 +906,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -915,7 +931,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -939,7 +955,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -963,7 +979,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -987,7 +1003,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1011,7 +1027,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1056,7 +1072,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1101,7 +1117,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1146,7 +1162,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1191,7 +1207,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1214,7 +1230,7 @@ module PureGymApi =
                             System.Uri ("endpoint", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1264,7 +1280,7 @@ module internal ApiWithoutBaseAddress =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1272,6 +1288,7 @@ module internal ApiWithoutBaseAddress =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1318,7 +1335,7 @@ module ApiWithBasePath =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1326,6 +1343,7 @@ module ApiWithBasePath =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1366,7 +1384,7 @@ module ApiWithBasePathAndAddress =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1374,6 +1392,7 @@ module ApiWithBasePathAndAddress =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1420,7 +1439,7 @@ module ApiWithAbsoluteBasePath =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1428,6 +1447,7 @@ module ApiWithAbsoluteBasePath =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1468,7 +1488,7 @@ module ApiWithAbsoluteBasePathAndAddress =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1476,6 +1496,7 @@ module ApiWithAbsoluteBasePathAndAddress =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1522,7 +1543,7 @@ module ApiWithBasePathAndAbsoluteEndpoint =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1530,6 +1551,7 @@ module ApiWithBasePathAndAbsoluteEndpoint =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1570,7 +1592,7 @@ module ApiWithBasePathAndAddressAndAbsoluteEndpoint =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1578,6 +1600,7 @@ module ApiWithBasePathAndAddressAndAbsoluteEndpoint =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1624,7 +1647,7 @@ module ApiWithAbsoluteBasePathAndAbsoluteEndpoint =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1632,6 +1655,7 @@ module ApiWithAbsoluteBasePathAndAbsoluteEndpoint =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1672,7 +1696,7 @@ module ApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1680,6 +1704,7 @@ module ApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1731,7 +1756,7 @@ module ApiWithHeaders =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1743,6 +1768,7 @@ module ApiWithHeaders =
                     do httpMessage.Headers.Add ("Something-Else", "val")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1794,7 +1820,7 @@ module ApiWithHeaders2 =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -1805,6 +1831,7 @@ module ApiWithHeaders2 =
                     do httpMessage.Headers.Add ("Header-Name", "Header-Value")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1848,7 +1875,7 @@ module ClientWithJsonBody =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -1864,6 +1891,7 @@ module ClientWithJsonBody =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1907,7 +1935,7 @@ module ClientWithJsonBodyOverridden =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -1923,6 +1951,7 @@ module ClientWithJsonBodyOverridden =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -1966,7 +1995,7 @@ module ClientWithStringBody =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -1976,6 +2005,7 @@ module ClientWithStringBody =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
