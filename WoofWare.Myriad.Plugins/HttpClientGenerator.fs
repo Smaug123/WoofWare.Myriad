@@ -667,8 +667,18 @@ module internal HttpClientGenerator =
             [
                 yield LetBang ("ct", SynExpr.createLongIdent [ "Async" ; "CancellationToken" ])
                 yield Let ("uri", requestUri)
+                // Disposing an HttpRequestMessage disposes its Content. When the body wraps a caller-owned resource
+                // (a Stream the caller supplied, or an HttpContent the caller constructed), disposing it would tear
+                // down a resource whose lifetime is the caller's responsibility, so in those cases we don't dispose
+                // the request message.
+                let bodyOwnedByCaller =
+                    match bodyParam with
+                    | Some (BodyParamMethods.StreamContent, _)
+                    | Some (BodyParamMethods.HttpContent, _) -> true
+                    | _ -> false
+
                 yield
-                    Use (
+                    (if bodyOwnedByCaller then Let else Use) (
                         "httpMessage",
                         SynExpr.createNew
                             (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "HttpRequestMessage" ])
@@ -690,6 +700,7 @@ module internal HttpClientGenerator =
                                 (SynExpr.tuple [ SynExpr.createIdent "httpMessage" ; SynExpr.createIdent "ct" ])
                         )
                     )
+
                 if info.EnsureSuccessHttpCode then
                     yield
                         Let (

@@ -565,7 +565,7 @@ module PureGymApi =
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
 
-                    use httpMessage =
+                    let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -799,7 +799,7 @@ module PureGymApi =
                             System.Uri ("users/new", System.UriKind.Relative)
                         )
 
-                    use httpMessage =
+                    let httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
