@@ -41579,7 +41579,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -41587,6 +41587,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -41631,7 +41632,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -41639,6 +41640,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41672,7 +41674,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -41680,6 +41682,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -41734,7 +41737,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -41742,6 +41745,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -41775,7 +41779,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -41783,6 +41787,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -41834,7 +41839,7 @@ module Gitea =
                             System.Uri ("admin/hooks", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -41850,6 +41855,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -41893,7 +41899,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -41901,6 +41907,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -41944,7 +41951,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -41960,6 +41967,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42008,7 +42016,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -42016,6 +42024,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42082,7 +42091,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -42090,6 +42099,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42148,7 +42158,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -42156,6 +42166,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42188,7 +42199,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -42196,6 +42207,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42229,7 +42241,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -42237,6 +42249,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42288,7 +42301,7 @@ module Gitea =
                             System.Uri ("admin/users", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -42304,6 +42317,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42354,7 +42368,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -42362,6 +42376,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42393,7 +42408,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -42409,6 +42424,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42455,7 +42471,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -42471,6 +42487,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42518,7 +42535,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -42526,6 +42543,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42557,7 +42575,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -42573,6 +42591,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42619,7 +42638,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -42635,6 +42654,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42678,7 +42698,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -42686,6 +42706,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -42711,7 +42732,7 @@ module Gitea =
                             System.Uri ("markdown", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -42727,6 +42748,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -42753,7 +42775,7 @@ module Gitea =
                             System.Uri ("markdown/raw", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -42763,6 +42785,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -42789,7 +42812,7 @@ module Gitea =
                             System.Uri ("nodeinfo", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -42797,6 +42820,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42866,7 +42890,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -42874,6 +42898,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -42945,7 +42970,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -42953,6 +42978,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43004,7 +43030,7 @@ module Gitea =
                             System.Uri ("notifications/new", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -43012,6 +43038,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43056,7 +43083,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -43064,6 +43091,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43116,7 +43144,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -43124,6 +43152,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43169,7 +43198,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -43185,6 +43214,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43233,7 +43263,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -43241,6 +43271,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43292,7 +43323,7 @@ module Gitea =
                             System.Uri ("orgs", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -43308,6 +43339,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43351,7 +43383,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -43359,6 +43391,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43402,7 +43435,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -43410,6 +43443,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43438,7 +43472,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -43454,6 +43488,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43507,7 +43542,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -43515,6 +43550,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43571,7 +43607,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -43587,6 +43623,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43632,7 +43669,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -43640,6 +43677,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43685,7 +43723,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -43693,6 +43731,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -43725,7 +43764,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -43741,6 +43780,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43794,7 +43834,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -43802,6 +43842,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43858,7 +43899,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -43874,6 +43915,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43919,7 +43961,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -43927,6 +43969,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -43972,7 +44015,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -43980,6 +44023,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44012,7 +44056,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -44028,6 +44072,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -44081,7 +44126,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44089,6 +44134,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -44145,7 +44191,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44153,6 +44199,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44183,7 +44230,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -44191,6 +44238,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44230,7 +44278,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44238,6 +44286,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -44296,7 +44345,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44304,6 +44353,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44336,7 +44386,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -44344,6 +44394,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44376,7 +44427,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -44384,6 +44435,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44422,7 +44474,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44430,6 +44482,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -44486,7 +44539,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -44502,6 +44555,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -44555,7 +44609,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44563,6 +44617,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -44619,7 +44674,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -44635,6 +44690,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -44700,7 +44756,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44708,6 +44764,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44758,7 +44815,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44766,6 +44823,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -44832,7 +44890,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44840,6 +44898,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -44895,7 +44954,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -44903,6 +44962,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -44943,7 +45003,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -44951,6 +45011,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45061,7 +45122,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -45069,6 +45130,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45120,7 +45182,7 @@ module Gitea =
                             System.Uri ("repos/migrate", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -45136,6 +45198,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45235,7 +45298,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -45243,6 +45306,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45288,7 +45352,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -45296,6 +45360,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45341,7 +45406,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -45349,6 +45414,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -45381,7 +45447,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -45397,6 +45463,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45445,7 +45512,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -45453,6 +45520,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -45483,7 +45551,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -45491,6 +45559,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45549,7 +45618,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -45557,6 +45626,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45620,7 +45690,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -45638,6 +45708,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45686,7 +45757,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -45694,6 +45765,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45742,7 +45814,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -45750,6 +45822,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -45789,7 +45862,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -45807,6 +45880,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45862,7 +45936,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -45870,6 +45944,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45933,7 +46008,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -45949,6 +46024,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -45997,7 +46073,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -46005,6 +46081,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46053,7 +46130,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -46061,6 +46138,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -46101,7 +46179,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -46109,6 +46187,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46168,7 +46247,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -46176,6 +46255,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -46209,7 +46289,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -46217,6 +46297,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -46256,7 +46337,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -46272,6 +46353,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -46305,7 +46387,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -46313,6 +46395,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46383,7 +46466,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -46391,6 +46474,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46465,7 +46549,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -46473,6 +46557,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46542,7 +46627,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -46550,6 +46635,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46614,7 +46700,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -46622,6 +46708,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46693,7 +46780,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -46701,6 +46788,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46755,7 +46843,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -46771,6 +46859,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46825,7 +46914,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -46841,6 +46930,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46895,7 +46985,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -46911,6 +47001,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -46958,7 +47049,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -46974,6 +47065,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47034,7 +47126,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47042,6 +47134,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -47082,7 +47175,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47090,6 +47183,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47148,7 +47242,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -47164,6 +47258,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47212,7 +47307,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47220,6 +47315,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47268,7 +47364,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47276,6 +47372,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47331,7 +47428,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47339,6 +47436,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -47373,7 +47471,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47381,6 +47479,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47428,7 +47527,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47436,6 +47535,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47495,7 +47595,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47503,6 +47603,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47562,7 +47663,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47570,6 +47671,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47636,7 +47738,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47644,6 +47746,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47699,7 +47802,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47707,6 +47810,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47765,7 +47869,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -47781,6 +47885,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47826,7 +47931,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47834,6 +47939,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47893,7 +47999,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -47901,6 +48007,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -47949,7 +48056,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -47957,6 +48064,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -47996,7 +48104,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -48012,6 +48120,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48060,7 +48169,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -48068,6 +48177,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48116,7 +48226,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -48124,6 +48234,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -48163,7 +48274,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -48179,6 +48290,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48233,7 +48345,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -48241,6 +48353,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -48273,7 +48386,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -48281,6 +48394,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48383,7 +48497,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -48391,6 +48505,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48449,7 +48564,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -48465,6 +48580,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48532,7 +48648,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -48540,6 +48656,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48599,7 +48716,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -48607,6 +48724,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -48640,7 +48758,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -48648,6 +48766,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48717,7 +48836,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -48725,6 +48844,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48783,7 +48903,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -48791,6 +48911,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -48835,7 +48956,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -48851,6 +48972,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48899,7 +49021,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -48907,6 +49029,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -48972,7 +49095,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -48988,6 +49111,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -49021,7 +49145,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -49029,6 +49153,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49077,7 +49202,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -49085,6 +49210,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -49124,7 +49250,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -49140,6 +49266,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49188,7 +49315,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -49196,6 +49323,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49265,7 +49393,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -49273,6 +49401,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49331,7 +49460,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -49339,6 +49468,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -49383,7 +49513,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -49399,6 +49529,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49462,7 +49593,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -49470,6 +49601,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49535,7 +49667,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -49553,6 +49685,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49602,7 +49735,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -49610,6 +49743,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -49649,7 +49783,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -49665,6 +49799,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49713,7 +49848,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -49721,6 +49856,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49786,7 +49922,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -49802,6 +49938,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49861,7 +49998,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -49869,6 +50006,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -49908,7 +50046,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -49924,6 +50062,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -49984,7 +50123,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -49992,6 +50131,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -50040,7 +50180,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -50048,6 +50188,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -50113,7 +50254,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -50129,6 +50270,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -50162,7 +50304,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -50170,6 +50312,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -50203,7 +50346,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -50211,6 +50354,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -50244,7 +50388,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -50252,6 +50396,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -50300,7 +50445,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -50308,6 +50453,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -50367,7 +50513,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -50375,6 +50521,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -50444,7 +50591,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -50452,6 +50599,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -50535,7 +50683,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -50543,6 +50691,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -50608,7 +50757,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -50624,6 +50773,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -50672,7 +50822,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -50680,6 +50830,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -50714,7 +50865,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -50722,6 +50873,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -50774,7 +50926,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -50782,6 +50934,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -50840,7 +50993,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -50856,6 +51009,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -50904,7 +51058,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -50912,6 +51066,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -50960,7 +51115,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -50968,6 +51123,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -51008,7 +51164,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -51016,6 +51172,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51074,7 +51231,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -51090,6 +51247,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51138,7 +51296,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -51146,6 +51304,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51194,7 +51353,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -51202,6 +51361,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -51241,7 +51401,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -51257,6 +51417,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51302,7 +51463,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -51310,6 +51471,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51370,7 +51532,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -51378,6 +51540,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -51430,7 +51593,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -51438,6 +51601,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51501,7 +51665,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -51517,6 +51681,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51565,7 +51730,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -51573,6 +51738,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51621,7 +51787,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -51629,6 +51795,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -51668,7 +51835,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -51684,6 +51851,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51729,7 +51897,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -51737,6 +51905,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -51798,7 +51967,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -51806,6 +51975,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51884,7 +52054,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -51892,6 +52062,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -51976,7 +52147,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -51984,6 +52155,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52047,7 +52219,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -52063,6 +52235,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52111,7 +52284,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -52119,6 +52292,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52173,7 +52347,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -52189,6 +52363,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52251,7 +52426,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -52259,6 +52434,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -52308,7 +52484,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -52316,6 +52492,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52396,7 +52573,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -52404,6 +52581,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52463,7 +52641,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -52471,6 +52649,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -52510,7 +52689,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -52526,6 +52705,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -52559,7 +52739,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -52567,6 +52747,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -52606,7 +52787,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -52624,6 +52805,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52689,7 +52871,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -52707,6 +52889,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -52755,7 +52938,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -52763,6 +52946,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52828,7 +53012,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -52844,6 +53028,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52893,7 +53078,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -52901,6 +53086,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -52957,7 +53143,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -52973,6 +53159,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53022,7 +53209,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -53030,6 +53217,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -53064,7 +53252,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -53072,6 +53260,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53139,7 +53328,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -53157,6 +53346,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53206,7 +53396,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -53214,6 +53404,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53274,7 +53465,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -53282,6 +53473,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -53322,7 +53514,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -53330,6 +53522,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53393,7 +53586,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -53409,6 +53602,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53456,7 +53650,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -53464,6 +53658,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -53497,7 +53692,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -53505,6 +53700,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53553,7 +53749,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -53561,6 +53757,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -53606,7 +53803,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -53614,6 +53811,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -53669,7 +53867,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -53677,6 +53875,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53740,7 +53939,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -53756,6 +53955,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53803,7 +54003,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -53811,6 +54011,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53859,7 +54060,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -53867,6 +54068,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -53915,7 +54117,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -53923,6 +54125,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -53956,7 +54159,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -53964,6 +54167,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54012,7 +54216,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -54020,6 +54224,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -54059,7 +54264,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -54075,6 +54280,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54123,7 +54329,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -54131,6 +54337,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54200,7 +54407,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -54208,6 +54415,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54266,7 +54474,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -54274,6 +54482,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -54318,7 +54527,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -54334,6 +54543,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54379,7 +54589,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -54387,6 +54597,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54443,7 +54654,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -54451,6 +54662,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -54491,7 +54703,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -54499,6 +54711,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54579,7 +54792,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -54587,6 +54800,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54652,7 +54866,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -54668,6 +54882,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54723,7 +54938,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -54731,6 +54946,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54789,7 +55005,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -54797,6 +55013,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54844,7 +55061,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -54852,6 +55069,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -54884,7 +55102,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -54892,6 +55110,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -54947,7 +55166,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -54955,6 +55174,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55013,7 +55233,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -55029,6 +55249,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55077,7 +55298,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -55085,6 +55306,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55133,7 +55355,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -55141,6 +55363,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -55171,7 +55394,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -55179,6 +55402,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55238,7 +55462,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -55246,6 +55470,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55294,7 +55519,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -55302,6 +55527,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -55335,7 +55561,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -55343,6 +55569,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -55398,7 +55625,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -55406,6 +55633,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55465,7 +55693,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -55473,6 +55701,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55539,7 +55768,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -55547,6 +55776,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55594,7 +55824,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -55610,6 +55840,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -55643,7 +55874,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -55651,6 +55882,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -55684,7 +55916,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -55692,6 +55924,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -55729,7 +55962,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -55745,6 +55978,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55792,7 +56026,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -55800,6 +56034,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55847,7 +56082,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -55855,6 +56090,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55907,7 +56143,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -55923,6 +56159,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -55971,7 +56208,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -55979,6 +56216,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56027,7 +56265,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -56035,6 +56273,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -56074,7 +56313,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -56090,6 +56329,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56145,7 +56385,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56153,6 +56393,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56224,7 +56465,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56232,6 +56473,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56290,7 +56532,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -56306,6 +56548,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56349,7 +56592,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56357,6 +56600,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56397,7 +56641,7 @@ module Gitea =
                             System.Uri ("settings/api", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56405,6 +56649,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56445,7 +56690,7 @@ module Gitea =
                             System.Uri ("settings/attachment", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56453,6 +56698,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56493,7 +56739,7 @@ module Gitea =
                             System.Uri ("settings/repository", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56501,6 +56747,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56541,7 +56788,7 @@ module Gitea =
                             System.Uri ("settings/ui", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56549,6 +56796,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56589,7 +56837,7 @@ module Gitea =
                             System.Uri ("signing-key.gpg", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56597,6 +56845,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -56625,7 +56874,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56633,6 +56882,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56676,7 +56926,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -56684,6 +56934,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -56712,7 +56963,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -56728,6 +56979,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56781,7 +57033,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56789,6 +57041,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56845,7 +57098,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56853,6 +57106,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -56898,7 +57152,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -56906,6 +57160,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -56936,7 +57191,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -56944,6 +57199,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -56982,7 +57238,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -56990,6 +57246,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57049,7 +57306,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -57057,6 +57314,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57105,7 +57363,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -57113,6 +57371,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -57146,7 +57405,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -57154,6 +57413,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -57189,7 +57449,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -57197,6 +57457,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57248,7 +57509,7 @@ module Gitea =
                             System.Uri ("user", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -57256,6 +57517,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57309,7 +57571,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -57317,6 +57579,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57370,7 +57633,7 @@ module Gitea =
                             System.Uri ("user/applications/oauth2", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -57388,6 +57651,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57432,7 +57696,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -57440,6 +57704,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57484,7 +57749,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -57492,6 +57757,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -57523,7 +57789,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -57541,6 +57807,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57581,7 +57848,7 @@ module Gitea =
                             System.Uri ("user/emails", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -57589,6 +57856,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57640,7 +57908,7 @@ module Gitea =
                             System.Uri ("user/emails", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -57656,6 +57924,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57707,7 +57976,7 @@ module Gitea =
                             System.Uri ("user/emails", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -57723,6 +57992,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -57758,7 +58028,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -57766,6 +58036,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57827,7 +58098,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -57835,6 +58106,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -57890,7 +58162,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -57898,6 +58170,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -57927,7 +58200,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -57935,6 +58208,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -57964,7 +58238,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -57972,6 +58246,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -57997,7 +58272,7 @@ module Gitea =
                             System.Uri ("user/gpg_key_token", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58005,6 +58280,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
@@ -58034,7 +58310,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -58042,6 +58318,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -58079,7 +58356,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58087,6 +58364,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58138,7 +58416,7 @@ module Gitea =
                             System.Uri ("user/keys", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -58154,6 +58432,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58197,7 +58476,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58205,6 +58484,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58248,7 +58528,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -58256,6 +58536,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -58289,7 +58570,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58297,6 +58578,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58356,7 +58638,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58364,6 +58646,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58415,7 +58698,7 @@ module Gitea =
                             System.Uri ("user/repos", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -58431,6 +58714,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58471,7 +58755,7 @@ module Gitea =
                             System.Uri ("user/settings", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58479,6 +58763,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58530,7 +58815,7 @@ module Gitea =
                             System.Uri ("user/settings", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Patch,
                             RequestUri = uri
@@ -58546,6 +58831,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58605,7 +58891,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58613,6 +58899,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58671,7 +58958,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58679,6 +58966,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -58711,7 +58999,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -58719,6 +59007,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -58751,7 +59040,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Put,
                             RequestUri = uri
@@ -58759,6 +59048,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -58795,7 +59085,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58803,6 +59093,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58867,7 +59158,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58875,6 +59166,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -58934,7 +59226,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -58942,6 +59234,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59013,7 +59306,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59021,6 +59314,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59086,7 +59380,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59094,6 +59388,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -59123,7 +59418,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59131,6 +59426,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59185,7 +59481,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59193,6 +59489,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59258,7 +59555,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59266,6 +59563,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59324,7 +59622,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59332,6 +59630,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -59361,7 +59660,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59369,6 +59668,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59442,7 +59742,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59450,6 +59750,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59515,7 +59816,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59523,6 +59824,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59581,7 +59883,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59589,6 +59891,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59643,7 +59946,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59651,6 +59954,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59716,7 +60020,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59724,6 +60028,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59789,7 +60094,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59797,6 +60102,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59862,7 +60168,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -59870,6 +60176,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59927,7 +60234,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
@@ -59943,6 +60250,7 @@ module Gitea =
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
@@ -59990,7 +60298,7 @@ module Gitea =
                             )
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Delete,
                             RequestUri = uri
@@ -59998,6 +60306,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     return ()
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
@@ -60023,7 +60332,7 @@ module Gitea =
                             System.Uri ("version", System.UriKind.Relative)
                         )
 
-                    let httpMessage =
+                    use httpMessage =
                         new System.Net.Http.HttpRequestMessage (
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
@@ -60031,6 +60340,7 @@ module Gitea =
 
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
+                    use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =

@@ -698,19 +698,33 @@ module internal HttpClientGenerator =
                                 (SynExpr.createLongIdent [ "response" ; "EnsureSuccessStatusCode" ])
                                 (SynExpr.CreateConst ())
                         )
+                // `use response = response`, to dispose the HttpResponseMessage once we've extracted what we need
+                // from it. We only do this when ownership of the response (or a resource whose lifetime is tied to
+                // it, like its content stream) is *not* passed back to the caller.
+                let disposeResponse = Use ("response", SynExpr.createIdent "response")
+
                 match info.TaskReturnType with
-                | HttpResponseMessage -> ()
+                | HttpResponseMessage ->
+                    // We hand the response back to the caller, so they're responsible for disposing it.
+                    ()
                 | RestEaseResponseType _ ->
+                    // The RestEase.Response we construct wraps (and takes ownership of) the response.
                     yield responseString
                     yield responseStream
                     yield jsonNode
                     yield jsonNodeWithoutNull
-                | String -> yield responseString
-                | Stream -> yield responseStream
+                | String ->
+                    yield disposeResponse
+                    yield responseString
+                | Stream ->
+                    // The stream we hand back is backed by the response's content, whose lifetime is therefore the
+                    // caller's responsibility; disposing the response here would dispose the stream out from under them.
+                    yield responseStream
                 | UnitType ->
-                    // What we're returning doesn't depend on the content, so don't bother!
-                    ()
+                    // What we're returning doesn't depend on the content, so don't bother reading it!
+                    yield disposeResponse
                 | _ ->
+                    yield disposeResponse
                     yield responseStream
                     yield jsonNode
                     yield jsonNodeWithoutNull
