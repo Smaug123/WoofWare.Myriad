@@ -88,8 +88,11 @@ module TestBodyParam =
             let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
                 async {
                     message.Method |> shouldEqual HttpMethod.Post
-                    let! content = message.Content.ReadAsStreamAsync () |> Async.AwaitTask
-                    let content = new StreamContent (content)
+                    // Materialise the request body into an independent buffer: the caller owns the request message
+                    // (and hence its content), and will dispose it once we return. Aliasing the request's own
+                    // content stream into the response would leave us reading a disposed stream.
+                    let! content = message.Content.ReadAsByteArrayAsync () |> Async.AwaitTask
+                    let content = new ByteArrayContent (content)
                     let resp = new HttpResponseMessage (HttpStatusCode.OK)
                     resp.Content <- content
                     return resp
