@@ -307,65 +307,6 @@ type SwaggerParameter =
             Required = required
         }
 
-/// An "endpoint" is basically a single HTTP verb, applied to some path.
-type SwaggerEndpoint =
-    {
-        /// The MIME types we should send our request body in.
-        /// This overrides (does not extend) any global definitions on the spec itself.
-        Consumes : MimeType list option
-        /// The MIME types we should expect to receive in response to this request.
-        /// This overrides (does not extend) any global definitions on the spec itself.
-        Produces : MimeType list option
-        /// Arbitrary list of [tags](https://swagger.io/docs/specification/2-0/grouping-operations-with-tags/).
-        Tags : string list
-        /// Human-readable description of the endpoint.
-        Summary : string
-        /// Arbitrary identifier of this endpoint; this must be unique across *all* endpoints
-        /// in this entire spec.
-        OperationId : OperationId
-        /// Parameters that must be supplied at HTTP-request-time to the endpoint.
-        /// (Each parameter knows how it needs to be supplied: e.g. if it's a query parameter or
-        /// if it's interpolated into the path.)
-        Parameters : SwaggerParameter list option
-        /// Map of HTTP response code to the type that we expect to receive in the body if we
-        /// get that response code back.
-        Responses : Map<int, Definition>
-    }
-
-    /// Render a JsonObject into this strongly-typed specification.
-    static member Parse (r : JsonObject) : SwaggerEndpoint =
-        let produces = asArrOpt'<string> r "produces" |> Option.map (List.map MimeType)
-        let consumes = asArrOpt'<string> r "consumes" |> Option.map (List.map MimeType)
-        let tags = asArr'<string> r "tags"
-        let summary = asString r "summary"
-        let operationId = asString r "operationId" |> OperationId
-
-        let responses =
-            asObj r "responses"
-            |> Seq.map (fun (KeyValue (key, value)) ->
-                let value = value.AsObject ()
-                Int32.Parse key, Definition.Parse value
-            )
-            |> Map.ofSeq
-
-        let parameters =
-            asArrOpt r "parameters"
-            |> Option.map (fun pars ->
-                pars
-                |> Seq.map (fun par -> par.AsObject () |> SwaggerParameter.Parse)
-                |> Seq.toList
-            )
-
-        {
-            Produces = produces
-            Consumes = consumes
-            Tags = tags
-            Summary = summary
-            OperationId = operationId
-            Parameters = parameters
-            Responses = responses
-        }
-
 /// Specifies the form a response to an endpoint will take if it's complying with this spec.
 type Response =
     {
@@ -387,6 +328,89 @@ type Response =
         {
             Description = desc
             Schema = schema
+        }
+
+/// Key into an endpoint's "responses" map: either a specific HTTP status code,
+/// or the catch-all "default", which describes all responses whose status codes
+/// are not otherwise listed.
+type ResponseKey =
+    /// A specific HTTP status code, e.g. 200.
+    | Code of int
+    /// The catch-all "default" response.
+    | Default
+
+    /// Parse a key of the "responses" object, e.g. "200" or "default".
+    static member Parse (s : string) : ResponseKey =
+        if s = "default" then
+            ResponseKey.Default
+        else
+            ResponseKey.Code (Int32.Parse s)
+
+/// An "endpoint" is basically a single HTTP verb, applied to some path.
+type SwaggerEndpoint =
+    {
+        /// The MIME types we should send our request body in.
+        /// This overrides (does not extend) any global definitions on the spec itself.
+        Consumes : MimeType list option
+        /// The MIME types we should expect to receive in response to this request.
+        /// This overrides (does not extend) any global definitions on the spec itself.
+        Produces : MimeType list option
+        /// Arbitrary list of [tags](https://swagger.io/docs/specification/2-0/grouping-operations-with-tags/).
+        Tags : string list
+        /// Human-readable description of the endpoint.
+        Summary : string
+        /// Arbitrary identifier of this endpoint; this must be unique across *all* endpoints
+        /// in this entire spec.
+        OperationId : OperationId
+        /// Parameters that must be supplied at HTTP-request-time to the endpoint.
+        /// (Each parameter knows how it needs to be supplied: e.g. if it's a query parameter or
+        /// if it's interpolated into the path.)
+        Parameters : SwaggerParameter list option
+        /// Map of HTTP response code (or the catch-all "default") to the type that we
+        /// expect to receive in the body if we get that response code back.
+        Responses : Map<ResponseKey, Definition>
+    }
+
+    /// Render a JsonObject into this strongly-typed specification.
+    static member Parse (r : JsonObject) : SwaggerEndpoint =
+        let produces = asArrOpt'<string> r "produces" |> Option.map (List.map MimeType)
+        let consumes = asArrOpt'<string> r "consumes" |> Option.map (List.map MimeType)
+        let tags = asArr'<string> r "tags"
+        let summary = asString r "summary"
+        let operationId = asString r "operationId" |> OperationId
+
+        let responses =
+            asObj r "responses"
+            |> Seq.map (fun (KeyValue (key, value)) ->
+                let value = value.AsObject ()
+
+                // A response is either a reference (e.g. to "#/responses/Blah"), or an
+                // inline Response Object whose type information lives in its "schema" field.
+                let defn =
+                    match value.["$ref"] |> Option.ofObj with
+                    | Some _ -> Definition.Parse value
+                    | None -> (Response.Parse value).Schema
+
+                ResponseKey.Parse key, defn
+            )
+            |> Map.ofSeq
+
+        let parameters =
+            asArrOpt r "parameters"
+            |> Option.map (fun pars ->
+                pars
+                |> Seq.map (fun par -> par.AsObject () |> SwaggerParameter.Parse)
+                |> Seq.toList
+            )
+
+        {
+            Produces = produces
+            Consumes = consumes
+            Tags = tags
+            Summary = summary
+            OperationId = operationId
+            Parameters = parameters
+            Responses = responses
         }
 
 /// A Swagger API specification.

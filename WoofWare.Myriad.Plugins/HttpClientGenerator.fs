@@ -251,15 +251,13 @@ module internal HttpClientGenerator =
                 )
             )
 
-        let requestUriTrailer =
+        // Query parameters of option type are omitted from the URL entirely when None,
+        // so the query string is a runtime computation: we emit a `queryString` binding
+        // and then splice it (with a separator, if it's nonempty) onto the URL.
+        let requestUriTrailer, queryStringBindings =
             match queryParams with
-            | [] -> requestUriTrailer
-            | (firstKey, firstValue) :: queryParams ->
-                let firstValueId =
-                    match firstValue.Id with
-                    | None -> failwith "Unable to get parameter variable name from anonymous parameter"
-                    | Some id -> id
-
+            | [] -> requestUriTrailer, []
+            | queryParams ->
                 let urlSeparator =
                     let questionMark = SynExpr.CreateConst '?'
 
@@ -271,29 +269,65 @@ module internal HttpClientGenerator =
                     SynExpr.ifThenElse containsQuestion (SynExpr.CreateConst "?") (SynExpr.CreateConst "&")
                     |> SynExpr.paren
 
-                let prefix =
-                    SynExpr.createIdent' firstValueId
-                    |> SynExpr.toString firstValue.Type
-                    |> SynExpr.paren
-                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Uri" ; "EscapeDataString" ])
-                    |> SynExpr.paren
-                    |> SynExpr.plus (SynExpr.plus urlSeparator (SynExpr.CreateConst (firstKey + "=")))
+                let components =
+                    queryParams
+                    |> List.map (fun (paramKey, paramValue) ->
+                        let paramValueId =
+                            match paramValue.Id with
+                            | None -> failwith "Unable to get parameter variable name from anonymous parameter"
+                            | Some id -> id
 
-                (prefix, queryParams)
-                ||> List.fold (fun uri (paramKey, paramValue) ->
-                    let paramValueId =
-                        match paramValue.Id with
-                        | None -> failwith "Unable to get parameter variable name from anonymous parameter"
-                        | Some id -> id
+                        // "{paramKey}=" + (({value converted to string}) |> System.Uri.EscapeDataString)
+                        let keyEqualsValue (ty : SynType) (value : SynExpr) =
+                            SynExpr.toString ty value
+                            |> SynExpr.paren
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.createLongIdent [ "System" ; "Uri" ; "EscapeDataString" ]
+                            )
+                            |> SynExpr.paren
+                            |> SynExpr.plus (SynExpr.CreateConst (paramKey + "="))
 
-                    SynExpr.toString paramValue.Type (SynExpr.createIdent' paramValueId)
+                        match paramValue.Type with
+                        | OptionType innerType ->
+                            SynExpr.createIdent' paramValueId
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.applyFunction
+                                    (SynExpr.createLongIdent [ "Option" ; "map" ])
+                                    (SynExpr.createLambda
+                                        "queryParam"
+                                        (keyEqualsValue innerType (SynExpr.createIdent "queryParam")))
+                            )
+                        | ty ->
+                            keyEqualsValue ty (SynExpr.createIdent' paramValueId)
+                            |> SynExpr.paren
+                            |> SynExpr.applyFunction (SynExpr.createIdent "Some")
+                    )
+
+                let queryString =
+                    components
+                    |> SynExpr.listLiteral
+                    |> SynExpr.pipeThroughFunction (
+                        SynExpr.applyFunction
+                            (SynExpr.createLongIdent [ "List" ; "choose" ])
+                            // not `id`: a method parameter could shadow it
+                            (SynExpr.createLambda "queryParam" (SynExpr.createIdent "queryParam"))
+                    )
+                    |> SynExpr.pipeThroughFunction (
+                        SynExpr.applyFunction
+                            (SynExpr.createLongIdent [ "String" ; "concat" ])
+                            (SynExpr.CreateConst "&")
+                    )
+
+                let trailer =
+                    SynExpr.ifThenElse
+                        (SynExpr.equals (SynExpr.createIdent "queryString") (SynExpr.CreateConst ""))
+                        (SynExpr.plus urlSeparator (SynExpr.createIdent "queryString") |> SynExpr.paren)
+                        (SynExpr.CreateConst "")
                     |> SynExpr.paren
-                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Uri" ; "EscapeDataString" ])
+                    |> SynExpr.plus requestUriTrailer
                     |> SynExpr.paren
-                    |> SynExpr.plus (SynExpr.plus uri (SynExpr.CreateConst ("&" + paramKey + "=")))
-                )
-                |> SynExpr.plus requestUriTrailer
-                |> SynExpr.paren
+
+                trailer, [ CompExprBinding.Let ("queryString", queryString) ]
 
         let requestUri =
             let uriIdent = SynExpr.createLongIdent [ "System" ; "Uri" ]
@@ -666,6 +700,7 @@ module internal HttpClientGenerator =
 
             [
                 yield LetBang ("ct", SynExpr.createLongIdent [ "Async" ; "CancellationToken" ])
+                yield! queryStringBindings
                 yield Let ("uri", requestUri)
                 // Disposing an HttpRequestMessage disposes its Content. When the body wraps a caller-owned resource
                 // (a Stream the caller supplied, or an HttpContent the caller constructed), disposing it would tear

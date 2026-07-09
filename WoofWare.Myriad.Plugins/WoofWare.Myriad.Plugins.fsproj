@@ -31,7 +31,6 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="List.fs"/>
     <Compile Include="Tuple.fs" />
-    <Compile Include="Text.fs" />
     <Compile Include="Measure.fs" />
     <Compile Include="AstHelper.fs" />
     <Compile Include="Parameters.fs" />

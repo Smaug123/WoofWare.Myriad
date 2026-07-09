@@ -524,8 +524,23 @@ module internal CapturingInterfaceMockGenerator =
             let properties =
                 interfaceType.Properties
                 |> List.map (fun pi ->
-                    SynExpr.createLongIdent' [ Ident.create "this" ; pi.Identifier ]
-                    |> SynExpr.applyTo (SynExpr.CreateConst ())
+                    let addToCalls =
+                        SynExpr.CreateConst ()
+                        |> SynExpr.applyFunction (
+                            SynExpr.createLongIdent [ "this" ; "Calls" ; pi.Identifier.idText ; "Add" ]
+                        )
+                        |> SynExpr.createLambda "_"
+                        |> SynExpr.applyFunction (
+                            SynExpr.createIdent "lock"
+                            |> SynExpr.applyTo (SynExpr.createLongIdent [ "this" ; "Calls" ; pi.Identifier.idText ])
+                        )
+
+                    let body =
+                        SynExpr.createLongIdent' [ Ident.create "this" ; pi.Identifier ]
+                        |> SynExpr.applyTo (SynExpr.CreateConst ())
+
+                    [ addToCalls ; body ]
+                    |> SynExpr.sequential
                     |> SynBinding.basic [ Ident.create "this" ; pi.Identifier ] []
                     |> SynMemberDefn.memberImplementation
                 )

@@ -15,15 +15,15 @@ type internal SwaggerClientConfig =
         ClassName : string
     }
 
-type internal Produces =
-    // TODO: this will cope with decoding JSON, plain text, etc
-    | Produces of string
-    | OctetStream
-
 type internal Endpoint =
     {
         DocString : PreXmlDoc
-        Produces : Produces
+        /// The MIME type in which we should send the request body, if known.
+        /// This becomes the Content-Type header on requests with a body.
+        Consumes : SwaggerV2.MimeType option
+        /// The MIME type in which the response body will arrive, if known.
+        /// This becomes the Accept header on requests.
+        Produces : SwaggerV2.MimeType option
         ReturnType : SwaggerV2.Definition
         Method : WoofWare.Myriad.Plugins.HttpMethod
         Operation : SwaggerV2.OperationId
@@ -65,6 +65,7 @@ module internal SwaggerClientGenerator =
         | SwaggerV2.Definition.Unspecified -> failwith "should not hit"
         | SwaggerV2.Definition.String -> SynType.string |> Some
         | SwaggerV2.Definition.Boolean -> SynType.bool |> Some
+        | SwaggerV2.Definition.Integer (Some "int64") -> SynType.createLongIdent' [ "int64" ] |> Some
         | SwaggerV2.Definition.Integer _ -> SynType.int |> Some
         | SwaggerV2.Definition.File -> SynType.createLongIdent' [ "System" ; "IO" ; "Stream" ] |> Some
 
@@ -308,9 +309,14 @@ module internal SwaggerClientGenerator =
                     FSharpDefinition = None
                 }
                 |> Some
-            | SwaggerV2.Definition.Integer _ ->
+            | SwaggerV2.Definition.Integer format ->
+                let repr =
+                    match format with
+                    | Some "int64" -> "int64"
+                    | _ -> "int"
+
                 {
-                    Signature = SynType.createLongIdent' [ "int" ]
+                    Signature = SynType.createLongIdent' [ repr ]
                     FSharpDefinition = None
                 }
                 |> Some
@@ -401,7 +407,18 @@ module internal SwaggerClientGenerator =
                         // failwith "Did not have a type here"
                         log $"Skipping %O{ep.Operation}: Couldn't render parameter: %O{par.Type}"
                         None
-                    | Some v -> Some (Ident.createSanitisedParamName par.Name, inParam, v)
+                    | Some v ->
+                        let v =
+                            match inParam with
+                            // A query parameter defaults to non-required if the spec
+                            // doesn't say; the caller expresses "not supplied" as None,
+                            // and the client omits it from the URL.
+                            // (Path parameters are always required, and we don't currently
+                            // model optional bodies.)
+                            | IsIn.Query _ when par.Required <> Some true -> SynType.option v
+                            | _ -> v
+
+                        Some (Ident.createSanitisedParamName par.Name, inParam, v)
                 )
                 |> List.allSome
 
@@ -463,21 +480,19 @@ module internal SwaggerClientGenerator =
                         // Gitea, at least, starts with a `/`, which `Uri` then takes to indicate an absolute path.
                         (SynExpr.CreateConst (ep.Endpoint.TrimStart '/'))
 
+                    match ep.Consumes with
+                    | None -> ()
+                    | Some (SwaggerV2.MimeType consumes) ->
+                        SynAttribute.create
+                            (SynLongIdent.createS' [ "RestEase" ; "Header" ])
+                            (SynExpr.tuple [ SynExpr.CreateConst "Content-Type" ; SynExpr.CreateConst consumes ])
+
                     match ep.Produces with
-                    | Produces.Produces contentType ->
+                    | None -> ()
+                    | Some (SwaggerV2.MimeType produces) ->
                         SynAttribute.create
                             (SynLongIdent.createS' [ "RestEase" ; "Header" ])
-                            // Gitea, at least, starts with a `/`, which `Uri` then takes to indicate an absolute path.
-                            (SynExpr.tuple [ SynExpr.CreateConst "Content-Type" ; SynExpr.CreateConst contentType ])
-                    | Produces.OctetStream ->
-                        SynAttribute.create
-                            (SynLongIdent.createS' [ "RestEase" ; "Header" ])
-                            // Gitea, at least, starts with a `/`, which `Uri` then takes to indicate an absolute path.
-                            (SynExpr.tuple
-                                [
-                                    SynExpr.CreateConst "Content-Type"
-                                    SynExpr.CreateConst "application/octet-stream"
-                                ])
+                            (SynExpr.tuple [ SynExpr.CreateConst "Accept" ; SynExpr.CreateConst produces ])
                 ]
 
             returnType
@@ -542,19 +557,13 @@ module internal SwaggerV2Generator =
             let byHandle = Dictionary ()
             let anonymousTypeCount = ref 0
 
-            let rec go (contents : ((string * SwaggerV2.Definition) * string) list) =
+            let rec go (contents : ((string option * SwaggerV2.Definition) * string) list) =
                 let lastRound = countAll ()
 
                 contents
                 |> List.filter (fun ((name, defn), defnClass) ->
                     let doIt =
-                        SwaggerClientGenerator.defnToType
-                            anonymousTypeCount
-                            byHandle
-                            bigCache
-                            defnClass
-                            (Some name)
-                            defn
+                        SwaggerClientGenerator.defnToType anonymousTypeCount byHandle bigCache defnClass name defn
 
                     match doIt with
                     | None -> true
@@ -566,6 +575,7 @@ module internal SwaggerV2Generator =
 
                         if currentCount = lastRound then
                             for (name, remaining), kind in remaining do
+                                let name = name |> Option.defaultValue "<anonymous>"
                                 SwaggerClientGenerator.log $"Remaining: %s{name} (%s{kind})"
 
                             SwaggerClientGenerator.log "--------"
@@ -584,15 +594,21 @@ module internal SwaggerV2Generator =
                             go remaining
 
             seq {
-                for defnClass in [ "definitions" ; "responses" ] do
-                    match defnClass with
-                    | "definitions" ->
-                        for KeyValue (k, v) in contents.Definitions do
-                            yield (k, v), defnClass
-                    | "responses" ->
-                        for KeyValue (k, v) in contents.Responses do
-                            yield (k, v.Schema), defnClass
-                    | _ -> failwith "oh no"
+                for KeyValue (k, v) in contents.Definitions do
+                    yield (Some k, v), "definitions"
+
+                for KeyValue (k, v) in contents.Responses do
+                    yield (Some k, v.Schema), "responses"
+
+                // Schemas declared inline on the endpoints themselves have no handle by
+                // which anything can refer to them, but we still need F# types for them.
+                for KeyValue (_, endpoints) in contents.Paths do
+                    for KeyValue (_, endpoint) in endpoints do
+                        for KeyValue (_, response) in endpoint.Responses do
+                            yield (None, response), "paths"
+
+                        for par in endpoint.Parameters |> Option.defaultValue [] do
+                            yield (None, par.Type), "paths"
             }
             |> Seq.toList
             |> go
@@ -608,6 +624,41 @@ module internal SwaggerV2Generator =
                 ByDefinition = result :> IReadOnlyDictionary<_, _>
             }
 
+        /// An endpoint's Consumes/Produces list overrides the spec-global one entirely.
+        /// Boil the resulting list down to the single MIME type we'll use, or None if
+        /// neither the endpoint nor the global spec expressed a preference.
+        let selectMimeType
+            (what : string)
+            (path : string)
+            (method : HttpMethod)
+            (endpointLevel : SwaggerV2.MimeType list option)
+            : SwaggerV2.MimeType option
+            =
+            let globalLevel =
+                match what with
+                | "Consumes" -> contents.Consumes
+                | "Produces" -> contents.Produces
+                | _ -> failwith $"unrecognised MIME source: %s{what}"
+
+            match endpointLevel with
+            | Some [] -> failwith $"API specified empty %s{what}: %s{path} (%O{method})"
+            | Some [ m ] -> Some m
+            | Some (_ :: _ :: _) -> failwith $"we don't support multiple %s{what} right now, at %s{path} (%O{method})"
+            | None ->
+
+            match globalLevel with
+            | [] -> None
+            | [ m ] -> Some m
+            | many ->
+                // The global list is ambiguous for this endpoint; JSON is this generator's
+                // best-supported interchange format, so prefer it when it's on offer.
+                let json = SwaggerV2.MimeType "application/json"
+
+                if List.contains json many then
+                    Some json
+                else
+                    failwith $"can't choose between multiple global %s{what} for %s{path} (%O{method})"
+
         let summary =
             contents.Paths
             |> Seq.collect (fun (KeyValue (path, endpoints)) ->
@@ -615,26 +666,19 @@ module internal SwaggerV2Generator =
                 |> Seq.choose (fun (KeyValue (method, endpoint)) ->
                     let docstring = endpoint.Summary |> PreXmlDoc.create
 
-                    let produces =
-                        match endpoint.Produces with
-                        | None -> Produces.Produces "json"
-                        | Some [] -> failwith $"API specified empty Produces: %s{path} (%O{method})"
-                        | Some [ SwaggerV2.MimeType "application/octet-stream" ] -> Produces.OctetStream
-                        | Some [ SwaggerV2.MimeType "application/json" ] -> Produces.Produces "json"
-                        | Some [ SwaggerV2.MimeType (StartsWith "text/" t) ] -> Produces.Produces t
-                        | Some [ SwaggerV2.MimeType s ] ->
-                            failwithf
-                                $"we don't support non-JSON Produces right now, got: %s{s} (%s{path} %O{method})"
-                        | Some (_ :: _) ->
-                            failwith $"we don't support multiple Produces right now, at %s{path} (%O{method})"
+                    let consumes = selectMimeType "Consumes" path method endpoint.Consumes
+                    let produces = selectMimeType "Produces" path method endpoint.Produces
 
                     let returnType =
                         endpoint.Responses
                         |> Seq.choose (fun (KeyValue (response, defn)) ->
-                            if 200 <= response && response < 300 then
-                                Some defn
-                            else
-                                None
+                            match response with
+                            | SwaggerV2.ResponseKey.Code code when 200 <= code && code < 300 -> Some defn
+                            | SwaggerV2.ResponseKey.Code _
+                            // The "default" response describes what comes back for status
+                            // codes not otherwise listed, which in practice means errors;
+                            // it doesn't contribute to the success return type.
+                            | SwaggerV2.ResponseKey.Default -> None
                         )
                         |> Seq.toList
 
@@ -655,6 +699,7 @@ module internal SwaggerV2Generator =
 
                     {
                         Method = method
+                        Consumes = consumes
                         Produces = produces
                         DocString = docstring
                         ReturnType = returnType

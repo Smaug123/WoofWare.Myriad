@@ -76,9 +76,92 @@ module TestSwaggerParse =
                     |> Some
                 Responses =
                     [
-                        204, Definition.Unspecified
-                        303, Definition.Unspecified
-                        404, Definition.Unspecified
+                        ResponseKey.Code 204, Definition.Unspecified
+                        ResponseKey.Code 303, Definition.Unspecified
+                        ResponseKey.Code 404, Definition.Unspecified
                     ]
                     |> Map.ofList
             }
+
+    [<Test>]
+    let ``Can parse inline response schemas`` () : unit =
+        let s =
+            """{
+  "produces": [
+    "application/json"
+  ],
+  "tags": [
+    "repository"
+  ],
+  "summary": "Returns the names of the supported gitignore templates",
+  "operationId": "listGitignoresTemplates",
+  "responses": {
+    "200": {
+      "description": "GitignoreTemplateList",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "403": {
+      "$ref": "#/responses/forbidden"
+    }
+  }
+}
+"""
+            |> JsonNode.Parse
+
+        let endpoint = s.AsObject () |> SwaggerEndpoint.Parse
+
+        endpoint.Responses
+        |> shouldEqual (
+            [
+                ResponseKey.Code 200,
+                Definition.Array
+                    {
+                        Items = Definition.String
+                    }
+                ResponseKey.Code 403, Definition.Handle "#/responses/forbidden"
+            ]
+            |> Map.ofList
+        )
+
+    [<Test>]
+    let ``Can parse a default response`` () : unit =
+        let s =
+            """{
+  "tags": [
+    "pet"
+  ],
+  "summary": "Returns all pets from the system that the user has access to",
+  "operationId": "findPets",
+  "responses": {
+    "200": {
+      "description": "pet response",
+      "schema": {
+        "type": "string"
+      }
+    },
+    "default": {
+      "description": "unexpected error",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    }
+  }
+}
+"""
+            |> JsonNode.Parse
+
+        let endpoint = s.AsObject () |> SwaggerEndpoint.Parse
+
+        endpoint.Responses
+        |> shouldEqual (
+            [
+                ResponseKey.Code 200, Definition.String
+                ResponseKey.Default, Definition.Handle "#/definitions/Error"
+            ]
+            |> Map.ofList
+        )

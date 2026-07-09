@@ -101,13 +101,13 @@ module AccessTokenJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -363,13 +363,13 @@ module AddTimeOptionJsonSerializeExtension =
                     "time",
                     (input.Time
                      |> (fun field ->
-                         let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                         let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                          (match field with
                           | null ->
                               raise (
                                   System.ArgumentNullException
-                                      "Expected type int32 to be non-null, but received a null value when serialising"
+                                      "Expected type int64 to be non-null, but received a null value when serialising"
                               )
                           | field -> field)
                      ))
@@ -572,13 +572,13 @@ module AttachmentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -597,13 +597,13 @@ module AttachmentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -647,13 +647,13 @@ module AttachmentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1276,13 +1276,13 @@ module BranchProtectionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1430,13 +1430,13 @@ module ChangedFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1455,13 +1455,13 @@ module ChangedFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1505,13 +1505,13 @@ module ChangedFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1881,13 +1881,13 @@ module CommitStatsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1906,13 +1906,13 @@ module CommitStatsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1931,13 +1931,13 @@ module CommitStatsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -2674,13 +2674,13 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -3254,13 +3254,13 @@ module CreateIssueOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -3284,13 +3284,13 @@ module CreateIssueOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -4119,13 +4119,13 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -4149,13 +4149,13 @@ module CreatePullRequestOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -4243,13 +4243,13 @@ module CreatePullReviewCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -4268,13 +4268,13 @@ module CreatePullReviewCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -5526,13 +5526,13 @@ module CreateUserOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -5705,13 +5705,13 @@ module CronJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -6526,13 +6526,13 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -7027,13 +7027,13 @@ module EditIssueOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -7743,13 +7743,13 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -7773,13 +7773,13 @@ module EditPullRequestOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -8560,13 +8560,13 @@ module EditUserOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -8680,13 +8680,13 @@ module EditUserOptionJsonSerializeExtension =
                     "source_id",
                     (input.SourceId
                      |> (fun field ->
-                         let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                         let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                          (match field with
                           | null ->
                               raise (
                                   System.ArgumentNullException
-                                      "Expected type int32 to be non-null, but received a null value when serialising"
+                                      "Expected type int64 to be non-null, but received a null value when serialising"
                               )
                           | field -> field)
                      ))
@@ -9389,13 +9389,13 @@ module GeneralAPISettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9414,13 +9414,13 @@ module GeneralAPISettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9439,13 +9439,13 @@ module GeneralAPISettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9464,13 +9464,13 @@ module GeneralAPISettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9558,13 +9558,13 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9583,13 +9583,13 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -10261,13 +10261,13 @@ module GitBlobResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -10405,13 +10405,13 @@ module GitEntryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -10687,13 +10687,13 @@ module GitTreeResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -10737,13 +10737,13 @@ module GitTreeResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -11007,13 +11007,13 @@ module HookJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -11351,13 +11351,13 @@ module IssueLabelsOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -11475,13 +11475,13 @@ module LabelJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12330,13 +12330,13 @@ module MigrateRepoOptionsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12626,13 +12626,13 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12651,13 +12651,13 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12676,13 +12676,13 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12720,13 +12720,13 @@ module NotificationCountJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12864,13 +12864,13 @@ module OAuth2ApplicationJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -13043,13 +13043,13 @@ module OrganizationJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -13381,13 +13381,13 @@ module PackageFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -13406,13 +13406,13 @@ module PackageFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -14299,13 +14299,13 @@ module RepositoryMetaJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -14487,13 +14487,13 @@ module StopWatchJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -14587,13 +14587,13 @@ module StopWatchJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -14938,13 +14938,13 @@ module TeamJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15193,13 +15193,13 @@ module TopicResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15218,13 +15218,13 @@ module TopicResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15333,13 +15333,13 @@ module TransferRepoOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -15716,13 +15716,13 @@ module UserJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15741,13 +15741,13 @@ module UserJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15791,13 +15791,13 @@ module UserJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16016,13 +16016,13 @@ module UserJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16110,13 +16110,13 @@ module UserHeatmapDataJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16135,13 +16135,13 @@ module UserHeatmapDataJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16938,13 +16938,13 @@ module WikiCommitListJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16982,13 +16982,13 @@ module WikiPageJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -17389,13 +17389,13 @@ module CommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -17464,13 +17464,13 @@ module CommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -17655,13 +17655,13 @@ module CommitStatusJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -18035,13 +18035,13 @@ module ContentsResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -19772,13 +19772,13 @@ module MilestoneJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -19872,13 +19872,13 @@ module MilestoneJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -19897,13 +19897,13 @@ module MilestoneJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20016,13 +20016,13 @@ module NodeInfoUsageJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20041,13 +20041,13 @@ module NodeInfoUsageJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20470,13 +20470,13 @@ module PublicKeyJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20675,13 +20675,13 @@ module PullReviewJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20775,13 +20775,13 @@ module PullReviewJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -21116,13 +21116,13 @@ module PullReviewCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -21241,13 +21241,13 @@ module PullReviewCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -21570,13 +21570,13 @@ module ReleaseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -22492,13 +22492,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -22667,13 +22667,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -22928,13 +22928,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -22953,13 +22953,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23061,13 +23061,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23097,13 +23097,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23147,13 +23147,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23222,13 +23222,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23617,13 +23617,13 @@ module CombinedStatusJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23943,13 +23943,13 @@ module DeployKeyJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23993,13 +23993,13 @@ module DeployKeyJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24335,13 +24335,13 @@ module IssueJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24435,13 +24435,13 @@ module IssueJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24518,13 +24518,13 @@ module IssueJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24568,13 +24568,13 @@ module IssueJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24973,13 +24973,13 @@ module NotificationThreadJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -25200,13 +25200,13 @@ module PRBranchInfoJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -25305,13 +25305,13 @@ module PackageJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -25822,13 +25822,13 @@ module PullRequestJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -25958,13 +25958,13 @@ module PullRequestJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26177,13 +26177,13 @@ module PullRequestJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26382,13 +26382,13 @@ module TrackedTimeJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26418,13 +26418,13 @@ module TrackedTimeJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26443,13 +26443,13 @@ module TrackedTimeJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26468,13 +26468,13 @@ module TrackedTimeJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26648,13 +26648,13 @@ module BranchJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26885,13 +26885,13 @@ module TimelineCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -27018,13 +27018,13 @@ module TimelineCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -27093,13 +27093,13 @@ module TimelineCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -27251,13 +27251,13 @@ module TimelineCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -27359,18 +27359,150 @@ module LanguageStatisticsJsonSerializeExtension =
                     node.Add (
                         key,
                         (fun field ->
-                            let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                            let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                             (match field with
                              | null ->
                                  raise (
                                      System.ArgumentNullException
-                                         "Expected type int32 to be non-null, but received a null value when serialising"
+                                         "Expected type int64 to be non-null, but received a null value when serialising"
                                  )
                              | field -> field)
                         )
                             value
                     )
+
+            node :> _
+namespace Gitea
+
+open WoofWare.Myriad.Plugins
+
+/// Module containing JSON serializing extension members for the Type9 type
+[<AutoOpen>]
+module Type9JsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type Type9 with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : Type9) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                for KeyValue (key, value) in input.AdditionalProperties do
+                    node.Add (key, id value)
+
+                node.Add (
+                    "data",
+                    (input.Data
+                     |> (fun field ->
+                         match field with
+                         | None -> None
+                         | Some field ->
+                             (field
+                              |> (fun field ->
+                                  let arr = System.Text.Json.Nodes.JsonArray ()
+
+                                  for mem in field do
+                                      arr.Add (Team.toJsonNode mem)
+
+                                  arr
+                              ))
+                             :> System.Text.Json.Nodes.JsonNode
+                             |> Some
+                     )
+                     |> Option.toObj)
+                )
+
+                node.Add (
+                    "ok",
+                    (input.Ok
+                     |> (fun field ->
+                         match field with
+                         | None -> None
+                         | Some field ->
+                             (field
+                              |> (fun field ->
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<bool> field
+
+                                  (match field with
+                                   | null ->
+                                       raise (
+                                           System.ArgumentNullException
+                                               "Expected type bool to be non-null, but received a null value when serialising"
+                                       )
+                                   | field -> field)
+                              ))
+                             :> System.Text.Json.Nodes.JsonNode
+                             |> Some
+                     )
+                     |> Option.toObj)
+                )
+
+            node :> _
+namespace Gitea
+
+open WoofWare.Myriad.Plugins
+
+/// Module containing JSON serializing extension members for the Type10 type
+[<AutoOpen>]
+module Type10JsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type Type10 with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : Type10) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                for KeyValue (key, value) in input.AdditionalProperties do
+                    node.Add (key, id value)
+
+                node.Add (
+                    "data",
+                    (input.Data
+                     |> (fun field ->
+                         match field with
+                         | None -> None
+                         | Some field ->
+                             (field
+                              |> (fun field ->
+                                  let arr = System.Text.Json.Nodes.JsonArray ()
+
+                                  for mem in field do
+                                      arr.Add (User.toJsonNode mem)
+
+                                  arr
+                              ))
+                             :> System.Text.Json.Nodes.JsonNode
+                             |> Some
+                     )
+                     |> Option.toObj)
+                )
+
+                node.Add (
+                    "ok",
+                    (input.Ok
+                     |> (fun field ->
+                         match field with
+                         | None -> None
+                         | Some field ->
+                             (field
+                              |> (fun field ->
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<bool> field
+
+                                  (match field with
+                                   | null ->
+                                       raise (
+                                           System.ArgumentNullException
+                                               "Expected type bool to be non-null, but received a null value when serialising"
+                                       )
+                                   | field -> field)
+                              ))
+                             :> System.Text.Json.Nodes.JsonNode
+                             |> Some
+                     )
+                     |> Option.toObj)
+                )
 
             node :> _
 
@@ -27468,7 +27600,7 @@ module AccessTokenJsonParseExtension =
             let arg_1 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -27617,7 +27749,7 @@ module AddTimeOptionJsonParseExtension =
                             sprintf "Required key '%s' not found on JSON object" ("time")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Int32> ()
+                | Some node -> node.AsValue().GetValue<System.Int64> ()
 
             let arg_1 =
                 match node.["created"] |> Option.ofObj with
@@ -27727,7 +27859,7 @@ module AttachmentJsonParseExtension =
             let arg_6 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["name"] |> Option.ofObj with
@@ -27737,12 +27869,12 @@ module AttachmentJsonParseExtension =
             let arg_4 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["download_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["created_at"] |> Option.ofObj with
@@ -27841,7 +27973,7 @@ module BranchProtectionJsonParseExtension =
             let arg_21 =
                 match node.["required_approvals"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_20 =
                 match node.["require_signed_commits"] |> Option.ofObj with
@@ -28131,7 +28263,7 @@ module ChangedFileJsonParseExtension =
             let arg_4 =
                 match node.["deletions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["contents_url"] |> Option.ofObj with
@@ -28141,12 +28273,12 @@ module ChangedFileJsonParseExtension =
             let arg_2 =
                 match node.["changes"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["additions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -28354,17 +28486,17 @@ module CommitStatsJsonParseExtension =
             let arg_3 =
                 match node.["total"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["deletions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["additions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -28557,7 +28689,7 @@ module CreateBranchProtectionOptionJsonParseExtension =
             let arg_20 =
                 match node.["required_approvals"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_19 =
                 match node.["require_signed_commits"] |> Option.ofObj with
@@ -29123,7 +29255,7 @@ module CreateIssueOptionJsonParseExtension =
             let arg_7 =
                 match node.["milestone"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["labels"] |> Option.ofObj with
@@ -29135,9 +29267,9 @@ module CreateIssueOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -29599,7 +29731,7 @@ module CreatePullRequestOptionJsonParseExtension =
             let arg_8 =
                 match node.["milestone"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_7 =
                 match node.["labels"] |> Option.ofObj with
@@ -29611,9 +29743,9 @@ module CreatePullRequestOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -29724,12 +29856,12 @@ module CreatePullReviewCommentJsonParseExtension =
             let arg_3 =
                 match node.["old_position"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["new_position"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["body"] |> Option.ofObj with
@@ -30333,7 +30465,7 @@ module CreateUserOptionJsonParseExtension =
             let arg_9 =
                 match node.["source_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_8 =
                 match node.["send_notify"] |> Option.ofObj with
@@ -30523,7 +30655,7 @@ module CronJsonParseExtension =
             let arg_1 =
                 match node.["exec_times"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -30745,7 +30877,7 @@ module EditBranchProtectionOptionJsonParseExtension =
             let arg_19 =
                 match node.["required_approvals"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_18 =
                 match node.["require_signed_commits"] |> Option.ofObj with
@@ -31271,7 +31403,7 @@ module EditIssueOptionJsonParseExtension =
             let arg_5 =
                 match node.["milestone"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["due_date"] |> Option.ofObj with
@@ -31581,7 +31713,7 @@ module EditPullRequestOptionJsonParseExtension =
             let arg_8 =
                 match node.["milestone"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_7 =
                 match node.["labels"] |> Option.ofObj with
@@ -31593,9 +31725,9 @@ module EditPullRequestOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -31982,7 +32114,7 @@ module EditUserOptionJsonParseExtension =
                             sprintf "Required key '%s' not found on JSON object" ("source_id")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Int32> ()
+                | Some node -> node.AsValue().GetValue<System.Int64> ()
 
             let arg_15 =
                 match node.["restricted"] |> Option.ofObj with
@@ -32007,7 +32139,7 @@ module EditUserOptionJsonParseExtension =
             let arg_11 =
                 match node.["max_repo_creation"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_10 =
                 match node.["login_name"] |> Option.ofObj with
@@ -32522,22 +32654,22 @@ module GeneralAPISettingsJsonParseExtension =
             let arg_4 =
                 match node.["max_response_items"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["default_paging_num"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["default_max_blob_size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["default_git_trees_per_page"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -32588,12 +32720,12 @@ module GeneralAttachmentSettingsJsonParseExtension =
             let arg_4 =
                 match node.["max_size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["max_files"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["enabled"] |> Option.ofObj with
@@ -32943,7 +33075,7 @@ module GitBlobResponseJsonParseExtension =
             let arg_4 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["sha"] |> Option.ofObj with
@@ -33021,7 +33153,7 @@ module GitEntryJsonParseExtension =
             let arg_4 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["sha"] |> Option.ofObj with
@@ -33228,7 +33360,7 @@ module GitTreeResponseJsonParseExtension =
             let arg_3 =
                 match node.["total_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["sha"] |> Option.ofObj with
@@ -33238,7 +33370,7 @@ module GitTreeResponseJsonParseExtension =
             let arg_1 =
                 match node.["page"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -33338,7 +33470,7 @@ module HookJsonParseExtension =
             let arg_6 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["events"] |> Option.ofObj with
@@ -33662,9 +33794,9 @@ module IssueLabelsOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -33720,7 +33852,7 @@ module LabelJsonParseExtension =
             let arg_4 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["exclusive"] |> Option.ofObj with
@@ -33955,7 +34087,7 @@ module MigrateRepoOptionsJsonParseExtension =
             let arg_19 =
                 match node.["uid"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_18 =
                 match node.["service"] |> Option.ofObj with
@@ -34309,17 +34441,17 @@ module NodeInfoUsageUsersJsonParseExtension =
             let arg_3 =
                 match node.["total"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["activeMonth"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["activeHalfyear"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -34364,7 +34496,7 @@ module NotificationCountJsonParseExtension =
             let arg_1 =
                 match node.["new"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -34429,7 +34561,7 @@ module OAuth2ApplicationJsonParseExtension =
             let arg_5 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["created"] |> Option.ofObj with
@@ -34536,7 +34668,7 @@ module OrganizationJsonParseExtension =
             let arg_4 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["full_name"] |> Option.ofObj with
@@ -34712,12 +34844,12 @@ module PackageFileJsonParseExtension =
             let arg_2 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["Size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -35220,7 +35352,7 @@ module RepositoryMetaJsonParseExtension =
             let arg_2 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["full_name"] |> Option.ofObj with
@@ -35314,7 +35446,7 @@ module StopWatchJsonParseExtension =
             let arg_7 =
                 match node.["seconds"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["repo_owner_name"] |> Option.ofObj with
@@ -35334,7 +35466,7 @@ module StopWatchJsonParseExtension =
             let arg_3 =
                 match node.["issue_index"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["duration"] |> Option.ofObj with
@@ -35607,7 +35739,7 @@ module TeamJsonParseExtension =
             let arg_3 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["description"] |> Option.ofObj with
@@ -35743,12 +35875,12 @@ module TopicResponseJsonParseExtension =
             let arg_3 =
                 match node.["repo_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["created"] |> Option.ofObj with
@@ -35813,9 +35945,9 @@ module TransferRepoOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -36000,7 +36132,7 @@ module UserJsonParseExtension =
             let arg_18 =
                 match node.["starred_repos_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_17 =
                 match node.["restricted"] |> Option.ofObj with
@@ -36045,7 +36177,7 @@ module UserJsonParseExtension =
             let arg_9 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_8 =
                 match node.["full_name"] |> Option.ofObj with
@@ -36055,12 +36187,12 @@ module UserJsonParseExtension =
             let arg_7 =
                 match node.["following_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["followers_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["email"] |> Option.ofObj with
@@ -36168,12 +36300,12 @@ module UserHeatmapDataJsonParseExtension =
             let arg_2 =
                 match node.["timestamp"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["contributions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -36560,7 +36692,7 @@ module WikiCommitListJsonParseExtension =
             let arg_2 =
                 match node.["count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["commits"] |> Option.ofObj with
@@ -36656,7 +36788,7 @@ module WikiPageJsonParseExtension =
             let arg_1 =
                 match node.["commit_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -36791,7 +36923,7 @@ module CommentJsonParseExtension =
             let arg_8 =
                 match node.["original_author_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_7 =
                 match node.["original_author"] |> Option.ofObj with
@@ -36806,7 +36938,7 @@ module CommentJsonParseExtension =
             let arg_5 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["html_url"] |> Option.ofObj with
@@ -36923,7 +37055,7 @@ module CommitStatusJsonParseExtension =
             let arg_5 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["description"] |> Option.ofObj with
@@ -37024,7 +37156,7 @@ module ContentsResponseJsonParseExtension =
             let arg_11 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_10 =
                 match node.["sha"] |> Option.ofObj with
@@ -37941,12 +38073,12 @@ module MilestoneJsonParseExtension =
             let arg_7 =
                 match node.["open_issues"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["due_on"] |> Option.ofObj with
@@ -37966,7 +38098,7 @@ module MilestoneJsonParseExtension =
             let arg_2 =
                 match node.["closed_issues"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["closed_at"] |> Option.ofObj with
@@ -38039,12 +38171,12 @@ module NodeInfoUsageJsonParseExtension =
             let arg_2 =
                 match node.["localPosts"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["localComments"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -38279,7 +38411,7 @@ module PublicKeyJsonParseExtension =
             let arg_3 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["fingerprint"] |> Option.ofObj with
@@ -38390,7 +38522,7 @@ module PullReviewJsonParseExtension =
             let arg_6 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["html_url"] |> Option.ofObj with
@@ -38410,7 +38542,7 @@ module PullReviewJsonParseExtension =
             let arg_2 =
                 match node.["comments_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["body"] |> Option.ofObj with
@@ -38506,7 +38638,7 @@ module PullReviewCommentJsonParseExtension =
             let arg_11 =
                 match node.["pull_request_review_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_10 =
                 match node.["position"] |> Option.ofObj with
@@ -38531,7 +38663,7 @@ module PullReviewCommentJsonParseExtension =
             let arg_6 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["html_url"] |> Option.ofObj with
@@ -38724,7 +38856,7 @@ module ReleaseJsonParseExtension =
             let arg_7 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["html_url"] |> Option.ofObj with
@@ -39046,7 +39178,7 @@ module RepositoryJsonParseExtension =
             let arg_51 =
                 match node.["watchers_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_50 =
                 match node.["updated_at"] |> Option.ofObj with
@@ -39061,7 +39193,7 @@ module RepositoryJsonParseExtension =
             let arg_48 =
                 match node.["stars_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_47 =
                 match node.["ssh_url"] |> Option.ofObj with
@@ -39071,7 +39203,7 @@ module RepositoryJsonParseExtension =
             let arg_46 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_45 =
                 match node.["repo_transfer"] |> Option.ofObj with
@@ -39081,7 +39213,7 @@ module RepositoryJsonParseExtension =
             let arg_44 =
                 match node.["release_counter"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_43 =
                 match node.["private"] |> Option.ofObj with
@@ -39111,12 +39243,12 @@ module RepositoryJsonParseExtension =
             let arg_38 =
                 match node.["open_pr_counter"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_37 =
                 match node.["open_issues_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_36 =
                 match node.["name"] |> Option.ofObj with
@@ -39171,7 +39303,7 @@ module RepositoryJsonParseExtension =
             let arg_26 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_25 =
                 match node.["html_url"] |> Option.ofObj with
@@ -39206,7 +39338,7 @@ module RepositoryJsonParseExtension =
             let arg_19 =
                 match node.["forks_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_18 =
                 match node.["fork"] |> Option.ofObj with
@@ -39596,7 +39728,7 @@ module CombinedStatusJsonParseExtension =
             let arg_6 =
                 match node.["total_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["statuses"] |> Option.ofObj with
@@ -39842,7 +39974,7 @@ module DeployKeyJsonParseExtension =
             let arg_5 =
                 match node.["key_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["key"] |> Option.ofObj with
@@ -39852,7 +39984,7 @@ module DeployKeyJsonParseExtension =
             let arg_3 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["fingerprint"] |> Option.ofObj with
@@ -40073,7 +40205,7 @@ module IssueJsonParseExtension =
             let arg_16 =
                 match node.["original_author_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_15 =
                 match node.["original_author"] |> Option.ofObj with
@@ -40083,7 +40215,7 @@ module IssueJsonParseExtension =
             let arg_14 =
                 match node.["number"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_13 =
                 match node.["milestone"] |> Option.ofObj with
@@ -40115,7 +40247,7 @@ module IssueJsonParseExtension =
             let arg_10 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_9 =
                 match node.["html_url"] |> Option.ofObj with
@@ -40135,7 +40267,7 @@ module IssueJsonParseExtension =
             let arg_6 =
                 match node.["comments"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["closed_at"] |> Option.ofObj with
@@ -40453,7 +40585,7 @@ module NotificationThreadJsonParseExtension =
             let arg_1 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -40515,7 +40647,7 @@ module PRBranchInfoJsonParseExtension =
             let arg_4 =
                 match node.["repo_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["repo"] |> Option.ofObj with
@@ -40602,7 +40734,7 @@ module PackageJsonParseExtension =
             let arg_3 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["creator"] |> Option.ofObj with
@@ -40845,7 +40977,7 @@ module PullRequestJsonParseExtension =
             let arg_23 =
                 match node.["number"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_22 =
                 match node.["milestone"] |> Option.ofObj with
@@ -40907,7 +41039,7 @@ module PullRequestJsonParseExtension =
             let arg_13 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_12 =
                 match node.["html_url"] |> Option.ofObj with
@@ -40937,7 +41069,7 @@ module PullRequestJsonParseExtension =
             let arg_7 =
                 match node.["comments"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["closed_at"] |> Option.ofObj with
@@ -41085,17 +41217,17 @@ module TrackedTimeJsonParseExtension =
             let arg_6 =
                 match node.["user_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["time"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["issue_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["issue"] |> Option.ofObj with
@@ -41105,7 +41237,7 @@ module TrackedTimeJsonParseExtension =
             let arg_2 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["created"] |> Option.ofObj with
@@ -41194,7 +41326,7 @@ module BranchJsonParseExtension =
             let arg_6 =
                 match node.["required_approvals"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["protected"] |> Option.ofObj with
@@ -41300,7 +41432,7 @@ module TimelineCommentJsonParseExtension =
             let arg_25 =
                 match node.["review_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_24 =
                 match node.["resolve_doer"] |> Option.ofObj with
@@ -41340,7 +41472,7 @@ module TimelineCommentJsonParseExtension =
             let arg_17 =
                 match node.["project_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_16 =
                 match node.["old_title"] |> Option.ofObj with
@@ -41355,7 +41487,7 @@ module TimelineCommentJsonParseExtension =
             let arg_14 =
                 match node.["old_project_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_13 =
                 match node.["old_milestone"] |> Option.ofObj with
@@ -41390,7 +41522,7 @@ module TimelineCommentJsonParseExtension =
             let arg_7 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["html_url"] |> Option.ofObj with
@@ -41519,7 +41651,7 @@ module LanguageStatisticsJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : LanguageStatistics =
             let arg_0 =
-                let result = System.Collections.Generic.Dictionary<string, int> ()
+                let result = System.Collections.Generic.Dictionary<string, int64> ()
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
@@ -41535,13 +41667,135 @@ module LanguageStatisticsJsonParseExtension =
                                         sprintf "Required key '%s' not found on JSON object" (key)
                                     )
                                 )
-                            | Some node -> node.AsValue().GetValue<System.Int32> ()
+                            | Some node -> node.AsValue().GetValue<System.Int64> ()
                         )
 
                 result
 
             {
                 AdditionalProperties = arg_0
+            }
+namespace Gitea
+
+/// Module containing JSON parsing extension members for the Type9 type
+[<AutoOpen>]
+module Type9JsonParseExtension =
+    /// Extension methods for JSON parsing
+    type Type9 with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Type9 =
+            let arg_2 =
+                match node.["ok"] |> Option.ofObj with
+                | None -> None
+                | Some v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
+            let arg_1 =
+                match node.["data"] |> Option.ofObj with
+                | None -> None
+                | Some v ->
+                    v.AsArray ()
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Expected element of array (element type Team) to be non-null, but found a null element"
+                             )
+                         | elt -> Team.jsonParse elt)
+                    )
+                    |> List.ofSeq
+                    |> Some
+
+            let arg_0 =
+                let result =
+                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode> ()
+
+                let node = node.AsObject ()
+
+                for KeyValue (key, value) in node do
+                    if key = "data" || key = "ok" then
+                        ()
+                    else
+                        result.Add (
+                            key,
+                            match node.[key] |> Option.ofObj with
+                            | None ->
+                                raise (
+                                    System.Collections.Generic.KeyNotFoundException (
+                                        sprintf "Required key '%s' not found on JSON object" (key)
+                                    )
+                                )
+                            | Some node -> node
+                        )
+
+                result
+
+            {
+                AdditionalProperties = arg_0
+                Data = arg_1
+                Ok = arg_2
+            }
+namespace Gitea
+
+/// Module containing JSON parsing extension members for the Type10 type
+[<AutoOpen>]
+module Type10JsonParseExtension =
+    /// Extension methods for JSON parsing
+    type Type10 with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Type10 =
+            let arg_2 =
+                match node.["ok"] |> Option.ofObj with
+                | None -> None
+                | Some v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
+            let arg_1 =
+                match node.["data"] |> Option.ofObj with
+                | None -> None
+                | Some v ->
+                    v.AsArray ()
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Expected element of array (element type User) to be non-null, but found a null element"
+                             )
+                         | elt -> User.jsonParse elt)
+                    )
+                    |> List.ofSeq
+                    |> Some
+
+            let arg_0 =
+                let result =
+                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode> ()
+
+                let node = node.AsObject ()
+
+                for KeyValue (key, value) in node do
+                    if key = "data" || key = "ok" then
+                        ()
+                    else
+                        result.Add (
+                            key,
+                            match node.[key] |> Option.ofObj with
+                            | None ->
+                                raise (
+                                    System.Collections.Generic.KeyNotFoundException (
+                                        sprintf "Required key '%s' not found on JSON object" (key)
+                                    )
+                                )
+                            | Some node -> node
+                        )
+
+                result
+
+            {
+                AdditionalProperties = arg_0
+                Data = arg_1
+                Ok = arg_2
             }
 
 namespace Gitea
@@ -41585,6 +41839,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41638,6 +41893,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41645,9 +41901,25 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminCronList (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminCronList
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -41665,11 +41937,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/cron"
-                                 + (if "admin/cron".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "admin/cron".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -41680,6 +41951,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41743,6 +42015,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41750,9 +42023,25 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminListHooks (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminListHooks
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -41770,11 +42059,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/hooks"
-                                 + (if "admin/hooks".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "admin/hooks".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -41785,6 +42073,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41853,6 +42142,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41875,7 +42165,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminGetHook (id : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminGetHook (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -41905,6 +42195,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41927,7 +42218,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminEditHook (id : int, body : EditHookOption, ct : System.Threading.CancellationToken option) =
+            member _.AdminEditHook (id : int64, body : EditHookOption, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -41965,6 +42256,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41987,9 +42279,25 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminGetAllOrgs (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminGetAllOrgs
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -42007,11 +42315,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/orgs"
-                                 + (if "admin/orgs".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "admin/orgs".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42022,6 +42329,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42056,10 +42364,34 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.AdminUnadoptedList
-                (page : int, limit : int, pattern : string, ct : System.Threading.CancellationToken option)
+                (
+                    page : int option,
+                    limit : int option,
+                    pattern : string option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            pattern
+                            |> Option.map (fun queryParam ->
+                                "pattern=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -42077,16 +42409,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/unadopted"
-                                 + (if "admin/unadopted".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&pattern="
-                                 + ((pattern.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "admin/unadopted".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42097,6 +42427,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42164,6 +42495,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42205,6 +42537,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42212,9 +42545,25 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminGetAllUsers (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminGetAllUsers
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -42232,11 +42581,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/users"
-                                 + (if "admin/users".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "admin/users".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42247,6 +42595,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42315,6 +42664,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42337,9 +42687,21 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminDeleteUser (username : string, purge : bool, ct : System.Threading.CancellationToken option) =
+            member _.AdminDeleteUser
+                (username : string, purge : bool option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            purge
+                            |> Option.map (fun queryParam ->
+                                "purge=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -42358,12 +42720,14 @@ module Gitea =
                             System.Uri (
                                 ("admin/users/{username}"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "admin/users/{username}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "purge="
-                                 + ((purge.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "admin/users/{username}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42374,6 +42738,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42422,6 +42787,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42485,6 +42851,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42508,7 +42875,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.AdminDeleteUserPublicKey
-                (username : string, id : int, ct : System.Threading.CancellationToken option)
+                (username : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -42541,6 +42908,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42589,6 +42957,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42652,6 +43021,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42674,7 +43044,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminDeleteHook (id : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminDeleteHook (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -42704,6 +43074,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42742,10 +43113,11 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body |> MarkdownOption.toJsonNode |> (fun node -> node.ToJsonString ()),
                             null,
-                            "text/html"
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "text/html")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42781,8 +43153,9 @@ module Gitea =
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.StringContent (body, null, "text/html")
+                    let queryParams = new System.Net.Http.StringContent (body, null, "text/plain")
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "text/html")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42818,6 +43191,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42842,18 +43216,57 @@ module Gitea =
 
             member _.NotifyGetList
                 (
-                    all : bool,
-                    status_types : string list,
-                    subject_type : string list,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    all : bool option,
+                    status_types : string list option,
+                    subject_type : string list option,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            all
+                            |> Option.map (fun queryParam ->
+                                "all=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            status_types
+                            |> Option.map (fun queryParam ->
+                                "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            subject_type
+                            |> Option.map (fun queryParam ->
+                                "subject-type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -42871,21 +43284,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("notifications"
-                                 + (if "notifications".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "all="
-                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&subject-type="
-                                 + ((subject_type.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "notifications".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42896,6 +43298,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42931,15 +43334,39 @@ module Gitea =
 
             member _.NotifyReadList
                 (
-                    last_read_at : string,
-                    all : string,
-                    status_types : string list,
-                    to_status : string,
+                    last_read_at : string option,
+                    all : string option,
+                    status_types : string list option,
+                    to_status : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            last_read_at
+                            |> Option.map (fun queryParam ->
+                                "last_read_at=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            all
+                            |> Option.map (fun queryParam ->
+                                "all=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            status_types
+                            |> Option.map (fun queryParam ->
+                                "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            to_status
+                            |> Option.map (fun queryParam ->
+                                "to-status=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -42957,15 +43384,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("notifications"
-                                 + (if "notifications".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "last_read_at="
-                                 + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&all="
-                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&to-status="
-                                 + ((to_status.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "notifications".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42976,6 +43398,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43036,6 +43459,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43089,6 +43513,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43112,10 +43537,20 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.NotifyReadThread
-                (id : string, to_status : string, ct : System.Threading.CancellationToken option)
+                (id : string, to_status : string option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            to_status
+                            |> Option.map (fun queryParam ->
+                                "to-status=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -43134,12 +43569,14 @@ module Gitea =
                             System.Uri (
                                 ("notifications/threads/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "notifications/threads/{id}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "to-status="
-                                 + ((to_status.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "notifications/threads/{id}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -43150,6 +43587,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43212,6 +43650,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43234,9 +43673,23 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgGetAll (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgGetAll (page : int option, limit : int option, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -43254,11 +43707,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs"
-                                 + (if "orgs".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "orgs".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -43269,6 +43721,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43337,6 +43790,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43389,6 +43843,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43441,6 +43896,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43486,6 +43942,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43509,10 +43966,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListHooks
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -43530,14 +44001,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/hooks".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/hooks".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/hooks".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -43548,6 +44019,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43621,6 +44093,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43643,7 +44116,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgGetHook (org : string, id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgGetHook (org : string, id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -43675,6 +44148,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43697,7 +44171,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgDeleteHook (org : string, id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgDeleteHook (org : string, id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -43729,6 +44203,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43737,7 +44212,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgEditHook
-                (org : string, id : int, body : EditHookOption, ct : System.Threading.CancellationToken option)
+                (org : string, id : int64, body : EditHookOption, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -43778,6 +44253,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43801,10 +44277,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListLabels
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -43822,14 +44312,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/labels".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/labels".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/labels".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -43840,6 +44330,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43913,6 +44404,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43935,7 +44427,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgGetLabel (org : string, id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgGetLabel (org : string, id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -43967,6 +44459,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43989,7 +44482,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgDeleteLabel (org : string, id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgDeleteLabel (org : string, id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -44021,6 +44514,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44029,7 +44523,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgEditLabel
-                (org : string, id : int, body : EditLabelOption, ct : System.Threading.CancellationToken option)
+                (org : string, id : int64, body : EditLabelOption, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -44070,6 +44564,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44093,10 +44588,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListMembers
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -44114,14 +44623,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/members".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/members".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/members".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44132,6 +44641,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44197,6 +44707,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44236,6 +44747,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44244,10 +44756,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListPublicMembers
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -44266,14 +44792,14 @@ module Gitea =
                             System.Uri (
                                 ("orgs/{org}/public_members"
                                     .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/public_members".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/public_members".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44284,6 +44810,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44351,6 +44878,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44392,6 +44920,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44433,6 +44962,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44441,10 +44971,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListRepos
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -44462,14 +45006,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/repos".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/repos".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/repos".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44480,6 +45024,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44553,6 +45098,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44576,10 +45122,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeams
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -44597,14 +45157,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/teams".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/teams".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/teams".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44615,6 +45175,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44688,6 +45249,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44713,15 +45275,39 @@ module Gitea =
             member _.TeamSearch
                 (
                     org : string,
-                    q : string,
-                    include_desc : bool,
-                    page : int,
-                    limit : int,
+                    q : string option,
+                    include_desc : bool option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            include_desc
+                            |> Option.map (fun queryParam ->
+                                "include_desc=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -44740,18 +45326,14 @@ module Gitea =
                             System.Uri (
                                 ("orgs/{org}/teams/search"
                                     .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/teams/search".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&include_desc="
-                                 + ((include_desc.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/teams/search".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44762,25 +45344,65 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
-                    return ()
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Type9"
+                             )
+                         | jsonNode -> jsonNode)
+
+                    return Type9.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.ListPackages
                 (
                     owner : string,
-                    page : int,
-                    limit : int,
-                    type' : string,
-                    q : string,
+                    page : int option,
+                    limit : int option,
+                    type' : string option,
+                    q : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            type'
+                            |> Option.map (fun queryParam ->
+                                "type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -44799,18 +45421,14 @@ module Gitea =
                             System.Uri (
                                 ("packages/{owner}"
                                     .Replace ("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "packages/{owner}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&type="
-                                 + ((type'.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "packages/{owner}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44821,6 +45439,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44896,6 +45515,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44960,6 +45580,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45009,6 +45630,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45044,27 +45666,111 @@ module Gitea =
 
             member _.IssueSearchIssues
                 (
-                    state : string,
-                    labels : string,
-                    milestones : string,
-                    q : string,
-                    priority_repo_id : int,
-                    type' : string,
-                    since : string,
-                    before : string,
-                    assigned : bool,
-                    created : bool,
-                    mentioned : bool,
-                    review_requested : bool,
-                    owner : string,
-                    team : string,
-                    page : int,
-                    limit : int,
+                    state : string option,
+                    labels : string option,
+                    milestones : string option,
+                    q : string option,
+                    priority_repo_id : int64 option,
+                    type' : string option,
+                    since : string option,
+                    before : string option,
+                    assigned : bool option,
+                    created : bool option,
+                    mentioned : bool option,
+                    review_requested : bool option,
+                    owner : string option,
+                    team : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            labels
+                            |> Option.map (fun queryParam ->
+                                "labels=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            milestones
+                            |> Option.map (fun queryParam ->
+                                "milestones=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            priority_repo_id
+                            |> Option.map (fun queryParam ->
+                                "priority_repo_id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            type'
+                            |> Option.map (fun queryParam ->
+                                "type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            assigned
+                            |> Option.map (fun queryParam ->
+                                "assigned=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            created
+                            |> Option.map (fun queryParam ->
+                                "created=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            mentioned
+                            |> Option.map (fun queryParam ->
+                                "mentioned=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            review_requested
+                            |> Option.map (fun queryParam ->
+                                "review_requested=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            owner
+                            |> Option.map (fun queryParam ->
+                                "owner=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            team
+                            |> Option.map (fun queryParam ->
+                                "team=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -45082,42 +45788,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/issues/search"
-                                 + (if "repos/issues/search".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&labels="
-                                 + ((labels.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&milestones="
-                                 + ((milestones.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&priority_repo_id="
-                                 + ((priority_repo_id.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&type="
-                                 + ((type'.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&assigned="
-                                 + ((assigned.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&created="
-                                 + ((created.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&mentioned="
-                                 + ((mentioned.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&review_requested="
-                                 + ((review_requested.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&owner="
-                                 + ((owner.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&team="
-                                 + ((team.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/issues/search".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -45128,6 +45806,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45196,6 +45875,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45220,28 +45900,117 @@ module Gitea =
 
             member _.RepoSearch
                 (
-                    q : string,
-                    topic : bool,
-                    includeDesc : bool,
-                    uid : int,
-                    priority_owner_id : int,
-                    team_id : int,
-                    starredBy : int,
-                    private' : bool,
-                    is_private : bool,
-                    template : bool,
-                    archived : bool,
-                    mode : string,
-                    exclusive : bool,
-                    sort : string,
-                    order : string,
-                    page : int,
-                    limit : int,
+                    q : string option,
+                    topic : bool option,
+                    includeDesc : bool option,
+                    uid : int64 option,
+                    priority_owner_id : int64 option,
+                    team_id : int64 option,
+                    starredBy : int64 option,
+                    private' : bool option,
+                    is_private : bool option,
+                    template : bool option,
+                    archived : bool option,
+                    mode : string option,
+                    exclusive : bool option,
+                    sort : string option,
+                    order : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            topic
+                            |> Option.map (fun queryParam ->
+                                "topic=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            includeDesc
+                            |> Option.map (fun queryParam ->
+                                "includeDesc=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            uid
+                            |> Option.map (fun queryParam ->
+                                "uid=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            priority_owner_id
+                            |> Option.map (fun queryParam ->
+                                "priority_owner_id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            team_id
+                            |> Option.map (fun queryParam ->
+                                "team_id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            starredBy
+                            |> Option.map (fun queryParam ->
+                                "starredBy=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            private'
+                            |> Option.map (fun queryParam ->
+                                "private=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            is_private
+                            |> Option.map (fun queryParam ->
+                                "is_private=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            template
+                            |> Option.map (fun queryParam ->
+                                "template=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            archived
+                            |> Option.map (fun queryParam ->
+                                "archived=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            mode
+                            |> Option.map (fun queryParam ->
+                                "mode=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            exclusive
+                            |> Option.map (fun queryParam ->
+                                "exclusive=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            sort
+                            |> Option.map (fun queryParam ->
+                                "sort=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            order
+                            |> Option.map (fun queryParam ->
+                                "order=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -45259,41 +46028,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/search"
-                                 + (if "repos/search".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&topic="
-                                 + ((topic.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&includeDesc="
-                                 + ((includeDesc.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&uid="
-                                 + ((uid.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&priority_owner_id="
-                                 + ((priority_owner_id.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&team_id="
-                                 + ((team_id.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&starredBy="
-                                 + ((starredBy.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&private="
-                                 + ((private'.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&is_private="
-                                 + ((is_private.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&template="
-                                 + ((template.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&archived="
-                                 + ((archived.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&mode="
-                                 + ((mode.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&exclusive="
-                                 + ((exclusive.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&sort="
-                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&order="
-                                 + ((order.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "repos/search".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -45304,6 +46042,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45358,6 +46097,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45412,6 +46152,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45461,6 +46202,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45518,6 +46260,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45557,6 +46300,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45624,6 +46368,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45706,6 +46451,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45763,6 +46509,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45820,6 +46567,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45878,6 +46626,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45901,10 +46650,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListBranches
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -45924,14 +46693,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/branches"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/branches".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/branches".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -45942,6 +46711,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46022,6 +46792,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46079,6 +46850,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46136,6 +46908,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46144,10 +46917,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListCollaborators
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -46167,14 +46960,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/collaborators"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/collaborators".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/collaborators".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46185,6 +46978,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46253,6 +47047,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46295,6 +47090,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46351,6 +47147,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46393,6 +47190,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46419,16 +47217,45 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    sha : string,
-                    path : string,
-                    stat : bool,
-                    page : int,
-                    limit : int,
+                    sha : string option,
+                    path : string option,
+                    stat : bool option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            sha
+                            |> Option.map (fun queryParam ->
+                                "sha=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            path
+                            |> Option.map (fun queryParam ->
+                                "path=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            stat
+                            |> Option.map (fun queryParam ->
+                                "stat=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -46448,20 +47275,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/commits"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/commits".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "sha="
-                                 + ((sha.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&path="
-                                 + ((path.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&stat="
-                                 + ((stat.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/commits".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46472,6 +47293,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46510,13 +47332,27 @@ module Gitea =
                     owner : string,
                     repo : string,
                     ref : string,
-                    page : int,
-                    limit : int,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -46537,14 +47373,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{ref}", ref.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/commits/{ref}/status".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/commits/{ref}/status".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46555,6 +47391,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46582,15 +47419,39 @@ module Gitea =
                     owner : string,
                     repo : string,
                     ref : string,
-                    sort : string,
-                    state : string,
-                    page : int,
-                    limit : int,
+                    sort : string option,
+                    state : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            sort
+                            |> Option.map (fun queryParam ->
+                                "sort=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -46611,18 +47472,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{ref}", ref.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/commits/{ref}/statuses".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "sort="
-                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/commits/{ref}/statuses".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46633,6 +47490,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46667,10 +47525,20 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetContentsList
-                (owner : string, repo : string, ref : string, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, ref : string option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -46690,12 +47558,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/contents"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/contents".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/contents".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46706,6 +47576,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46744,12 +47615,22 @@ module Gitea =
                     owner : string,
                     repo : string,
                     filepath : string,
-                    ref : string,
+                    ref : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -46770,12 +47651,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/contents/{filepath}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/contents/{filepath}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46786,6 +47669,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46857,6 +47741,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46928,6 +47813,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46999,6 +47885,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47063,6 +47950,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47090,12 +47978,22 @@ module Gitea =
                     owner : string,
                     repo : string,
                     filepath : string,
-                    ref : string,
+                    ref : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -47116,12 +48014,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/editorconfig/{filepath}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/editorconfig/{filepath}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -47132,6 +48032,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47140,10 +48041,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.ListForks
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -47163,14 +48084,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/forks"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/forks".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/forks".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -47181,6 +48102,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47256,6 +48178,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47313,6 +48236,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47370,6 +48294,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47434,6 +48359,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47477,6 +48403,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47533,6 +48460,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47601,6 +48529,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47669,6 +48598,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47696,14 +48626,33 @@ module Gitea =
                     owner : string,
                     repo : string,
                     sha : string,
-                    recursive : bool,
-                    page : int,
-                    per_page : int,
+                    recursive : bool option,
+                    page : int option,
+                    per_page : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            recursive
+                            |> Option.map (fun queryParam ->
+                                "recursive=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            per_page
+                            |> Option.map (fun queryParam ->
+                                "per_page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -47724,16 +48673,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/git/trees/{sha}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "recursive="
-                                 + ((recursive.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&per_page="
-                                 + ((per_page.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/git/trees/{sha}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -47744,6 +48691,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47767,10 +48715,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListHooks
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -47790,14 +48758,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/hooks"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/hooks".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/hooks".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -47808,6 +48776,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47883,6 +48852,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47937,6 +48907,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48005,6 +48976,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48062,6 +49034,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48118,6 +49091,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48141,7 +49115,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetHook
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -48175,6 +49149,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48198,7 +49173,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoDeleteHook
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -48232,6 +49207,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48243,7 +49219,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
+                    id : int64,
                     body : EditHookOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -48288,6 +49264,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48311,10 +49288,26 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoTestHook
-                (owner : string, repo : string, id : int, ref : string, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    id : int64,
+                    ref : string option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -48335,12 +49328,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/hooks/{id}/tests".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/hooks/{id}/tests".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -48351,6 +49346,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48392,6 +49388,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48429,23 +49426,87 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    state : string,
-                    labels : string,
-                    q : string,
-                    type' : string,
-                    milestones : string,
-                    since : string,
-                    before : string,
-                    created_by : string,
-                    assigned_by : string,
-                    mentioned_by : string,
-                    page : int,
-                    limit : int,
+                    state : string option,
+                    labels : string option,
+                    q : string option,
+                    type' : string option,
+                    milestones : string option,
+                    since : string option,
+                    before : string option,
+                    created_by : string option,
+                    assigned_by : string option,
+                    mentioned_by : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            labels
+                            |> Option.map (fun queryParam ->
+                                "labels=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            type'
+                            |> Option.map (fun queryParam ->
+                                "type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            milestones
+                            |> Option.map (fun queryParam ->
+                                "milestones=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            created_by
+                            |> Option.map (fun queryParam ->
+                                "created_by=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            assigned_by
+                            |> Option.map (fun queryParam ->
+                                "assigned_by=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            mentioned_by
+                            |> Option.map (fun queryParam ->
+                                "mentioned_by=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -48465,34 +49526,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/issues"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&labels="
-                                 + ((labels.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&type="
-                                 + ((type'.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&milestones="
-                                 + ((milestones.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&created_by="
-                                 + ((created_by.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&assigned_by="
-                                 + ((assigned_by.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&mentioned_by="
-                                 + ((mentioned_by.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -48503,6 +49544,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48578,6 +49620,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48604,15 +49647,39 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -48632,18 +49699,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/issues/comments"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/comments".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/comments".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -48654,6 +49717,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48688,7 +49752,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteComment
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -48722,6 +49786,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48730,7 +49795,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueListIssueCommentAttachments
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -48764,6 +49829,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48801,8 +49867,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -48842,6 +49908,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48868,8 +49935,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -48909,6 +49976,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48920,8 +49988,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     body : EditAttachmentOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -48970,6 +50038,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48993,7 +50062,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueGetCommentReactions
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49027,6 +50096,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49064,7 +50134,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
+                    id : int64,
                     content : EditReactionOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -49109,6 +50179,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49117,7 +50188,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueGetIssue
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49151,6 +50222,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49174,7 +50246,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDelete
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49208,6 +50280,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49219,7 +50292,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : EditIssueOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -49264,6 +50337,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49287,7 +50361,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueListIssueAttachments
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49321,6 +50395,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49358,8 +50433,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    attachment_id : int,
+                    index : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -49399,6 +50474,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49425,8 +50501,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    attachment_id : int,
+                    index : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -49466,6 +50542,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49477,8 +50554,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    attachment_id : int,
+                    index : int64,
+                    attachment_id : int64,
                     body : EditAttachmentOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -49527,6 +50604,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49553,14 +50631,28 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    since : string,
-                    before : string,
+                    index : int64,
+                    since : string option,
+                    before : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -49581,14 +50673,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/comments".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/{index}/comments".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -49599,6 +50691,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49636,7 +50729,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : CreateIssueCommentOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -49683,6 +50776,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49706,7 +50800,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteCommentDeprecated
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49741,6 +50835,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49752,7 +50847,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : EditDeadlineOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -49797,6 +50892,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49820,7 +50916,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueGetLabels
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49854,6 +50950,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49891,7 +50988,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : IssueLabelsOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -49936,6 +51033,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49970,7 +51068,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueClearLabels
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50004,6 +51102,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50015,7 +51114,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : IssueLabelsOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -50060,6 +51159,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50094,7 +51194,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueRemoveLabel
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50129,6 +51235,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50140,14 +51247,28 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    page : int,
-                    limit : int,
+                    index : int64,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -50168,14 +51289,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/reactions".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/{index}/reactions".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50186,6 +51307,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50223,7 +51345,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     content : EditReactionOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -50268,6 +51390,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50276,7 +51399,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteStopWatch
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50310,6 +51433,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50318,7 +51442,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueStartStopWatch
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50352,6 +51476,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50360,7 +51485,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueStopStopWatch
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50394,6 +51519,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50405,14 +51531,28 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    page : int,
-                    limit : int,
+                    index : int64,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -50433,14 +51573,16 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/subscriptions".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if
+                                              "repos/{owner}/{repo}/issues/{index}/subscriptions".IndexOf (char 63) >= 0
+                                          then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50451,6 +51593,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50485,7 +51628,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueCheckSubscription
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50519,6 +51662,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50545,16 +51689,40 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    since : string,
-                    page : int,
-                    limit : int,
-                    before : string,
+                    index : int64,
+                    since : string option,
+                    page : int option,
+                    limit : int option,
+                    before : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -50575,18 +51743,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/timeline".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/{index}/timeline".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50597,6 +51761,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50634,17 +51799,46 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    user : string,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    index : int64,
+                    user : string option,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            user
+                            |> Option.map (fun queryParam ->
+                                "user=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -50665,20 +51859,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/times".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "user="
-                                 + ((user.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/{index}/times".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50689,6 +51877,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50726,7 +51915,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : AddTimeOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -50771,6 +51960,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50794,7 +51984,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueResetTime
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50828,6 +52018,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50836,7 +52027,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteTime
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50871,6 +52068,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50882,15 +52080,39 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    key_id : int,
-                    fingerprint : string,
-                    page : int,
-                    limit : int,
+                    key_id : int option,
+                    fingerprint : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            key_id
+                            |> Option.map (fun queryParam ->
+                                "key_id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            fingerprint
+                            |> Option.map (fun queryParam ->
+                                "fingerprint=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -50910,18 +52132,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/keys"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/keys".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "key_id="
-                                 + ((key_id.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&fingerprint="
-                                 + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/keys".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50932,6 +52150,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51007,6 +52226,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51030,7 +52250,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetKey
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51064,6 +52284,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51087,7 +52308,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoDeleteKey
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51121,6 +52342,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51129,10 +52351,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueListLabels
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -51152,14 +52394,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/labels"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/labels".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/labels".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -51170,6 +52412,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51245,6 +52488,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51268,7 +52512,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueGetLabel
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51302,6 +52546,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51325,7 +52570,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteLabel
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51359,6 +52604,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51370,7 +52616,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
+                    id : int64,
                     body : EditLabelOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -51415,6 +52661,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51469,6 +52716,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51496,12 +52744,22 @@ module Gitea =
                     owner : string,
                     repo : string,
                     filepath : string,
-                    ref : string,
+                    ref : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -51522,12 +52780,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/media/{filepath}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/media/{filepath}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -51538,6 +52798,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51549,15 +52810,39 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    state : string,
-                    name : string,
-                    page : int,
-                    limit : int,
+                    state : string option,
+                    name : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            name
+                            |> Option.map (fun queryParam ->
+                                "name=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -51577,18 +52862,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/milestones"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/milestones".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&name="
-                                 + ((name.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/milestones".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -51599,6 +52880,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51679,6 +52961,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51736,6 +53019,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51793,6 +53077,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51849,6 +53134,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51903,6 +53189,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51914,18 +53201,57 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    all : bool,
-                    status_types : string list,
-                    subject_type : string list,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    all : bool option,
+                    status_types : string list option,
+                    subject_type : string list option,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            all
+                            |> Option.map (fun queryParam ->
+                                "all=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            status_types
+                            |> Option.map (fun queryParam ->
+                                "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            subject_type
+                            |> Option.map (fun queryParam ->
+                                "subject-type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -51945,24 +53271,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/notifications"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "all="
-                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&subject-type="
-                                 + ((subject_type.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -51973,6 +53289,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52010,15 +53327,39 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    all : string,
-                    status_types : string list,
-                    to_status : string,
-                    last_read_at : string,
+                    all : string option,
+                    status_types : string list option,
+                    to_status : string option,
+                    last_read_at : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            all
+                            |> Option.map (fun queryParam ->
+                                "all=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            status_types
+                            |> Option.map (fun queryParam ->
+                                "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            to_status
+                            |> Option.map (fun queryParam ->
+                                "to-status=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            last_read_at
+                            |> Option.map (fun queryParam ->
+                                "last_read_at=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -52038,18 +53379,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/notifications"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "all="
-                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&to-status="
-                                 + ((to_status.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&last_read_at="
-                                 + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52060,6 +53397,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52097,17 +53435,51 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    state : string,
-                    sort : string,
-                    milestone : int,
-                    labels : int list,
-                    page : int,
-                    limit : int,
+                    state : string option,
+                    sort : string option,
+                    milestone : int64 option,
+                    labels : int64 list option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            sort
+                            |> Option.map (fun queryParam ->
+                                "sort=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            milestone
+                            |> Option.map (fun queryParam ->
+                                "milestone=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            labels
+                            |> Option.map (fun queryParam ->
+                                "labels=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -52127,22 +53499,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/pulls"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&sort="
-                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&milestone="
-                                 + ((milestone.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&labels="
-                                 + ((labels.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52153,6 +53517,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52233,6 +53598,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52256,7 +53622,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetPullRequest
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -52290,6 +53656,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52316,7 +53683,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : EditPullRequestOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -52361,6 +53728,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52387,14 +53755,24 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     diffType : string,
-                    binary : bool,
+                    binary : bool option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            binary
+                            |> Option.map (fun queryParam ->
+                                "binary=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -52416,12 +53794,14 @@ module Gitea =
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{diffType}", diffType.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}.{diffType}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "binary="
-                                 + ((binary.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}.{diffType}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52432,6 +53812,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52444,14 +53825,28 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    page : int,
-                    limit : int,
+                    index : int64,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -52472,14 +53867,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}/commits".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}/commits".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52490,6 +53885,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52527,16 +53923,40 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    skip_to : string,
-                    whitespace : string,
-                    page : int,
-                    limit : int,
+                    index : int64,
+                    skip_to : string option,
+                    whitespace : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            skip_to
+                            |> Option.map (fun queryParam ->
+                                "skip-to=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            whitespace
+                            |> Option.map (fun queryParam ->
+                                "whitespace=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -52557,18 +53977,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}/files".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "skip-to="
-                                 + ((skip_to.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&whitespace="
-                                 + ((whitespace.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}/files".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52579,6 +53995,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52613,7 +54030,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoPullRequestIsMerged
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -52647,6 +54064,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52658,7 +54076,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : MergePullRequestOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -52703,6 +54121,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52711,7 +54130,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoCancelScheduledAutoMerge
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -52745,6 +54164,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52756,7 +54176,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : PullReviewRequestOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -52803,6 +54223,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52840,7 +54261,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : PullReviewRequestOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -52887,6 +54308,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52898,14 +54320,28 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    page : int,
-                    limit : int,
+                    index : int64,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -52926,14 +54362,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}/reviews".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}/reviews".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52944,6 +54380,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52981,7 +54418,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : CreatePullReviewOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -53026,6 +54463,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53049,7 +54487,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetPullReview
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -53084,6 +54528,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53110,8 +54555,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    id : int,
+                    index : int64,
+                    id : int64,
                     body : SubmitPullReviewOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -53157,6 +54602,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53180,7 +54626,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoDeletePullReview
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -53215,6 +54667,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53223,7 +54676,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetPullReviewComments
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -53258,6 +54717,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53295,8 +54755,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    id : int,
+                    index : int64,
+                    id : int64,
                     body : DismissPullReviewOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -53344,6 +54804,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53367,7 +54828,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoUnDismissPullReview
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -53402,6 +54869,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53428,13 +54896,23 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    style : string,
+                    index : int64,
+                    style : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            style
+                            |> Option.map (fun queryParam ->
+                                "style=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -53455,12 +54933,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}/update".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "style="
-                                 + ((style.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}/update".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -53471,6 +54951,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53479,10 +54960,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListPushMirrors
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -53502,14 +55003,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/push_mirrors"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/push_mirrors".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/push_mirrors".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -53520,6 +55021,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53600,6 +55102,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53656,6 +55159,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53698,6 +55202,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53755,6 +55260,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53767,12 +55273,22 @@ module Gitea =
                     owner : string,
                     repo : string,
                     filepath : string,
-                    ref : string,
+                    ref : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -53793,12 +55309,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/raw/{filepath}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/raw/{filepath}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -53809,6 +55327,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53820,16 +55339,45 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    draft : bool,
-                    pre_release : bool,
-                    per_page : int,
-                    page : int,
-                    limit : int,
+                    draft : bool option,
+                    pre_release : bool option,
+                    per_page : int option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            draft
+                            |> Option.map (fun queryParam ->
+                                "draft=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            pre_release
+                            |> Option.map (fun queryParam ->
+                                "pre-release=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            per_page
+                            |> Option.map (fun queryParam ->
+                                "per_page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -53849,20 +55397,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/releases"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/releases".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "draft="
-                                 + ((draft.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&pre-release="
-                                 + ((pre_release.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&per_page="
-                                 + ((per_page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/releases".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -53873,6 +55415,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53953,6 +55496,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54009,6 +55553,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54066,6 +55611,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54123,6 +55669,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54131,7 +55678,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetRelease
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -54165,6 +55712,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54188,7 +55736,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoDeleteRelease
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -54222,6 +55770,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54233,7 +55782,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
+                    id : int64,
                     body : EditReleaseOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -54278,6 +55827,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54301,7 +55851,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListReleaseAttachments
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -54335,6 +55885,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54372,8 +55923,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -54413,6 +55964,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54439,8 +55991,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -54480,6 +56032,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54491,8 +56044,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     body : EditAttachmentOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -54541,6 +56094,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54595,6 +56149,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54660,18 +56215,40 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
-                    return ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListStargazers
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -54691,14 +56268,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/stargazers"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/stargazers".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/stargazers".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -54709,6 +56286,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54747,15 +56325,39 @@ module Gitea =
                     owner : string,
                     repo : string,
                     sha : string,
-                    sort : string,
-                    state : string,
-                    page : int,
-                    limit : int,
+                    sort : string option,
+                    state : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            sort
+                            |> Option.map (fun queryParam ->
+                                "sort=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -54776,18 +56378,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/statuses/{sha}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "sort="
-                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/statuses/{sha}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -54798,6 +56396,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54880,6 +56479,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54903,10 +56503,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListSubscribers
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -54926,14 +56546,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/subscribers"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/subscribers".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/subscribers".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -54944,6 +56564,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55011,6 +56632,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55067,6 +56689,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55108,6 +56731,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55131,10 +56755,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListTags
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -55154,14 +56798,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/tags"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/tags".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/tags".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -55172,6 +56816,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55247,6 +56892,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55304,6 +56950,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55361,6 +57008,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55400,6 +57048,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55468,6 +57117,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55525,6 +57175,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55567,6 +57218,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55578,16 +57230,45 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    user : string,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    user : string option,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            user
+                            |> Option.map (fun queryParam ->
+                                "user=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -55607,20 +57288,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/times"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/times".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "user="
-                                 + ((user.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/times".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -55631,6 +57306,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55699,6 +57375,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55733,10 +57410,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListTopics
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -55756,14 +57453,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/topics"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/topics".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/topics".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -55774,6 +57471,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55838,6 +57536,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55880,6 +57579,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55922,6 +57622,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55976,6 +57677,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56032,6 +57734,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56088,6 +57791,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56157,6 +57861,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56214,6 +57919,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56271,6 +57977,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56327,6 +58034,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56350,10 +58058,30 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetWikiPages
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -56373,14 +58101,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/wiki/pages"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/wiki/pages".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/wiki/pages".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -56391,6 +58119,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56429,12 +58158,22 @@ module Gitea =
                     owner : string,
                     repo : string,
                     pageName : string,
-                    page : int,
+                    page : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -56455,12 +58194,16 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{pageName}", pageName.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/wiki/revisions/{pageName}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if
+                                              "repos/{owner}/{repo}/wiki/revisions/{pageName}".IndexOf (char 63) >= 0
+                                          then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -56471,6 +58214,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56546,6 +58290,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56568,7 +58313,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.RepoGetByID (id : int, ct : System.Threading.CancellationToken option) =
+            member _.RepoGetByID (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -56598,6 +58343,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56647,6 +58393,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56696,6 +58443,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56745,6 +58493,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56794,6 +58543,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56843,14 +58593,16 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
-                    return ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgGetTeam (id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgGetTeam (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -56880,6 +58632,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56902,7 +58655,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgDeleteTeam (id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgDeleteTeam (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -56932,6 +58685,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56977,6 +58731,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57000,10 +58755,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeamMembers
-                (id : int, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (id : int64, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -57021,14 +58790,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("teams/{id}/members".Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "teams/{id}/members".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "teams/{id}/members".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -57039,6 +58808,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57072,7 +58842,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgListTeamMember (id : int, username : string, ct : System.Threading.CancellationToken option) =
+            member _.OrgListTeamMember (id : int64, username : string, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57104,6 +58874,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57126,7 +58897,9 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgRemoveTeamMember (id : int, username : string, ct : System.Threading.CancellationToken option) =
+            member _.OrgRemoveTeamMember
+                (id : int64, username : string, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57158,6 +58931,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57165,7 +58939,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgAddTeamMember (id : int, username : string, ct : System.Threading.CancellationToken option) =
+            member _.OrgAddTeamMember (id : int64, username : string, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57197,6 +58971,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57205,10 +58980,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeamRepos
-                (id : int, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (id : int64, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -57226,14 +59015,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("teams/{id}/repos".Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "teams/{id}/repos".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "teams/{id}/repos".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -57244,6 +59033,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57278,7 +59068,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeamRepo
-                (id : int, org : string, repo : string, ct : System.Threading.CancellationToken option)
+                (id : int64, org : string, repo : string, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -57312,6 +59102,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57335,7 +59126,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgRemoveTeamRepository
-                (id : int, org : string, repo : string, ct : System.Threading.CancellationToken option)
+                (id : int64, org : string, repo : string, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -57369,6 +59160,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57377,7 +59169,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgAddTeamRepository
-                (id : int, org : string, repo : string, ct : System.Threading.CancellationToken option)
+                (id : int64, org : string, repo : string, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -57411,6 +59203,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57418,9 +59211,27 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.TopicSearch (q : string, page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.TopicSearch
+                (q : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            Some ("q=" + ((q.ToString ()) |> System.Uri.EscapeDataString))
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -57438,13 +59249,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("topics/search"
-                                 + (if "topics/search".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "topics/search".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -57455,6 +59263,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57515,6 +59324,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57538,10 +59348,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserGetOauth2Application
-                (page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -57559,14 +59383,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/applications/oauth2"
-                                 + (if "user/applications/oauth2".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "user/applications/oauth2".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -57577,6 +59401,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57649,6 +59474,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57671,7 +59497,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserGetOAuth2Application (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserGetOAuth2Application (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57702,6 +59528,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57724,7 +59551,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserDeleteOAuth2Application (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserDeleteOAuth2Application (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57755,6 +59582,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57763,7 +59591,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserUpdateOAuth2Application
-                (id : int, body : CreateOAuth2ApplicationOptions, ct : System.Threading.CancellationToken option)
+                (id : int64, body : CreateOAuth2ApplicationOptions, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -57805,6 +59633,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57854,6 +59683,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57922,6 +59752,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57990,6 +59821,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57998,10 +59830,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserCurrentListFollowers
-                (page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -58019,11 +59865,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/followers"
-                                 + (if "user/followers".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/followers".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58034,6 +59879,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58068,10 +59914,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserCurrentListFollowing
-                (page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -58089,11 +59949,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/following"
-                                 + (if "user/following".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/following".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58104,6 +59963,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58168,6 +60028,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58206,6 +60067,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58244,6 +60106,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58278,6 +60141,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58286,7 +60150,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentDeleteGPGKey (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentDeleteGPGKey (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -58316,6 +60180,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58324,10 +60189,34 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserCurrentListKeys
-                (fingerprint : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    fingerprint : string option,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            fingerprint
+                            |> Option.map (fun queryParam ->
+                                "fingerprint=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -58345,13 +60234,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/keys"
-                                 + (if "user/keys".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "fingerprint="
-                                 + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/keys".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58362,6 +60248,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58430,6 +60317,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58452,7 +60340,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentGetKey (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentGetKey (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -58482,6 +60370,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58504,7 +60393,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentDeleteKey (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentDeleteKey (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -58534,6 +60423,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58541,9 +60431,25 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgListCurrentUserOrgs (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgListCurrentUserOrgs
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -58561,11 +60467,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/orgs"
-                                 + (if "user/orgs".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/orgs".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58576,6 +60481,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58609,9 +60515,25 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentListRepos (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentListRepos
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -58629,11 +60551,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/repos"
-                                 + (if "user/repos".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/repos".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58644,6 +60565,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58712,6 +60634,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58761,6 +60684,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58829,6 +60753,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58862,9 +60787,25 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentListStarred (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentListStarred
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -58882,11 +60823,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/starred"
-                                 + (if "user/starred".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/starred".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58897,6 +60837,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58964,6 +60905,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59005,6 +60947,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59046,6 +60989,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59053,9 +60997,25 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserGetStopWatches (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.UserGetStopWatches
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59073,14 +61033,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/stopwatches"
-                                 + (if "user/stopwatches".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "user/stopwatches".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59091,6 +61051,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59125,10 +61086,24 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserCurrentListSubscriptions
-                (page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59146,14 +61121,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/subscriptions"
-                                 + (if "user/subscriptions".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "user/subscriptions".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59164,6 +61139,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59197,9 +61173,25 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserListTeams (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.UserListTeams
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59217,11 +61209,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/teams"
-                                 + (if "user/teams".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/teams".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59232,6 +61223,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59267,15 +61259,39 @@ module Gitea =
 
             member _.UserCurrentTrackedTimes
                 (
-                    page : int,
-                    limit : int,
-                    since : string,
-                    before : string,
+                    page : int option,
+                    limit : int option,
+                    since : string option,
+                    before : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59293,15 +61309,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/times"
-                                 + (if "user/times".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/times".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59312,6 +61323,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59346,10 +61358,40 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserSearch
-                (q : string, uid : int, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    q : string option,
+                    uid : int64 option,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            uid
+                            |> Option.map (fun queryParam ->
+                                "uid=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59367,15 +61409,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/search"
-                                 + (if "users/search".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&uid="
-                                 + ((uid.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "users/search".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59386,10 +61423,26 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
-                    return ()
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Type10"
+                             )
+                         | jsonNode -> jsonNode)
+
+                    return Type10.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -59424,6 +61477,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59447,10 +61501,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListFollowers
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59469,14 +61542,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/followers"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/followers".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/followers".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59487,6 +61560,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59521,10 +61595,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListFollowing
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59543,14 +61636,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/following"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/following".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/following".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59561,6 +61654,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59628,6 +61722,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59666,6 +61761,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59702,14 +61798,33 @@ module Gitea =
             member _.UserListKeys
                 (
                     username : string,
-                    fingerprint : string,
-                    page : int,
-                    limit : int,
+                    fingerprint : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            fingerprint
+                            |> Option.map (fun queryParam ->
+                                "fingerprint=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59728,16 +61843,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/keys"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/keys".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "fingerprint="
-                                 + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/keys".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59748,6 +61861,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59782,10 +61896,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListUserOrgs
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59804,14 +61937,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/orgs"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/orgs".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/orgs".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59822,6 +61955,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59889,6 +62023,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59912,10 +62047,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListRepos
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -59934,14 +62088,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/repos"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/repos".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/repos".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59952,6 +62106,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59986,10 +62141,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListStarred
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -60008,14 +62182,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/starred"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/starred".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/starred".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -60026,6 +62200,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60060,10 +62235,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListSubscriptions
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -60082,14 +62276,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/subscriptions"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/subscriptions".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/subscriptions".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -60100,6 +62294,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60134,10 +62329,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserGetTokens
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.choose (fun queryParam -> queryParam)
+                        |> String.concat "&"
 
                     let uri =
                         System.Uri (
@@ -60156,14 +62370,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/tokens"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/tokens".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/tokens".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -60174,6 +62388,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60248,6 +62463,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60304,6 +62520,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60338,6 +62555,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
