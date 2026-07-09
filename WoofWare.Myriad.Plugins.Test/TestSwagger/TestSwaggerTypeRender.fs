@@ -23,7 +23,7 @@ module TestSwaggerTypeRender =
     let ``defnToType respects integer formats`` (format : string option, expected : string) : unit =
         let result =
             SwaggerClientGenerator.defnToType
-                (ref 0)
+                (fun () -> failwith "no anonymous types expected")
                 (Dictionary ())
                 (Dictionary ())
                 "definitions"
