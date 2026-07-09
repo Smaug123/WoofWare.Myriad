@@ -24,6 +24,15 @@ type Type1 =
     }
 
 [<JsonParse true ; JsonSerialize true>]
+type Type2147483647 =
+    {
+        [<System.Text.Json.Serialization.JsonExtensionData>]
+        AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
+        [<System.Text.Json.Serialization.JsonPropertyName "wouldOverflowASeededCounter">]
+        WouldOverflowASeededCounter : string option
+    }
+
+[<JsonParse true ; JsonSerialize true>]
 type Type2 =
     {
         [<System.Text.Json.Serialization.JsonExtensionData>]

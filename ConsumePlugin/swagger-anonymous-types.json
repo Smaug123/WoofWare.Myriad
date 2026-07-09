@@ -50,6 +50,14 @@
                     "type": "string"
                 }
             }
+        },
+        "Type2147483647": {
+            "type": "object",
+            "properties": {
+                "wouldOverflowASeededCounter": {
+                    "type": "string"
+                }
+            }
         }
     },
     "responses": {}
