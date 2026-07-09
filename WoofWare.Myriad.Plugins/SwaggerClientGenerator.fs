@@ -542,6 +542,26 @@ module internal SwaggerV2Generator =
             let byHandle = Dictionary ()
             let anonymousTypeCount = ref 0
 
+            // A spec is free to define types whose (sanitised) names look like the
+            // "Type{N}" names we invent for anonymous inline schemas; start counting
+            // past any such name so we never collide with them.
+            let namedTypes =
+                seq {
+                    for KeyValue (k, _) in contents.Definitions do
+                        yield k
+
+                    for KeyValue (k, _) in contents.Responses do
+                        yield k
+                }
+
+            for name in namedTypes do
+                let name = (Ident.createSanitisedTypeName name).idText
+
+                if name.StartsWith ("Type", System.StringComparison.Ordinal) then
+                    match System.Int32.TryParse (name.Substring "Type".Length) with
+                    | true, n -> anonymousTypeCount.Value <- max anonymousTypeCount.Value n
+                    | false, _ -> ()
+
             let rec go (contents : ((string option * SwaggerV2.Definition) * string) list) =
                 let lastRound = countAll ()
 

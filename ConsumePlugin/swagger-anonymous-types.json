@@ -1,0 +1,56 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "An API whose spec explicitly defines a type called \"Type1\", the first name WoofWare.Myriad would otherwise invent for the anonymous inline response schema below.",
+        "title": "Anonymous type collision test",
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0.0"
+    },
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "schemes": [
+        "https"
+    ],
+    "basePath": "/v1",
+    "paths": {
+        "/foo": {
+            "get": {
+                "tags": [
+                    "foo"
+                ],
+                "summary": "Gets a foo",
+                "operationId": "getFoo",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "data": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Type1": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "responses": {}
+}
