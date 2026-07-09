@@ -41649,6 +41649,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -41665,11 +41673,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/cron"
-                                 + (if "admin/cron".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "admin/cron".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -41754,6 +41761,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -41770,11 +41785,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/hooks"
-                                 + (if "admin/hooks".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "admin/hooks".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -41991,6 +42005,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -42007,11 +42029,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/orgs"
-                                 + (if "admin/orgs".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "admin/orgs".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42061,6 +42082,15 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "pattern=" + ((pattern.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -42077,16 +42107,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/unadopted"
-                                 + (if "admin/unadopted".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&pattern="
-                                 + ((pattern.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "admin/unadopted".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42216,6 +42244,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -42232,11 +42268,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("admin/users"
-                                 + (if "admin/users".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "admin/users".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42341,6 +42376,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "purge=" + ((purge.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -42358,12 +42398,14 @@ module Gitea =
                             System.Uri (
                                 ("admin/users/{username}"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "admin/users/{username}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "purge="
-                                 + ((purge.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "admin/users/{username}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42855,6 +42897,28 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "all=" + ((all.ToString ()) |> System.Uri.EscapeDataString) ]
+
+                            status_types
+                            |> List.map (fun queryParam ->
+                                "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            subject_type
+                            |> List.map (fun queryParam ->
+                                "subject-type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -42871,21 +42935,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("notifications"
-                                 + (if "notifications".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "all="
-                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&subject-type="
-                                 + ((subject_type.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "notifications".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -42941,6 +42994,22 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [
+                                "last_read_at=" + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)
+                            ]
+                            [ "all=" + ((all.ToString ()) |> System.Uri.EscapeDataString) ]
+
+                            status_types
+                            |> List.map (fun queryParam ->
+                                "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            [ "to-status=" + ((to_status.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -42957,15 +43026,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("notifications"
-                                 + (if "notifications".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "last_read_at="
-                                 + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&all="
-                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&to-status="
-                                 + ((to_status.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "notifications".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -43117,6 +43181,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "to-status=" + ((to_status.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -43134,12 +43203,14 @@ module Gitea =
                             System.Uri (
                                 ("notifications/threads/{id}"
                                     .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "notifications/threads/{id}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "to-status="
-                                 + ((to_status.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "notifications/threads/{id}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -43238,6 +43309,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -43254,11 +43333,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs"
-                                 + (if "orgs".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "orgs".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -43514,6 +43592,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -43530,14 +43616,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/hooks".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/hooks".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/hooks".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -43806,6 +43892,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -43822,14 +43916,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/labels".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/labels".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/labels".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44098,6 +44192,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -44114,14 +44216,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/members".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/members".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/members".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44249,6 +44351,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -44266,14 +44376,14 @@ module Gitea =
                             System.Uri (
                                 ("orgs/{org}/public_members"
                                     .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/public_members".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/public_members".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44446,6 +44556,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -44462,14 +44580,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/repos".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/repos".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/repos".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44581,6 +44699,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -44597,14 +44723,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("orgs/{org}/teams".Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/teams".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/teams".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44723,6 +44849,18 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [
+                                "include_desc=" + ((include_desc.ToString ()) |> System.Uri.EscapeDataString)
+                            ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -44740,18 +44878,14 @@ module Gitea =
                             System.Uri (
                                 ("orgs/{org}/teams/search"
                                     .Replace ("{org}", org.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "orgs/{org}/teams/search".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&include_desc="
-                                 + ((include_desc.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "orgs/{org}/teams/search".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -44782,6 +44916,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "type=" + ((type'.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -44799,18 +44943,14 @@ module Gitea =
                             System.Uri (
                                 ("packages/{owner}"
                                     .Replace ("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "packages/{owner}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&type="
-                                 + ((type'.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "packages/{owner}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -45066,6 +45206,38 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "labels=" + ((labels.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "milestones=" + ((milestones.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
+
+                            [
+                                "priority_repo_id="
+                                + ((priority_repo_id.ToString ()) |> System.Uri.EscapeDataString)
+                            ]
+
+                            [ "type=" + ((type'.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "assigned=" + ((assigned.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "created=" + ((created.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "mentioned=" + ((mentioned.ToString ()) |> System.Uri.EscapeDataString) ]
+
+                            [
+                                "review_requested="
+                                + ((review_requested.ToString ()) |> System.Uri.EscapeDataString)
+                            ]
+
+                            [ "owner=" + ((owner.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "team=" + ((team.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -45082,42 +45254,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/issues/search"
-                                 + (if "repos/issues/search".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&labels="
-                                 + ((labels.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&milestones="
-                                 + ((milestones.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&priority_repo_id="
-                                 + ((priority_repo_id.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&type="
-                                 + ((type'.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&assigned="
-                                 + ((assigned.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&created="
-                                 + ((created.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&mentioned="
-                                 + ((mentioned.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&review_requested="
-                                 + ((review_requested.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&owner="
-                                 + ((owner.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&team="
-                                 + ((team.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/issues/search".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -45243,6 +45387,34 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "topic=" + ((topic.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "includeDesc=" + ((includeDesc.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "uid=" + ((uid.ToString ()) |> System.Uri.EscapeDataString) ]
+
+                            [
+                                "priority_owner_id="
+                                + ((priority_owner_id.ToString ()) |> System.Uri.EscapeDataString)
+                            ]
+
+                            [ "team_id=" + ((team_id.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "starredBy=" + ((starredBy.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "private=" + ((private'.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "is_private=" + ((is_private.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "template=" + ((template.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "archived=" + ((archived.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "mode=" + ((mode.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "exclusive=" + ((exclusive.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "sort=" + ((sort.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "order=" + ((order.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -45259,41 +45431,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("repos/search"
-                                 + (if "repos/search".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&topic="
-                                 + ((topic.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&includeDesc="
-                                 + ((includeDesc.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&uid="
-                                 + ((uid.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&priority_owner_id="
-                                 + ((priority_owner_id.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&team_id="
-                                 + ((team_id.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&starredBy="
-                                 + ((starredBy.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&private="
-                                 + ((private'.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&is_private="
-                                 + ((is_private.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&template="
-                                 + ((template.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&archived="
-                                 + ((archived.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&mode="
-                                 + ((mode.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&exclusive="
-                                 + ((exclusive.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&sort="
-                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&order="
-                                 + ((order.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "repos/search".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -45906,6 +46047,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -45924,14 +46073,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/branches"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/branches".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/branches".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46149,6 +46298,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -46167,14 +46324,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/collaborators"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/collaborators".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/collaborators".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46430,6 +46587,17 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "sha=" + ((sha.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "path=" + ((path.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "stat=" + ((stat.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -46448,20 +46616,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/commits"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/commits".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "sha="
-                                 + ((sha.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&path="
-                                 + ((path.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&stat="
-                                 + ((stat.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/commits".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46518,6 +46680,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -46537,14 +46707,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{ref}", ref.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/commits/{ref}/status".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/commits/{ref}/status".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46592,6 +46762,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "sort=" + ((sort.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -46611,18 +46791,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{ref}", ref.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/commits/{ref}/statuses".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "sort="
-                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/commits/{ref}/statuses".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46672,6 +46848,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -46690,12 +46871,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/contents"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/contents".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/contents".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -46751,6 +46934,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -46770,12 +46958,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/contents/{filepath}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/contents/{filepath}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -47097,6 +47287,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -47116,12 +47311,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/editorconfig/{filepath}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/editorconfig/{filepath}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -47145,6 +47342,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -47163,14 +47368,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/forks"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/forks".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/forks".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -47705,6 +47910,15 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "recursive=" + ((recursive.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "per_page=" + ((per_page.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -47724,16 +47938,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/git/trees/{sha}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "recursive="
-                                 + ((recursive.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&per_page="
-                                 + ((per_page.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/git/trees/{sha}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -47772,6 +47984,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -47790,14 +48010,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/hooks"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/hooks".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/hooks".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -48316,6 +48536,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -48335,12 +48560,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/hooks/{id}/tests".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/hooks/{id}/tests".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -48447,6 +48674,26 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "labels=" + ((labels.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "type=" + ((type'.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "milestones=" + ((milestones.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "created_by=" + ((created_by.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "assigned_by=" + ((assigned_by.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [
+                                "mentioned_by=" + ((mentioned_by.ToString ()) |> System.Uri.EscapeDataString)
+                            ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -48465,34 +48712,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/issues"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&labels="
-                                 + ((labels.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&type="
-                                 + ((type'.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&milestones="
-                                 + ((milestones.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&created_by="
-                                 + ((created_by.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&assigned_by="
-                                 + ((assigned_by.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&mentioned_by="
-                                 + ((mentioned_by.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -48614,6 +48841,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -48632,18 +48869,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/issues/comments"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/comments".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/comments".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -49562,6 +49795,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -49581,14 +49822,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/comments".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/{index}/comments".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50149,6 +50390,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -50168,14 +50417,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/reactions".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/{index}/reactions".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50414,6 +50663,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -50433,14 +50690,16 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/subscriptions".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if
+                                              "repos/{owner}/{repo}/issues/{index}/subscriptions".IndexOf (char 63) >= 0
+                                          then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50556,6 +50815,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -50575,18 +50844,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/timeline".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/{index}/timeline".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50646,6 +50911,17 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "user=" + ((user.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -50665,20 +50941,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/issues/{index}/times".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "user="
-                                 + ((user.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/issues/{index}/times".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -50892,6 +51162,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "key_id=" + ((key_id.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "fingerprint=" + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -50910,18 +51190,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/keys"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/keys".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "key_id="
-                                 + ((key_id.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&fingerprint="
-                                 + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/keys".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -51134,6 +51410,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -51152,14 +51436,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/labels"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/labels".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/labels".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -51503,6 +51787,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -51522,12 +51811,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/media/{filepath}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/media/{filepath}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -51559,6 +51850,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "name=" + ((name.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -51577,18 +51878,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/milestones"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/milestones".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&name="
-                                 + ((name.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/milestones".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -51927,6 +52224,28 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "all=" + ((all.ToString ()) |> System.Uri.EscapeDataString) ]
+
+                            status_types
+                            |> List.map (fun queryParam ->
+                                "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            subject_type
+                            |> List.map (fun queryParam ->
+                                "subject-type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -51945,24 +52264,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/notifications"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "all="
-                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&subject-type="
-                                 + ((subject_type.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52020,6 +52329,23 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "all=" + ((all.ToString ()) |> System.Uri.EscapeDataString) ]
+
+                            status_types
+                            |> List.map (fun queryParam ->
+                                "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            [ "to-status=" + ((to_status.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [
+                                "last_read_at=" + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)
+                            ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -52038,18 +52364,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/notifications"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "all="
-                                 + ((all.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&status-types="
-                                 + ((status_types.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&to-status="
-                                 + ((to_status.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&last_read_at="
-                                 + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/notifications".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52109,6 +52431,23 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "sort=" + ((sort.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "milestone=" + ((milestone.ToString ()) |> System.Uri.EscapeDataString) ]
+
+                            labels
+                            |> List.map (fun queryParam ->
+                                "labels=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -52127,22 +52466,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/pulls"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&sort="
-                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&milestone="
-                                 + ((milestone.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&labels="
-                                 + ((labels.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52396,6 +52727,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "binary=" + ((binary.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -52416,12 +52752,14 @@ module Gitea =
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{index}", index.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{diffType}", diffType.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}.{diffType}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "binary="
-                                 + ((binary.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}.{diffType}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52453,6 +52791,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -52472,14 +52818,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}/commits".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}/commits".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52538,6 +52884,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "skip-to=" + ((skip_to.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "whitespace=" + ((whitespace.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -52557,18 +52913,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}/files".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "skip-to="
-                                 + ((skip_to.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&whitespace="
-                                 + ((whitespace.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}/files".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -52907,6 +53259,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -52926,14 +53286,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}/reviews".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}/reviews".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -53436,6 +53796,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "style=" + ((style.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -53455,12 +53820,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{index}", index.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/pulls/{index}/update".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "style="
-                                 + ((style.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/pulls/{index}/update".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -53484,6 +53851,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -53502,14 +53877,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/push_mirrors"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/push_mirrors".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/push_mirrors".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -53774,6 +54149,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -53793,12 +54173,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{filepath}", filepath.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/raw/{filepath}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "ref="
-                                 + ((ref.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/raw/{filepath}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -53831,6 +54213,17 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "draft=" + ((draft.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "pre-release=" + ((pre_release.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "per_page=" + ((per_page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -53849,20 +54242,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/releases"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/releases".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "draft="
-                                 + ((draft.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&pre-release="
-                                 + ((pre_release.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&per_page="
-                                 + ((per_page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/releases".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -54673,6 +55060,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -54691,14 +55086,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/stargazers"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/stargazers".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/stargazers".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -54757,6 +55152,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "sort=" + ((sort.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -54776,18 +55181,14 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{sha}", sha.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/statuses/{sha}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "sort="
-                                 + ((sort.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&state="
-                                 + ((state.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/statuses/{sha}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -54908,6 +55309,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -54926,14 +55335,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/subscribers"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/subscribers".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/subscribers".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -55136,6 +55545,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -55154,14 +55571,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/tags"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/tags".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/tags".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -55589,6 +56006,17 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "user=" + ((user.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -55607,20 +56035,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/times"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/times".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "user="
-                                 + ((user.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/times".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -55738,6 +56160,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -55756,14 +56186,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/topics"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/topics".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/topics".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -56355,6 +56785,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -56373,14 +56811,14 @@ module Gitea =
                                 ("repos/{owner}/{repo}/wiki/pages"
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/wiki/pages".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "repos/{owner}/{repo}/wiki/pages".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -56436,6 +56874,11 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -56455,12 +56898,16 @@ module Gitea =
                                     .Replace("{owner}", owner.ToString () |> System.Uri.EscapeDataString)
                                     .Replace("{repo}", repo.ToString () |> System.Uri.EscapeDataString)
                                     .Replace ("{pageName}", pageName.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "repos/{owner}/{repo}/wiki/revisions/{pageName}".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if
+                                              "repos/{owner}/{repo}/wiki/revisions/{pageName}".IndexOf (char 63) >= 0
+                                          then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -57005,6 +57452,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -57021,14 +57476,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("teams/{id}/members".Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "teams/{id}/members".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "teams/{id}/members".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -57210,6 +57665,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -57226,14 +57689,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("teams/{id}/repos".Replace ("{id}", id.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "teams/{id}/repos".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "teams/{id}/repos".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -57422,6 +57885,15 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -57438,13 +57910,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("topics/search"
-                                 + (if "topics/search".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "topics/search".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -57543,6 +58012,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -57559,14 +58036,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/applications/oauth2"
-                                 + (if "user/applications/oauth2".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "user/applications/oauth2".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58003,6 +58480,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -58019,11 +58504,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/followers"
-                                 + (if "user/followers".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/followers".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58073,6 +58557,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -58089,11 +58581,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/following"
-                                 + (if "user/following".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/following".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58329,6 +58820,15 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "fingerprint=" + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -58345,13 +58845,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/keys"
-                                 + (if "user/keys".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "fingerprint="
-                                 + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/keys".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58545,6 +59042,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -58561,11 +59066,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/orgs"
-                                 + (if "user/orgs".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/orgs".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58613,6 +59117,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -58629,11 +59141,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/repos"
-                                 + (if "user/repos".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/repos".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -58866,6 +59377,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -58882,11 +59401,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/starred"
-                                 + (if "user/starred".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/starred".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59057,6 +59575,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59073,14 +59599,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/stopwatches"
-                                 + (if "user/stopwatches".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "user/stopwatches".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59130,6 +59656,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59146,14 +59680,14 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/subscriptions"
-                                 + (if "user/subscriptions".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "user/subscriptions".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59201,6 +59735,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59217,11 +59759,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/teams"
-                                 + (if "user/teams".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/teams".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59277,6 +59818,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59293,15 +59844,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("user/times"
-                                 + (if "user/times".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&since="
-                                 + ((since.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&before="
-                                 + ((before.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "user/times".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59351,6 +59897,16 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "uid=" + ((uid.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59367,15 +59923,10 @@ module Gitea =
                             ),
                             System.Uri (
                                 ("users/search"
-                                 + (if "users/search".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "q="
-                                 + ((q.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&uid="
-                                 + ((uid.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "users/search".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59452,6 +60003,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59469,14 +60028,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/followers"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/followers".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/followers".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59526,6 +60085,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59543,14 +60110,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/following"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/following".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/following".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59711,6 +60278,15 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "fingerprint=" + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59728,16 +60304,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/keys"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/keys".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "fingerprint="
-                                 + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/keys".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59787,6 +60361,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59804,14 +60386,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/orgs"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/orgs".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/orgs".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59917,6 +60499,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -59934,14 +60524,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/repos"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/repos".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/repos".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -59991,6 +60581,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -60008,14 +60606,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/starred"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/starred".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/starred".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -60065,6 +60663,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -60082,14 +60688,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/subscriptions"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/subscriptions".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/subscriptions".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -60139,6 +60745,14 @@ module Gitea =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             System.Uri (
@@ -60156,14 +60770,14 @@ module Gitea =
                             System.Uri (
                                 ("users/{username}/tokens"
                                     .Replace ("{username}", username.ToString () |> System.Uri.EscapeDataString)
-                                 + (if "users/{username}/tokens".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "page="
-                                 + ((page.ToString ()) |> System.Uri.EscapeDataString)
-                                 + "&limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                        ((if "users/{username}/tokens".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )

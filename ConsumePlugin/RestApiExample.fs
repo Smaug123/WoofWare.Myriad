@@ -227,6 +227,20 @@ type IClientWithJsonBodyOverridden =
             Task<string>
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
+[<BaseAddress "https://whatnot.com">]
+type IApiWithListQuery =
+    // A list-typed query parameter contributes one key=value pair per element.
+    [<Get "endpoint">]
+    abstract GetWithListQuery :
+        [<Query "tag">] tags : string list * [<Query "limit">] limit : int * ?ct : CancellationToken -> Task<string>
+
+    [<Get "endpoint">]
+    abstract GetWithSoleListQuery : [<Query "tag">] tags : string list * ?ct : CancellationToken -> Task<string>
+
+    [<Get "endpoint">]
+    abstract GetWithArrayQuery : [<Query "id">] ids : int[] * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
 type IClientWithStringBody =
     // As a POST request of a bare string body, we don't override the Content-Type.
     [<Post "endpoint/{param}">]
