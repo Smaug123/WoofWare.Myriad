@@ -655,10 +655,13 @@ module internal SwaggerV2Generator =
                     let returnType =
                         endpoint.Responses
                         |> Seq.choose (fun (KeyValue (response, defn)) ->
-                            if 200 <= response && response < 300 then
-                                Some defn
-                            else
-                                None
+                            match response with
+                            | SwaggerV2.ResponseKey.Code code when 200 <= code && code < 300 -> Some defn
+                            | SwaggerV2.ResponseKey.Code _
+                            // The "default" response describes what comes back for status
+                            // codes not otherwise listed, which in practice means errors;
+                            // it doesn't contribute to the success return type.
+                            | SwaggerV2.ResponseKey.Default -> None
                         )
                         |> Seq.toList
 

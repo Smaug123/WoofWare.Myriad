@@ -330,6 +330,22 @@ type Response =
             Schema = schema
         }
 
+/// Key into an endpoint's "responses" map: either a specific HTTP status code,
+/// or the catch-all "default", which describes all responses whose status codes
+/// are not otherwise listed.
+type ResponseKey =
+    /// A specific HTTP status code, e.g. 200.
+    | Code of int
+    /// The catch-all "default" response.
+    | Default
+
+    /// Parse a key of the "responses" object, e.g. "200" or "default".
+    static member Parse (s : string) : ResponseKey =
+        if s = "default" then
+            ResponseKey.Default
+        else
+            ResponseKey.Code (Int32.Parse s)
+
 /// An "endpoint" is basically a single HTTP verb, applied to some path.
 type SwaggerEndpoint =
     {
@@ -350,9 +366,9 @@ type SwaggerEndpoint =
         /// (Each parameter knows how it needs to be supplied: e.g. if it's a query parameter or
         /// if it's interpolated into the path.)
         Parameters : SwaggerParameter list option
-        /// Map of HTTP response code to the type that we expect to receive in the body if we
-        /// get that response code back.
-        Responses : Map<int, Definition>
+        /// Map of HTTP response code (or the catch-all "default") to the type that we
+        /// expect to receive in the body if we get that response code back.
+        Responses : Map<ResponseKey, Definition>
     }
 
     /// Render a JsonObject into this strongly-typed specification.
@@ -375,7 +391,7 @@ type SwaggerEndpoint =
                     | Some _ -> Definition.Parse value
                     | None -> (Response.Parse value).Schema
 
-                Int32.Parse key, defn
+                ResponseKey.Parse key, defn
             )
             |> Map.ofSeq
 
