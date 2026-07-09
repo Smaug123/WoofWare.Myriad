@@ -3368,6 +3368,28 @@ type LanguageStatistics =
         AdditionalProperties : System.Collections.Generic.Dictionary<string, int>
     }
 
+[<JsonParse true ; JsonSerialize true>]
+type Type9 =
+    {
+        [<System.Text.Json.Serialization.JsonExtensionData>]
+        AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
+        [<System.Text.Json.Serialization.JsonPropertyName "data">]
+        Data : Team list option
+        [<System.Text.Json.Serialization.JsonPropertyName "ok">]
+        Ok : bool option
+    }
+
+[<JsonParse true ; JsonSerialize true>]
+type Type10 =
+    {
+        [<System.Text.Json.Serialization.JsonExtensionData>]
+        AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
+        [<System.Text.Json.Serialization.JsonPropertyName "data">]
+        Data : User list option
+        [<System.Text.Json.Serialization.JsonPropertyName "ok">]
+        Ok : bool option
+    }
+
 /// This documentation describes the Gitea API.
 [<HttpClient false ; RestEase.BasePath "/api/v1">]
 type IGitea =
@@ -3865,7 +3887,7 @@ type IGitea =
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
-            unit System.Threading.Tasks.Task
+            Type9 System.Threading.Tasks.Task
 
     /// Gets all packages of an owner
     [<RestEase.Get "packages/{owner}">]
@@ -5566,7 +5588,7 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         ?ct : System.Threading.CancellationToken ->
-            unit System.Threading.Tasks.Task
+            string System.Threading.Tasks.Task
 
     /// List a repo's stargazers
     [<RestEase.Get "repos/{owner}/{repo}/stargazers">]
@@ -5922,7 +5944,7 @@ type IGitea =
     /// Get default signing-key.gpg
     [<RestEase.Get "signing-key.gpg">]
     [<RestEase.Header("Content-Type", "plain")>]
-    abstract GetSigningKey : ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
+    abstract GetSigningKey : ?ct : System.Threading.CancellationToken -> string System.Threading.Tasks.Task
 
     /// Get a team
     [<RestEase.Get "teams/{id}">]
@@ -6294,7 +6316,7 @@ type IGitea =
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
-            unit System.Threading.Tasks.Task
+            Type10 System.Threading.Tasks.Task
 
     /// Get a user
     [<RestEase.Get "users/{username}">]
