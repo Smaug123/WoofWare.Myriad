@@ -34,6 +34,41 @@ module TestGiteaClient =
         api.RenderMarkdownRaw("# hi").Result |> shouldEqual "<p>hi</p>"
 
     [<Test>]
+    let ``Optional query parameters are omitted when None`` () =
+        // The Gitea spec does not mark adminCronList's page and limit as required.
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.RequestUri.AbsoluteUri
+                |> shouldEqual "https://example.com/api/v1/admin/cron"
+
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- new StringContent ("[]")
+                return resp
+            }
+
+        use client = HttpClientMock.make (Uri "https://example.com/") proc
+        let api = Gitea.Gitea.make client
+
+        api.AdminCronList(None, None).Result |> shouldEqual []
+
+    [<Test>]
+    let ``Optional query parameters are sent when Some`` () =
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.RequestUri.AbsoluteUri
+                |> shouldEqual "https://example.com/api/v1/admin/cron?page=2&limit=5"
+
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- new StringContent ("[]")
+                return resp
+            }
+
+        use client = HttpClientMock.make (Uri "https://example.com/") proc
+        let api = Gitea.Gitea.make client
+
+        api.AdminCronList(Some 2, Some 5).Result |> shouldEqual []
+
+    [<Test>]
     let ``Accept header is sent for JSON endpoints`` () =
         let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
             async {

@@ -41900,14 +41900,24 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminCronList (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminCronList
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -42013,14 +42023,24 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminListHooks (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminListHooks
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -42265,14 +42285,24 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminGetAllOrgs (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminGetAllOrgs
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -42342,16 +42372,34 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.AdminUnadoptedList
-                (page : int, limit : int, pattern : string, ct : System.Threading.CancellationToken option)
+                (
+                    page : int option,
+                    limit : int option,
+                    pattern : string option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "pattern=" + ((pattern.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            pattern
+                            |> Option.map (fun queryParam ->
+                                "pattern=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -42506,14 +42554,24 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminGetAllUsers (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminGetAllUsers
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -42642,12 +42700,20 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminDeleteUser (username : string, purge : bool, ct : System.Threading.CancellationToken option) =
+            member _.AdminDeleteUser
+                (username : string, purge : bool option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "purge=" + ((purge.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            purge
+                            |> Option.map (fun queryParam ->
+                                "purge=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -43176,13 +43242,13 @@ module Gitea =
 
             member _.NotifyGetList
                 (
-                    all : bool,
-                    status_types : string list,
-                    subject_type : string list,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    all : bool option,
+                    status_types : string list option,
+                    subject_type : string list option,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -43191,22 +43257,46 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "all=" + ((all.ToString ()) |> System.Uri.EscapeDataString) ]
+                            all
+                            |> Option.map (fun queryParam ->
+                                "all=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
                             status_types
-                            |> List.map (fun queryParam ->
+                            |> Option.map (fun queryParam ->
                                 "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
                             )
+                            |> Option.toList
 
                             subject_type
-                            |> List.map (fun queryParam ->
+                            |> Option.map (fun queryParam ->
                                 "subject-type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
                             )
+                            |> Option.toList
 
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -43277,10 +43367,10 @@ module Gitea =
 
             member _.NotifyReadList
                 (
-                    last_read_at : string,
-                    all : string,
-                    status_types : string list,
-                    to_status : string,
+                    last_read_at : string option,
+                    all : string option,
+                    status_types : string list option,
+                    to_status : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -43289,16 +43379,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [
-                                "last_read_at=" + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)
-                            ]
-                            [ "all=" + ((all.ToString ()) |> System.Uri.EscapeDataString) ]
+                            last_read_at
+                            |> Option.map (fun queryParam ->
+                                "last_read_at=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            all
+                            |> Option.map (fun queryParam ->
+                                "all=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
                             status_types
-                            |> List.map (fun queryParam ->
+                            |> Option.map (fun queryParam ->
                                 "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
                             )
-                            [ "to-status=" + ((to_status.ToString ()) |> System.Uri.EscapeDataString) ]
+                            |> Option.toList
+                            to_status
+                            |> Option.map (fun queryParam ->
+                                "to-status=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -43472,13 +43574,19 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.NotifyReadThread
-                (id : string, to_status : string, ct : System.Threading.CancellationToken option)
+                (id : string, to_status : string option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "to-status=" + ((to_status.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            to_status
+                            |> Option.map (fun queryParam ->
+                                "to-status=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -43605,14 +43713,22 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgGetAll (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgGetAll (page : int option, limit : int option, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -43895,15 +44011,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListHooks
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -44203,15 +44327,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListLabels
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -44511,15 +44643,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListMembers
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -44671,15 +44811,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListPublicMembers
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -44877,15 +45025,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListRepos
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -45024,15 +45180,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeams
-                (org : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (org : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -45173,10 +45337,10 @@ module Gitea =
             member _.TeamSearch
                 (
                     org : string,
-                    q : string,
-                    include_desc : bool,
-                    page : int,
-                    limit : int,
+                    q : string option,
+                    include_desc : bool option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -45185,12 +45349,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [
-                                "include_desc=" + ((include_desc.ToString ()) |> System.Uri.EscapeDataString)
-                            ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            include_desc
+                            |> Option.map (fun queryParam ->
+                                "include_desc=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -45256,10 +45436,10 @@ module Gitea =
             member _.ListPackages
                 (
                     owner : string,
-                    page : int,
-                    limit : int,
-                    type' : string,
-                    q : string,
+                    page : int option,
+                    limit : int option,
+                    type' : string option,
+                    q : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -45268,10 +45448,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "type=" + ((type'.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            type'
+                            |> Option.map (fun queryParam ->
+                                "type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -45537,22 +45735,22 @@ module Gitea =
 
             member _.IssueSearchIssues
                 (
-                    state : string,
-                    labels : string,
-                    milestones : string,
-                    q : string,
-                    priority_repo_id : int64,
-                    type' : string,
-                    since : string,
-                    before : string,
-                    assigned : bool,
-                    created : bool,
-                    mentioned : bool,
-                    review_requested : bool,
-                    owner : string,
-                    team : string,
-                    page : int,
-                    limit : int,
+                    state : string option,
+                    labels : string option,
+                    milestones : string option,
+                    q : string option,
+                    priority_repo_id : int64 option,
+                    type' : string option,
+                    since : string option,
+                    before : string option,
+                    assigned : bool option,
+                    created : bool option,
+                    mentioned : bool option,
+                    review_requested : bool option,
+                    owner : string option,
+                    team : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -45561,32 +45759,100 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "labels=" + ((labels.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "milestones=" + ((milestones.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
-                            [
-                                "priority_repo_id="
-                                + ((priority_repo_id.ToString ()) |> System.Uri.EscapeDataString)
-                            ]
+                            labels
+                            |> Option.map (fun queryParam ->
+                                "labels=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
-                            [ "type=" + ((type'.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "assigned=" + ((assigned.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "created=" + ((created.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "mentioned=" + ((mentioned.ToString ()) |> System.Uri.EscapeDataString) ]
+                            milestones
+                            |> Option.map (fun queryParam ->
+                                "milestones=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
-                            [
-                                "review_requested="
-                                + ((review_requested.ToString ()) |> System.Uri.EscapeDataString)
-                            ]
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
-                            [ "owner=" + ((owner.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "team=" + ((team.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            priority_repo_id
+                            |> Option.map (fun queryParam ->
+                                "priority_repo_id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            type'
+                            |> Option.map (fun queryParam ->
+                                "type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            assigned
+                            |> Option.map (fun queryParam ->
+                                "assigned=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            created
+                            |> Option.map (fun queryParam ->
+                                "created=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            mentioned
+                            |> Option.map (fun queryParam ->
+                                "mentioned=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            review_requested
+                            |> Option.map (fun queryParam ->
+                                "review_requested=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            owner
+                            |> Option.map (fun queryParam ->
+                                "owner=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            team
+                            |> Option.map (fun queryParam ->
+                                "team=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -45721,23 +45987,23 @@ module Gitea =
 
             member _.RepoSearch
                 (
-                    q : string,
-                    topic : bool,
-                    includeDesc : bool,
-                    uid : int64,
-                    priority_owner_id : int64,
-                    team_id : int64,
-                    starredBy : int64,
-                    private' : bool,
-                    is_private : bool,
-                    template : bool,
-                    archived : bool,
-                    mode : string,
-                    exclusive : bool,
-                    sort : string,
-                    order : string,
-                    page : int,
-                    limit : int,
+                    q : string option,
+                    topic : bool option,
+                    includeDesc : bool option,
+                    uid : int64 option,
+                    priority_owner_id : int64 option,
+                    team_id : int64 option,
+                    starredBy : int64 option,
+                    private' : bool option,
+                    is_private : bool option,
+                    template : bool option,
+                    archived : bool option,
+                    mode : string option,
+                    exclusive : bool option,
+                    sort : string option,
+                    order : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -45746,28 +46012,106 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "topic=" + ((topic.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "includeDesc=" + ((includeDesc.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "uid=" + ((uid.ToString ()) |> System.Uri.EscapeDataString) ]
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
-                            [
-                                "priority_owner_id="
-                                + ((priority_owner_id.ToString ()) |> System.Uri.EscapeDataString)
-                            ]
+                            topic
+                            |> Option.map (fun queryParam ->
+                                "topic=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
-                            [ "team_id=" + ((team_id.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "starredBy=" + ((starredBy.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "private=" + ((private'.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "is_private=" + ((is_private.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "template=" + ((template.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "archived=" + ((archived.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "mode=" + ((mode.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "exclusive=" + ((exclusive.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "sort=" + ((sort.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "order=" + ((order.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            includeDesc
+                            |> Option.map (fun queryParam ->
+                                "includeDesc=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            uid
+                            |> Option.map (fun queryParam ->
+                                "uid=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            priority_owner_id
+                            |> Option.map (fun queryParam ->
+                                "priority_owner_id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            team_id
+                            |> Option.map (fun queryParam ->
+                                "team_id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            starredBy
+                            |> Option.map (fun queryParam ->
+                                "starredBy=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            private'
+                            |> Option.map (fun queryParam ->
+                                "private=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            is_private
+                            |> Option.map (fun queryParam ->
+                                "is_private=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            template
+                            |> Option.map (fun queryParam ->
+                                "template=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            archived
+                            |> Option.map (fun queryParam ->
+                                "archived=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            mode
+                            |> Option.map (fun queryParam ->
+                                "mode=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            exclusive
+                            |> Option.map (fun queryParam ->
+                                "exclusive=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            sort
+                            |> Option.map (fun queryParam ->
+                                "sort=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            order
+                            |> Option.map (fun queryParam ->
+                                "order=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -46413,15 +46757,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListBranches
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -46669,15 +47027,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListCollaborators
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -46956,11 +47328,11 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    sha : string,
-                    path : string,
-                    stat : bool,
-                    page : int,
-                    limit : int,
+                    sha : string option,
+                    path : string option,
+                    stat : bool option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -46969,11 +47341,34 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "sha=" + ((sha.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "path=" + ((path.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "stat=" + ((stat.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            sha
+                            |> Option.map (fun queryParam ->
+                                "sha=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            path
+                            |> Option.map (fun queryParam ->
+                                "path=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            stat
+                            |> Option.map (fun queryParam ->
+                                "stat=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -47053,8 +47448,8 @@ module Gitea =
                     owner : string,
                     repo : string,
                     ref : string,
-                    page : int,
-                    limit : int,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -47063,8 +47458,16 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -47134,10 +47537,10 @@ module Gitea =
                     owner : string,
                     repo : string,
                     ref : string,
-                    sort : string,
-                    state : string,
-                    page : int,
-                    limit : int,
+                    sort : string option,
+                    state : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -47146,10 +47549,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "sort=" + ((sort.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            sort
+                            |> Option.map (fun queryParam ->
+                                "sort=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -47226,13 +47647,19 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetContentsList
-                (owner : string, repo : string, ref : string, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, ref : string option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -47311,7 +47738,7 @@ module Gitea =
                     owner : string,
                     repo : string,
                     filepath : string,
-                    ref : string,
+                    ref : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -47319,7 +47746,13 @@ module Gitea =
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -47677,7 +48110,7 @@ module Gitea =
                     owner : string,
                     repo : string,
                     filepath : string,
-                    ref : string,
+                    ref : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -47685,7 +48118,13 @@ module Gitea =
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -47734,15 +48173,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.ListForks
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -48309,9 +48762,9 @@ module Gitea =
                     owner : string,
                     repo : string,
                     sha : string,
-                    recursive : bool,
-                    page : int,
-                    per_page : int,
+                    recursive : bool option,
+                    page : int option,
+                    per_page : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -48320,9 +48773,22 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "recursive=" + ((recursive.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "per_page=" + ((per_page.ToString ()) |> System.Uri.EscapeDataString) ]
+                            recursive
+                            |> Option.map (fun queryParam ->
+                                "recursive=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            per_page
+                            |> Option.map (fun queryParam ->
+                                "per_page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -48388,15 +48854,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListHooks
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -48953,13 +49433,25 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoTestHook
-                (owner : string, repo : string, id : int64, ref : string, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    id : int64,
+                    ref : string option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -49079,18 +49571,18 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    state : string,
-                    labels : string,
-                    q : string,
-                    type' : string,
-                    milestones : string,
-                    since : string,
-                    before : string,
-                    created_by : string,
-                    assigned_by : string,
-                    mentioned_by : string,
-                    page : int,
-                    limit : int,
+                    state : string option,
+                    labels : string option,
+                    q : string option,
+                    type' : string option,
+                    milestones : string option,
+                    since : string option,
+                    before : string option,
+                    created_by : string option,
+                    assigned_by : string option,
+                    mentioned_by : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -49099,20 +49591,76 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "labels=" + ((labels.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "type=" + ((type'.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "milestones=" + ((milestones.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "created_by=" + ((created_by.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "assigned_by=" + ((assigned_by.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [
-                                "mentioned_by=" + ((mentioned_by.ToString ()) |> System.Uri.EscapeDataString)
-                            ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            labels
+                            |> Option.map (fun queryParam ->
+                                "labels=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            type'
+                            |> Option.map (fun queryParam ->
+                                "type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            milestones
+                            |> Option.map (fun queryParam ->
+                                "milestones=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            created_by
+                            |> Option.map (fun queryParam ->
+                                "created_by=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            assigned_by
+                            |> Option.map (fun queryParam ->
+                                "assigned_by=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            mentioned_by
+                            |> Option.map (fun queryParam ->
+                                "mentioned_by=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -49258,10 +49806,10 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -49270,10 +49818,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -50232,8 +50798,8 @@ module Gitea =
                     owner : string,
                     repo : string,
                     index : int64,
-                    since : string,
-                    before : string,
+                    since : string option,
+                    before : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -50242,8 +50808,16 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -50847,8 +51421,8 @@ module Gitea =
                     owner : string,
                     repo : string,
                     index : int64,
-                    page : int,
-                    limit : int,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -50857,8 +51431,16 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -51123,8 +51705,8 @@ module Gitea =
                     owner : string,
                     repo : string,
                     index : int64,
-                    page : int,
-                    limit : int,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -51133,8 +51715,16 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -51275,10 +51865,10 @@ module Gitea =
                     owner : string,
                     repo : string,
                     index : int64,
-                    since : string,
-                    page : int,
-                    limit : int,
-                    before : string,
+                    since : string option,
+                    page : int option,
+                    limit : int option,
+                    before : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -51287,10 +51877,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -51371,11 +51979,11 @@ module Gitea =
                     owner : string,
                     repo : string,
                     index : int64,
-                    user : string,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    user : string option,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -51384,11 +51992,34 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "user=" + ((user.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            user
+                            |> Option.map (fun queryParam ->
+                                "user=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -51633,10 +52264,10 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    key_id : int,
-                    fingerprint : string,
-                    page : int,
-                    limit : int,
+                    key_id : int option,
+                    fingerprint : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -51645,10 +52276,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "key_id=" + ((key_id.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "fingerprint=" + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            key_id
+                            |> Option.map (fun queryParam ->
+                                "key_id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            fingerprint
+                            |> Option.map (fun queryParam ->
+                                "fingerprint=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -51891,15 +52540,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueListLabels
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -52275,7 +52938,7 @@ module Gitea =
                     owner : string,
                     repo : string,
                     filepath : string,
-                    ref : string,
+                    ref : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -52283,7 +52946,13 @@ module Gitea =
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -52335,10 +53004,10 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    state : string,
-                    name : string,
-                    page : int,
-                    limit : int,
+                    state : string option,
+                    name : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -52347,10 +53016,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "name=" + ((name.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            name
+                            |> Option.map (fun queryParam ->
+                                "name=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -52714,13 +53401,13 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    all : bool,
-                    status_types : string list,
-                    subject_type : string list,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    all : bool option,
+                    status_types : string list option,
+                    subject_type : string list option,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -52729,22 +53416,46 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "all=" + ((all.ToString ()) |> System.Uri.EscapeDataString) ]
+                            all
+                            |> Option.map (fun queryParam ->
+                                "all=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
                             status_types
-                            |> List.map (fun queryParam ->
+                            |> Option.map (fun queryParam ->
                                 "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
                             )
+                            |> Option.toList
 
                             subject_type
-                            |> List.map (fun queryParam ->
+                            |> Option.map (fun queryParam ->
                                 "subject-type=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
                             )
+                            |> Option.toList
 
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -52823,10 +53534,10 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    all : string,
-                    status_types : string list,
-                    to_status : string,
-                    last_read_at : string,
+                    all : string option,
+                    status_types : string list option,
+                    to_status : string option,
+                    last_read_at : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -52835,17 +53546,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "all=" + ((all.ToString ()) |> System.Uri.EscapeDataString) ]
+                            all
+                            |> Option.map (fun queryParam ->
+                                "all=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
                             status_types
-                            |> List.map (fun queryParam ->
+                            |> Option.map (fun queryParam ->
                                 "status-types=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
                             )
+                            |> Option.toList
 
-                            [ "to-status=" + ((to_status.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [
-                                "last_read_at=" + ((last_read_at.ToString ()) |> System.Uri.EscapeDataString)
-                            ]
+                            to_status
+                            |> Option.map (fun queryParam ->
+                                "to-status=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            last_read_at
+                            |> Option.map (fun queryParam ->
+                                "last_read_at=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -52924,12 +53646,12 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    state : string,
-                    sort : string,
-                    milestone : int64,
-                    labels : int64 list,
-                    page : int,
-                    limit : int,
+                    state : string option,
+                    sort : string option,
+                    milestone : int64 option,
+                    labels : int64 list option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -52938,17 +53660,40 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "sort=" + ((sort.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "milestone=" + ((milestone.ToString ()) |> System.Uri.EscapeDataString) ]
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            sort
+                            |> Option.map (fun queryParam ->
+                                "sort=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            milestone
+                            |> Option.map (fun queryParam ->
+                                "milestone=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
 
                             labels
-                            |> List.map (fun queryParam ->
+                            |> Option.map (fun queryParam ->
                                 "labels=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
                             )
+                            |> Option.toList
 
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -53233,7 +53978,7 @@ module Gitea =
                     repo : string,
                     index : int64,
                     diffType : string,
-                    binary : bool,
+                    binary : bool option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -53241,7 +53986,13 @@ module Gitea =
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "binary=" + ((binary.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            binary
+                            |> Option.map (fun queryParam ->
+                                "binary=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -53297,8 +54048,8 @@ module Gitea =
                     owner : string,
                     repo : string,
                     index : int64,
-                    page : int,
-                    limit : int,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -53307,8 +54058,16 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -53389,10 +54148,10 @@ module Gitea =
                     owner : string,
                     repo : string,
                     index : int64,
-                    skip_to : string,
-                    whitespace : string,
-                    page : int,
-                    limit : int,
+                    skip_to : string option,
+                    whitespace : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -53401,10 +54160,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "skip-to=" + ((skip_to.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "whitespace=" + ((whitespace.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            skip_to
+                            |> Option.map (fun queryParam ->
+                                "skip-to=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            whitespace
+                            |> Option.map (fun queryParam ->
+                                "whitespace=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -53774,8 +54551,8 @@ module Gitea =
                     owner : string,
                     repo : string,
                     index : int64,
-                    page : int,
-                    limit : int,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -53784,8 +54561,16 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -54349,7 +55134,7 @@ module Gitea =
                     owner : string,
                     repo : string,
                     index : int64,
-                    style : string,
+                    style : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -54357,7 +55142,13 @@ module Gitea =
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "style=" + ((style.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            style
+                            |> Option.map (fun queryParam ->
+                                "style=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -54406,15 +55197,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListPushMirrors
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -54707,7 +55512,7 @@ module Gitea =
                     owner : string,
                     repo : string,
                     filepath : string,
-                    ref : string,
+                    ref : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -54715,7 +55520,13 @@ module Gitea =
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "ref=" + ((ref.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            ref
+                            |> Option.map (fun queryParam ->
+                                "ref=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -54767,11 +55578,11 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    draft : bool,
-                    pre_release : bool,
-                    per_page : int,
-                    page : int,
-                    limit : int,
+                    draft : bool option,
+                    pre_release : bool option,
+                    per_page : int option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -54780,11 +55591,34 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "draft=" + ((draft.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "pre-release=" + ((pre_release.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "per_page=" + ((per_page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            draft
+                            |> Option.map (fun queryParam ->
+                                "draft=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            pre_release
+                            |> Option.map (fun queryParam ->
+                                "pre-release=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            per_page
+                            |> Option.map (fun queryParam ->
+                                "per_page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -55638,15 +56472,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListStargazers
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -55726,10 +56574,10 @@ module Gitea =
                     owner : string,
                     repo : string,
                     sha : string,
-                    sort : string,
-                    state : string,
-                    page : int,
-                    limit : int,
+                    sort : string option,
+                    state : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -55738,10 +56586,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "sort=" + ((sort.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "state=" + ((state.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            sort
+                            |> Option.map (fun queryParam ->
+                                "sort=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            state
+                            |> Option.map (fun queryParam ->
+                                "state=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -55892,15 +56758,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListSubscribers
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -56131,15 +57011,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListTags
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -56593,11 +57487,11 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    user : string,
-                    since : string,
-                    before : string,
-                    page : int,
-                    limit : int,
+                    user : string option,
+                    since : string option,
+                    before : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -56606,11 +57500,34 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "user=" + ((user.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            user
+                            |> Option.map (fun queryParam ->
+                                "user=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -56755,15 +57672,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListTopics
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -57395,15 +58326,29 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetWikiPages
-                (owner : string, repo : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -57483,7 +58428,7 @@ module Gitea =
                     owner : string,
                     repo : string,
                     pageName : string,
-                    page : int,
+                    page : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -57491,7 +58436,13 @@ module Gitea =
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
@@ -58078,15 +59029,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeamMembers
-                (id : int64, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (id : int64, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -58295,15 +59254,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeamRepos
-                (id : int64, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (id : int64, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -58518,15 +59485,26 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.TopicSearch (q : string, page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.TopicSearch
+                (q : string, page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
                             [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -58646,15 +59624,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserGetOauth2Application
-                (page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -59128,15 +60114,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserCurrentListFollowers
-                (page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -59206,15 +60200,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserCurrentListFollowing
-                (page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -59471,16 +60473,34 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserCurrentListKeys
-                (fingerprint : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    fingerprint : string option,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "fingerprint=" + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            fingerprint
+                            |> Option.map (fun queryParam ->
+                                "fingerprint=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -59699,14 +60719,24 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgListCurrentUserOrgs (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgListCurrentUserOrgs
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -59775,14 +60805,24 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentListRepos (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentListRepos
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -60043,14 +61083,24 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentListStarred (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentListStarred
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -60242,14 +61292,24 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserGetStopWatches (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.UserGetStopWatches
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -60323,15 +61383,23 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserCurrentListSubscriptions
-                (page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -60404,14 +61472,24 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserListTeams (page : int, limit : int, ct : System.Threading.CancellationToken option) =
+            member _.UserListTeams
+                (page : int option, limit : int option, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -60482,10 +61560,10 @@ module Gitea =
 
             member _.UserCurrentTrackedTimes
                 (
-                    page : int,
-                    limit : int,
-                    since : string,
-                    before : string,
+                    page : int option,
+                    limit : int option,
+                    since : string option,
+                    before : string option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -60494,10 +61572,28 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "since=" + ((since.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "before=" + ((before.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            before
+                            |> Option.map (fun queryParam ->
+                                "before=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -60567,17 +61663,41 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserSearch
-                (q : string, uid : int64, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    q : string option,
+                    uid : int64 option,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "q=" + ((q.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "uid=" + ((uid.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            q
+                            |> Option.map (fun queryParam ->
+                                "q=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            uid
+                            |> Option.map (fun queryParam ->
+                                "uid=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -60690,15 +61810,28 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListFollowers
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -60773,15 +61906,28 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListFollowing
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -60964,9 +62110,9 @@ module Gitea =
             member _.UserListKeys
                 (
                     username : string,
-                    fingerprint : string,
-                    page : int,
-                    limit : int,
+                    fingerprint : string option,
+                    page : int option,
+                    limit : int option,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -60975,9 +62121,22 @@ module Gitea =
 
                     let queryString =
                         [
-                            [ "fingerprint=" + ((fingerprint.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            fingerprint
+                            |> Option.map (fun queryParam ->
+                                "fingerprint=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -61052,15 +62211,28 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListUserOrgs
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -61192,15 +62364,28 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListRepos
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -61275,15 +62460,28 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListStarred
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -61358,15 +62556,28 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserListSubscriptions
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"
@@ -61441,15 +62652,28 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserGetTokens
-                (username : string, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (
+                    username : string,
+                    page : int option,
+                    limit : int option,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
                         [
-                            [ "page=" + ((page.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
                         ]
                         |> List.concat
                         |> String.concat "&"

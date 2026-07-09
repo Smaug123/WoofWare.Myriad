@@ -642,7 +642,18 @@ module internal SwaggerClientGenerator =
                         // failwith "Did not have a type here"
                         log $"Skipping %O{ep.Operation}: Couldn't render parameter: %O{par.Type}"
                         None
-                    | Some v -> Some (Ident.createSanitisedParamName par.Name, inParam, v)
+                    | Some v ->
+                        let v =
+                            match inParam with
+                            // A query parameter defaults to non-required if the spec
+                            // doesn't say; the caller expresses "not supplied" as None,
+                            // and the client omits it from the URL.
+                            // (Path parameters are always required, and we don't currently
+                            // model optional bodies.)
+                            | IsIn.Query _ when par.Required <> Some true -> SynType.option v
+                            | _ -> v
+
+                        Some (Ident.createSanitisedParamName par.Name, inParam, v)
                 )
                 |> List.allSome
 

@@ -3410,8 +3410,8 @@ type IGitea =
     [<RestEase.Get "admin/cron">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract AdminCronList :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Cron list System.Threading.Tasks.Task
 
@@ -3425,8 +3425,8 @@ type IGitea =
     [<RestEase.Get "admin/hooks">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract AdminListHooks :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Hook list System.Threading.Tasks.Task
 
@@ -3458,8 +3458,8 @@ type IGitea =
     [<RestEase.Get "admin/orgs">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract AdminGetAllOrgs :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Organization list System.Threading.Tasks.Task
 
@@ -3467,9 +3467,9 @@ type IGitea =
     [<RestEase.Get "admin/unadopted">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract AdminUnadoptedList :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
-        [<RestEase.Query "pattern">] pattern : string *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
+        [<RestEase.Query "pattern">] pattern : string option *
         ?ct : System.Threading.CancellationToken ->
             string list System.Threading.Tasks.Task
 
@@ -3493,8 +3493,8 @@ type IGitea =
     [<RestEase.Get "admin/users">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract AdminGetAllUsers :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -3510,7 +3510,7 @@ type IGitea =
     [<RestEase.Delete "admin/users/{username}">]
     abstract AdminDeleteUser :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Query "purge">] purge : bool *
+        [<RestEase.Query "purge">] purge : bool option *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -3591,13 +3591,13 @@ type IGitea =
     [<RestEase.Get "notifications">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract NotifyGetList :
-        [<RestEase.Query "all">] all : bool *
-        [<RestEase.Query "status-types">] status_types : string list *
-        [<RestEase.Query "subject-type">] subject_type : string list *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "before">] before : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "all">] all : bool option *
+        [<RestEase.Query "status-types">] status_types : string list option *
+        [<RestEase.Query "subject-type">] subject_type : string list option *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "before">] before : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             NotificationThread list System.Threading.Tasks.Task
 
@@ -3605,10 +3605,10 @@ type IGitea =
     [<RestEase.Put "notifications">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract NotifyReadList :
-        [<RestEase.Query "last_read_at">] last_read_at : string *
-        [<RestEase.Query "all">] all : string *
-        [<RestEase.Query "status-types">] status_types : string list *
-        [<RestEase.Query "to-status">] to_status : string *
+        [<RestEase.Query "last_read_at">] last_read_at : string option *
+        [<RestEase.Query "all">] all : string option *
+        [<RestEase.Query "status-types">] status_types : string list option *
+        [<RestEase.Query "to-status">] to_status : string option *
         ?ct : System.Threading.CancellationToken ->
             NotificationThread list System.Threading.Tasks.Task
 
@@ -3630,7 +3630,7 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract NotifyReadThread :
         [<RestEase.Path "id">] id : string *
-        [<RestEase.Query "to-status">] to_status : string *
+        [<RestEase.Query "to-status">] to_status : string option *
         ?ct : System.Threading.CancellationToken ->
             NotificationThread System.Threading.Tasks.Task
 
@@ -3648,8 +3648,8 @@ type IGitea =
     [<RestEase.Get "orgs">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgGetAll :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Organization list System.Threading.Tasks.Task
 
@@ -3689,8 +3689,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListHooks :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Hook list System.Threading.Tasks.Task
 
@@ -3737,8 +3737,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListLabels :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Label list System.Threading.Tasks.Task
 
@@ -3785,8 +3785,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListMembers :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -3811,8 +3811,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListPublicMembers :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -3845,8 +3845,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListRepos :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Repository list System.Threading.Tasks.Task
 
@@ -3865,8 +3865,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListTeams :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Team list System.Threading.Tasks.Task
 
@@ -3885,10 +3885,10 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract TeamSearch :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Query "q">] q : string *
-        [<RestEase.Query "include_desc">] include_desc : bool *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "q">] q : string option *
+        [<RestEase.Query "include_desc">] include_desc : bool option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Type9 System.Threading.Tasks.Task
 
@@ -3897,10 +3897,10 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract ListPackages :
         [<RestEase.Path "owner">] owner : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
-        [<RestEase.Query "type">] type' : string *
-        [<RestEase.Query "q">] q : string *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
+        [<RestEase.Query "type">] type' : string option *
+        [<RestEase.Query "q">] q : string option *
         ?ct : System.Threading.CancellationToken ->
             Package list System.Threading.Tasks.Task
 
@@ -3940,22 +3940,22 @@ type IGitea =
     [<RestEase.Get "repos/issues/search">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract IssueSearchIssues :
-        [<RestEase.Query "state">] state : string *
-        [<RestEase.Query "labels">] labels : string *
-        [<RestEase.Query "milestones">] milestones : string *
-        [<RestEase.Query "q">] q : string *
-        [<RestEase.Query "priority_repo_id">] priority_repo_id : int64 *
-        [<RestEase.Query "type">] type' : string *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "before">] before : string *
-        [<RestEase.Query "assigned">] assigned : bool *
-        [<RestEase.Query "created">] created : bool *
-        [<RestEase.Query "mentioned">] mentioned : bool *
-        [<RestEase.Query "review_requested">] review_requested : bool *
-        [<RestEase.Query "owner">] owner : string *
-        [<RestEase.Query "team">] team : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "state">] state : string option *
+        [<RestEase.Query "labels">] labels : string option *
+        [<RestEase.Query "milestones">] milestones : string option *
+        [<RestEase.Query "q">] q : string option *
+        [<RestEase.Query "priority_repo_id">] priority_repo_id : int64 option *
+        [<RestEase.Query "type">] type' : string option *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "before">] before : string option *
+        [<RestEase.Query "assigned">] assigned : bool option *
+        [<RestEase.Query "created">] created : bool option *
+        [<RestEase.Query "mentioned">] mentioned : bool option *
+        [<RestEase.Query "review_requested">] review_requested : bool option *
+        [<RestEase.Query "owner">] owner : string option *
+        [<RestEase.Query "team">] team : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Issue list System.Threading.Tasks.Task
 
@@ -3971,23 +3971,23 @@ type IGitea =
     [<RestEase.Get "repos/search">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract RepoSearch :
-        [<RestEase.Query "q">] q : string *
-        [<RestEase.Query "topic">] topic : bool *
-        [<RestEase.Query "includeDesc">] includeDesc : bool *
-        [<RestEase.Query "uid">] uid : int64 *
-        [<RestEase.Query "priority_owner_id">] priority_owner_id : int64 *
-        [<RestEase.Query "team_id">] team_id : int64 *
-        [<RestEase.Query "starredBy">] starredBy : int64 *
-        [<RestEase.Query "private">] private' : bool *
-        [<RestEase.Query "is_private">] is_private : bool *
-        [<RestEase.Query "template">] template : bool *
-        [<RestEase.Query "archived">] archived : bool *
-        [<RestEase.Query "mode">] mode : string *
-        [<RestEase.Query "exclusive">] exclusive : bool *
-        [<RestEase.Query "sort">] sort : string *
-        [<RestEase.Query "order">] order : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "q">] q : string option *
+        [<RestEase.Query "topic">] topic : bool option *
+        [<RestEase.Query "includeDesc">] includeDesc : bool option *
+        [<RestEase.Query "uid">] uid : int64 option *
+        [<RestEase.Query "priority_owner_id">] priority_owner_id : int64 option *
+        [<RestEase.Query "team_id">] team_id : int64 option *
+        [<RestEase.Query "starredBy">] starredBy : int64 option *
+        [<RestEase.Query "private">] private' : bool option *
+        [<RestEase.Query "is_private">] is_private : bool option *
+        [<RestEase.Query "template">] template : bool option *
+        [<RestEase.Query "archived">] archived : bool option *
+        [<RestEase.Query "mode">] mode : string option *
+        [<RestEase.Query "exclusive">] exclusive : bool option *
+        [<RestEase.Query "sort">] sort : string option *
+        [<RestEase.Query "order">] order : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             SearchResults System.Threading.Tasks.Task
 
@@ -4094,8 +4094,8 @@ type IGitea =
     abstract RepoListBranches :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Branch list System.Threading.Tasks.Task
 
@@ -4135,8 +4135,8 @@ type IGitea =
     abstract RepoListCollaborators :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -4185,11 +4185,11 @@ type IGitea =
     abstract RepoGetAllCommits :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "sha">] sha : string *
-        [<RestEase.Query "path">] path : string *
-        [<RestEase.Query "stat">] stat : bool *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "sha">] sha : string option *
+        [<RestEase.Query "path">] path : string option *
+        [<RestEase.Query "stat">] stat : bool option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Commit list System.Threading.Tasks.Task
 
@@ -4200,8 +4200,8 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "ref">] ref : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             CombinedStatus System.Threading.Tasks.Task
 
@@ -4212,10 +4212,10 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "ref">] ref : string *
-        [<RestEase.Query "sort">] sort : string *
-        [<RestEase.Query "state">] state : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "sort">] sort : string option *
+        [<RestEase.Query "state">] state : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             CommitStatus list System.Threading.Tasks.Task
 
@@ -4225,7 +4225,7 @@ type IGitea =
     abstract RepoGetContentsList :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "ref">] ref : string *
+        [<RestEase.Query "ref">] ref : string option *
         ?ct : System.Threading.CancellationToken ->
             ContentsResponse list System.Threading.Tasks.Task
 
@@ -4236,7 +4236,7 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "filepath">] filepath : string *
-        [<RestEase.Query "ref">] ref : string *
+        [<RestEase.Query "ref">] ref : string option *
         ?ct : System.Threading.CancellationToken ->
             ContentsResponse System.Threading.Tasks.Task
 
@@ -4293,7 +4293,7 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "filepath">] filepath : string *
-        [<RestEase.Query "ref">] ref : string *
+        [<RestEase.Query "ref">] ref : string option *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4303,8 +4303,8 @@ type IGitea =
     abstract ListForks :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Repository list System.Threading.Tasks.Task
 
@@ -4396,9 +4396,9 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "sha">] sha : string *
-        [<RestEase.Query "recursive">] recursive : bool *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "per_page">] per_page : int *
+        [<RestEase.Query "recursive">] recursive : bool option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "per_page">] per_page : int option *
         ?ct : System.Threading.CancellationToken ->
             GitTreeResponse System.Threading.Tasks.Task
 
@@ -4408,8 +4408,8 @@ type IGitea =
     abstract RepoListHooks :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Hook list System.Threading.Tasks.Task
 
@@ -4501,7 +4501,7 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "id">] id : int64 *
-        [<RestEase.Query "ref">] ref : string *
+        [<RestEase.Query "ref">] ref : string option *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4520,18 +4520,18 @@ type IGitea =
     abstract IssueListIssues :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "state">] state : string *
-        [<RestEase.Query "labels">] labels : string *
-        [<RestEase.Query "q">] q : string *
-        [<RestEase.Query "type">] type' : string *
-        [<RestEase.Query "milestones">] milestones : string *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "before">] before : string *
-        [<RestEase.Query "created_by">] created_by : string *
-        [<RestEase.Query "assigned_by">] assigned_by : string *
-        [<RestEase.Query "mentioned_by">] mentioned_by : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "state">] state : string option *
+        [<RestEase.Query "labels">] labels : string option *
+        [<RestEase.Query "q">] q : string option *
+        [<RestEase.Query "type">] type' : string option *
+        [<RestEase.Query "milestones">] milestones : string option *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "before">] before : string option *
+        [<RestEase.Query "created_by">] created_by : string option *
+        [<RestEase.Query "assigned_by">] assigned_by : string option *
+        [<RestEase.Query "mentioned_by">] mentioned_by : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Issue list System.Threading.Tasks.Task
 
@@ -4552,10 +4552,10 @@ type IGitea =
     abstract IssueGetRepoComments :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "before">] before : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "before">] before : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Comment list System.Threading.Tasks.Task
 
@@ -4715,8 +4715,8 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "before">] before : string *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "before">] before : string option *
         ?ct : System.Threading.CancellationToken ->
             Comment list System.Threading.Tasks.Task
 
@@ -4814,8 +4814,8 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Reaction list System.Threading.Tasks.Task
 
@@ -4864,8 +4864,8 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -4886,10 +4886,10 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
-        [<RestEase.Query "before">] before : string *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
+        [<RestEase.Query "before">] before : string option *
         ?ct : System.Threading.CancellationToken ->
             TimelineComment list System.Threading.Tasks.Task
 
@@ -4900,11 +4900,11 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
-        [<RestEase.Query "user">] user : string *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "before">] before : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "user">] user : string option *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "before">] before : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             TrackedTime list System.Threading.Tasks.Task
 
@@ -4945,10 +4945,10 @@ type IGitea =
     abstract RepoListKeys :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "key_id">] key_id : int *
-        [<RestEase.Query "fingerprint">] fingerprint : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "key_id">] key_id : int option *
+        [<RestEase.Query "fingerprint">] fingerprint : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             DeployKey list System.Threading.Tasks.Task
 
@@ -4988,8 +4988,8 @@ type IGitea =
     abstract IssueListLabels :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Label list System.Threading.Tasks.Task
 
@@ -5050,7 +5050,7 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "filepath">] filepath : string *
-        [<RestEase.Query "ref">] ref : string *
+        [<RestEase.Query "ref">] ref : string option *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5060,10 +5060,10 @@ type IGitea =
     abstract IssueGetMilestonesList :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "state">] state : string *
-        [<RestEase.Query "name">] name : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "state">] state : string option *
+        [<RestEase.Query "name">] name : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Milestone list System.Threading.Tasks.Task
 
@@ -5123,13 +5123,13 @@ type IGitea =
     abstract NotifyGetRepoList :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "all">] all : bool *
-        [<RestEase.Query "status-types">] status_types : string list *
-        [<RestEase.Query "subject-type">] subject_type : string list *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "before">] before : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "all">] all : bool option *
+        [<RestEase.Query "status-types">] status_types : string list option *
+        [<RestEase.Query "subject-type">] subject_type : string list option *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "before">] before : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             NotificationThread list System.Threading.Tasks.Task
 
@@ -5139,10 +5139,10 @@ type IGitea =
     abstract NotifyReadRepoList :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "all">] all : string *
-        [<RestEase.Query "status-types">] status_types : string list *
-        [<RestEase.Query "to-status">] to_status : string *
-        [<RestEase.Query "last_read_at">] last_read_at : string *
+        [<RestEase.Query "all">] all : string option *
+        [<RestEase.Query "status-types">] status_types : string list option *
+        [<RestEase.Query "to-status">] to_status : string option *
+        [<RestEase.Query "last_read_at">] last_read_at : string option *
         ?ct : System.Threading.CancellationToken ->
             NotificationThread list System.Threading.Tasks.Task
 
@@ -5152,12 +5152,12 @@ type IGitea =
     abstract RepoListPullRequests :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "state">] state : string *
-        [<RestEase.Query "sort">] sort : string *
-        [<RestEase.Query "milestone">] milestone : int64 *
-        [<RestEase.Query "labels">] labels : int64 list *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "state">] state : string option *
+        [<RestEase.Query "sort">] sort : string option *
+        [<RestEase.Query "milestone">] milestone : int64 option *
+        [<RestEase.Query "labels">] labels : int64 list option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             PullRequest list System.Threading.Tasks.Task
 
@@ -5202,7 +5202,7 @@ type IGitea =
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
         [<RestEase.Path "diffType">] diffType : string *
-        [<RestEase.Query "binary">] binary : bool *
+        [<RestEase.Query "binary">] binary : bool option *
         ?ct : System.Threading.CancellationToken ->
             string System.Threading.Tasks.Task
 
@@ -5213,8 +5213,8 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Commit list System.Threading.Tasks.Task
 
@@ -5225,10 +5225,10 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
-        [<RestEase.Query "skip-to">] skip_to : string *
-        [<RestEase.Query "whitespace">] whitespace : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "skip-to">] skip_to : string option *
+        [<RestEase.Query "whitespace">] whitespace : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             ChangedFile list System.Threading.Tasks.Task
 
@@ -5291,8 +5291,8 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             PullReview list System.Threading.Tasks.Task
 
@@ -5383,7 +5383,7 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int64 *
-        [<RestEase.Query "style">] style : string *
+        [<RestEase.Query "style">] style : string option *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5393,8 +5393,8 @@ type IGitea =
     abstract RepoListPushMirrors :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             PushMirror list System.Threading.Tasks.Task
 
@@ -5442,7 +5442,7 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "filepath">] filepath : string *
-        [<RestEase.Query "ref">] ref : string *
+        [<RestEase.Query "ref">] ref : string option *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5452,11 +5452,11 @@ type IGitea =
     abstract RepoListReleases :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "draft">] draft : bool *
-        [<RestEase.Query "pre-release">] pre_release : bool *
-        [<RestEase.Query "per_page">] per_page : int *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "draft">] draft : bool option *
+        [<RestEase.Query "pre-release">] pre_release : bool option *
+        [<RestEase.Query "per_page">] per_page : int option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Release list System.Threading.Tasks.Task
 
@@ -5598,8 +5598,8 @@ type IGitea =
     abstract RepoListStargazers :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -5610,10 +5610,10 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "sha">] sha : string *
-        [<RestEase.Query "sort">] sort : string *
-        [<RestEase.Query "state">] state : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "sort">] sort : string option *
+        [<RestEase.Query "state">] state : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             CommitStatus list System.Threading.Tasks.Task
 
@@ -5635,8 +5635,8 @@ type IGitea =
     abstract RepoListSubscribers :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -5672,8 +5672,8 @@ type IGitea =
     abstract RepoListTags :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Tag list System.Threading.Tasks.Task
 
@@ -5750,11 +5750,11 @@ type IGitea =
     abstract RepoTrackedTimes :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "user">] user : string *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "before">] before : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "user">] user : string option *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "before">] before : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             TrackedTime list System.Threading.Tasks.Task
 
@@ -5774,8 +5774,8 @@ type IGitea =
     abstract RepoListTopics :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             TopicName System.Threading.Tasks.Task
 
@@ -5884,8 +5884,8 @@ type IGitea =
     abstract RepoGetWikiPages :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             WikiPageMetaData list System.Threading.Tasks.Task
 
@@ -5896,7 +5896,7 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "pageName">] pageName : string *
-        [<RestEase.Query "page">] page : int *
+        [<RestEase.Query "page">] page : int option *
         ?ct : System.Threading.CancellationToken ->
             WikiCommitList System.Threading.Tasks.Task
 
@@ -5973,8 +5973,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListTeamMembers :
         [<RestEase.Path "id">] id : int64 *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -6008,8 +6008,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListTeamRepos :
         [<RestEase.Path "id">] id : int64 *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Repository list System.Threading.Tasks.Task
 
@@ -6046,8 +6046,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract TopicSearch :
         [<RestEase.Query "q">] q : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             TopicResponse list System.Threading.Tasks.Task
 
@@ -6060,8 +6060,8 @@ type IGitea =
     [<RestEase.Get "user/applications/oauth2">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserGetOauth2Application :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             OAuth2Application list System.Threading.Tasks.Task
 
@@ -6119,8 +6119,8 @@ type IGitea =
     [<RestEase.Get "user/followers">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentListFollowers :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -6128,8 +6128,8 @@ type IGitea =
     [<RestEase.Get "user/following">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentListFollowing :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -6165,9 +6165,9 @@ type IGitea =
     [<RestEase.Get "user/keys">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentListKeys :
-        [<RestEase.Query "fingerprint">] fingerprint : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "fingerprint">] fingerprint : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             PublicKey list System.Threading.Tasks.Task
 
@@ -6195,8 +6195,8 @@ type IGitea =
     [<RestEase.Get "user/orgs">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListCurrentUserOrgs :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Organization list System.Threading.Tasks.Task
 
@@ -6204,8 +6204,8 @@ type IGitea =
     [<RestEase.Get "user/repos">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentListRepos :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Repository list System.Threading.Tasks.Task
 
@@ -6234,8 +6234,8 @@ type IGitea =
     [<RestEase.Get "user/starred">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentListStarred :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Repository list System.Threading.Tasks.Task
 
@@ -6267,8 +6267,8 @@ type IGitea =
     [<RestEase.Get "user/stopwatches">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserGetStopWatches :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             StopWatch list System.Threading.Tasks.Task
 
@@ -6276,8 +6276,8 @@ type IGitea =
     [<RestEase.Get "user/subscriptions">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentListSubscriptions :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Repository list System.Threading.Tasks.Task
 
@@ -6285,8 +6285,8 @@ type IGitea =
     [<RestEase.Get "user/teams">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserListTeams :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Team list System.Threading.Tasks.Task
 
@@ -6294,10 +6294,10 @@ type IGitea =
     [<RestEase.Get "user/times">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentTrackedTimes :
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
-        [<RestEase.Query "since">] since : string *
-        [<RestEase.Query "before">] before : string *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
+        [<RestEase.Query "since">] since : string option *
+        [<RestEase.Query "before">] before : string option *
         ?ct : System.Threading.CancellationToken ->
             TrackedTime list System.Threading.Tasks.Task
 
@@ -6305,10 +6305,10 @@ type IGitea =
     [<RestEase.Get "users/search">]
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserSearch :
-        [<RestEase.Query "q">] q : string *
-        [<RestEase.Query "uid">] uid : int64 *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "q">] q : string option *
+        [<RestEase.Query "uid">] uid : int64 option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Type10 System.Threading.Tasks.Task
 
@@ -6324,8 +6324,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserListFollowers :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -6334,8 +6334,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserListFollowing :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             User list System.Threading.Tasks.Task
 
@@ -6359,9 +6359,9 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserListKeys :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Query "fingerprint">] fingerprint : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "fingerprint">] fingerprint : string option *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             PublicKey list System.Threading.Tasks.Task
 
@@ -6370,8 +6370,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract OrgListUserOrgs :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Organization list System.Threading.Tasks.Task
 
@@ -6389,8 +6389,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserListRepos :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Repository list System.Threading.Tasks.Task
 
@@ -6399,8 +6399,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserListStarred :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Repository list System.Threading.Tasks.Task
 
@@ -6409,8 +6409,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserListSubscriptions :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             Repository list System.Threading.Tasks.Task
 
@@ -6419,8 +6419,8 @@ type IGitea =
     [<RestEase.Header("Accept", "application/json")>]
     abstract UserGetTokens :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Query "page">] page : int *
-        [<RestEase.Query "limit">] limit : int *
+        [<RestEase.Query "page">] page : int option *
+        [<RestEase.Query "limit">] limit : int option *
         ?ct : System.Threading.CancellationToken ->
             AccessToken list System.Threading.Tasks.Task
 
