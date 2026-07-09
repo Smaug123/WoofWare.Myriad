@@ -542,19 +542,13 @@ module internal SwaggerV2Generator =
             let byHandle = Dictionary ()
             let anonymousTypeCount = ref 0
 
-            let rec go (contents : ((string * SwaggerV2.Definition) * string) list) =
+            let rec go (contents : ((string option * SwaggerV2.Definition) * string) list) =
                 let lastRound = countAll ()
 
                 contents
                 |> List.filter (fun ((name, defn), defnClass) ->
                     let doIt =
-                        SwaggerClientGenerator.defnToType
-                            anonymousTypeCount
-                            byHandle
-                            bigCache
-                            defnClass
-                            (Some name)
-                            defn
+                        SwaggerClientGenerator.defnToType anonymousTypeCount byHandle bigCache defnClass name defn
 
                     match doIt with
                     | None -> true
@@ -566,6 +560,7 @@ module internal SwaggerV2Generator =
 
                         if currentCount = lastRound then
                             for (name, remaining), kind in remaining do
+                                let name = name |> Option.defaultValue "<anonymous>"
                                 SwaggerClientGenerator.log $"Remaining: %s{name} (%s{kind})"
 
                             SwaggerClientGenerator.log "--------"
@@ -584,15 +579,21 @@ module internal SwaggerV2Generator =
                             go remaining
 
             seq {
-                for defnClass in [ "definitions" ; "responses" ] do
-                    match defnClass with
-                    | "definitions" ->
-                        for KeyValue (k, v) in contents.Definitions do
-                            yield (k, v), defnClass
-                    | "responses" ->
-                        for KeyValue (k, v) in contents.Responses do
-                            yield (k, v.Schema), defnClass
-                    | _ -> failwith "oh no"
+                for KeyValue (k, v) in contents.Definitions do
+                    yield (Some k, v), "definitions"
+
+                for KeyValue (k, v) in contents.Responses do
+                    yield (Some k, v.Schema), "responses"
+
+                // Schemas declared inline on the endpoints themselves have no handle by
+                // which anything can refer to them, but we still need F# types for them.
+                for KeyValue (_, endpoints) in contents.Paths do
+                    for KeyValue (_, endpoint) in endpoints do
+                        for KeyValue (_, response) in endpoint.Responses do
+                            yield (None, response), "paths"
+
+                        for par in endpoint.Parameters |> Option.defaultValue [] do
+                            yield (None, par.Type), "paths"
             }
             |> Seq.toList
             |> go
