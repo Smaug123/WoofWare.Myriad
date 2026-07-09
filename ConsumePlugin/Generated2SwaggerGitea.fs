@@ -41839,6 +41839,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41892,6 +41893,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -41941,6 +41943,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42004,6 +42007,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42053,6 +42057,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42121,6 +42126,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42173,6 +42179,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42233,6 +42240,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42297,6 +42305,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42379,6 +42388,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42446,6 +42456,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42487,6 +42498,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42536,6 +42548,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42604,6 +42617,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42670,6 +42684,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42718,6 +42733,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42781,6 +42797,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42837,6 +42854,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42885,6 +42903,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -42948,6 +42967,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43000,6 +43020,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43038,10 +43059,11 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body |> MarkdownOption.toJsonNode |> (fun node -> node.ToJsonString ()),
                             null,
-                            "text/html"
+                            "application/json"
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "text/html")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43077,8 +43099,9 @@ module Gitea =
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.StringContent (body, null, "text/html")
+                    let queryParams = new System.Net.Http.StringContent (body, null, "text/plain")
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "text/html")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43114,6 +43137,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43203,6 +43227,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43294,6 +43319,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43354,6 +43380,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43407,6 +43434,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43475,6 +43503,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43537,6 +43566,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43601,6 +43631,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43669,6 +43700,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43721,6 +43753,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43773,6 +43806,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43818,6 +43852,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43888,6 +43923,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -43961,6 +43997,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44015,6 +44052,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44069,6 +44107,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44118,6 +44157,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44188,6 +44228,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44261,6 +44302,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44315,6 +44357,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44369,6 +44412,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44418,6 +44462,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44488,6 +44533,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44553,6 +44599,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44592,6 +44639,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44648,6 +44696,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44715,6 +44764,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44756,6 +44806,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44797,6 +44848,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44852,6 +44904,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44925,6 +44978,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -44995,6 +45049,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45068,6 +45123,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45150,6 +45206,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45230,6 +45287,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45305,6 +45363,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45369,6 +45428,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45418,6 +45478,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45541,6 +45602,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45609,6 +45671,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45714,6 +45777,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45768,6 +45832,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45822,6 +45887,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45871,6 +45937,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45928,6 +45995,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -45967,6 +46035,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46034,6 +46103,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46116,6 +46186,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46173,6 +46244,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46230,6 +46302,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46288,6 +46361,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46360,6 +46434,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46440,6 +46515,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46497,6 +46573,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46554,6 +46631,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46611,6 +46689,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46679,6 +46758,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46721,6 +46801,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46777,6 +46858,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46819,6 +46901,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46903,6 +46986,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -46994,6 +47078,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47078,6 +47163,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47158,6 +47244,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47245,6 +47332,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47316,6 +47404,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47387,6 +47476,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47458,6 +47548,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47522,6 +47613,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47598,6 +47690,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47655,6 +47748,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47730,6 +47824,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47787,6 +47882,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47844,6 +47940,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47908,6 +48005,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -47951,6 +48049,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48007,6 +48106,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48075,6 +48175,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48143,6 +48244,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48225,6 +48327,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48297,6 +48400,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48372,6 +48476,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48426,6 +48531,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48494,6 +48600,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48551,6 +48658,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48607,6 +48715,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48664,6 +48773,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48721,6 +48831,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48777,6 +48888,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48847,6 +48959,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48888,6 +49001,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -48999,6 +49113,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49074,6 +49189,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49156,6 +49272,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49224,6 +49341,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49266,6 +49384,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49344,6 +49463,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49411,6 +49531,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49472,6 +49593,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49529,6 +49651,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49611,6 +49734,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49653,6 +49777,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49710,6 +49835,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49766,6 +49892,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49823,6 +49950,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49901,6 +50029,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -49968,6 +50097,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50029,6 +50159,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50109,6 +50240,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50193,6 +50325,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50251,6 +50384,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50307,6 +50441,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50364,6 +50499,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50446,6 +50582,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50514,6 +50651,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50570,6 +50708,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50645,6 +50784,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50710,6 +50850,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50792,6 +50933,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50834,6 +50976,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50876,6 +51019,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50918,6 +51062,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -50985,6 +51130,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51053,6 +51199,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51137,6 +51284,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51234,6 +51382,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51316,6 +51465,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51373,6 +51523,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51422,6 +51573,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51489,6 +51641,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51564,6 +51717,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51621,6 +51775,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51678,6 +51833,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51735,6 +51891,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51810,6 +51967,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51867,6 +52025,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51924,6 +52083,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -51980,6 +52140,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52034,6 +52195,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52110,6 +52272,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52177,6 +52340,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52257,6 +52421,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52314,6 +52479,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52371,6 +52537,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52427,6 +52594,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52481,6 +52649,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52563,6 +52732,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52663,6 +52833,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52765,6 +52936,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52845,6 +53017,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52902,6 +53075,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -52973,6 +53147,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53051,6 +53226,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53117,6 +53293,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53212,6 +53389,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53280,6 +53458,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53336,6 +53515,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53378,6 +53558,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53436,6 +53617,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53520,6 +53702,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53585,6 +53768,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53667,6 +53851,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53731,6 +53916,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53804,6 +53990,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53868,6 +54055,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -53917,6 +54105,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54003,6 +54192,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54067,6 +54257,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54143,6 +54334,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54200,6 +54392,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54280,6 +54473,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54336,6 +54530,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54378,6 +54573,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54435,6 +54631,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54496,6 +54693,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54565,6 +54763,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54645,6 +54844,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54701,6 +54901,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54758,6 +54959,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54815,6 +55017,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54857,6 +55060,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54914,6 +55118,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -54970,6 +55175,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55027,6 +55233,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55105,6 +55312,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55172,6 +55380,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55233,6 +55442,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55287,6 +55497,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55352,6 +55563,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55410,6 +55622,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55505,6 +55718,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55587,6 +55801,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55659,6 +55874,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55726,6 +55942,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55782,6 +55999,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55823,6 +56041,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55895,6 +56114,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -55970,6 +56190,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56027,6 +56248,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56084,6 +56306,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56123,6 +56346,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56191,6 +56415,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56248,6 +56473,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56290,6 +56516,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56359,6 +56586,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56427,6 +56655,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56510,6 +56739,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56574,6 +56804,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56616,6 +56847,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56658,6 +56890,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56712,6 +56945,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56768,6 +57002,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56824,6 +57059,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56893,6 +57129,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -56950,6 +57187,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57007,6 +57245,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57063,6 +57302,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57135,6 +57375,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57224,6 +57465,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57299,6 +57541,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57351,6 +57594,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57400,6 +57644,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57449,6 +57694,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57498,6 +57744,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57547,6 +57794,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57596,6 +57844,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57634,6 +57883,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57686,6 +57936,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57731,6 +57982,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57801,6 +58053,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57866,6 +58119,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57922,6 +58176,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -57961,6 +58216,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58016,6 +58272,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58084,6 +58341,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58141,6 +58399,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58183,6 +58442,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58233,6 +58493,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58293,6 +58554,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58363,6 +58625,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58435,6 +58698,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58488,6 +58752,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58541,6 +58806,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58591,6 +58857,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58640,6 +58907,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58708,6 +58976,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58776,6 +59045,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58827,6 +59097,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58904,6 +59175,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -58968,6 +59240,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59006,6 +59279,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59044,6 +59318,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59078,6 +59353,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59116,6 +59392,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59168,6 +59445,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59236,6 +59514,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59288,6 +59567,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59340,6 +59620,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59389,6 +59670,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59464,6 +59746,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59532,6 +59815,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59581,6 +59865,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59649,6 +59934,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59724,6 +60010,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59791,6 +60078,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59832,6 +60120,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59873,6 +60162,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -59926,6 +60216,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60007,6 +60298,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60082,6 +60374,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60167,6 +60460,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60246,6 +60540,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60299,6 +60594,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60370,6 +60666,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60452,6 +60749,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60519,6 +60817,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60557,6 +60856,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60646,6 +60946,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60728,6 +61029,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60795,6 +61097,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60866,6 +61169,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -60948,6 +61252,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -61030,6 +61335,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -61112,6 +61418,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -61186,6 +61493,7 @@ module Gitea =
                         )
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -61242,6 +61550,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -61276,6 +61585,7 @@ module Gitea =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
