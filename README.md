@@ -15,7 +15,7 @@ Currently implemented:
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
 * `GenerateMock` and `GenerateCapturingMock` (to stamp out a record type corresponding to an interface, like a compile-time [Foq](https://github.com/fsprojects/Foq)).
 * `ArgParser` (to stamp out a basic argument parser).
-* `SwaggerClient` (to stamp out an HTTP client for a Swagger API).
+* `SwaggerClient` (to stamp out an HTTP client for a Swagger 2.0 or OpenAPI 3.0 API).
 * `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
 * `RemoveOptions` (to strip `option` modifiers from a type) - this one is particularly half-baked!
 
@@ -229,7 +229,7 @@ It should work fine if you just want to compose a few primitive types, though.
 
 ## `SwaggerClient`
 
-Takes a JSON-schema definition of a [Swagger API](https://swagger.io/), and stamps out a client like this:
+Takes a JSON definition of a [Swagger 2.0 or OpenAPI 3.0 API](https://swagger.io/), and stamps out a client like this:
 
 ```fsharp
 /// A type which was defined in the Swagger spec
@@ -293,6 +293,33 @@ so that the following manoeuvre will result in a generated mock:
 
 (Note that you do have to create the `GeneratedSwaggerGitea.fs` file manually before code generation happens. Myriad will throw if that file isn't there, because `Generated2SwaggerGitea.fs` depends on it so Myriad wants to compute its hash. Just make an empty file.)
 
+### OpenAPI 3.0
+
+The existing `swagger-client` generator detects the document version from the root `swagger` or `openapi` field, so OpenAPI 3.0 uses the same project configuration and preserves the Swagger 2.0 entry point.
+OpenAPI 3.1 is rejected explicitly rather than being interpreted with 3.0 schema semantics.
+
+The OpenAPI 3.0 path supports:
+
+* local component references for schemas, parameters, request bodies, and responses;
+* primitive schemas and formats, arrays, objects, required properties, `nullable`, `additionalProperties`, compatible object `allOf` intersections, and self-recursive records;
+* inherited and operation-level path/query parameters, with operation-level overrides;
+* JSON and plain-text request bodies, successful JSON/plain-text/binary responses, and no-content responses;
+* root server URLs, including expansion of server-variable defaults; and
+* deterministic sanitisation and collision handling for generated F# identifiers.
+
+The planner fails with a located diagnostic for structural constructs which the generated HTTP/JSON layer cannot represent.
+This currently includes OpenAPI 3.1, external references, `oneOf`/`anyOf`/`not`, optional-and-nullable three-state values, mutually recursive groups of records, header/cookie parameters, non-default parameter styles, optional or binary request bodies, and operations whose possible successful responses have incompatible body shapes.
+
+This is a typed client generator, not a complete OpenAPI validator or policy engine:
+
+* schema validation keywords such as `enum`, patterns, and numeric bounds are not enforced by the generated F# types;
+* security requirements and schemes do not add authentication automatically: configure the caller-supplied `HttpClient` instead;
+* the existing JSON codecs represent both an absent optional field and an explicit JSON `null` as `None`, and likewise cannot distinguish a missing required-nullable field from `null` (schemas which require all three states are rejected); and
+* optional query parameters are emitted as `option` arguments, with wire-level omission delegated to the chained `HttpClient` generator.
+
+Unconstrained JSON schemas use `JsonNode option` so that JSON `null` remains representable, and unformatted or extension-formatted integers use `System.Numerics.BigInteger` rather than silently narrowing their range.
+Unformatted or unknown-format `number` schemas are rejected because `float` cannot preserve the full JSON number range; explicit `float`, `double`, and `decimal` formats are supported.
+
 ### What's the point?
 
 [`SwaggerProvider`](https://github.com/fsprojects/SwaggerProvider) is *absolutely magical*, but it's kind of witchcraft.
@@ -302,7 +329,7 @@ Also, builds using `SwaggerProvider` appear to be inherently nondeterministic, e
 
 ## Limitations
 
-Swagger API specs appear to be pretty cowboy in the wild.
+Swagger and OpenAPI specs appear to be pretty cowboy in the wild.
 I try to cope with invalid schemas I have seen, but I can't guarantee I do so correctly.
 Definitely do perform integration tests and let me know of weird specs you encounter, and bits of the (very extensive) Swagger spec I have omitted!
 

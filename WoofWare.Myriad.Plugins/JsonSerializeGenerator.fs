@@ -287,7 +287,13 @@ module internal JsonSerializeGenerator =
                 ]
             |> SynExpr.createLambda "field"
             |> fun e -> e, false
-        | JsonNode -> SynExpr.createIdent "id", true
+        | JsonNode ->
+            SynExpr.createIdent "node"
+            |> SynExpr.typeAnnotate (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+            |> SynExpr.paren
+            |> SynExpr.callMethod "DeepClone"
+            |> SynExpr.createLambda "node"
+            |> fun expr -> expr, true
         | UnitType ->
             SynExpr.createLambda
                 "value"

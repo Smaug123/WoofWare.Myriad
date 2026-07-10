@@ -108,6 +108,16 @@
     </Compile>
     -->
     <None Include="swagger-gitea.json" />
+    <None Include="openapi-petstore.json" />
+    <Compile Include="GeneratedOpenApiPetstore.fs">
+      <MyriadFile>openapi-petstore.json</MyriadFile>
+      <MyriadParams>
+        <ClassName>OpenApiPetstore</ClassName>
+      </MyriadParams>
+    </Compile>
+    <Compile Include="Generated2OpenApiPetstore.fs">
+      <MyriadFile>GeneratedOpenApiPetstore.fs</MyriadFile>
+    </Compile>
     <Compile Include="GeneratedSwaggerGitea.fs">
       <MyriadFile>swagger-gitea.json</MyriadFile>
       <MyriadParams>

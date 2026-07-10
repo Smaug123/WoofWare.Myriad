@@ -757,7 +757,7 @@ module CollectRemainingJsonSerializeExtension =
                 )
 
                 for KeyValue (key, value) in input.Rest do
-                    node.Add (key, id value)
+                    node.Add (key, (fun node -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()) value)
 
             node :> _
 namespace ConsumePlugin

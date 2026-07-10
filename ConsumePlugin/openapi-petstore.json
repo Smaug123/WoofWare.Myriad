@@ -1,0 +1,328 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Systematic pet store",
+    "description": "A compact OpenAPI 3 fixture used to compile the generated client.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.test/v1/{tenant}",
+      "variables": {
+        "tenant": {
+          "default": "public"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/pets": {
+      "get": {
+        "operationId": "listPets",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All pets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPet",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreatePet"
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/PetResponse"
+          }
+        }
+      }
+    },
+    "/pets/{pet-id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PetId"
+        }
+      ],
+      "get": {
+        "operationId": "getPet",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/PetResponse"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deletePet",
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/status": {
+      "get": {
+        "operationId": "getStatus",
+        "responses": {
+          "200": {
+            "description": "Plain-text status",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/download": {
+      "get": {
+        "operationId": "download",
+        "responses": {
+          "200": {
+            "description": "Binary payload",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/echo": {
+      "post": {
+        "operationId": "echo",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Echoed text",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/anything": {
+      "post": {
+        "operationId": "echoAnything",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any JSON value",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/counter": {
+      "get": {
+        "operationId": "getCounter",
+        "responses": {
+          "200": {
+            "description": "An unconstrained-size integer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "echoCounter",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The same unconstrained-size integer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NewPet": {
+        "allOf": [
+          {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "Pet": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NewPet"
+          },
+          {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "parent": {
+                "$ref": "#/components/schemas/Pet"
+              }
+            }
+          }
+        ]
+      },
+      "JsonParseAttribute": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "JsonSerializeAttribute": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "HttpClientAttribute": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "GenerateMockAttribute": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "PetId": {
+        "name": "pet-id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "requestBodies": {
+      "CreatePet": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/NewPet"
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "PetResponse": {
+        "description": "A pet",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Pet"
+            }
+          }
+        }
+      }
+    }
+  }
+}
