@@ -555,8 +555,13 @@ type internal TypeWithPropertiesMock =
             lock this.Calls.Mem1 (fun _ -> this.Calls.Mem1.Add (arg_0_0))
             this.Mem1 (arg_0_0)
 
-        member this.Prop1 = this.Prop1 ()
-        member this.Prop2 = this.Prop2 ()
+        member this.Prop1 =
+            lock this.Calls.Prop1 (fun _ -> this.Calls.Prop1.Add ())
+            this.Prop1 ()
+
+        member this.Prop2 =
+            lock this.Calls.Prop2 (fun _ -> this.Calls.Prop2.Add ())
+            this.Prop2 ()
 
     interface System.IDisposable with
         member this.Dispose () : unit = this.Dispose ()

@@ -76,9 +76,9 @@ module TestSwaggerParse =
                     |> Some
                 Responses =
                     [
-                        204, Definition.Unspecified
-                        303, Definition.Unspecified
-                        404, Definition.Unspecified
+                        ResponseKey.Code 204, Definition.Unspecified
+                        ResponseKey.Code 303, Definition.Unspecified
+                        ResponseKey.Code 404, Definition.Unspecified
                     ]
                     |> Map.ofList
             }
@@ -118,12 +118,50 @@ module TestSwaggerParse =
         endpoint.Responses
         |> shouldEqual (
             [
-                200,
+                ResponseKey.Code 200,
                 Definition.Array
                     {
                         Items = Definition.String
                     }
-                403, Definition.Handle "#/responses/forbidden"
+                ResponseKey.Code 403, Definition.Handle "#/responses/forbidden"
+            ]
+            |> Map.ofList
+        )
+
+    [<Test>]
+    let ``Can parse a default response`` () : unit =
+        let s =
+            """{
+  "tags": [
+    "pet"
+  ],
+  "summary": "Returns all pets from the system that the user has access to",
+  "operationId": "findPets",
+  "responses": {
+    "200": {
+      "description": "pet response",
+      "schema": {
+        "type": "string"
+      }
+    },
+    "default": {
+      "description": "unexpected error",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    }
+  }
+}
+"""
+            |> JsonNode.Parse
+
+        let endpoint = s.AsObject () |> SwaggerEndpoint.Parse
+
+        endpoint.Responses
+        |> shouldEqual (
+            [
+                ResponseKey.Code 200, Definition.String
+                ResponseKey.Default, Definition.Handle "#/definitions/Error"
             ]
             |> Map.ofList
         )
