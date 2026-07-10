@@ -307,6 +307,29 @@ type SwaggerParameter =
             Required = required
         }
 
+/// Specifies the form a response to an endpoint will take if it's complying with this spec.
+type Response =
+    {
+        /// Human-readable description.
+        Description : string
+        /// Specification of the type to which responses will conform under this spec.
+        Schema : Definition
+    }
+
+    /// Render a JsonObject into this strongly-typed specification.
+    static member Parse (r : JsonObject) : Response =
+        let desc = asString r "description"
+
+        let schema =
+            match asObjOpt r "schema" with
+            | None -> Definition.Unspecified
+            | Some s -> Definition.Parse s
+
+        {
+            Description = desc
+            Schema = schema
+        }
+
 /// An "endpoint" is basically a single HTTP verb, applied to some path.
 type SwaggerEndpoint =
     {
@@ -344,7 +367,15 @@ type SwaggerEndpoint =
             asObj r "responses"
             |> Seq.map (fun (KeyValue (key, value)) ->
                 let value = value.AsObject ()
-                Int32.Parse key, Definition.Parse value
+
+                // A response is either a reference (e.g. to "#/responses/Blah"), or an
+                // inline Response Object whose type information lives in its "schema" field.
+                let defn =
+                    match value.["$ref"] |> Option.ofObj with
+                    | Some _ -> Definition.Parse value
+                    | None -> (Response.Parse value).Schema
+
+                Int32.Parse key, defn
             )
             |> Map.ofSeq
 
@@ -364,29 +395,6 @@ type SwaggerEndpoint =
             OperationId = operationId
             Parameters = parameters
             Responses = responses
-        }
-
-/// Specifies the form a response to an endpoint will take if it's complying with this spec.
-type Response =
-    {
-        /// Human-readable description.
-        Description : string
-        /// Specification of the type to which responses will conform under this spec.
-        Schema : Definition
-    }
-
-    /// Render a JsonObject into this strongly-typed specification.
-    static member Parse (r : JsonObject) : Response =
-        let desc = asString r "description"
-
-        let schema =
-            match asObjOpt r "schema" with
-            | None -> Definition.Unspecified
-            | Some s -> Definition.Parse s
-
-        {
-            Description = desc
-            Schema = schema
         }
 
 /// A Swagger API specification.
