@@ -251,6 +251,23 @@ module internal HttpClientGenerator =
                 )
             )
 
+        // The binding we emit below is in scope for the URI, body and header expressions, all of
+        // which may refer to the method's own parameters; so it must not capture any of them.
+        let queryStringName =
+            let taken =
+                info.Args
+                |> List.choose (fun arg -> arg.Id |> Option.map (fun id -> id.idText))
+                |> Set.ofList
+
+            let mutable candidate = "queryString"
+            let mutable suffix = 0
+
+            while taken.Contains candidate do
+                suffix <- suffix + 1
+                candidate <- $"queryString%i{suffix}"
+
+            candidate
+
         // A list- or array-typed query parameter contributes one key=value pair per
         // element ("multi" collection format, RestEase's convention), so the query
         // string is a runtime computation: we emit a `queryString` binding and then
@@ -327,14 +344,14 @@ module internal HttpClientGenerator =
 
                 let trailer =
                     SynExpr.ifThenElse
-                        (SynExpr.equals (SynExpr.createIdent "queryString") (SynExpr.CreateConst ""))
-                        (SynExpr.plus urlSeparator (SynExpr.createIdent "queryString") |> SynExpr.paren)
+                        (SynExpr.equals (SynExpr.createIdent queryStringName) (SynExpr.CreateConst ""))
+                        (SynExpr.plus urlSeparator (SynExpr.createIdent queryStringName) |> SynExpr.paren)
                         (SynExpr.CreateConst "")
                     |> SynExpr.paren
                     |> SynExpr.plus requestUriTrailer
                     |> SynExpr.paren
 
-                trailer, [ CompExprBinding.Let ("queryString", queryString) ]
+                trailer, [ CompExprBinding.Let (queryStringName, queryString) ]
 
         let requestUri =
             let uriIdent = SynExpr.createLongIdent [ "System" ; "Uri" ]
