@@ -560,6 +560,18 @@ module internal SwaggerClientGenerator =
 open Myriad.Core
 open System.IO
 
+/// Which of an endpoint's two MIME negotiations we're resolving: the request body's
+/// Content-Type (Consumes) or the response's Accept (Produces).
+[<RequireQualifiedAccess>]
+type internal MimeUsage =
+    | Consumes
+    | Produces
+
+    override this.ToString () =
+        match this with
+        | MimeUsage.Consumes -> "Consumes"
+        | MimeUsage.Produces -> "Produces"
+
 [<RequireQualifiedAccess>]
 module internal SwaggerV2Generator =
     let generate (pars : Map<string, string>) (contents : SwaggerV2.SwaggerV2) : Output =
@@ -679,7 +691,7 @@ module internal SwaggerV2Generator =
         /// Boil the resulting list down to the single MIME type we'll use, or None if
         /// neither the endpoint nor the global spec expressed a preference.
         let selectMimeType
-            (what : string)
+            (what : MimeUsage)
             (path : string)
             (method : HttpMethod)
             (endpointLevel : SwaggerV2.MimeType list option)
@@ -687,14 +699,13 @@ module internal SwaggerV2Generator =
             =
             let globalLevel =
                 match what with
-                | "Consumes" -> contents.Consumes
-                | "Produces" -> contents.Produces
-                | _ -> failwith $"unrecognised MIME source: %s{what}"
+                | MimeUsage.Consumes -> contents.Consumes
+                | MimeUsage.Produces -> contents.Produces
 
             match endpointLevel with
-            | Some [] -> failwith $"API specified empty %s{what}: %s{path} (%O{method})"
+            | Some [] -> failwith $"API specified empty %O{what}: %s{path} (%O{method})"
             | Some [ m ] -> Some m
-            | Some (_ :: _ :: _) -> failwith $"we don't support multiple %s{what} right now, at %s{path} (%O{method})"
+            | Some (_ :: _ :: _) -> failwith $"we don't support multiple %O{what} right now, at %s{path} (%O{method})"
             | None ->
 
             match globalLevel with
@@ -708,7 +719,7 @@ module internal SwaggerV2Generator =
                 if List.contains json many then
                     Some json
                 else
-                    failwith $"can't choose between multiple global %s{what} for %s{path} (%O{method})"
+                    failwith $"can't choose between multiple global %O{what} for %s{path} (%O{method})"
 
         let summary =
             contents.Paths
@@ -717,8 +728,8 @@ module internal SwaggerV2Generator =
                 |> Seq.choose (fun (KeyValue (method, endpoint)) ->
                     let docstring = endpoint.Summary |> PreXmlDoc.create
 
-                    let consumes = selectMimeType "Consumes" path method endpoint.Consumes
-                    let produces = selectMimeType "Produces" path method endpoint.Produces
+                    let consumes = selectMimeType MimeUsage.Consumes path method endpoint.Consumes
+                    let produces = selectMimeType MimeUsage.Produces path method endpoint.Produces
 
                     let returnType =
                         match SwaggerClientGenerator.successResponse endpoint.Responses with
