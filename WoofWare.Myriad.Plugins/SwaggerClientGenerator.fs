@@ -45,10 +45,49 @@ type internal Types =
         ByDefinition : IReadOnlyDictionary<SwaggerV2.Definition, TypeEntry>
     }
 
+/// What an endpoint's "responses" object tells us about the body of a successful response.
+[<RequireQualifiedAccess>]
+type internal SuccessResponse =
+    /// Exactly one schema can describe the body of a successful response.
+    | Exactly of SwaggerV2.Definition
+    /// Several 2xx statuses are declared, and we don't know which one to return.
+    | Ambiguous
+    /// Nothing the endpoint declares could describe the body of a successful response.
+    | Missing
+
 [<RequireQualifiedAccess>]
 module internal SwaggerClientGenerator =
 
     let internal log (_ : string) = ()
+
+    /// Determine the schema of the body we expect back from a successful call to an endpoint.
+    let successResponse (responses : Map<SwaggerV2.ResponseKey, SwaggerV2.Definition>) : SuccessResponse =
+        let successes =
+            responses
+            |> Seq.choose (fun (KeyValue (key, defn)) ->
+                match key with
+                | SwaggerV2.ResponseKey.Code code when 200 <= code && code < 300 -> Some defn
+                | SwaggerV2.ResponseKey.Code _
+                | SwaggerV2.ResponseKey.Default -> None
+            )
+            |> Seq.toList
+
+        match successes with
+        | [ defn ] ->
+            // Strictly, "default" also describes any 2xx status we haven't declared, so a server
+            // answering with an undeclared 201 here would be described by "default", not by `defn`.
+            // We assume the server honours the single 2xx status it declares. The alternative,
+            // calling this shape ambiguous, would discard the return type of nearly every real
+            // spec, since {200: T, default: Error} is the idiomatic way to write an endpoint.
+            SuccessResponse.Exactly defn
+        | [] ->
+            // The "default" response describes every status code not explicitly listed,
+            // which includes any undeclared 2xx status: so with no explicit 2xx response,
+            // it's the only description of a success body we have.
+            match Map.tryFind SwaggerV2.ResponseKey.Default responses with
+            | Some defn -> SuccessResponse.Exactly defn
+            | None -> SuccessResponse.Missing
+        | _ :: _ :: _ -> SuccessResponse.Ambiguous
 
     let renderType (types : Types) (defn : SwaggerV2.Definition) : SynType option =
         match types.ByDefinition.TryGetValue defn with
@@ -653,23 +692,11 @@ module internal SwaggerV2Generator =
                             failwith $"we don't support multiple Produces right now, at %s{path} (%O{method})"
 
                     let returnType =
-                        endpoint.Responses
-                        |> Seq.choose (fun (KeyValue (response, defn)) ->
-                            match response with
-                            | SwaggerV2.ResponseKey.Code code when 200 <= code && code < 300 -> Some defn
-                            | SwaggerV2.ResponseKey.Code _
-                            // The "default" response describes what comes back for status
-                            // codes not otherwise listed, which in practice means errors;
-                            // it doesn't contribute to the success return type.
-                            | SwaggerV2.ResponseKey.Default -> None
-                        )
-                        |> Seq.toList
-
-                    let returnType =
-                        match returnType with
-                        | [ t ] -> Some t
-                        | [] -> failwith $"got no successful response results, %s{path} %O{method}"
-                        | _ ->
+                        match SwaggerClientGenerator.successResponse endpoint.Responses with
+                        | SuccessResponse.Exactly t -> Some t
+                        | SuccessResponse.Missing ->
+                            failwith $"got no successful response results, %s{path} %O{method}"
+                        | SuccessResponse.Ambiguous ->
                             SwaggerClientGenerator.log
                                 $"Ignoring %s{path} %O{method} due to multiple success responses"
                             // can't be bothered to work out how to deal with multiple success
