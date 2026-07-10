@@ -525,6 +525,23 @@ module TestOpenApi3Generator =
             |> shouldEqual true
 
     [<Test>]
+    let ``Mutually recursive allOf components produce a diagnostic instead of recursing forever`` () =
+        let composedWith name =
+            jsonObject [ "allOf", jsonArray [ reference name ] ]
+
+        let pathItem = standardPathItem (responseWithSchema (reference "A")) [] []
+
+        let source =
+            document "3.0.3" [ "A", composedWith "B" ; "B", composedWith "A" ] "/things" pathItem
+
+        match OpenApiClientGenerator.parseAndPlan config source with
+        | Ok _ -> failwith "Planning unexpectedly accepted mutually recursive allOf components"
+        | Error diagnostics ->
+            diagnostics
+            |> List.exists (fun diagnostic -> diagnostic.Code = OpenApiGenerationDiagnosticCode.UnsupportedSchema)
+            |> shouldEqual true
+
+    [<Test>]
     let ``Dangling references always produce a located diagnostic`` () =
         let property (PositiveInt suffix) =
             let missing = $"Missing%i{suffix}"
@@ -1363,6 +1380,83 @@ module TestOpenApi3Generator =
         |> List.exactlyOne
         |> _.ReturnType
         |> shouldEqual (OpenApiPlannedType.Named definition.FSharpName)
+
+    [<Test>]
+    let ``Equivalent additionalProperties forms share their generated dictionary type`` () =
+        let schema additionalProperties =
+            jsonObject [ "type", jsonString "object" ; "additionalProperties", additionalProperties ]
+
+        let pathItem =
+            jsonObject
+                [
+                    "get",
+                    jsonObject
+                        [
+                            "operationId", jsonString "getThing"
+                            "responses",
+                            jsonObject
+                                [
+                                    "200", responseWithSchema (schema (jsonBool true))
+                                    "201", responseWithSchema (schema (jsonObject []))
+                                ]
+                        ]
+                ]
+
+        let actual = document "3.0.3" [] "/things" pathItem |> plan
+        let definition = actual.Types |> List.exactlyOne
+
+        definition.AdditionalProperties
+        |> shouldEqual (Some (OpenApiPlannedType.Optional OpenApiPlannedType.JsonNode))
+
+        actual.Operations
+        |> List.exactlyOne
+        |> _.ReturnType
+        |> shouldEqual (OpenApiPlannedType.Named definition.FSharpName)
+
+    [<Test>]
+    let ``AllOf repeated properties compare their canonical generated type rather than source syntax`` () =
+        let payload =
+            jsonObject
+                [
+                    "type", jsonString "object"
+                    "required", jsonArray [ jsonString "id" ]
+                    "properties", jsonObject [ "id", schemaForScalar GeneratedScalar.Int64 false ]
+                ]
+
+        let branch propertySchema =
+            jsonObject
+                [
+                    "type", jsonString "object"
+                    "properties", jsonObject [ "payload", propertySchema ]
+                ]
+
+        let parent =
+            jsonObject
+                [
+                    "allOf",
+                    jsonArray
+                        [
+                            branch (payload.DeepClone ())
+                            branch (jsonObject [ "allOf", jsonArray [ payload.DeepClone () ] ])
+                        ]
+                ]
+
+        let pathItem = standardPathItem (responseWithSchema (reference "Parent")) [] []
+        let actual = document "3.0.3" [ "Parent", parent ] "/things" pathItem |> plan
+
+        let parentType =
+            actual.Types |> List.find (fun definition -> definition.SourceName = "Parent")
+
+        let payloadField = parentType.Fields |> List.exactlyOne
+
+        payloadField.JsonName |> shouldEqual "payload"
+
+        match payloadField.Type with
+        | OpenApiPlannedType.Optional (OpenApiPlannedType.Named payloadTypeName) ->
+            actual.Types
+            |> List.exists (fun definition -> definition.FSharpName = payloadTypeName)
+            |> shouldEqual true
+        | unexpected -> failwith $"Expected an optional generated payload type, got %A{unexpected}"
 
     [<Test>]
     let ``Anonymous object deduplication keeps incompatible field types distinct`` () =

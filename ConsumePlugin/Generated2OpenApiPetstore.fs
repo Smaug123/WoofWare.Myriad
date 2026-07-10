@@ -741,10 +741,12 @@ module OpenApiPetstore =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> NewPet.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> NewPet.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -844,7 +846,12 @@ module OpenApiPetstore =
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.StringContent (body, null, "text/plain")
+                    let queryParams = new System.Net.Http.StringContent (body)
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("text/plain; charset=utf-8")
+
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -883,10 +890,12 @@ module OpenApiPetstore =
                                 | None -> "null"
                                 | Some field ->
                                     (fun node -> (node : System.Text.Json.Nodes.JsonNode).ToJsonString ()) field
-                            ),
-                            null,
-                            "application/json"
+                            )
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -932,10 +941,12 @@ module OpenApiPetstore =
                             |> (fun field ->
                                 let value = field : System.Numerics.BigInteger
                                 value.ToString ("D", System.Globalization.CultureInfo.InvariantCulture)
-                            ),
-                            null,
-                            "application/json"
+                            )
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -1093,6 +1104,11 @@ module OpenApiPetstore =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [ [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
@@ -1100,9 +1116,10 @@ module OpenApiPetstore =
                              | v -> v),
                             System.Uri (
                                 ("pets"
-                                 + (if "pets".IndexOf (char 63) >= 0 then "&" else "?")
-                                 + "limit="
-                                 + ((limit.ToString ()) |> System.Uri.EscapeDataString)),
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "pets".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )

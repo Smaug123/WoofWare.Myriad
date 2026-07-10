@@ -118,18 +118,73 @@ module internal OpenApiClientGenerator =
             Location : string
         }
 
-    type private AdditionalProperties =
+    type private SchemaReference =
+        {
+            Name : string
+            Location : string
+        }
+
+    type private CanonicalSchema =
+        {
+            Location : string
+            Description : string option
+            Nullable : bool
+            Shape : CanonicalSchemaShape
+        }
+
+    and private CanonicalSchemaShape =
+        | Reference of SchemaReference
+        | Any
+        | Primitive of OpenApiPrimitive
+        | Array of CanonicalSchema option
+        | Object of DirectObjectShape
+        | AllOf of
+            outerAllowsNull : bool *
+            hasSiblingObjectKeywords : bool *
+            allBranchesValid : bool *
+            branches : CanonicalSchema list
+        | UnsupportedNumber of format : string option
+        | UnsupportedType of typeName : string
+        | Invalid
+
+    and private DirectObjectShape =
+        {
+            Properties : Map<string, CanonicalSchema option>
+            Required : Set<string>
+            AdditionalProperties : AdditionalProperties
+        }
+
+    and private AdditionalProperties =
         | Any
         | Forbidden
-        | Typed of LocatedObject
+        | Typed of CanonicalSchema
 
     type private ObjectShape =
         {
             Description : string option
-            Properties : Map<string, LocatedObject option>
+            Properties : Map<string, CanonicalSchema option>
             Required : Set<string>
             AdditionalProperties : AdditionalProperties
         }
+
+    type private SchemaIdentity =
+        | Json
+        | Primitive of OpenApiPrimitive
+        | Named of componentName : string
+        | List of SchemaIdentity
+        | Optional of SchemaIdentity
+        | Object of ObjectShapeIdentity
+
+    and private ObjectShapeIdentity =
+        {
+            Properties : Map<string, SchemaIdentity>
+            Required : Set<string>
+            AdditionalProperties : AdditionalPropertiesIdentity
+        }
+
+    and private AdditionalPropertiesIdentity =
+        | Forbidden
+        | Value of SchemaIdentity
 
     type private ResolvedParameterLocation =
         | Path
@@ -142,7 +197,7 @@ module internal OpenApiClientGenerator =
             Name : string
             Location : ResolvedParameterLocation
             Required : bool
-            Schema : LocatedObject
+            Schema : CanonicalSchema
             SourceLocation : string
         }
 
@@ -198,1446 +253,1441 @@ module internal OpenApiClientGenerator =
     let private sanitiseParameterName (value : string) : string =
         (Ident.createSanitisedParamName value).idText
 
-    let rec private canonicalJson (node : JsonNode) : string =
-        if isNull node then
-            "null"
-        else
-            match node with
-            | :? JsonObject as value ->
-                value
-                |> Seq.map (fun (KeyValue (name, child)) ->
-                    let name = JsonSerializer.Serialize<string> name
-                    $"%s{name}:%s{canonicalJson child}"
-                )
-                |> Seq.sort
-                |> String.concat ","
-                |> fun contents -> "{" + contents + "}"
-            | :? JsonArray as value ->
-                value
-                |> Seq.map canonicalJson
-                |> String.concat ","
-                |> fun contents -> $"[%s{contents}]"
-            | value -> value.ToJsonString ()
+    let private report
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (code : OpenApiGenerationDiagnosticCode)
+        (location : string)
+        (message : string)
+        =
+        diagnostics.Add (diagnostic code location message)
 
-    /// A canonical description of the F# type shape which this generator emits for a schema.
-    /// OpenAPI annotations and validation constraints are intentionally absent: until the generated
-    /// type represents them, they cannot make two generated record definitions distinct.
-    let rec private schemaShapeKey (includeTopLevelNullable : bool) (node : JsonNode) : string =
-        let quoted (value : string) = JsonSerializer.Serialize<string> value
+    let private tryProperty
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (location : string)
+        (node : JsonObject)
+        (name : string)
+        : JsonNode option
+        =
+        let propertyLocation = $"%s{location}/%s{pointerToken name}"
 
-        let tryNode (node : JsonObject) (name : string) =
-            match node.TryGetPropertyValue name with
-            | true, value when not (isNull value) -> Some value
-            | _ -> None
+        match node.TryGetPropertyValue name with
+        | false, _ -> None
+        | true, value when isNull value ->
+            report diagnostics InvalidDocument propertyLocation "An optional property cannot be null."
+            None
+        | true, value -> Some value
 
-        let tryStringValue (node : JsonNode) =
-            try
-                Some (node.GetValue<string> ())
-            with
-            | :? InvalidOperationException
-            | :? FormatException -> None
+    let private tryString
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (location : string)
+        (node : JsonNode)
+        : string option
+        =
+        try
+            Some (node.GetValue<string> ())
+        with
+        | :? InvalidOperationException
+        | :? FormatException ->
+            report diagnostics InvalidDocument location "Expected a JSON string."
+            None
 
-        let tryBoolValue (node : JsonNode) =
-            try
-                Some (node.GetValue<bool> ())
-            with
-            | :? InvalidOperationException
-            | :? FormatException -> None
+    let private optionalString diagnostics location (node : JsonObject) name : string option =
+        tryProperty diagnostics location node name
+        |> Option.bind (tryString diagnostics ($"%s{location}/%s{pointerToken name}"))
 
+    let private requiredString diagnostics location (node : JsonObject) name : string option =
+        let propertyLocation = $"%s{location}/%s{pointerToken name}"
+
+        match node.TryGetPropertyValue name with
+        | false, _ ->
+            report diagnostics InvalidDocument propertyLocation "A required string property is missing."
+            None
+        | true, value when isNull value ->
+            report diagnostics InvalidDocument propertyLocation "A required string property cannot be null."
+            None
+        | true, value -> tryString diagnostics propertyLocation value
+
+    let private tryBool
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (location : string)
+        (node : JsonNode)
+        : bool option
+        =
+        try
+            Some (node.GetValue<bool> ())
+        with
+        | :? InvalidOperationException
+        | :? FormatException ->
+            report diagnostics InvalidDocument location "Expected a JSON boolean."
+            None
+
+    let private optionalBool diagnostics location (node : JsonObject) name : bool option =
+        tryProperty diagnostics location node name
+        |> Option.bind (tryBool diagnostics ($"%s{location}/%s{pointerToken name}"))
+
+    let private tryObject
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (location : string)
+        (node : JsonNode)
+        : LocatedObject option
+        =
         match node with
         | :? JsonObject as value ->
-            match tryNode value "$ref" |> Option.bind tryStringValue with
-            | Some reference ->
-                let schemaPrefix = "#/components/schemas/"
-
-                let reference =
-                    if reference.StartsWith (schemaPrefix, StringComparison.Ordinal) then
-                        reference.Substring schemaPrefix.Length
-                        |> Uri.UnescapeDataString
-                        |> fun value -> value.Replace ("~1", "/", StringComparison.Ordinal)
-                        |> fun value -> value.Replace ("~0", "~", StringComparison.Ordinal)
-                        |> fun value -> schemaPrefix + value
-                    else
-                        reference
-
-                $"ref(%s{quoted reference})"
-            | None ->
-                let typeName = tryNode value "type" |> Option.bind tryStringValue
-
-                let isObject =
-                    typeName = Some "object"
-                    || (typeName.IsNone
-                        && (value.ContainsKey "properties"
-                            || value.ContainsKey "required"
-                            || value.ContainsKey "additionalProperties"
-                            || value.ContainsKey "allOf"))
-
-                let nullable =
-                    includeTopLevelNullable
-                    && ((tryNode value "nullable" |> Option.bind tryBoolValue = Some true)
-                        || (typeName.IsNone && not isObject))
-
-                let core =
-                    if isObject && value.ContainsKey "allOf" then
-                        match tryNode value "allOf" with
-                        | Some (:? JsonArray as branches) ->
-                            branches
-                            |> Seq.map (schemaShapeKey true)
-                            |> Seq.sort
-                            |> String.concat ","
-                            |> fun branches -> $"allOf[%s{branches}]"
-                        | Some invalid -> $"invalidAllOf(%s{canonicalJson invalid})"
-                        | None -> "invalidAllOf(null)"
-                    elif isObject then
-                        let properties =
-                            match tryNode value "properties" with
-                            | Some (:? JsonObject as properties) ->
-                                properties
-                                |> Seq.map (fun (KeyValue (name, schema)) ->
-                                    let schema = if isNull schema then "json" else schemaShapeKey true schema
-
-                                    $"%s{quoted name}:%s{schema}"
-                                )
-                                |> Seq.sort
-                                |> String.concat ","
-                            | Some invalid -> $"invalid(%s{canonicalJson invalid})"
-                            | None -> ""
-
-                        let required =
-                            match tryNode value "required" with
-                            | Some (:? JsonArray as required) ->
-                                required
-                                |> Seq.map (fun item ->
-                                    if isNull item then
-                                        "null"
-                                    else
-                                        match tryStringValue item with
-                                        | Some item -> quoted item
-                                        | None -> canonicalJson item
-                                )
-                                |> Seq.distinct
-                                |> Seq.sort
-                                |> String.concat ","
-                            | Some invalid -> $"invalid(%s{canonicalJson invalid})"
-                            | None -> ""
-
-                        let additionalProperties =
-                            match tryNode value "additionalProperties" with
-                            | None -> "any"
-                            | Some (:? JsonObject as schema) -> $"typed(%s{schemaShapeKey true schema})"
-                            | Some other ->
-                                match tryBoolValue other with
-                                | Some true -> "any"
-                                | Some false -> "forbidden"
-                                | None -> $"invalid(%s{canonicalJson other})"
-
-                        $"object(properties=(%s{properties});required=[%s{required}];additional=%s{additionalProperties})"
-                    else
-                        match typeName with
-                        | None -> "json"
-                        | Some "string" ->
-                            match tryNode value "format" |> Option.bind tryStringValue with
-                            | Some "date" -> "date"
-                            | Some "date-time" -> "date-time"
-                            | Some "uuid" -> "guid"
-                            | _ -> "string"
-                        | Some "boolean" -> "bool"
-                        | Some "integer" ->
-                            match tryNode value "format" |> Option.bind tryStringValue with
-                            | Some "int32" -> "int32"
-                            | Some "int64" -> "int64"
-                            | _ -> "bigint"
-                        | Some "number" ->
-                            match tryNode value "format" |> Option.bind tryStringValue with
-                            | Some "float" -> "float32"
-                            | Some "double" -> "float"
-                            | Some "decimal" -> "decimal"
-                            | Some format -> $"unsupported-number(%s{quoted format})"
-                            | None -> "unsupported-number(unformatted)"
-                        | Some "array" ->
-                            match tryNode value "items" with
-                            | Some items -> $"list(%s{schemaShapeKey true items})"
-                            | None -> "list(json)"
-                        | Some other -> $"unsupported(%s{quoted other})"
-
-                if nullable then $"optional(%s{core})" else core
-        | invalid -> $"invalid(%s{canonicalJson invalid})"
-
-    let private objectShapeKey (shape : ObjectShape) : string =
-        let quoted (value : string) = JsonSerializer.Serialize<string> value
-
-        let properties =
-            shape.Properties
-            |> Map.toSeq
-            |> Seq.map (fun (name, schema) ->
-                let schema =
-                    match schema with
-                    | None -> "optional(json)"
-                    | Some schema -> schemaShapeKey true schema.Value
-
-                $"%s{quoted name}:%s{schema}"
-            )
-            |> String.concat ","
-
-        let required = shape.Required |> Seq.map quoted |> String.concat ","
-
-        let additionalProperties =
-            match shape.AdditionalProperties with
-            | AdditionalProperties.Any -> "any"
-            | AdditionalProperties.Forbidden -> "forbidden"
-            | AdditionalProperties.Typed schema -> $"typed(%s{schemaShapeKey true schema.Value})"
-
-        $"object(properties=(%s{properties});required=[%s{required}];additional=%s{additionalProperties})"
-
-    let private parseDocument
-        (parameters : Map<string, string>)
-        (root : JsonObject)
-        : Result<OpenApiClientPlan, OpenApiGenerationDiagnostic list>
-        =
-        let diagnostics = ResizeArray<OpenApiGenerationDiagnostic> ()
-
-        let report code location message =
-            diagnostics.Add (diagnostic code location message)
-
-        let tryProperty (location : string) (node : JsonObject) (name : string) : JsonNode option =
-            let propertyLocation = $"%s{location}/%s{pointerToken name}"
-
-            match node.TryGetPropertyValue name with
-            | false, _ -> None
-            | true, value when isNull value ->
-                report InvalidDocument propertyLocation "An optional property cannot be null."
-                None
-            | true, value -> Some value
-
-        let tryString (location : string) (node : JsonNode) : string option =
-            try
-                Some (node.GetValue<string> ())
-            with
-            | :? InvalidOperationException
-            | :? FormatException ->
-                report InvalidDocument location "Expected a JSON string."
-                None
-
-        let optionalString (location : string) (node : JsonObject) (name : string) : string option =
-            tryProperty location node name
-            |> Option.bind (tryString ($"%s{location}/%s{pointerToken name}"))
-
-        let requiredString (location : string) (node : JsonObject) (name : string) : string option =
-            let propertyLocation = $"%s{location}/%s{pointerToken name}"
-
-            match node.TryGetPropertyValue name with
-            | false, _ ->
-                report InvalidDocument propertyLocation "A required string property is missing."
-                None
-            | true, value when isNull value ->
-                report InvalidDocument propertyLocation "A required string property cannot be null."
-                None
-            | true, value -> tryString propertyLocation value
-
-        let tryBool (location : string) (node : JsonNode) : bool option =
-            try
-                Some (node.GetValue<bool> ())
-            with
-            | :? InvalidOperationException
-            | :? FormatException ->
-                report InvalidDocument location "Expected a JSON boolean."
-                None
-
-        let optionalBool (location : string) (node : JsonObject) (name : string) : bool option =
-            tryProperty location node name
-            |> Option.bind (tryBool ($"%s{location}/%s{pointerToken name}"))
-
-        let tryObject (location : string) (node : JsonNode) : LocatedObject option =
-            match node with
-            | :? JsonObject as value ->
+            Some
                 {
                     Value = value
                     Location = location
                 }
-                |> Some
-            | _ ->
-                report InvalidDocument location "Expected a JSON object."
-                None
+        | _ ->
+            report diagnostics InvalidDocument location "Expected a JSON object."
+            None
 
-        let optionalObject (location : string) (node : JsonObject) (name : string) : LocatedObject option =
-            tryProperty location node name
-            |> Option.bind (tryObject ($"%s{location}/%s{pointerToken name}"))
+    let private optionalObject diagnostics location (node : JsonObject) name : LocatedObject option =
+        tryProperty diagnostics location node name
+        |> Option.bind (tryObject diagnostics ($"%s{location}/%s{pointerToken name}"))
 
-        let tryArray (location : string) (node : JsonNode) : JsonArray option =
-            match node with
-            | :? JsonArray as value -> Some value
-            | _ ->
-                report InvalidDocument location "Expected a JSON array."
-                None
+    let private tryArray
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (location : string)
+        (node : JsonNode)
+        : JsonArray option
+        =
+        match node with
+        | :? JsonArray as value -> Some value
+        | _ ->
+            report diagnostics InvalidDocument location "Expected a JSON array."
+            None
 
-        let optionalArray (location : string) (node : JsonObject) (name : string) : JsonArray option =
-            tryProperty location node name
-            |> Option.bind (tryArray ($"%s{location}/%s{pointerToken name}"))
+    let private optionalArray diagnostics location (node : JsonObject) name : JsonArray option =
+        tryProperty diagnostics location node name
+        |> Option.bind (tryArray diagnostics ($"%s{location}/%s{pointerToken name}"))
 
-        let objectMap (location : string) (node : JsonObject) : Map<string, LocatedObject> =
-            node
-            |> Seq.choose (fun (KeyValue (name, value)) ->
-                tryObject ($"%s{location}/%s{pointerToken name}") value
-                |> Option.map (fun value -> name, value)
-            )
-            |> Map.ofSeq
+    let private objectMap diagnostics location (node : JsonObject) : Map<string, LocatedObject> =
+        node
+        |> Seq.choose (fun (KeyValue (name, value)) ->
+            tryObject diagnostics ($"%s{location}/%s{pointerToken name}") value
+            |> Option.map (fun value -> name, value)
+        )
+        |> Map.ofSeq
 
-        let componentMap (components : LocatedObject option) (name : string) : Map<string, LocatedObject> =
-            match
-                components
-                |> Option.bind (fun value -> optionalObject value.Location value.Value name)
-            with
-            | None -> Map.empty
-            | Some values -> objectMap values.Location values.Value
+    let private componentMap diagnostics (components : LocatedObject option) name : Map<string, LocatedObject> =
+        match
+            components
+            |> Option.bind (fun value -> optionalObject diagnostics value.Location value.Value name)
+        with
+        | None -> Map.empty
+        | Some values -> objectMap diagnostics values.Location values.Value
 
-        let decodePointerToken
-            (code : OpenApiGenerationDiagnosticCode)
-            (location : string)
-            (value : string)
-            : string option
-            =
-            let value = Uri.UnescapeDataString value
+    let private decodePointerToken diagnostics code location (value : string) : string option =
+        let value = Uri.UnescapeDataString value
 
-            if Regex.IsMatch (value, "~(?:[^01]|$)") then
-                report code location $"Reference token '%s{value}' contains an invalid JSON Pointer escape."
-                None
-            else
-                let value = value.Replace ("~1", "/", StringComparison.Ordinal)
-                value.Replace ("~0", "~", StringComparison.Ordinal) |> Some
+        if Regex.IsMatch (value, "~(?:[^01]|$)") then
+            report diagnostics code location $"Reference token '%s{value}' contains an invalid JSON Pointer escape."
+            None
+        else
+            let value = value.Replace ("~1", "/", StringComparison.Ordinal)
+            value.Replace ("~0", "~", StringComparison.Ordinal) |> Some
 
-        let referenceName
-            (code : OpenApiGenerationDiagnosticCode)
-            (expectedPrefix : string)
-            (referenceLocation : string)
-            (reference : string)
-            : string option
-            =
-            if reference.StartsWith (expectedPrefix, StringComparison.Ordinal) then
-                reference.Substring expectedPrefix.Length
-                |> decodePointerToken code referenceLocation
-            else
-                report
-                    code
-                    referenceLocation
-                    $"Only local references below '%s{expectedPrefix}' are supported; got '%s{reference}'."
-
-                None
-
-        let version = requiredString "#" root "openapi"
-
-        match version with
-        | Some value ->
-            let parts = value.Split '.'
-
-            if parts.Length < 2 || parts.[0] <> "3" || parts.[1] <> "0" then
-                report UnsupportedVersion "#/openapi" $"Expected an OpenAPI 3.0.x document, but got '%s{value}'."
-        | None -> ()
-
-        let parameters = normaliseParameters parameters
-
-        let className =
-            match Map.tryFind "CLASSNAME" parameters with
-            | Some value when not (String.IsNullOrWhiteSpace value) -> value
-            | _ ->
-                report InvalidDocument "#/$parameters/ClassName" "The ClassName Myriad parameter is required."
-                "GeneratedClient"
-
-        if sanitiseTypeName className <> className then
+    let private referenceName diagnostics code expectedPrefix referenceLocation (reference : string) : string option =
+        if reference.StartsWith (expectedPrefix, StringComparison.Ordinal) then
+            reference.Substring expectedPrefix.Length
+            |> decodePointerToken diagnostics code referenceLocation
+        else
             report
-                InvalidDocument
-                "#/$parameters/ClassName"
-                "ClassName must already be a valid PascalCase F# identifier."
+                diagnostics
+                code
+                referenceLocation
+                $"Only local references below '%s{expectedPrefix}' are supported; got '%s{reference}'."
 
-        let createMock =
-            match Map.tryFind "GENERATEMOCKVISIBILITY" parameters with
-            | None -> None
-            | Some value ->
-                match value.ToLowerInvariant () with
-                | "internal" -> Some true
-                | "public" -> Some false
-                | _ ->
-                    report
-                        InvalidDocument
-                        "#/$parameters/GenerateMockVisibility"
-                        "GenerateMockVisibility must be 'internal' or 'public'."
+            None
 
-                    None
+    let rec private analyzeSchema
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (cache : Dictionary<string, CanonicalSchema>)
+        (schema : LocatedObject)
+        : CanonicalSchema
+        =
+        match cache.TryGetValue schema.Location with
+        | true, analyzed -> analyzed
+        | false, _ ->
+            let reference = optionalString diagnostics schema.Location schema.Value "$ref"
 
-        let info = optionalObject "#" root "info"
+            let analyzed =
+                match reference with
+                | Some reference ->
+                    let referenceLocation = $"%s{schema.Location}/$ref"
 
-        let description =
-            info
-            |> Option.bind (fun value -> optionalString value.Location value.Value "description")
-
-        match info with
-        | None -> report InvalidDocument "#/info" "The OpenAPI info object is required."
-        | Some value -> requiredString value.Location value.Value "title" |> ignore
-
-        let components = optionalObject "#" root "components"
-        let schemaComponents = componentMap components "schemas"
-        let parameterComponents = componentMap components "parameters"
-        let requestBodyComponents = componentMap components "requestBodies"
-        let responseComponents = componentMap components "responses"
-
-        let rawReference (schema : LocatedObject) : (string * string) option =
-            optionalString schema.Location schema.Value "$ref"
-            |> Option.map (fun value -> $"%s{schema.Location}/$ref", value)
-
-        let rec isObjectLike (visited : Set<string>) (schema : LocatedObject) : bool =
-            match rawReference schema with
-            | Some (location, reference) ->
-                match referenceName UnsupportedSchema "#/components/schemas/" location reference with
-                | None -> false
-                | Some name when Set.contains name visited -> false
-                | Some name ->
-                    match Map.tryFind name schemaComponents with
-                    | None -> false
-                    | Some target -> isObjectLike (Set.add name visited) target
-            | None ->
-                match optionalString schema.Location schema.Value "type" with
-                | Some "object" -> true
-                | Some _ -> false
-                | None ->
-                    schema.Value.ContainsKey "allOf"
-                    || schema.Value.ContainsKey "properties"
-                    || schema.Value.ContainsKey "required"
-                    || schema.Value.ContainsKey "additionalProperties"
-
-        let usedTypeNames = HashSet<string> (StringComparer.Ordinal)
-
-        for reservedTypeName in
-            [
-                className
-                "I" + className
-                "System"
-                "RestEase"
-                "WoofWare"
-                "GenerateMockAttribute"
-                "HttpClientAttribute"
-                "JsonParseAttribute"
-                "JsonSerializeAttribute"
-            ] do
-            usedTypeNames.Add reservedTypeName |> ignore
-
-        let objectComponentNames =
-            schemaComponents
-            |> Map.toList
-            |> List.choose (fun (name, schema) -> if isObjectLike Set.empty schema then Some name else None)
-
-        let componentTypeNames =
-            objectComponentNames
-            |> List.map (fun sourceName ->
-                let fsharpName =
-                    allocateUniqueName usedTypeNames "GeneratedType" sanitiseTypeName sourceName
-
-                sourceName, fsharpName
-            )
-            |> Map.ofList
-
-        let definitions = ResizeArray<OpenApiPlannedTypeDefinition> ()
-
-        let liftedObjectTypes =
-            System.Collections.Generic.Dictionary<string, string> (StringComparer.Ordinal)
-
-        let rec schemaNullableInner (visited : Set<string>) (schema : LocatedObject) : bool =
-            match rawReference schema with
-            | Some (location, reference) ->
-                match referenceName UnresolvedReference "#/components/schemas/" location reference with
-                | None -> false
-                | Some name when Set.contains name visited -> false
-                | Some name ->
-                    match Map.tryFind name schemaComponents with
-                    | None -> false
-                    | Some target -> schemaNullableInner (Set.add name visited) target
-            | None ->
-                optionalBool schema.Location schema.Value "nullable"
-                |> Option.defaultValue false
-
-        let schemaNullable (schema : LocatedObject) : bool = schemaNullableInner Set.empty schema
-
-        let rec schemaAllowsNullInner (visited : Set<string>) (schema : LocatedObject) : bool =
-            match rawReference schema with
-            | Some (location, reference) ->
-                match referenceName UnresolvedReference "#/components/schemas/" location reference with
-                | None -> false
-                | Some name when Set.contains name visited -> false
-                | Some name ->
-                    match Map.tryFind name schemaComponents with
-                    | None -> false
-                    | Some target -> schemaAllowsNullInner (Set.add name visited) target
-            | None ->
-                match optionalArray schema.Location schema.Value "allOf" with
-                | Some branches ->
-                    let outerAllowsNull =
-                        match optionalString schema.Location schema.Value "type" with
-                        | None -> true
-                        | Some _ -> schemaNullable schema
-
-                    let branchNullability =
-                        branches
-                        |> Seq.mapi (fun index branch ->
-                            tryObject ($"%s{schema.Location}/allOf/%i{index}") branch
-                            |> Option.map (schemaAllowsNullInner visited)
+                    let shape =
+                        referenceName
+                            diagnostics
+                            UnresolvedReference
+                            "#/components/schemas/"
+                            referenceLocation
+                            reference
+                        |> Option.map (fun name ->
+                            CanonicalSchemaShape.Reference
+                                {
+                                    Name = name
+                                    Location = referenceLocation
+                                }
                         )
-                        |> Seq.toList
-
-                    outerAllowsNull
-                    && branchNullability.Length = branches.Count
-                    && (branchNullability |> List.forall (Option.defaultValue false))
-                | None ->
-                    if not (schema.Value.ContainsKey "type") && not (isObjectLike Set.empty schema) then
-                        // An unconstrained OpenAPI 3.0 Schema Object accepts every JSON value, including null.
-                        true
-                    else
-                        schemaNullable schema
-
-        let schemaAllowsNull (schema : LocatedObject) : bool = schemaAllowsNullInner Set.empty schema
-
-        let reportedUnsupportedSchemaKeywords = HashSet<string> (StringComparer.Ordinal)
-
-        let validateSchemaKeywords (schema : LocatedObject) =
-            let unsupportedKeywords =
-                [ "oneOf" ; "anyOf" ; "not" ; "discriminator" ]
-                |> List.filter schema.Value.ContainsKey
-
-            if not unsupportedKeywords.IsEmpty then
-                let keywordKey = String.concat "," unsupportedKeywords
-                let reportKey = $"%s{schema.Location}|%s{keywordKey}"
-
-                if reportedUnsupportedSchemaKeywords.Add reportKey then
-                    let unsupportedKeywords = String.concat ", " unsupportedKeywords
-
-                    report
-                        UnsupportedSchema
-                        schema.Location
-                        $"Unsupported shape-changing schema keyword(s): %s{unsupportedKeywords}."
-
-            match
-                optionalBool schema.Location schema.Value "readOnly",
-                optionalBool schema.Location schema.Value "writeOnly"
-            with
-            | Some true, _
-            | _, Some true ->
-                let reportKey = $"%s{schema.Location}|readOnly/writeOnly"
-
-                if reportedUnsupportedSchemaKeywords.Add reportKey then
-                    report
-                        UnsupportedSchema
-                        schema.Location
-                        "readOnly/writeOnly schemas require separate request and response projections."
-            | _ -> ()
-
-            let hasObjectKeywords =
-                schema.Value.ContainsKey "properties"
-                || schema.Value.ContainsKey "required"
-                || schema.Value.ContainsKey "additionalProperties"
-                || schema.Value.ContainsKey "allOf"
-
-            match optionalString schema.Location schema.Value "type" with
-            | Some value when value <> "object" && hasObjectKeywords ->
-                let reportKey = $"%s{schema.Location}|contradictory-type"
-
-                if reportedUnsupportedSchemaKeywords.Add reportKey then
-                    report
-                        UnsupportedSchema
-                        ($"%s{schema.Location}/type")
-                        $"Schema type '%s{value}' contradicts its object-shape keywords."
-            | _ -> ()
-
-        let validatedSchemaLocations = HashSet<string> (StringComparer.Ordinal)
-
-        let rec validateSchemaTree (schema : LocatedObject) =
-            if validatedSchemaLocations.Add schema.Location then
-                match rawReference schema with
-                | Some _ -> ()
-                | None ->
-                    validateSchemaKeywords schema
-                    optionalString schema.Location schema.Value "format" |> ignore
-                    optionalString schema.Location schema.Value "description" |> ignore
-                    optionalBool schema.Location schema.Value "nullable" |> ignore
-
-                    match optionalObject schema.Location schema.Value "properties" with
-                    | None -> ()
-                    | Some properties ->
-                        for KeyValue (name, value) in properties.Value do
-                            tryObject ($"%s{properties.Location}/%s{pointerToken name}") value
-                            |> Option.iter validateSchemaTree
-
-                    match optionalArray schema.Location schema.Value "required" with
-                    | None -> ()
-                    | Some required ->
-                        required
-                        |> Seq.iteri (fun index value ->
-                            tryString ($"%s{schema.Location}/required/%i{index}") value |> ignore
-                        )
-
-                    match optionalObject schema.Location schema.Value "items" with
-                    | None -> ()
-                    | Some items -> validateSchemaTree items
-
-                    match tryProperty schema.Location schema.Value "additionalProperties" with
-                    | None -> ()
-                    | Some (:? JsonObject as value) ->
-                        validateSchemaTree
-                            {
-                                Value = value
-                                Location = $"%s{schema.Location}/additionalProperties"
-                            }
-                    | Some value -> tryBool ($"%s{schema.Location}/additionalProperties") value |> ignore
-
-                    match optionalArray schema.Location schema.Value "allOf" with
-                    | None -> ()
-                    | Some branches ->
-                        branches
-                        |> Seq.iteri (fun index value ->
-                            tryObject ($"%s{schema.Location}/allOf/%i{index}") value
-                            |> Option.iter validateSchemaTree
-                        )
-
-        for KeyValue (_, schema) in schemaComponents do
-            validateSchemaTree schema
-
-        let rec typeForSchema
-            (aliasStack : Set<string>)
-            (suggestedName : string)
-            (schema : LocatedObject)
-            : OpenApiPlannedType
-            =
-            validateSchemaTree schema
-
-            match rawReference schema with
-            | Some (location, reference) ->
-                match referenceName UnresolvedReference "#/components/schemas/" location reference with
-                | None -> OpenApiPlannedType.JsonNode
-                | Some name ->
-                    match Map.tryFind name schemaComponents with
-                    | None ->
-                        report UnresolvedReference location $"Schema component '%s{name}' does not exist."
-                        OpenApiPlannedType.JsonNode
-                    | Some target ->
-                        match Map.tryFind name componentTypeNames with
-                        | Some typeName ->
-                            let result = OpenApiPlannedType.Named typeName
-
-                            if schemaAllowsNull target then
-                                OpenApiPlannedType.Optional result
-                            else
-                                result
-                        | None when Set.contains name aliasStack ->
-                            report
-                                UnsupportedSchema
-                                location
-                                $"Non-object schema reference cycle involving '%s{name}' is unsupported."
-
-                            OpenApiPlannedType.JsonNode
-                        | None -> typeForSchema (Set.add name aliasStack) suggestedName target
-            | None ->
-                validateSchemaKeywords schema
-
-                let baseType =
-                    if isObjectLike Set.empty schema then
-                        liftObject suggestedName schema
-                    else
-                        match optionalString schema.Location schema.Value "type" with
-                        | None -> OpenApiPlannedType.JsonNode
-                        | Some "string" ->
-                            match optionalString schema.Location schema.Value "format" with
-                            | Some "date" -> OpenApiPlannedType.Primitive OpenApiPrimitive.Date
-                            | Some "date-time" -> OpenApiPlannedType.Primitive OpenApiPrimitive.DateTime
-                            | Some "uuid" -> OpenApiPlannedType.Primitive OpenApiPrimitive.Guid
-                            | _ -> OpenApiPlannedType.Primitive OpenApiPrimitive.String
-                        | Some "boolean" -> OpenApiPlannedType.Primitive OpenApiPrimitive.Boolean
-                        | Some "integer" ->
-                            match optionalString schema.Location schema.Value "format" with
-                            | Some "int32" -> OpenApiPlannedType.Primitive OpenApiPrimitive.Int32
-                            | Some "int64" -> OpenApiPlannedType.Primitive OpenApiPrimitive.Int64
-                            | _ -> OpenApiPlannedType.Primitive OpenApiPrimitive.BigInteger
-                        | Some "number" ->
-                            match optionalString schema.Location schema.Value "format" with
-                            | Some "float" -> OpenApiPlannedType.Primitive OpenApiPrimitive.Float32
-                            | Some "double" -> OpenApiPlannedType.Primitive OpenApiPrimitive.Float
-                            | Some "decimal" -> OpenApiPlannedType.Primitive OpenApiPrimitive.Decimal
-                            | format ->
-                                report
-                                    UnsupportedSchema
-                                    ($"%s{schema.Location}/format")
-                                    (match format with
-                                     | None -> "Unformatted JSON numbers have no lossless built-in F# representation."
-                                     | Some format ->
-                                         $"Number format '%s{format}' has no lossless built-in F# representation.")
-
-                                OpenApiPlannedType.JsonNode
-                        | Some "array" ->
-                            match optionalObject schema.Location schema.Value "items" with
-                            | None ->
-                                report
-                                    UnsupportedSchema
-                                    ($"%s{schema.Location}/items")
-                                    "Array schemas must specify items."
-
-                                OpenApiPlannedType.List OpenApiPlannedType.JsonNode
-                            | Some items ->
-                                typeForSchema aliasStack ($"%s{suggestedName}Item") items
-                                |> OpenApiPlannedType.List
-                        | Some value ->
-                            report
-                                UnsupportedSchema
-                                ($"%s{schema.Location}/type")
-                                $"Schema type '%s{value}' is unsupported."
-
-                            OpenApiPlannedType.JsonNode
-
-                if schemaAllowsNull schema then
-                    OpenApiPlannedType.Optional baseType
-                else
-                    baseType
-
-        and liftObject (suggestedName : string) (schema : LocatedObject) : OpenApiPlannedType =
-            // Planning every occurrence preserves diagnostics even when its emitted definition is shared.
-            let shape = collectObjectShape Set.empty schema
-            // Nullability and annotations wrap or document each use; the flattened record shape is shared.
-            let key = objectShapeKey shape
-
-            match liftedObjectTypes.TryGetValue key with
-            | true, typeName -> OpenApiPlannedType.Named typeName
-            | false, _ ->
-                let typeName =
-                    allocateUniqueName usedTypeNames "AnonymousType" sanitiseTypeName suggestedName
-
-                liftedObjectTypes.Add (key, typeName)
-                buildDefinition suggestedName schema.Location typeName shape |> definitions.Add
-                OpenApiPlannedType.Named typeName
-
-        and buildDefinition
-            (sourceName : string)
-            (sourceLocation : string)
-            (typeName : string)
-            (shape : ObjectShape)
-            : OpenApiPlannedTypeDefinition
-            =
-            let allProperties =
-                (shape.Properties, shape.Required)
-                ||> Set.fold (fun properties requiredName ->
-                    if Map.containsKey requiredName properties then
-                        properties
-                    else
-                        Map.add requiredName None properties
-                )
-
-            if
-                allProperties.IsEmpty
-                && shape.AdditionalProperties = AdditionalProperties.Forbidden
-            then
-                report
-                    UnsupportedSchema
-                    sourceLocation
-                    "A closed object with no properties has no faithful non-null F# record representation."
-
-            let usedFieldNames = HashSet<string> (StringComparer.Ordinal)
-
-            if shape.AdditionalProperties <> AdditionalProperties.Forbidden then
-                usedFieldNames.Add "AdditionalProperties" |> ignore
-
-            let fields =
-                allProperties
-                |> Map.toList
-                |> List.map (fun (jsonName, propertySchema) ->
-                    let required = Set.contains jsonName shape.Required
-
-                    let fsharpName = allocateUniqueName usedFieldNames "Field" sanitiseTypeName jsonName
-
-                    let fieldType =
-                        match propertySchema with
-                        | None -> OpenApiPlannedType.Optional OpenApiPlannedType.JsonNode
-                        | Some propertySchema ->
-                            let allowsNull = schemaAllowsNull propertySchema
-
-                            if allowsNull && not required then
-                                report
-                                    UnsupportedSchema
-                                    propertySchema.Location
-                                    "An optional property whose schema allows null has three wire states (missing, null, value), which this generated API does not conflate."
-
-                            let result = typeForSchema Set.empty ($"%s{typeName}%s{fsharpName}") propertySchema
-
-                            if required || allowsNull then
-                                result
-                            else
-                                OpenApiPlannedType.Optional result
+                        |> Option.defaultValue CanonicalSchemaShape.Invalid
 
                     {
-                        JsonName = jsonName
-                        FSharpName = fsharpName
-                        Type = fieldType
-                        Required = required
+                        Location = schema.Location
+                        Description = None
+                        Nullable = false
+                        Shape = shape
                     }
-                )
+                | None ->
+                    let description =
+                        optionalString diagnostics schema.Location schema.Value "description"
 
-            let additionalProperties =
-                match shape.AdditionalProperties with
-                | AdditionalProperties.Forbidden -> None
-                | AdditionalProperties.Any -> Some (OpenApiPlannedType.Optional OpenApiPlannedType.JsonNode)
-                | AdditionalProperties.Typed schema ->
-                    typeForSchema Set.empty ($"%s{typeName}AdditionalProperty") schema |> Some
+                    let nullable =
+                        optionalBool diagnostics schema.Location schema.Value "nullable"
+                        |> Option.defaultValue false
 
-            {
-                SourceName = sourceName
-                FSharpName = typeName
-                Description = shape.Description
-                Fields = fields
-                AdditionalProperties = additionalProperties
-            }
+                    let typeName = optionalString diagnostics schema.Location schema.Value "type"
+                    let format = optionalString diagnostics schema.Location schema.Value "format"
 
-        and collectObjectShape (compositionStack : Set<string>) (schema : LocatedObject) : ObjectShape =
-            match rawReference schema with
-            | Some (location, reference) ->
-                match referenceName UnresolvedReference "#/components/schemas/" location reference with
-                | None -> emptyObjectShape None
-                | Some name when Set.contains name compositionStack ->
-                    report UnsupportedSchema location $"Object composition cycle involving '%s{name}' is unsupported."
-                    emptyObjectShape None
-                | Some name ->
-                    match Map.tryFind name schemaComponents with
-                    | None ->
-                        report UnresolvedReference location $"Schema component '%s{name}' does not exist."
-                        emptyObjectShape None
-                    | Some target -> collectObjectShape (Set.add name compositionStack) target
-            | None ->
-                validateSchemaKeywords schema
+                    let unsupportedKeywords =
+                        [ "oneOf" ; "anyOf" ; "not" ; "discriminator" ]
+                        |> List.filter schema.Value.ContainsKey
 
-                match optionalArray schema.Location schema.Value "allOf" with
-                | Some branches ->
-                    let shapes =
-                        branches
-                        |> Seq.mapi (fun index node ->
-                            tryObject ($"%s{schema.Location}/allOf/%i{index}") node
-                            |> Option.map (fun branch ->
-                                if not (isObjectLike Set.empty branch) then
-                                    report
-                                        UnsupportedSchema
-                                        branch.Location
-                                        "Only object-shaped allOf branches can be represented as an F# record."
+                    if not unsupportedKeywords.IsEmpty then
+                        let keywordList = String.concat ", " unsupportedKeywords
 
-                                collectObjectShape compositionStack branch
-                            )
-                        )
-                        |> Seq.choose id
-                        |> Seq.toList
+                        report
+                            diagnostics
+                            UnsupportedSchema
+                            schema.Location
+                            $"Unsupported shape-changing schema keyword(s): %s{keywordList}."
 
-                    if
+                    match
+                        optionalBool diagnostics schema.Location schema.Value "readOnly",
+                        optionalBool diagnostics schema.Location schema.Value "writeOnly"
+                    with
+                    | Some true, _
+                    | _, Some true ->
+                        report
+                            diagnostics
+                            UnsupportedSchema
+                            schema.Location
+                            "readOnly/writeOnly schemas require separate request and response projections."
+                    | _ -> ()
+
+                    let hasObjectKeywords =
                         schema.Value.ContainsKey "properties"
                         || schema.Value.ContainsKey "required"
                         || schema.Value.ContainsKey "additionalProperties"
-                    then
+                        || schema.Value.ContainsKey "allOf"
+
+                    match typeName with
+                    | Some value when value <> "object" && hasObjectKeywords ->
                         report
+                            diagnostics
                             UnsupportedSchema
-                            schema.Location
-                            "An allOf schema with sibling object-shape keywords is not currently supported."
+                            ($"%s{schema.Location}/type")
+                            $"Schema type '%s{value}' contradicts its object-shape keywords."
+                    | _ -> ()
 
-                    let merge (left : ObjectShape) (right : ObjectShape) : ObjectShape =
-                        let ensureNoForbiddenIntroductions (constrained : ObjectShape) (other : ObjectShape) =
-                            match constrained.AdditionalProperties with
-                            | AdditionalProperties.Any -> ()
-                            | AdditionalProperties.Forbidden
-                            | AdditionalProperties.Typed _ ->
-                                let introduced =
-                                    Set.difference
-                                        (other.Properties |> Map.toSeq |> Seq.map fst |> Set.ofSeq)
-                                        (constrained.Properties |> Map.toSeq |> Seq.map fst |> Set.ofSeq)
+                    let isObject = typeName = Some "object" || (typeName.IsNone && hasObjectKeywords)
 
-                                if not introduced.IsEmpty then
-                                    report
-                                        UnsupportedSchema
-                                        schema.Location
-                                        "allOf cannot merge fields introduced outside a branch with constrained additionalProperties."
-
-                        ensureNoForbiddenIntroductions left right
-                        ensureNoForbiddenIntroductions right left
-
-                        let properties =
-                            (left.Properties, right.Properties)
-                            ||> Map.fold (fun current name schema ->
-                                match Map.tryFind name current, schema with
-                                | None, _ -> Map.add name schema current
-                                | Some None, Some value -> Map.add name (Some value) current
-                                | Some None, None -> current
-                                | Some (Some _), None -> current
-                                | Some (Some existing), Some value ->
-                                    if schemaShapeKey true existing.Value <> schemaShapeKey true value.Value then
-                                        report
-                                            UnsupportedSchema
-                                            value.Location
-                                            $"allOf gives property '%s{name}' incompatible schemas."
-
-                                    current
-                            )
-
-                        let additionalProperties =
-                            match left.AdditionalProperties, right.AdditionalProperties with
-                            | AdditionalProperties.Any, value
-                            | value, AdditionalProperties.Any -> value
-                            | AdditionalProperties.Forbidden, AdditionalProperties.Forbidden ->
-                                AdditionalProperties.Forbidden
-                            | AdditionalProperties.Typed left, AdditionalProperties.Typed right when
-                                schemaShapeKey true left.Value = schemaShapeKey true right.Value
-                                ->
-                                AdditionalProperties.Typed left
-                            | _ ->
-                                report
-                                    UnsupportedSchema
-                                    schema.Location
-                                    "allOf branches have incompatible additionalProperties constraints."
-
-                                AdditionalProperties.Forbidden
-
-                        {
-                            Description = None
-                            Properties = properties
-                            Required = Set.union left.Required right.Required
-                            AdditionalProperties = additionalProperties
-                        }
-
-                    let description = optionalString schema.Location schema.Value "description"
-
-                    match shapes with
-                    | [] -> emptyObjectShape description
-                    | head :: tail ->
-                        { List.fold merge head tail with
-                            Description = description
-                        }
-                | None ->
-                    let properties =
-                        match optionalObject schema.Location schema.Value "properties" with
+                    // Parse every nested schema occurrence once, even if contradictory keywords mean that
+                    // the occurrence cannot contribute to the generated type. Diagnostics must not depend on
+                    // which planning branch happens to consume the canonical schema.
+                    let properties : Map<string, CanonicalSchema option> =
+                        match optionalObject diagnostics schema.Location schema.Value "properties" with
                         | None -> Map.empty
                         | Some properties ->
                             properties.Value
                             |> Seq.choose (fun (KeyValue (name, value)) ->
-                                tryObject ($"%s{properties.Location}/%s{pointerToken name}") value
-                                |> Option.map (fun value -> name, Some value)
+                                tryObject diagnostics ($"%s{properties.Location}/%s{pointerToken name}") value
+                                |> Option.map (fun value -> name, Some (analyzeSchema diagnostics cache value))
                             )
                             |> Map.ofSeq
 
                     let required =
-                        match optionalArray schema.Location schema.Value "required" with
+                        match optionalArray diagnostics schema.Location schema.Value "required" with
                         | None -> Set.empty
                         | Some values ->
                             values
-                            |> Seq.mapi (fun index value -> tryString ($"%s{schema.Location}/required/%i{index}") value)
+                            |> Seq.mapi (fun index value ->
+                                tryString diagnostics ($"%s{schema.Location}/required/%i{index}") value
+                            )
                             |> Seq.choose id
                             |> Set.ofSeq
 
-                    let additionalProperties =
-                        match tryProperty schema.Location schema.Value "additionalProperties" with
+                    let additionalProperties : AdditionalProperties =
+                        match tryProperty diagnostics schema.Location schema.Value "additionalProperties" with
                         | None -> AdditionalProperties.Any
                         | Some (:? JsonObject as value) ->
-                            AdditionalProperties.Typed
-                                {
-                                    Value = value
-                                    Location = $"%s{schema.Location}/additionalProperties"
-                                }
+                            {
+                                Value = value
+                                Location = $"%s{schema.Location}/additionalProperties"
+                            }
+                            |> analyzeSchema diagnostics cache
+                            |> AdditionalProperties.Typed
                         | Some value ->
-                            match tryBool ($"%s{schema.Location}/additionalProperties") value with
+                            match tryBool diagnostics ($"%s{schema.Location}/additionalProperties") value with
                             | Some true -> AdditionalProperties.Any
                             | Some false -> AdditionalProperties.Forbidden
                             | None -> AdditionalProperties.Any
 
+                    let items =
+                        optionalObject diagnostics schema.Location schema.Value "items"
+                        |> Option.map (analyzeSchema diagnostics cache)
+
+                    let allOf =
+                        optionalArray diagnostics schema.Location schema.Value "allOf"
+                        |> Option.map (fun values ->
+                            let branches =
+                                values
+                                |> Seq.mapi (fun index value ->
+                                    tryObject diagnostics ($"%s{schema.Location}/allOf/%i{index}") value
+                                    |> Option.map (analyzeSchema diagnostics cache)
+                                )
+                                |> Seq.toList
+
+                            branches, values.Count
+                        )
+
+                    let directObject : DirectObjectShape =
+                        {
+                            Properties = properties
+                            Required = required
+                            AdditionalProperties = additionalProperties
+                        }
+
+                    let shape =
+                        if isObject && schema.Value.ContainsKey "allOf" then
+                            match allOf with
+                            | None -> CanonicalSchemaShape.Object directObject
+                            | Some (branches, branchCount) ->
+                                let parsedBranches = branches |> List.choose id
+                                let allBranchesValid = parsedBranches.Length = branchCount
+
+                                let hasSiblingObjectKeywords =
+                                    schema.Value.ContainsKey "properties"
+                                    || schema.Value.ContainsKey "required"
+                                    || schema.Value.ContainsKey "additionalProperties"
+
+                                CanonicalSchemaShape.AllOf (
+                                    typeName.IsNone || nullable,
+                                    hasSiblingObjectKeywords,
+                                    allBranchesValid,
+                                    parsedBranches
+                                )
+                        elif isObject then
+                            CanonicalSchemaShape.Object directObject
+                        else
+                            match typeName with
+                            | None -> CanonicalSchemaShape.Any
+                            | Some "string" ->
+                                match format with
+                                | Some "date" -> CanonicalSchemaShape.Primitive OpenApiPrimitive.Date
+                                | Some "date-time" -> CanonicalSchemaShape.Primitive OpenApiPrimitive.DateTime
+                                | Some "uuid" -> CanonicalSchemaShape.Primitive OpenApiPrimitive.Guid
+                                | _ -> CanonicalSchemaShape.Primitive OpenApiPrimitive.String
+                            | Some "boolean" -> CanonicalSchemaShape.Primitive OpenApiPrimitive.Boolean
+                            | Some "integer" ->
+                                match format with
+                                | Some "int32" -> CanonicalSchemaShape.Primitive OpenApiPrimitive.Int32
+                                | Some "int64" -> CanonicalSchemaShape.Primitive OpenApiPrimitive.Int64
+                                | _ -> CanonicalSchemaShape.Primitive OpenApiPrimitive.BigInteger
+                            | Some "number" ->
+                                match format with
+                                | Some "float" -> CanonicalSchemaShape.Primitive OpenApiPrimitive.Float32
+                                | Some "double" -> CanonicalSchemaShape.Primitive OpenApiPrimitive.Float
+                                | Some "decimal" -> CanonicalSchemaShape.Primitive OpenApiPrimitive.Decimal
+                                | format -> CanonicalSchemaShape.UnsupportedNumber format
+                            | Some "array" -> CanonicalSchemaShape.Array items
+                            | Some other -> CanonicalSchemaShape.UnsupportedType other
+
                     {
-                        Description = optionalString schema.Location schema.Value "description"
+                        Location = schema.Location
+                        Description = description
+                        Nullable = nullable
+                        Shape = shape
+                    }
+
+            cache.Add (schema.Location, analyzed)
+            analyzed
+
+    type private SchemaResolutionContext =
+        {
+            Diagnostics : ResizeArray<OpenApiGenerationDiagnostic>
+            Components : Map<string, CanonicalSchema>
+        }
+
+    let private trySchemaTarget
+        (context : SchemaResolutionContext)
+        (reportMissing : bool)
+        (reference : SchemaReference)
+        : CanonicalSchema option
+        =
+        match Map.tryFind reference.Name context.Components with
+        | Some target -> Some target
+        | None ->
+            if reportMissing then
+                report
+                    context.Diagnostics
+                    UnresolvedReference
+                    reference.Location
+                    $"Schema component '%s{reference.Name}' does not exist."
+
+            None
+
+    let rec private resolveSchemaReferences
+        (context : SchemaResolutionContext)
+        (reportFailures : bool)
+        (visited : Set<string>)
+        (schema : CanonicalSchema)
+        : (Set<string> * CanonicalSchema) option
+        =
+        match schema.Shape with
+        | CanonicalSchemaShape.Reference reference when Set.contains reference.Name visited ->
+            if reportFailures then
+                report
+                    context.Diagnostics
+                    UnsupportedSchema
+                    reference.Location
+                    $"Schema reference cycle involving '%s{reference.Name}' is unsupported."
+
+            None
+        | CanonicalSchemaShape.Reference reference ->
+            trySchemaTarget context reportFailures reference
+            |> Option.bind (resolveSchemaReferences context reportFailures (Set.add reference.Name visited))
+        | _ -> Some (visited, schema)
+
+    let private schemaIsObjectLike (context : SchemaResolutionContext) (schema : CanonicalSchema) : bool =
+        match resolveSchemaReferences context false Set.empty schema with
+        | Some (_,
+                {
+                    Shape = CanonicalSchemaShape.Object _
+                })
+        | Some (_,
+                {
+                    Shape = CanonicalSchemaShape.AllOf _
+                }) -> true
+        | _ -> false
+
+    let rec private schemaAllowsNullInner
+        (context : SchemaResolutionContext)
+        (visited : Set<string>)
+        (schema : CanonicalSchema)
+        : bool
+        =
+        match resolveSchemaReferences context false visited schema with
+        | None -> false
+        | Some (visited, resolved) ->
+            match resolved.Shape with
+            | CanonicalSchemaShape.Any -> true
+            | CanonicalSchemaShape.AllOf (outerAllowsNull, _, allBranchesValid, branches) ->
+                outerAllowsNull
+                && allBranchesValid
+                && (branches |> List.forall (schemaAllowsNullInner context visited))
+            | _ -> resolved.Nullable
+
+    let private schemaAllowsNull (context : SchemaResolutionContext) (schema : CanonicalSchema) : bool =
+        schemaAllowsNullInner context Set.empty schema
+
+    type private SchemaPlanningContext =
+        {
+            Resolution : SchemaResolutionContext
+            UsedTypeNames : HashSet<string>
+            ComponentTypeNames : Map<string, string>
+            Definitions : ResizeArray<OpenApiPlannedTypeDefinition>
+            LiftedObjectTypes : Dictionary<ObjectShapeIdentity, string>
+        }
+
+    let private emptyObjectShape description : ObjectShape =
+        {
+            Description = description
+            Properties = Map.empty
+            Required = Set.empty
+            AdditionalProperties = AdditionalProperties.Any
+        }
+
+    let rec private typeForSchema
+        (context : SchemaPlanningContext)
+        (aliasStack : Set<string>)
+        (suggestedName : string)
+        (schema : CanonicalSchema)
+        : OpenApiPlannedType
+        =
+        match schema.Shape with
+        | CanonicalSchemaShape.Reference reference when Map.containsKey reference.Name context.ComponentTypeNames ->
+            match trySchemaTarget context.Resolution true reference with
+            | Some target ->
+                let typeName = context.ComponentTypeNames.[reference.Name]
+                let result = OpenApiPlannedType.Named typeName
+
+                if schemaAllowsNull context.Resolution target then
+                    OpenApiPlannedType.Optional result
+                else
+                    result
+            | None -> OpenApiPlannedType.JsonNode
+        | CanonicalSchemaShape.Reference _ ->
+            match resolveSchemaReferences context.Resolution true aliasStack schema with
+            | None -> OpenApiPlannedType.JsonNode
+            | Some (aliasStack, target) -> typeForSchema context aliasStack suggestedName target
+        | shape ->
+            let baseType =
+                match shape with
+                | CanonicalSchemaShape.Any -> OpenApiPlannedType.JsonNode
+                | CanonicalSchemaShape.Primitive primitive -> OpenApiPlannedType.Primitive primitive
+                | CanonicalSchemaShape.Array None ->
+                    report
+                        context.Resolution.Diagnostics
+                        UnsupportedSchema
+                        ($"%s{schema.Location}/items")
+                        "Array schemas must specify items."
+
+                    OpenApiPlannedType.List OpenApiPlannedType.JsonNode
+                | CanonicalSchemaShape.Array (Some items) ->
+                    typeForSchema context aliasStack ($"%s{suggestedName}Item") items
+                    |> OpenApiPlannedType.List
+                | CanonicalSchemaShape.Object _
+                | CanonicalSchemaShape.AllOf _ -> liftObject context suggestedName schema
+                | CanonicalSchemaShape.UnsupportedNumber format ->
+                    report
+                        context.Resolution.Diagnostics
+                        UnsupportedSchema
+                        ($"%s{schema.Location}/format")
+                        (match format with
+                         | None -> "Unformatted JSON numbers have no lossless built-in F# representation."
+                         | Some format -> $"Number format '%s{format}' has no lossless built-in F# representation.")
+
+                    OpenApiPlannedType.JsonNode
+                | CanonicalSchemaShape.UnsupportedType value ->
+                    report
+                        context.Resolution.Diagnostics
+                        UnsupportedSchema
+                        ($"%s{schema.Location}/type")
+                        $"Schema type '%s{value}' is unsupported."
+
+                    OpenApiPlannedType.JsonNode
+                | CanonicalSchemaShape.Invalid
+                | CanonicalSchemaShape.Reference _ -> OpenApiPlannedType.JsonNode
+
+            if schemaAllowsNull context.Resolution schema then
+                OpenApiPlannedType.Optional baseType
+            else
+                baseType
+
+    and private liftObject
+        (context : SchemaPlanningContext)
+        (suggestedName : string)
+        (schema : CanonicalSchema)
+        : OpenApiPlannedType
+        =
+        let shape = collectObjectShape context Set.empty schema
+        let identity = objectIdentity context shape
+
+        match context.LiftedObjectTypes.TryGetValue identity with
+        | true, typeName -> OpenApiPlannedType.Named typeName
+        | false, _ ->
+            let typeName =
+                allocateUniqueName context.UsedTypeNames "AnonymousType" sanitiseTypeName suggestedName
+
+            context.LiftedObjectTypes.Add (identity, typeName)
+
+            buildDefinition context suggestedName schema.Location typeName shape
+            |> context.Definitions.Add
+
+            OpenApiPlannedType.Named typeName
+
+    and private buildDefinition
+        (context : SchemaPlanningContext)
+        sourceName
+        sourceLocation
+        typeName
+        (shape : ObjectShape)
+        : OpenApiPlannedTypeDefinition
+        =
+        let allProperties =
+            (shape.Properties, shape.Required)
+            ||> Set.fold (fun properties requiredName ->
+                if Map.containsKey requiredName properties then
+                    properties
+                else
+                    Map.add requiredName None properties
+            )
+
+        if
+            allProperties.IsEmpty
+            && shape.AdditionalProperties = AdditionalProperties.Forbidden
+        then
+            report
+                context.Resolution.Diagnostics
+                UnsupportedSchema
+                sourceLocation
+                "A closed object with no properties has no faithful non-null F# record representation."
+
+        let usedFieldNames = HashSet<string> (StringComparer.Ordinal)
+
+        if shape.AdditionalProperties <> AdditionalProperties.Forbidden then
+            usedFieldNames.Add "AdditionalProperties" |> ignore
+
+        let fields =
+            allProperties
+            |> Map.toList
+            |> List.map (fun (jsonName, propertySchema) ->
+                let required = Set.contains jsonName shape.Required
+                let fsharpName = allocateUniqueName usedFieldNames "Field" sanitiseTypeName jsonName
+
+                let fieldType =
+                    match propertySchema with
+                    | None -> OpenApiPlannedType.Optional OpenApiPlannedType.JsonNode
+                    | Some propertySchema ->
+                        let allowsNull = schemaAllowsNull context.Resolution propertySchema
+
+                        if allowsNull && not required then
+                            report
+                                context.Resolution.Diagnostics
+                                UnsupportedSchema
+                                propertySchema.Location
+                                "An optional property whose schema allows null has three wire states (missing, null, value), which this generated API does not conflate."
+
+                        let result =
+                            typeForSchema context Set.empty ($"%s{typeName}%s{fsharpName}") propertySchema
+
+                        if required || allowsNull then
+                            result
+                        else
+                            OpenApiPlannedType.Optional result
+
+                {
+                    JsonName = jsonName
+                    FSharpName = fsharpName
+                    Type = fieldType
+                    Required = required
+                }
+            )
+
+        let additionalProperties =
+            match shape.AdditionalProperties with
+            | AdditionalProperties.Forbidden -> None
+            | AdditionalProperties.Any -> Some (OpenApiPlannedType.Optional OpenApiPlannedType.JsonNode)
+            | AdditionalProperties.Typed schema ->
+                typeForSchema context Set.empty ($"%s{typeName}AdditionalProperty") schema
+                |> Some
+
+        {
+            SourceName = sourceName
+            FSharpName = typeName
+            Description = shape.Description
+            Fields = fields
+            AdditionalProperties = additionalProperties
+        }
+
+    and private collectObjectShape
+        (context : SchemaPlanningContext)
+        (compositionStack : Set<string>)
+        (schema : CanonicalSchema)
+        : ObjectShape
+        =
+        match resolveSchemaReferences context.Resolution true compositionStack schema with
+        | None -> emptyObjectShape None
+        | Some (compositionStack, resolved) ->
+            match resolved.Shape with
+            | CanonicalSchemaShape.Object shape ->
+                {
+                    Description = resolved.Description
+                    Properties = shape.Properties
+                    Required = shape.Required
+                    AdditionalProperties = shape.AdditionalProperties
+                }
+            | CanonicalSchemaShape.AllOf (_, hasSiblingObjectKeywords, _, branches) ->
+                if hasSiblingObjectKeywords then
+                    report
+                        context.Resolution.Diagnostics
+                        UnsupportedSchema
+                        resolved.Location
+                        "An allOf schema with sibling object-shape keywords is not currently supported."
+
+                let shapes =
+                    branches
+                    |> List.map (fun branch ->
+                        if not (schemaIsObjectLike context.Resolution branch) then
+                            report
+                                context.Resolution.Diagnostics
+                                UnsupportedSchema
+                                branch.Location
+                                "Only object-shaped allOf branches can be represented as an F# record."
+
+                        collectObjectShape context compositionStack branch
+                    )
+
+                let merge (left : ObjectShape) (right : ObjectShape) : ObjectShape =
+                    let ensureNoForbiddenIntroductions (constrained : ObjectShape) (other : ObjectShape) =
+                        match constrained.AdditionalProperties with
+                        | AdditionalProperties.Any -> ()
+                        | AdditionalProperties.Forbidden
+                        | AdditionalProperties.Typed _ ->
+                            let introduced =
+                                Set.difference
+                                    (other.Properties |> Map.toSeq |> Seq.map fst |> Set.ofSeq)
+                                    (constrained.Properties |> Map.toSeq |> Seq.map fst |> Set.ofSeq)
+
+                            if not introduced.IsEmpty then
+                                report
+                                    context.Resolution.Diagnostics
+                                    UnsupportedSchema
+                                    resolved.Location
+                                    "allOf cannot merge fields introduced outside a branch with constrained additionalProperties."
+
+                    ensureNoForbiddenIntroductions left right
+                    ensureNoForbiddenIntroductions right left
+
+                    let properties =
+                        (left.Properties, right.Properties)
+                        ||> Map.fold (fun current name propertySchema ->
+                            match Map.tryFind name current, propertySchema with
+                            | None, _ -> Map.add name propertySchema current
+                            | Some None, Some value -> Map.add name (Some value) current
+                            | Some None, None
+                            | Some (Some _), None -> current
+                            | Some (Some existing), Some value ->
+                                if
+                                    schemaIdentity context Set.empty existing
+                                    <> schemaIdentity context Set.empty value
+                                then
+                                    report
+                                        context.Resolution.Diagnostics
+                                        UnsupportedSchema
+                                        value.Location
+                                        $"allOf gives property '%s{name}' incompatible schemas."
+
+                                current
+                        )
+
+                    let additionalProperties =
+                        match left.AdditionalProperties, right.AdditionalProperties with
+                        | AdditionalProperties.Any, value
+                        | value, AdditionalProperties.Any -> value
+                        | AdditionalProperties.Forbidden, AdditionalProperties.Forbidden ->
+                            AdditionalProperties.Forbidden
+                        | AdditionalProperties.Typed left, AdditionalProperties.Typed right when
+                            schemaIdentity context Set.empty left = schemaIdentity context Set.empty right
+                            ->
+                            AdditionalProperties.Typed left
+                        | _ ->
+                            report
+                                context.Resolution.Diagnostics
+                                UnsupportedSchema
+                                resolved.Location
+                                "allOf branches have incompatible additionalProperties constraints."
+
+                            AdditionalProperties.Forbidden
+
+                    {
+                        Description = None
                         Properties = properties
-                        Required = required
+                        Required = Set.union left.Required right.Required
                         AdditionalProperties = additionalProperties
                     }
 
-        and emptyObjectShape (description : string option) : ObjectShape =
-            {
-                Description = description
-                Properties = Map.empty
-                Required = Set.empty
-                AdditionalProperties = AdditionalProperties.Any
-            }
-
-        for sourceName in objectComponentNames do
-            let schema = schemaComponents.[sourceName]
-            let shape = collectObjectShape (Set.singleton sourceName) schema
-            let typeName = componentTypeNames.[sourceName]
-            buildDefinition sourceName schema.Location typeName shape |> definitions.Add
-
-        let rec resolveComponentReference
-            (diagnosticCode : OpenApiGenerationDiagnosticCode)
-            (prefix : string)
-            (components : Map<string, LocatedObject>)
-            (visited : Set<string>)
-            (value : LocatedObject)
-            : LocatedObject option
-            =
-            match rawReference value with
-            | None -> Some value
-            | Some (location, reference) ->
-                match referenceName diagnosticCode prefix location reference with
-                | None -> None
-                | Some name when Set.contains name visited ->
-                    report diagnosticCode location $"Reference cycle involving '%s{name}' is unsupported here."
-                    None
-                | Some name ->
-                    match Map.tryFind name components with
-                    | None ->
-                        report diagnosticCode location $"Component '%s{name}' does not exist."
-                        None
-                    | Some target ->
-                        resolveComponentReference diagnosticCode prefix components (Set.add name visited) target
-
-        let parseParameter (value : LocatedObject) : ResolvedParameter option =
-            resolveComponentReference UnresolvedReference "#/components/parameters/" parameterComponents Set.empty value
-            |> Option.bind (fun value ->
-                let name = requiredString value.Location value.Value "name"
-
-                let location =
-                    requiredString value.Location value.Value "in"
-                    |> Option.bind (fun location ->
-                        match location with
-                        | "path" -> Some ResolvedParameterLocation.Path
-                        | "query" -> Some ResolvedParameterLocation.Query
-                        | "header" -> Some ResolvedParameterLocation.Header
-                        | "cookie" -> Some ResolvedParameterLocation.Cookie
-                        | other ->
-                            report
-                                UnsupportedParameter
-                                ($"%s{value.Location}/in")
-                                $"Parameter location '%s{other}' is unsupported."
-
-                            None
-                    )
-
-                let schema = optionalObject value.Location value.Value "schema"
-                let hasSchema = value.Value.ContainsKey "schema"
-                let hasContent = value.Value.ContainsKey "content"
-
-                if hasContent then
-                    report
-                        UnsupportedParameter
-                        ($"%s{value.Location}/content")
-                        "Content-based parameters are not supported."
-
-                if not hasSchema && not hasContent then
-                    report InvalidDocument value.Location "A parameter must contain exactly one of schema or content."
-
-                if hasSchema && schema.IsNone then
-                    report
-                        InvalidDocument
-                        ($"%s{value.Location}/schema")
-                        "A parameter schema must be a non-null JSON object."
-
-                match name, location, schema with
-                | Some name, Some location, Some schema ->
-                    let required =
-                        optionalBool value.Location value.Value "required" |> Option.defaultValue false
-
-                    match location with
-                    | ResolvedParameterLocation.Path when not required ->
-                        report UnsupportedParameter value.Location "Path parameters must specify required: true."
-                    | ResolvedParameterLocation.Query when not (Regex.IsMatch (name, "^[A-Za-z0-9._~-]+$")) ->
-                        report
-                            UnsupportedParameter
-                            ($"%s{value.Location}/name")
-                            "Query parameter names must contain only RFC 3986 unreserved characters."
-                    | ResolvedParameterLocation.Header
-                    | ResolvedParameterLocation.Cookie ->
-                        report
-                            UnsupportedParameter
-                            value.Location
-                            "Header and cookie parameters are not representable by the generated HTTP client."
-                    | _ -> ()
-
-                    let expectedStyle =
-                        match location with
-                        | ResolvedParameterLocation.Path -> Some "simple"
-                        | ResolvedParameterLocation.Query -> Some "form"
-                        | _ -> None
-
-                    match expectedStyle, optionalString value.Location value.Value "style" with
-                    | Some expected, Some actual when actual <> expected ->
-                        report
-                            UnsupportedParameter
-                            ($"%s{value.Location}/style")
-                            $"Only the default '%s{expected}' parameter style is supported."
-                    | _ -> ()
-
-                    match optionalBool value.Location value.Value "allowReserved" with
-                    | Some true ->
-                        report
-                            UnsupportedParameter
-                            ($"%s{value.Location}/allowReserved")
-                            "allowReserved parameters require a different URI-escaping strategy."
-                    | _ -> ()
-
-                    {
-                        Name = name
-                        Location = location
-                        Required = required
-                        Schema = schema
-                        SourceLocation = value.Location
+                match shapes with
+                | [] -> emptyObjectShape resolved.Description
+                | head :: tail ->
+                    { List.fold merge head tail with
+                        Description = resolved.Description
                     }
-                    |> Some
-                | _ -> None
+            | _ ->
+                report
+                    context.Resolution.Diagnostics
+                    UnsupportedSchema
+                    resolved.Location
+                    "Expected an object-shaped schema."
+
+                emptyObjectShape resolved.Description
+
+    and private schemaIdentity
+        (context : SchemaPlanningContext)
+        (aliasStack : Set<string>)
+        (schema : CanonicalSchema)
+        : SchemaIdentity
+        =
+        match schema.Shape with
+        | CanonicalSchemaShape.Reference reference when Map.containsKey reference.Name context.ComponentTypeNames ->
+            match trySchemaTarget context.Resolution false reference with
+            | None -> SchemaIdentity.Json
+            | Some target ->
+                let core = SchemaIdentity.Named reference.Name
+
+                if schemaAllowsNull context.Resolution target then
+                    SchemaIdentity.Optional core
+                else
+                    core
+        | CanonicalSchemaShape.Reference _ ->
+            match resolveSchemaReferences context.Resolution false aliasStack schema with
+            | None -> SchemaIdentity.Json
+            | Some (aliasStack, target) -> schemaIdentity context aliasStack target
+        | shape ->
+            let core =
+                match shape with
+                | CanonicalSchemaShape.Any -> SchemaIdentity.Json
+                | CanonicalSchemaShape.Primitive primitive -> SchemaIdentity.Primitive primitive
+                | CanonicalSchemaShape.Array None -> SchemaIdentity.List SchemaIdentity.Json
+                | CanonicalSchemaShape.Array (Some items) ->
+                    SchemaIdentity.List (schemaIdentity context aliasStack items)
+                | CanonicalSchemaShape.Object _
+                | CanonicalSchemaShape.AllOf _ ->
+                    collectObjectShape context Set.empty schema
+                    |> objectIdentity context
+                    |> SchemaIdentity.Object
+                | CanonicalSchemaShape.UnsupportedNumber _
+                | CanonicalSchemaShape.UnsupportedType _
+                | CanonicalSchemaShape.Invalid
+                | CanonicalSchemaShape.Reference _ -> SchemaIdentity.Json
+
+            if schemaAllowsNull context.Resolution schema then
+                SchemaIdentity.Optional core
+            else
+                core
+
+    and private objectIdentity (context : SchemaPlanningContext) (shape : ObjectShape) : ObjectShapeIdentity =
+        let allProperties =
+            (shape.Properties, shape.Required)
+            ||> Set.fold (fun properties requiredName ->
+                if Map.containsKey requiredName properties then
+                    properties
+                else
+                    Map.add requiredName None properties
             )
 
-        let parseParameterList (owner : LocatedObject) : ResolvedParameter list =
-            match optionalArray owner.Location owner.Value "parameters" with
-            | None -> []
-            | Some values ->
-                let parsed =
-                    values
-                    |> Seq.mapi (fun index value ->
-                        tryObject ($"%s{owner.Location}/parameters/%i{index}") value
-                        |> Option.bind parseParameter
-                    )
-                    |> Seq.choose id
-                    |> Seq.toList
+        let properties =
+            allProperties
+            |> Map.map (fun _ schema ->
+                match schema with
+                | None -> SchemaIdentity.Optional SchemaIdentity.Json
+                | Some schema -> schemaIdentity context Set.empty schema
+            )
 
-                parsed
-                |> List.groupBy (fun parameter -> parameter.Name, parameter.Location)
-                |> List.iter (fun ((name, _), values) ->
-                    if values.Length > 1 then
-                        report
-                            InvalidDocument
-                            owner.Location
-                            $"Parameter '%s{name}' is duplicated at the same location."
-                )
+        let additionalProperties =
+            match shape.AdditionalProperties with
+            | AdditionalProperties.Forbidden -> AdditionalPropertiesIdentity.Forbidden
+            | AdditionalProperties.Any ->
+                SchemaIdentity.Optional SchemaIdentity.Json
+                |> AdditionalPropertiesIdentity.Value
+            | AdditionalProperties.Typed schema ->
+                schemaIdentity context Set.empty schema |> AdditionalPropertiesIdentity.Value
 
-                parsed
+        {
+            Properties = properties
+            Required = shape.Required
+            AdditionalProperties = additionalProperties
+        }
 
-        let mergeParameters
-            (inherited : ResolvedParameter list)
-            (operation : ResolvedParameter list)
-            : ResolvedParameter list
-            =
-            let overrides =
-                operation
-                |> List.map (fun parameter -> (parameter.Name, parameter.Location), parameter)
-                |> Map
+    let private addComponentDefinition
+        (context : SchemaPlanningContext)
+        (sourceName : string)
+        (schema : CanonicalSchema)
+        : unit
+        =
+        let shape = collectObjectShape context (Set.singleton sourceName) schema
+        let typeName = context.ComponentTypeNames.[sourceName]
 
-            [
-                for parameter in inherited do
-                    match Map.tryFind (parameter.Name, parameter.Location) overrides with
-                    | Some replacement -> yield replacement
-                    | None -> yield parameter
+        buildDefinition context sourceName schema.Location typeName shape
+        |> context.Definitions.Add
 
-                let inheritedKeys =
-                    inherited
-                    |> List.map (fun parameter -> parameter.Name, parameter.Location)
-                    |> Set
+    let rec private resolveComponentReference
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (diagnosticCode : OpenApiGenerationDiagnosticCode)
+        (prefix : string)
+        (components : Map<string, LocatedObject>)
+        (visited : Set<string>)
+        (value : LocatedObject)
+        : LocatedObject option
+        =
+        match optionalString diagnostics value.Location value.Value "$ref" with
+        | None -> Some value
+        | Some reference ->
+            let location = $"%s{value.Location}/$ref"
 
-                for parameter in operation do
-                    if not (Set.contains (parameter.Name, parameter.Location) inheritedKeys) then
-                        yield parameter
-            ]
+            match referenceName diagnostics diagnosticCode prefix location reference with
+            | None -> None
+            | Some name when Set.contains name visited ->
+                report diagnostics diagnosticCode location $"Reference cycle involving '%s{name}' is unsupported here."
+                None
+            | Some name ->
+                match Map.tryFind name components with
+                | None ->
+                    report diagnostics diagnosticCode location $"Component '%s{name}' does not exist."
+                    None
+                | Some target ->
+                    resolveComponentReference diagnostics diagnosticCode prefix components (Set.add name visited) target
 
-        let mediaTypeWithoutParameters (name : string) : string =
-            match name.IndexOf ';' with
-            | -1 -> name.Trim ()
-            | separator -> (name.Substring (0, separator)).Trim ()
+    let private parseServerBase
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (root : JsonObject)
+        : OpenApiServerBase
+        =
+        let report = report diagnostics
+        let optionalArray = optionalArray diagnostics
+        let tryObject = tryObject diagnostics
+        let requiredString = requiredString diagnostics
+        let optionalObject = optionalObject diagnostics
+        let objectMap = objectMap diagnostics
 
-        let mediaTypeEquals (expected : string) (actual : string) : bool =
-            (mediaTypeWithoutParameters actual).Equals (expected, StringComparison.OrdinalIgnoreCase)
-
-        let selectMedia (purpose : string) (content : LocatedObject) : (string * LocatedObject option) option =
-            let rank (name : string) =
-                let name = mediaTypeWithoutParameters name
-
-                if name.Equals ("application/json", StringComparison.OrdinalIgnoreCase) then
-                    0
-                elif name.EndsWith ("+json", StringComparison.OrdinalIgnoreCase) then
-                    1
-                elif name.Equals ("text/plain", StringComparison.OrdinalIgnoreCase) then
-                    2
-                elif name.Equals ("application/octet-stream", StringComparison.OrdinalIgnoreCase) then
-                    3
-                else
-                    100
-
-            let candidates =
-                content.Value
-                |> Seq.choose (fun (KeyValue (name, node)) ->
-                    let rank = rank name
-
-                    if rank = 100 then
-                        None
-                    else
-                        tryObject ($"%s{content.Location}/%s{pointerToken name}") node
-                        |> Option.map (fun media -> rank, name, media)
-                )
-                |> Seq.sortBy (fun (rank, name, _) -> rank, name)
-                |> Seq.toList
-
-            match candidates with
-            | [] ->
-                let keys =
-                    content.Value
-                    |> Seq.map (fun (KeyValue (name, _)) -> name)
-                    |> Seq.sort
-                    |> String.concat "', '"
-                    |> fun value ->
-                        if String.IsNullOrEmpty value then
-                            "(none)"
-                        else
-                            $"'%s{value}'"
-
+        match optionalArray "#" root "servers" with
+        | None -> OpenApiServerBase.BasePath "/"
+        | Some servers when servers.Count = 0 -> OpenApiServerBase.BasePath "/"
+        | Some servers ->
+            if servers.Count > 1 then
                 report
                     UnsupportedOperation
-                    content.Location
-                    $"No supported media type was found for %s{purpose}. Content keys: %s{keys}."
+                    "#/servers"
+                    "Only the first document-level server is supported; additional server entries would be ignored."
 
-                None
-            | (_, selectedName, selected) :: _ ->
-                let selectedSchema = optionalObject selected.Location selected.Value "schema"
-                Some (mediaTypeWithoutParameters selectedName, selectedSchema)
+            match tryObject "#/servers/0" servers.[0] with
+            | None -> OpenApiServerBase.BasePath "/"
+            | Some server ->
+                let mutable url =
+                    requiredString server.Location server.Value "url" |> Option.defaultValue "/"
 
-        let rec isJsonStringType (plannedType : OpenApiPlannedType) : bool =
-            match plannedType with
-            | OpenApiPlannedType.Primitive OpenApiPrimitive.String -> true
-            | OpenApiPlannedType.Optional inner -> isJsonStringType inner
-            | _ -> false
+                let variables =
+                    match optionalObject server.Location server.Value "variables" with
+                    | None -> Map.empty
+                    | Some variables -> objectMap variables.Location variables.Value
 
-        let isJsonMediaType (mediaType : string) : bool =
-            let mediaType = mediaTypeWithoutParameters mediaType
+                for found in Regex.Matches (url, "\\{([^{}]+)\\}") |> Seq.cast<Match> do
+                    let variableName = found.Groups.[1].Value
 
-            mediaType.Equals ("application/json", StringComparison.OrdinalIgnoreCase)
-            || mediaType.EndsWith ("+json", StringComparison.OrdinalIgnoreCase)
+                    match Map.tryFind variableName variables with
+                    | None ->
+                        report
+                            InvalidDocument
+                            ($"%s{server.Location}/url")
+                            $"Server variable '%s{variableName}' has no definition."
+                    | Some variable ->
+                        match requiredString variable.Location variable.Value "default" with
+                        | None -> ()
+                        | Some value -> url <- url.Replace (found.Value, value, StringComparison.Ordinal)
 
-        let responseShape (operationName : string) (value : LocatedObject) : OpenApiPlannedType * string option =
-            let value =
+                match Uri.TryCreate (url, UriKind.Absolute) with
+                | true, _ -> OpenApiServerBase.BaseAddress url
+                | false, _ -> OpenApiServerBase.BasePath url
+
+    type private OperationPlanningContext =
+        {
+            Diagnostics : ResizeArray<OpenApiGenerationDiagnostic>
+            SchemaCache : Dictionary<string, CanonicalSchema>
+            SchemaPlanning : SchemaPlanningContext
+            ParameterComponents : Map<string, LocatedObject>
+            RequestBodyComponents : Map<string, LocatedObject>
+            ResponseComponents : Map<string, LocatedObject>
+        }
+
+    let private parseParameter (context : OperationPlanningContext) (value : LocatedObject) : ResolvedParameter option =
+        let diagnostics = context.Diagnostics
+        let report = report diagnostics
+        let requiredString = requiredString diagnostics
+        let optionalString = optionalString diagnostics
+        let optionalBool = optionalBool diagnostics
+        let optionalObject = optionalObject diagnostics
+
+        resolveComponentReference
+            diagnostics
+            UnresolvedReference
+            "#/components/parameters/"
+            context.ParameterComponents
+            Set.empty
+            value
+        |> Option.bind (fun value ->
+            let name = requiredString value.Location value.Value "name"
+
+            let location =
+                requiredString value.Location value.Value "in"
+                |> Option.bind (fun location ->
+                    match location with
+                    | "path" -> Some ResolvedParameterLocation.Path
+                    | "query" -> Some ResolvedParameterLocation.Query
+                    | "header" -> Some ResolvedParameterLocation.Header
+                    | "cookie" -> Some ResolvedParameterLocation.Cookie
+                    | other ->
+                        report
+                            UnsupportedParameter
+                            ($"%s{value.Location}/in")
+                            $"Parameter location '%s{other}' is unsupported."
+
+                        None
+                )
+
+            let schema =
+                optionalObject value.Location value.Value "schema"
+                |> Option.map (analyzeSchema diagnostics context.SchemaCache)
+
+            let hasSchema = value.Value.ContainsKey "schema"
+            let hasContent = value.Value.ContainsKey "content"
+
+            if hasContent then
+                report
+                    UnsupportedParameter
+                    ($"%s{value.Location}/content")
+                    "Content-based parameters are not supported."
+
+            if not hasSchema && not hasContent then
+                report InvalidDocument value.Location "A parameter must contain exactly one of schema or content."
+
+            if hasSchema && schema.IsNone then
+                report
+                    InvalidDocument
+                    ($"%s{value.Location}/schema")
+                    "A parameter schema must be a non-null JSON object."
+
+            match name, location, schema with
+            | Some name, Some location, Some schema ->
+                let required =
+                    optionalBool value.Location value.Value "required" |> Option.defaultValue false
+
+                match location with
+                | ResolvedParameterLocation.Path when not required ->
+                    report UnsupportedParameter value.Location "Path parameters must specify required: true."
+                | ResolvedParameterLocation.Query when not (Regex.IsMatch (name, "^[A-Za-z0-9._~-]+$")) ->
+                    report
+                        UnsupportedParameter
+                        ($"%s{value.Location}/name")
+                        "Query parameter names must contain only RFC 3986 unreserved characters."
+                | ResolvedParameterLocation.Header
+                | ResolvedParameterLocation.Cookie ->
+                    report
+                        UnsupportedParameter
+                        value.Location
+                        "Header and cookie parameters are not representable by the generated HTTP client."
+                | _ -> ()
+
+                let expectedStyle =
+                    match location with
+                    | ResolvedParameterLocation.Path -> Some "simple"
+                    | ResolvedParameterLocation.Query -> Some "form"
+                    | _ -> None
+
+                match expectedStyle, optionalString value.Location value.Value "style" with
+                | Some expected, Some actual when actual <> expected ->
+                    report
+                        UnsupportedParameter
+                        ($"%s{value.Location}/style")
+                        $"Only the default '%s{expected}' parameter style is supported."
+                | _ -> ()
+
+                match optionalBool value.Location value.Value "allowReserved" with
+                | Some true ->
+                    report
+                        UnsupportedParameter
+                        ($"%s{value.Location}/allowReserved")
+                        "allowReserved parameters require a different URI-escaping strategy."
+                | _ -> ()
+
+                {
+                    Name = name
+                    Location = location
+                    Required = required
+                    Schema = schema
+                    SourceLocation = value.Location
+                }
+                |> Some
+            | _ -> None
+        )
+
+    let private parseParameterList
+        (context : OperationPlanningContext)
+        (owner : LocatedObject)
+        : ResolvedParameter list
+        =
+        let diagnostics = context.Diagnostics
+        let report = report diagnostics
+        let optionalArray = optionalArray diagnostics
+        let tryObject = tryObject diagnostics
+
+        match optionalArray owner.Location owner.Value "parameters" with
+        | None -> []
+        | Some values ->
+            let parsed =
+                values
+                |> Seq.mapi (fun index value ->
+                    tryObject ($"%s{owner.Location}/parameters/%i{index}") value
+                    |> Option.bind (parseParameter context)
+                )
+                |> Seq.choose id
+                |> Seq.toList
+
+            parsed
+            |> List.groupBy (fun parameter -> parameter.Name, parameter.Location)
+            |> List.iter (fun ((name, _), values) ->
+                if values.Length > 1 then
+                    report InvalidDocument owner.Location $"Parameter '%s{name}' is duplicated at the same location."
+            )
+
+            parsed
+
+    let private mergeParameters
+        (inherited : ResolvedParameter list)
+        (operation : ResolvedParameter list)
+        : ResolvedParameter list
+        =
+        let overrides =
+            operation
+            |> List.map (fun parameter -> (parameter.Name, parameter.Location), parameter)
+            |> Map
+
+        [
+            for parameter in inherited do
+                match Map.tryFind (parameter.Name, parameter.Location) overrides with
+                | Some replacement -> yield replacement
+                | None -> yield parameter
+
+            let inheritedKeys =
+                inherited
+                |> List.map (fun parameter -> parameter.Name, parameter.Location)
+                |> Set
+
+            for parameter in operation do
+                if not (Set.contains (parameter.Name, parameter.Location) inheritedKeys) then
+                    yield parameter
+        ]
+
+    let private mediaTypeWithoutParameters (name : string) : string =
+        match name.IndexOf ';' with
+        | -1 -> name.Trim ()
+        | separator -> (name.Substring (0, separator)).Trim ()
+
+    let private mediaTypeEquals (expected : string) (actual : string) : bool =
+        (mediaTypeWithoutParameters actual).Equals (expected, StringComparison.OrdinalIgnoreCase)
+
+    let private selectMedia
+        (context : OperationPlanningContext)
+        (purpose : string)
+        (content : LocatedObject)
+        : (string * CanonicalSchema option) option
+        =
+        let diagnostics = context.Diagnostics
+        let report = report diagnostics
+        let tryObject = tryObject diagnostics
+        let optionalObject = optionalObject diagnostics
+
+        let rank (name : string) =
+            let name = mediaTypeWithoutParameters name
+
+            if name.Equals ("application/json", StringComparison.OrdinalIgnoreCase) then
+                0
+            elif name.EndsWith ("+json", StringComparison.OrdinalIgnoreCase) then
+                1
+            elif name.Equals ("text/plain", StringComparison.OrdinalIgnoreCase) then
+                2
+            elif name.Equals ("application/octet-stream", StringComparison.OrdinalIgnoreCase) then
+                3
+            else
+                100
+
+        let candidates =
+            content.Value
+            |> Seq.choose (fun (KeyValue (name, node)) ->
+                let rank = rank name
+
+                if rank = 100 then
+                    None
+                else
+                    tryObject ($"%s{content.Location}/%s{pointerToken name}") node
+                    |> Option.map (fun media -> rank, name, media)
+            )
+            |> Seq.sortBy (fun (rank, name, _) -> rank, name)
+            |> Seq.toList
+
+        match candidates with
+        | [] ->
+            let keys =
+                content.Value
+                |> Seq.map (fun (KeyValue (name, _)) -> name)
+                |> Seq.sort
+                |> String.concat "', '"
+                |> fun value ->
+                    if String.IsNullOrEmpty value then
+                        "(none)"
+                    else
+                        $"'%s{value}'"
+
+            report
+                UnsupportedOperation
+                content.Location
+                $"No supported media type was found for %s{purpose}. Content keys: %s{keys}."
+
+            None
+        | (_, selectedName, selected) :: _ ->
+            let selectedSchema =
+                optionalObject selected.Location selected.Value "schema"
+                |> Option.map (analyzeSchema diagnostics context.SchemaCache)
+
+            Some (mediaTypeWithoutParameters selectedName, selectedSchema)
+
+    let rec private isJsonStringType (plannedType : OpenApiPlannedType) : bool =
+        match plannedType with
+        | OpenApiPlannedType.Primitive OpenApiPrimitive.String -> true
+        | OpenApiPlannedType.Optional inner -> isJsonStringType inner
+        | _ -> false
+
+    let private isJsonMediaType (mediaType : string) : bool =
+        let mediaType = mediaTypeWithoutParameters mediaType
+
+        mediaType.Equals ("application/json", StringComparison.OrdinalIgnoreCase)
+        || mediaType.EndsWith ("+json", StringComparison.OrdinalIgnoreCase)
+
+    let private responseShape
+        (context : OperationPlanningContext)
+        (operationName : string)
+        (value : LocatedObject)
+        : OpenApiPlannedType * string option
+        =
+        let diagnostics = context.Diagnostics
+        let report = report diagnostics
+        let optionalObject = optionalObject diagnostics
+
+        let value =
+            resolveComponentReference
+                diagnostics
+                UnresolvedReference
+                "#/components/responses/"
+                context.ResponseComponents
+                Set.empty
+                value
+
+        match value with
+        | None -> OpenApiPlannedType.JsonNode, None
+        | Some value ->
+            match optionalObject value.Location value.Value "content" with
+            | None -> OpenApiPlannedType.Unit, None
+            | Some content when content.Value.Count = 0 -> OpenApiPlannedType.Unit, None
+            | Some content ->
+                match selectMedia context "a response" content with
+                | None -> OpenApiPlannedType.JsonNode, None
+                | Some (mediaType, schema) ->
+                    let result =
+                        if mediaTypeEquals "application/octet-stream" mediaType then
+                            match schema with
+                            | None -> ()
+                            | Some schema ->
+                                match
+                                    typeForSchema
+                                        context.SchemaPlanning
+                                        Set.empty
+                                        ($"%s{operationName}BinaryResponse")
+                                        schema
+                                with
+                                | OpenApiPlannedType.Primitive OpenApiPrimitive.String -> ()
+                                | _ ->
+                                    report
+                                        UnsupportedOperation
+                                        schema.Location
+                                        "application/octet-stream responses require a non-null string/binary schema."
+
+                            OpenApiPlannedType.Stream
+                        elif mediaTypeEquals "text/plain" mediaType then
+                            match schema with
+                            | None -> ()
+                            | Some schema ->
+                                match
+                                    typeForSchema
+                                        context.SchemaPlanning
+                                        Set.empty
+                                        ($"%s{operationName}TextResponse")
+                                        schema
+                                with
+                                | OpenApiPlannedType.Primitive OpenApiPrimitive.String -> ()
+                                | _ ->
+                                    report
+                                        UnsupportedOperation
+                                        schema.Location
+                                        "text/plain responses require a non-null string schema."
+
+                            OpenApiPlannedType.Primitive OpenApiPrimitive.String
+                        else
+                            match schema with
+                            | None -> OpenApiPlannedType.Optional OpenApiPlannedType.JsonNode
+                            | Some schema ->
+                                typeForSchema context.SchemaPlanning Set.empty ($"%s{operationName}Response") schema
+
+                    if isJsonMediaType mediaType && isJsonStringType result then
+                        report
+                            UnsupportedOperation
+                            content.Location
+                            "JSON string responses need JSON unquoting, which the generated HTTP shell cannot distinguish from text/plain."
+
+                    result, Some mediaType
+
+    let private successfulResponses
+        (context : OperationPlanningContext)
+        (operationName : string)
+        (responses : LocatedObject)
+        : OpenApiPlannedType * string option
+        =
+        let diagnostics = context.Diagnostics
+        let report = report diagnostics
+        let tryObject = tryObject diagnostics
+
+        let declaredSuccesses =
+            responses.Value
+            |> Seq.choose (fun (KeyValue (status, node)) ->
+                let successful =
+                    if status.Equals ("2XX", StringComparison.OrdinalIgnoreCase) then
+                        true
+                    else
+                        match Int32.TryParse status with
+                        | true, value -> 200 <= value && value < 300
+                        | false, _ -> false
+
+                if successful then
+                    tryObject ($"%s{responses.Location}/%s{pointerToken status}") node
+                    |> Option.map (fun response -> status, response)
+                else
+                    None
+            )
+            |> Seq.sortBy fst
+            |> Seq.toList
+
+        let rangeCoversEverySuccess =
+            declaredSuccesses
+            |> List.exists (fun (status, _) -> status.Equals ("2XX", StringComparison.OrdinalIgnoreCase))
+
+        let candidates =
+            if rangeCoversEverySuccess then
+                declaredSuccesses
+            else
+                match responses.Value.TryGetPropertyValue "default" with
+                | false, _ -> declaredSuccesses
+                | true, value ->
+                    match tryObject ($"%s{responses.Location}/default") value with
+                    | None -> declaredSuccesses
+                    | Some response -> declaredSuccesses @ [ "default", response ]
+
+        match candidates with
+        | [] ->
+            report
+                AmbiguousSuccessResponse
+                responses.Location
+                "At least one exact 2xx, 2XX, or default response is required to describe success."
+
+            OpenApiPlannedType.Unit, None
+        | (_, first) :: rest ->
+            let firstShape = responseShape context operationName first
+
+            for status, response in rest do
+                let otherShape = responseShape context operationName response
+
+                if otherShape <> firstShape then
+                    report
+                        AmbiguousSuccessResponse
+                        ($"%s{responses.Location}/%s{pointerToken status}")
+                        "All possible successful responses must have the same body type and media type."
+
+            firstShape
+
+    let private requestBodyParameter
+        (context : OperationPlanningContext)
+        (operationName : string)
+        (operation : LocatedObject)
+        : (OpenApiPlannedParameter * string) option
+        =
+        let diagnostics = context.Diagnostics
+        let report = report diagnostics
+        let optionalBool = optionalBool diagnostics
+        let optionalObject = optionalObject diagnostics
+
+        match optionalObject operation.Location operation.Value "requestBody" with
+        | None -> None
+        | Some body ->
+            let body =
                 resolveComponentReference
+                    diagnostics
                     UnresolvedReference
-                    "#/components/responses/"
-                    responseComponents
+                    "#/components/requestBodies/"
+                    context.RequestBodyComponents
                     Set.empty
-                    value
+                    body
 
-            match value with
-            | None -> OpenApiPlannedType.JsonNode, None
-            | Some value ->
-                match optionalObject value.Location value.Value "content" with
-                | None -> OpenApiPlannedType.Unit, None
-                | Some content when content.Value.Count = 0 -> OpenApiPlannedType.Unit, None
+            body
+            |> Option.bind (fun body ->
+                let required =
+                    optionalBool body.Location body.Value "required" |> Option.defaultValue false
+
+                if not required then
+                    report
+                        UnsupportedOperation
+                        body.Location
+                        "Optional request bodies cannot be represented without conflating omission and JSON null."
+
+                match optionalObject body.Location body.Value "content" with
+                | None ->
+                    report InvalidDocument ($"%s{body.Location}/content") "Request bodies require content."
+                    None
                 | Some content ->
-                    match selectMedia "a response" content with
-                    | None -> OpenApiPlannedType.JsonNode, None
-                    | Some (mediaType, schema) ->
-                        let result =
+                    selectMedia context "a request body" content
+                    |> Option.map (fun (mediaType, schema) ->
+                        let plannedType =
                             if mediaTypeEquals "application/octet-stream" mediaType then
-                                match schema with
-                                | None -> ()
-                                | Some schema ->
-                                    match typeForSchema Set.empty ($"%s{operationName}BinaryResponse") schema with
-                                    | OpenApiPlannedType.Primitive OpenApiPrimitive.String -> ()
-                                    | _ ->
-                                        report
-                                            UnsupportedOperation
-                                            schema.Location
-                                            "application/octet-stream responses require a non-null string/binary schema."
-
                                 OpenApiPlannedType.Stream
                             elif mediaTypeEquals "text/plain" mediaType then
                                 match schema with
                                 | None -> ()
                                 | Some schema ->
-                                    match typeForSchema Set.empty ($"%s{operationName}TextResponse") schema with
+                                    match
+                                        typeForSchema
+                                            context.SchemaPlanning
+                                            Set.empty
+                                            ($"%s{operationName}TextRequest")
+                                            schema
+                                    with
                                     | OpenApiPlannedType.Primitive OpenApiPrimitive.String -> ()
                                     | _ ->
                                         report
                                             UnsupportedOperation
                                             schema.Location
-                                            "text/plain responses require a non-null string schema."
+                                            "text/plain request bodies require a non-null string schema."
 
                                 OpenApiPlannedType.Primitive OpenApiPrimitive.String
                             else
                                 match schema with
                                 | None -> OpenApiPlannedType.Optional OpenApiPlannedType.JsonNode
-                                | Some schema -> typeForSchema Set.empty ($"%s{operationName}Response") schema
+                                | Some schema ->
+                                    typeForSchema
+                                        context.SchemaPlanning
+                                        Set.empty
+                                        ($"%s{operationName}Request")
+                                        schema
 
-                        if isJsonMediaType mediaType && isJsonStringType result then
+                        if mediaTypeEquals "application/octet-stream" mediaType then
                             report
                                 UnsupportedOperation
                                 content.Location
-                                "JSON string responses need JSON unquoting, which the generated HTTP shell cannot distinguish from text/plain."
+                                "Binary request content types are not emitted correctly by the generated HTTP shell."
 
-                        result, Some mediaType
-
-        let successfulResponses (operationName : string) (responses : LocatedObject) =
-            let declaredSuccesses =
-                responses.Value
-                |> Seq.choose (fun (KeyValue (status, node)) ->
-                    let successful =
-                        if status.Equals ("2XX", StringComparison.OrdinalIgnoreCase) then
-                            true
-                        else
-                            match Int32.TryParse status with
-                            | true, value -> 200 <= value && value < 300
-                            | false, _ -> false
-
-                    if successful then
-                        tryObject ($"%s{responses.Location}/%s{pointerToken status}") node
-                        |> Option.map (fun response -> status, response)
-                    else
-                        None
-                )
-                |> Seq.sortBy fst
-                |> Seq.toList
-
-            let rangeCoversEverySuccess =
-                declaredSuccesses
-                |> List.exists (fun (status, _) -> status.Equals ("2XX", StringComparison.OrdinalIgnoreCase))
-
-            let candidates =
-                if rangeCoversEverySuccess then
-                    declaredSuccesses
-                else
-                    match responses.Value.TryGetPropertyValue "default" with
-                    | false, _ -> declaredSuccesses
-                    | true, value ->
-                        match tryObject ($"%s{responses.Location}/default") value with
-                        | None -> declaredSuccesses
-                        | Some response -> declaredSuccesses @ [ "default", response ]
-
-            match candidates with
-            | [] ->
-                report
-                    AmbiguousSuccessResponse
-                    responses.Location
-                    "At least one exact 2xx, 2XX, or default response is required to describe success."
-
-                OpenApiPlannedType.Unit, None
-            | (_, first) :: rest ->
-                let firstShape = responseShape operationName first
-
-                for status, response in rest do
-                    let otherShape = responseShape operationName response
-
-                    if otherShape <> firstShape then
-                        report
-                            AmbiguousSuccessResponse
-                            ($"%s{responses.Location}/%s{pointerToken status}")
-                            "All possible successful responses must have the same body type and media type."
-
-                firstShape
-
-        let requestBodyParameter
-            (operationName : string)
-            (operation : LocatedObject)
-            : (OpenApiPlannedParameter * string) option
-            =
-            match optionalObject operation.Location operation.Value "requestBody" with
-            | None -> None
-            | Some body ->
-                let body =
-                    resolveComponentReference
-                        UnresolvedReference
-                        "#/components/requestBodies/"
-                        requestBodyComponents
-                        Set.empty
-                        body
-
-                body
-                |> Option.bind (fun body ->
-                    let required =
-                        optionalBool body.Location body.Value "required" |> Option.defaultValue false
-
-                    if not required then
-                        report
-                            UnsupportedOperation
-                            body.Location
-                            "Optional request bodies cannot be represented without conflating omission and JSON null."
-
-                    match optionalObject body.Location body.Value "content" with
-                    | None ->
-                        report InvalidDocument ($"%s{body.Location}/content") "Request bodies require content."
-                        None
-                    | Some content ->
-                        selectMedia "a request body" content
-                        |> Option.map (fun (mediaType, schema) ->
-                            let plannedType =
-                                if mediaTypeEquals "application/octet-stream" mediaType then
-                                    OpenApiPlannedType.Stream
-                                elif mediaTypeEquals "text/plain" mediaType then
-                                    match schema with
-                                    | None -> ()
-                                    | Some schema ->
-                                        match typeForSchema Set.empty ($"%s{operationName}TextRequest") schema with
-                                        | OpenApiPlannedType.Primitive OpenApiPrimitive.String -> ()
-                                        | _ ->
-                                            report
-                                                UnsupportedOperation
-                                                schema.Location
-                                                "text/plain request bodies require a non-null string schema."
-
-                                    OpenApiPlannedType.Primitive OpenApiPrimitive.String
-                                else
-                                    match schema with
-                                    | None -> OpenApiPlannedType.Optional OpenApiPlannedType.JsonNode
-                                    | Some schema -> typeForSchema Set.empty ($"%s{operationName}Request") schema
-
-                            if mediaTypeEquals "application/octet-stream" mediaType then
-                                report
-                                    UnsupportedOperation
-                                    content.Location
-                                    "Binary request content types are not emitted correctly by the generated HTTP shell."
-
-                            if isJsonMediaType mediaType && isJsonStringType plannedType then
-                                report
-                                    UnsupportedOperation
-                                    content.Location
-                                    "JSON string request bodies need JSON quoting, which the generated HTTP shell cannot distinguish from text/plain."
-
-                            {
-                                WireName = "body"
-                                FSharpName = "body"
-                                Location = OpenApiParameterLocation.Body
-                                Type = plannedType
-                                Required = required
-                            },
-                            mediaType
-                        )
-                )
-
-        let parseServerBase () : OpenApiServerBase =
-            match optionalArray "#" root "servers" with
-            | None -> OpenApiServerBase.BasePath "/"
-            | Some servers when servers.Count = 0 -> OpenApiServerBase.BasePath "/"
-            | Some servers ->
-                if servers.Count > 1 then
-                    report
-                        UnsupportedOperation
-                        "#/servers"
-                        "Only the first document-level server is supported; additional server entries would be ignored."
-
-                match tryObject "#/servers/0" servers.[0] with
-                | None -> OpenApiServerBase.BasePath "/"
-                | Some server ->
-                    let mutable url =
-                        requiredString server.Location server.Value "url" |> Option.defaultValue "/"
-
-                    let variables =
-                        match optionalObject server.Location server.Value "variables" with
-                        | None -> Map.empty
-                        | Some variables -> objectMap variables.Location variables.Value
-
-                    for found in Regex.Matches (url, "\\{([^{}]+)\\}") |> Seq.cast<Match> do
-                        let variableName = found.Groups.[1].Value
-
-                        match Map.tryFind variableName variables with
-                        | None ->
+                        if isJsonMediaType mediaType && isJsonStringType plannedType then
                             report
-                                InvalidDocument
-                                ($"%s{server.Location}/url")
-                                $"Server variable '%s{variableName}' has no definition."
-                        | Some variable ->
-                            match requiredString variable.Location variable.Value "default" with
-                            | None -> ()
-                            | Some value -> url <- url.Replace (found.Value, value, StringComparison.Ordinal)
+                                UnsupportedOperation
+                                content.Location
+                                "JSON string request bodies need JSON quoting, which the generated HTTP shell cannot distinguish from text/plain."
 
-                    match Uri.TryCreate (url, UriKind.Absolute) with
-                    | true, _ -> OpenApiServerBase.BaseAddress url
-                    | false, _ -> OpenApiServerBase.BasePath url
+                        {
+                            WireName = "body"
+                            FSharpName = "body"
+                            Location = OpenApiParameterLocation.Body
+                            Type = plannedType
+                            Required = required
+                        },
+                        mediaType
+                    )
+            )
+
+    let private planOperations (context : OperationPlanningContext) (root : JsonObject) : OpenApiPlannedOperation list =
+        let diagnostics = context.Diagnostics
+        let report = report diagnostics
+        let optionalString = optionalString diagnostics
+        let optionalObject = optionalObject diagnostics
+        let optionalArray = optionalArray diagnostics
+        let tryObject = tryObject diagnostics
+        let schemaResolution = context.SchemaPlanning.Resolution
+        let typeForSchema = typeForSchema context.SchemaPlanning
 
         let paths = optionalObject "#" root "paths"
         let operations = ResizeArray<OpenApiPlannedOperation> ()
@@ -1693,7 +1743,7 @@ module internal OpenApiClientGenerator =
                             "Path-specific servers are unsupported."
                     | _ -> ()
 
-                    let inheritedParameters = parseParameterList pathItem
+                    let inheritedParameters = parseParameterList context pathItem
 
                     for httpMethod, operation in methodEntries pathItem do
                         match optionalArray operation.Location operation.Value "servers" with
@@ -1718,7 +1768,7 @@ module internal OpenApiClientGenerator =
                             allocateUniqueName usedMethodNames "Operation" sanitiseTypeName operationId
 
                         let mergedParameters =
-                            parseParameterList operation |> mergeParameters inheritedParameters
+                            parseParameterList context operation |> mergeParameters inheritedParameters
 
                         let templateNames =
                             Regex.Matches (path, "\\{([^{}]+)\\}")
@@ -1774,7 +1824,7 @@ module internal OpenApiClientGenerator =
                                             ($"%s{operationFSharpName}%s{parameterFSharpName}")
                                             parameter.Schema
 
-                                    if schemaAllowsNull parameter.Schema then
+                                    if schemaAllowsNull schemaResolution parameter.Schema then
                                         report
                                             UnsupportedParameter
                                             parameter.Schema.Location
@@ -1808,7 +1858,7 @@ module internal OpenApiClientGenerator =
                                 )
                             )
 
-                        let body = requestBodyParameter operationFSharpName operation
+                        let body = requestBodyParameter context operationFSharpName operation
 
                         let plannedParameters =
                             match body with
@@ -1826,7 +1876,7 @@ module internal OpenApiClientGenerator =
                                     "Operations require responses."
 
                                 OpenApiPlannedType.Unit, None
-                            | Some responses -> successfulResponses operationFSharpName responses
+                            | Some responses -> successfulResponses context operationFSharpName responses
 
                         operations.Add
                             {
@@ -1844,6 +1894,15 @@ module internal OpenApiClientGenerator =
                                 Accept = accept
                                 RequestContentType = body |> Option.map snd
                             }
+
+        operations |> Seq.sortBy _.FSharpName |> Seq.toList
+
+    let private orderDefinitions
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (definitions : OpenApiPlannedTypeDefinition seq)
+        : OpenApiPlannedTypeDefinition list
+        =
+        let report = report diagnostics
 
         let rec namedDependencies (plannedType : OpenApiPlannedType) : Set<string> =
             match plannedType with
@@ -1902,15 +1961,160 @@ module internal OpenApiClientGenerator =
         for name in definitionsByName |> Map.toList |> List.map fst do
             visitDefinition name
 
+        orderedDefinitions |> Seq.toList
+
+    let private parseDocument
+        (parameters : Map<string, string>)
+        (root : JsonObject)
+        : Result<OpenApiClientPlan, OpenApiGenerationDiagnostic list>
+        =
+        let diagnostics = ResizeArray<OpenApiGenerationDiagnostic> ()
+        let report = report diagnostics
+        let optionalString = optionalString diagnostics
+        let requiredString = requiredString diagnostics
+        let optionalObject = optionalObject diagnostics
+        let componentMap = componentMap diagnostics
+
+        let version = requiredString "#" root "openapi"
+
+        match version with
+        | Some value ->
+            let parts = value.Split '.'
+
+            if parts.Length < 2 || parts.[0] <> "3" || parts.[1] <> "0" then
+                report UnsupportedVersion "#/openapi" $"Expected an OpenAPI 3.0.x document, but got '%s{value}'."
+        | None -> ()
+
+        let parameters = normaliseParameters parameters
+
+        let className =
+            match Map.tryFind "CLASSNAME" parameters with
+            | Some value when not (String.IsNullOrWhiteSpace value) -> value
+            | _ ->
+                report InvalidDocument "#/$parameters/ClassName" "The ClassName Myriad parameter is required."
+                "GeneratedClient"
+
+        if sanitiseTypeName className <> className then
+            report
+                InvalidDocument
+                "#/$parameters/ClassName"
+                "ClassName must already be a valid PascalCase F# identifier."
+
+        let createMock =
+            match Map.tryFind "GENERATEMOCKVISIBILITY" parameters with
+            | None -> None
+            | Some value ->
+                match value.ToLowerInvariant () with
+                | "internal" -> Some true
+                | "public" -> Some false
+                | _ ->
+                    report
+                        InvalidDocument
+                        "#/$parameters/GenerateMockVisibility"
+                        "GenerateMockVisibility must be 'internal' or 'public'."
+
+                    None
+
+        let info = optionalObject "#" root "info"
+
+        let description =
+            info
+            |> Option.bind (fun value -> optionalString value.Location value.Value "description")
+
+        match info with
+        | None -> report InvalidDocument "#/info" "The OpenAPI info object is required."
+        | Some value -> requiredString value.Location value.Value "title" |> ignore
+
+        let components = optionalObject "#" root "components"
+        let schemaCache = Dictionary<string, CanonicalSchema> (StringComparer.Ordinal)
+
+        let schemaComponents =
+            componentMap components "schemas"
+            |> Map.map (fun _ -> analyzeSchema diagnostics schemaCache)
+
+        let parameterComponents = componentMap components "parameters"
+        let requestBodyComponents = componentMap components "requestBodies"
+        let responseComponents = componentMap components "responses"
+
+        let schemaResolution =
+            {
+                Diagnostics = diagnostics
+                Components = schemaComponents
+            }
+
+        let usedTypeNames = HashSet<string> (StringComparer.Ordinal)
+
+        for reservedTypeName in
+            [
+                className
+                "I" + className
+                "System"
+                "RestEase"
+                "WoofWare"
+                "GenerateMockAttribute"
+                "HttpClientAttribute"
+                "JsonParseAttribute"
+                "JsonSerializeAttribute"
+            ] do
+            usedTypeNames.Add reservedTypeName |> ignore
+
+        let objectComponentNames =
+            schemaComponents
+            |> Map.toList
+            |> List.choose (fun (name, schema) ->
+                if schemaIsObjectLike schemaResolution schema then
+                    Some name
+                else
+                    None
+            )
+
+        let componentTypeNames =
+            objectComponentNames
+            |> List.map (fun sourceName ->
+                let fsharpName =
+                    allocateUniqueName usedTypeNames "GeneratedType" sanitiseTypeName sourceName
+
+                sourceName, fsharpName
+            )
+            |> Map.ofList
+
+        let definitions = ResizeArray<OpenApiPlannedTypeDefinition> ()
+
+        let schemaPlanning =
+            {
+                Resolution = schemaResolution
+                UsedTypeNames = usedTypeNames
+                ComponentTypeNames = componentTypeNames
+                Definitions = definitions
+                LiftedObjectTypes = Dictionary<ObjectShapeIdentity, string> ()
+            }
+
+        for sourceName in objectComponentNames do
+            addComponentDefinition schemaPlanning sourceName schemaComponents.[sourceName]
+
+        let operationPlanning =
+            {
+                Diagnostics = diagnostics
+                SchemaCache = schemaCache
+                SchemaPlanning = schemaPlanning
+                ParameterComponents = parameterComponents
+                RequestBodyComponents = requestBodyComponents
+                ResponseComponents = responseComponents
+            }
+
+        let serverBase = parseServerBase diagnostics root
+        let operations = planOperations operationPlanning root
+        let orderedDefinitions = orderDefinitions diagnostics definitions
+
         let plan =
             {
                 Namespace = className
                 InterfaceName = "I" + className
                 Description = description
                 CreateMock = createMock
-                ServerBase = parseServerBase ()
-                Types = orderedDefinitions |> Seq.toList
-                Operations = operations |> Seq.sortBy _.FSharpName |> Seq.toList
+                ServerBase = serverBase
+                Types = orderedDefinitions
+                Operations = operations
             }
 
         if diagnostics.Count = 0 then
