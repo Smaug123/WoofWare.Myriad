@@ -288,10 +288,23 @@ module internal JsonSerializeGenerator =
             |> SynExpr.createLambda "field"
             |> fun e -> e, false
         | JsonNode ->
-            SynExpr.createIdent "node"
-            |> SynExpr.typeAnnotate (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
-            |> SynExpr.paren
-            |> SynExpr.callMethod "DeepClone"
+            let jsonNodeType =
+                SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ]
+
+            [
+                SynExpr.createLongIdent [ "Unchecked" ; "defaultof" ]
+                |> SynExpr.typeApp [ jsonNodeType ]
+                |> SynMatchClause.create SynPat.createNull
+                SynExpr.createIdent "node"
+                |> SynExpr.typeAnnotate jsonNodeType
+                |> SynExpr.paren
+                |> SynExpr.callMethod "DeepClone"
+                |> SynMatchClause.create (SynPat.named "_")
+            ]
+            |> SynExpr.createMatch (
+                SynExpr.createIdent "node"
+                |> SynExpr.pipeThroughFunction (SynExpr.createIdent "box")
+            )
             |> SynExpr.createLambda "node"
             |> fun expr -> expr, true
         | UnitType ->

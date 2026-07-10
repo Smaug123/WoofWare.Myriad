@@ -872,6 +872,179 @@ module TestOpenApi3Generator =
             |> shouldEqual true
 
     [<Test>]
+    let ``Parameterized JSON media types use their base media type and JSON schema`` () =
+        let responseMediaType = "application/problem+json; charset=utf-8"
+        let requestMediaType = "application/json; charset=utf-8"
+
+        let operation =
+            jsonObject
+                [
+                    "operationId", jsonString "createThing"
+                    "requestBody",
+                    jsonObject
+                        [
+                            "required", jsonBool true
+                            "content",
+                            jsonObject
+                                [
+                                    requestMediaType,
+                                    jsonObject [ "schema", schemaForScalar GeneratedScalar.Int64 false ]
+                                ]
+                        ]
+                    "responses",
+                    jsonObject
+                        [
+                            "200",
+                            jsonObject
+                                [
+                                    "description", jsonString "success"
+                                    "content",
+                                    jsonObject
+                                        [
+                                            responseMediaType,
+                                            jsonObject [ "schema", schemaForScalar GeneratedScalar.Int64 false ]
+                                        ]
+                                ]
+                        ]
+                ]
+
+        let source = document "3.0.3" [] "/things" (jsonObject [ "post", operation ])
+        let actual = plan source |> _.Operations |> List.exactlyOne
+
+        actual.RequestContentType |> shouldEqual (Some "application/json")
+        actual.Accept |> shouldEqual (Some "application/problem+json")
+
+        actual.Parameters
+        |> List.exactlyOne
+        |> _.Type
+        |> shouldEqual (OpenApiPlannedType.Primitive OpenApiPrimitive.Int64)
+
+        actual.ReturnType
+        |> shouldEqual (OpenApiPlannedType.Primitive OpenApiPrimitive.Int64)
+
+    [<Test>]
+    let ``Unsupported media diagnostics list the content keys`` () =
+        let response =
+            jsonObject
+                [
+                    "description", jsonString "success"
+                    "content", jsonObject [ "application/xml", jsonObject [] ; "image/png", jsonObject [] ]
+                ]
+
+        let source = document "3.0.3" [] "/things" (standardPathItem response [] [])
+
+        match OpenApiClientGenerator.parseAndPlan config source with
+        | Ok _ -> failwith "Planning unexpectedly accepted unsupported response media"
+        | Error diagnostics ->
+            diagnostics
+            |> List.exists (fun diagnostic ->
+                diagnostic.Code = OpenApiGenerationDiagnosticCode.UnsupportedOperation
+                && diagnostic.Message.Contains ("application/xml", StringComparison.Ordinal)
+                && diagnostic.Message.Contains ("image/png", StringComparison.Ordinal)
+            )
+            |> shouldEqual true
+
+    [<Test>]
+    let ``Additional document servers are diagnosed instead of silently ignored`` () =
+        let source =
+            jsonObject
+                [
+                    "openapi", jsonString "3.0.3"
+                    "info", jsonObject [ "title", jsonString "API" ; "version", jsonString "1" ]
+                    "servers",
+                    jsonArray
+                        [
+                            jsonObject [ "url", jsonString "https://first.example" ]
+                            jsonObject [ "url", jsonString "https://second.example" ]
+                        ]
+                    "paths", jsonObject []
+                    "components", jsonObject [ "schemas", jsonObject [] ]
+                ]
+            |> _.ToJsonString()
+
+        match OpenApiClientGenerator.parseAndPlan config source with
+        | Ok _ -> failwith "Planning unexpectedly ignored additional document servers"
+        | Error diagnostics ->
+            diagnostics
+            |> List.exists (fun diagnostic ->
+                diagnostic.Code = OpenApiGenerationDiagnosticCode.UnsupportedOperation
+                && diagnostic.Location = "#/servers"
+                && diagnostic.Message.Contains ("first", StringComparison.OrdinalIgnoreCase)
+            )
+            |> shouldEqual true
+
+    [<Test>]
+    let ``Generated types cannot shadow namespaces used by emitted code`` () =
+        let objectSchema fieldName =
+            jsonObject
+                [
+                    "type", jsonString "object"
+                    "properties", jsonObject [ fieldName, schemaForScalar GeneratedScalar.String false ]
+                ]
+
+        let schemas =
+            [
+                "System", objectSchema "systemValue"
+                "RestEase", objectSchema "restEaseValue"
+                "WoofWare", objectSchema "woofWareValue"
+                "GeneratedClient", objectSchema "clientValue"
+            ]
+
+        let actual =
+            document "3.0.3" schemas "/things" (standardPathItem (noContentResponse ()) [] [])
+            |> plan
+
+        actual.Types
+        |> List.map (fun definition -> definition.SourceName, definition.FSharpName)
+        |> Map.ofList
+        |> shouldEqual (
+            Map
+                [
+                    "GeneratedClient", "GeneratedClient2"
+                    "RestEase", "RestEase2"
+                    "System", "System2"
+                    "WoofWare", "WoofWare2"
+                ]
+        )
+
+    [<Test>]
+    let ``Fallback operation ids participate in duplicate detection`` () =
+        let operation operationId =
+            jsonObject
+                [
+                    match operationId with
+                    | None -> ()
+                    | Some value -> "operationId", jsonString value
+                    "responses", jsonObject [ "200", noContentResponse () ]
+                ]
+
+        let source =
+            jsonObject
+                [
+                    "openapi", jsonString "3.0.3"
+                    "info", jsonObject [ "title", jsonString "API" ; "version", jsonString "1" ]
+                    "paths",
+                    jsonObject
+                        [
+                            "/other", jsonObject [ "get", operation (Some "get-/things") ]
+                            "/things", jsonObject [ "get", operation None ]
+                        ]
+                    "components", jsonObject [ "schemas", jsonObject [] ]
+                ]
+            |> _.ToJsonString()
+
+        match OpenApiClientGenerator.parseAndPlan config source with
+        | Ok _ -> failwith "Planning unexpectedly accepted colliding explicit and fallback operation ids"
+        | Error diagnostics ->
+            diagnostics
+            |> List.exists (fun diagnostic ->
+                diagnostic.Code = OpenApiGenerationDiagnosticCode.InvalidDocument
+                && diagnostic.Message.Contains ("get-/things", StringComparison.Ordinal)
+                && diagnostic.Message.Contains ("duplicated", StringComparison.Ordinal)
+            )
+            |> shouldEqual true
+
+    [<Test>]
     let ``Unsupported composition keywords on named objects are not bypassed by references`` () =
         let schema =
             jsonObject

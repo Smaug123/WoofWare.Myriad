@@ -93,8 +93,8 @@ module TestOpenApi3Client =
 
                         message.Content.Headers.ContentType.MediaType |> shouldEqual "application/json"
                         let! requestBody = message.Content.ReadAsStringAsync () |> Async.AwaitTask
-                        requestBody |> shouldEqual "null"
-                        return response HttpStatusCode.OK (Some "null")
+                        JsonNode.Parse requestBody |> ignore
+                        return response HttpStatusCode.OK (Some requestBody)
                     | "GET", "https://api.example.test/v1/public/counter" ->
                         message.Headers.Accept
                         |> Seq.exactlyOne
@@ -166,6 +166,14 @@ module TestOpenApi3Client =
             let! anything = client.EchoAnything None
             anything |> shouldEqual None
 
+            let anythingBody = JsonNode.Parse """{"nested":[1,null,"value"]}"""
+            let! echoedAnything = client.EchoAnything (Some anythingBody)
+
+            JsonNode.DeepEquals (echoedAnything |> Option.get, anythingBody)
+            |> shouldEqual true
+
+            isNull anythingBody.Parent |> shouldEqual true
+
             let! counter = client.GetCounter ()
             counter |> shouldEqual (BigInteger.Pow (10I, 30))
 
@@ -174,7 +182,7 @@ module TestOpenApi3Client =
 
             let! echoedCounter = client.EchoCounter counter
             echoedCounter |> shouldEqual counter
-            calls |> shouldEqual 10
+            calls |> shouldEqual 11
         }
 
     [<Test>]

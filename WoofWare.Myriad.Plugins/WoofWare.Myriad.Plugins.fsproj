@@ -46,7 +46,6 @@
     <Compile Include="JsonHelpers.fs" />
     <Compile Include="HttpMethod.fs" />
     <Compile Include="SwaggerV2.fs" />
-    <Compile Include="OpenApi3.fs" />
     <Compile Include="OpenApiClientGenerator.fs" />
     <Compile Include="SwaggerClientGenerator.fs" />
     <EmbeddedResource Include="version.json"/>

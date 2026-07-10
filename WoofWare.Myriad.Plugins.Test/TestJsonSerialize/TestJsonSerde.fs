@@ -458,6 +458,36 @@ module TestJsonSerde =
         |> shouldEqual """{"present":3,"absent":null}"""
 
     [<Test>]
+    let ``Null extension data is written as JSON null`` () =
+        let toWrite =
+            {
+                Rest = [ "nothing", Unchecked.defaultof<JsonNode> ] |> dict
+                Message = None
+            }
+
+        CollectRemaining.toJsonNode(toWrite).ToJsonString ()
+        |> shouldEqual """{"message":null,"nothing":null}"""
+
+    [<Test>]
+    let ``Null serialization failures identify the parameter and explain the invariant`` () =
+        let toWrite =
+            {
+                Header = Unchecked.defaultof<string>
+                Value = "value"
+            }
+
+        let error =
+            Assert.Throws<ArgumentNullException> (fun () -> HeaderAndValue.toJsonNode toWrite |> ignore)
+
+        error.ParamName |> shouldEqual "field"
+
+        error.Message.Contains (
+            "Expected type string to be non-null, but received a null value when serialising",
+            StringComparison.Ordinal
+        )
+        |> shouldEqual true
+
+    [<Test>]
     let ``Can collect extension data, nested`` () =
         let str =
             """{

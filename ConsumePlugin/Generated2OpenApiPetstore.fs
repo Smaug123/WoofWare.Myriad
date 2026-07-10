@@ -28,7 +28,11 @@ module GenerateMockAttribute2JsonSerializeExtension =
                             | None -> None
                             | Some field ->
                                 field
-                                |> (fun node -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ())
+                                |> (fun node ->
+                                    match node |> box with
+                                    | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                                    | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                                )
                                 |> Some
                         )
                             value
@@ -49,8 +53,10 @@ module GenerateMockAttribute2JsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -84,7 +90,11 @@ module HttpClientAttribute2JsonSerializeExtension =
                             | None -> None
                             | Some field ->
                                 field
-                                |> (fun node -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ())
+                                |> (fun node ->
+                                    match node |> box with
+                                    | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                                    | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                                )
                                 |> Some
                         )
                             value
@@ -105,8 +115,10 @@ module HttpClientAttribute2JsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -140,7 +152,11 @@ module JsonParseAttribute2JsonSerializeExtension =
                             | None -> None
                             | Some field ->
                                 field
-                                |> (fun node -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ())
+                                |> (fun node ->
+                                    match node |> box with
+                                    | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                                    | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                                )
                                 |> Some
                         )
                             value
@@ -161,8 +177,10 @@ module JsonParseAttribute2JsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -196,7 +214,11 @@ module JsonSerializeAttribute2JsonSerializeExtension =
                             | None -> None
                             | Some field ->
                                 field
-                                |> (fun node -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ())
+                                |> (fun node ->
+                                    match node |> box with
+                                    | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                                    | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                                )
                                 |> Some
                         )
                             value
@@ -217,8 +239,10 @@ module JsonSerializeAttribute2JsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -252,7 +276,11 @@ module NewPetJsonSerializeExtension =
                             | None -> None
                             | Some field ->
                                 field
-                                |> (fun node -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ())
+                                |> (fun node ->
+                                    match node |> box with
+                                    | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                                    | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                                )
                                 |> Some
                         )
                             value
@@ -268,8 +296,10 @@ module NewPetJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -289,8 +319,10 @@ module NewPetJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -324,7 +356,11 @@ module PetJsonSerializeExtension =
                             | None -> None
                             | Some field ->
                                 field
-                                |> (fun node -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ())
+                                |> (fun node ->
+                                    match node |> box with
+                                    | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                                    | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                                )
                                 |> Some
                         )
                             value
@@ -340,8 +376,10 @@ module PetJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type int64 to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -356,8 +394,10 @@ module PetJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -388,8 +428,10 @@ module PetJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -719,8 +761,10 @@ module OpenApiPetstore =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Pet"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -836,16 +880,9 @@ module OpenApiPetstore =
                             body
                             |> (fun field ->
                                 match field with
-                                | None -> None
-                                | Some field ->
-                                    field
-                                    |> (fun node -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ())
-                                    |> Some
-                            )
-                            |> (fun node ->
-                                match node with
                                 | None -> "null"
-                                | Some node -> node.ToJsonString ()
+                                | Some field ->
+                                    (fun node -> (node : System.Text.Json.Nodes.JsonNode).ToJsonString ()) field
                             ),
                             null,
                             "application/json"
@@ -894,21 +931,8 @@ module OpenApiPetstore =
                             body
                             |> (fun field ->
                                 let value = field : System.Numerics.BigInteger
-
-                                let node =
-                                    System.Text.Json.Nodes.JsonNode.Parse (
-                                        value.ToString ("D", System.Globalization.CultureInfo.InvariantCulture)
-                                    )
-
-                                (match node with
-                                 | null ->
-                                     raise (
-                                         System.ArgumentNullException
-                                             "Invariant BigInteger text unexpectedly parsed as JSON null."
-                                     )
-                                 | node -> node)
-                            )
-                            |> (fun node -> node.ToJsonString ()),
+                                value.ToString ("D", System.Globalization.CultureInfo.InvariantCulture)
+                            ),
                             null,
                             "application/json"
                         )
@@ -928,8 +952,10 @@ module OpenApiPetstore =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type bigint"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -974,8 +1000,10 @@ module OpenApiPetstore =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type bigint"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -1023,8 +1051,10 @@ module OpenApiPetstore =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Pet"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -1097,8 +1127,10 @@ module OpenApiPetstore =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Pet list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -1108,8 +1140,10 @@ module OpenApiPetstore =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Pet) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Pet.jsonParse elt)
                         )

@@ -604,16 +604,20 @@ module internal OpenApiClientGenerator =
                     || schema.Value.ContainsKey "additionalProperties"
 
         let usedTypeNames = HashSet<string> (StringComparer.Ordinal)
-        usedTypeNames.Add ("I" + className) |> ignore
 
-        for generatedAttributeName in
+        for reservedTypeName in
             [
+                className
+                "I" + className
+                "System"
+                "RestEase"
+                "WoofWare"
                 "GenerateMockAttribute"
                 "HttpClientAttribute"
                 "JsonParseAttribute"
                 "JsonSerializeAttribute"
             ] do
-            usedTypeNames.Add generatedAttributeName |> ignore
+            usedTypeNames.Add reservedTypeName |> ignore
 
         let objectComponentNames =
             schemaComponents
@@ -1328,8 +1332,18 @@ module internal OpenApiClientGenerator =
                         yield parameter
             ]
 
+        let mediaTypeWithoutParameters (name : string) : string =
+            match name.IndexOf ';' with
+            | -1 -> name.Trim ()
+            | separator -> (name.Substring (0, separator)).Trim ()
+
+        let mediaTypeEquals (expected : string) (actual : string) : bool =
+            (mediaTypeWithoutParameters actual).Equals (expected, StringComparison.OrdinalIgnoreCase)
+
         let selectMedia (purpose : string) (content : LocatedObject) : (string * LocatedObject option) option =
             let rank (name : string) =
+                let name = mediaTypeWithoutParameters name
+
                 if name.Equals ("application/json", StringComparison.OrdinalIgnoreCase) then
                     0
                 elif name.EndsWith ("+json", StringComparison.OrdinalIgnoreCase) then
@@ -1357,11 +1371,26 @@ module internal OpenApiClientGenerator =
 
             match candidates with
             | [] ->
-                report UnsupportedOperation content.Location $"No supported media type was found for %s{purpose}."
+                let keys =
+                    content.Value
+                    |> Seq.map (fun (KeyValue (name, _)) -> name)
+                    |> Seq.sort
+                    |> String.concat "', '"
+                    |> fun value ->
+                        if String.IsNullOrEmpty value then
+                            "(none)"
+                        else
+                            $"'%s{value}'"
+
+                report
+                    UnsupportedOperation
+                    content.Location
+                    $"No supported media type was found for %s{purpose}. Content keys: %s{keys}."
+
                 None
             | (_, selectedName, selected) :: _ ->
                 let selectedSchema = optionalObject selected.Location selected.Value "schema"
-                Some (selectedName, selectedSchema)
+                Some (mediaTypeWithoutParameters selectedName, selectedSchema)
 
         let rec isJsonStringType (plannedType : OpenApiPlannedType) : bool =
             match plannedType with
@@ -1370,6 +1399,8 @@ module internal OpenApiClientGenerator =
             | _ -> false
 
         let isJsonMediaType (mediaType : string) : bool =
+            let mediaType = mediaTypeWithoutParameters mediaType
+
             mediaType.Equals ("application/json", StringComparison.OrdinalIgnoreCase)
             || mediaType.EndsWith ("+json", StringComparison.OrdinalIgnoreCase)
 
@@ -1393,7 +1424,7 @@ module internal OpenApiClientGenerator =
                     | None -> OpenApiPlannedType.JsonNode, None
                     | Some (mediaType, schema) ->
                         let result =
-                            if mediaType.Equals ("application/octet-stream", StringComparison.OrdinalIgnoreCase) then
+                            if mediaTypeEquals "application/octet-stream" mediaType then
                                 match schema with
                                 | None -> ()
                                 | Some schema ->
@@ -1406,7 +1437,7 @@ module internal OpenApiClientGenerator =
                                             "application/octet-stream responses require a non-null string/binary schema."
 
                                 OpenApiPlannedType.Stream
-                            elif mediaType.Equals ("text/plain", StringComparison.OrdinalIgnoreCase) then
+                            elif mediaTypeEquals "text/plain" mediaType then
                                 match schema with
                                 | None -> ()
                                 | Some schema ->
@@ -1525,11 +1556,9 @@ module internal OpenApiClientGenerator =
                         selectMedia "a request body" content
                         |> Option.map (fun (mediaType, schema) ->
                             let plannedType =
-                                if
-                                    mediaType.Equals ("application/octet-stream", StringComparison.OrdinalIgnoreCase)
-                                then
+                                if mediaTypeEquals "application/octet-stream" mediaType then
                                     OpenApiPlannedType.Stream
-                                elif mediaType.Equals ("text/plain", StringComparison.OrdinalIgnoreCase) then
+                                elif mediaTypeEquals "text/plain" mediaType then
                                     match schema with
                                     | None -> ()
                                     | Some schema ->
@@ -1547,7 +1576,7 @@ module internal OpenApiClientGenerator =
                                     | None -> OpenApiPlannedType.Optional OpenApiPlannedType.JsonNode
                                     | Some schema -> typeForSchema Set.empty ($"%s{operationName}Request") schema
 
-                            if mediaType.Equals ("application/octet-stream", StringComparison.OrdinalIgnoreCase) then
+                            if mediaTypeEquals "application/octet-stream" mediaType then
                                 report
                                     UnsupportedOperation
                                     content.Location
@@ -1575,6 +1604,12 @@ module internal OpenApiClientGenerator =
             | None -> OpenApiServerBase.BasePath "/"
             | Some servers when servers.Count = 0 -> OpenApiServerBase.BasePath "/"
             | Some servers ->
+                if servers.Count > 1 then
+                    report
+                        UnsupportedOperation
+                        "#/servers"
+                        "Only the first document-level server is supported; additional server entries would be ignored."
+
                 match tryObject "#/servers/0" servers.[0] with
                 | None -> OpenApiServerBase.BasePath "/"
                 | Some server ->
@@ -1669,19 +1704,15 @@ module internal OpenApiClientGenerator =
                                 "Operation-specific servers are unsupported."
                         | _ -> ()
 
-                        let operationId =
+                        let operationId, operationIdLocation =
                             match optionalString operation.Location operation.Value "operationId" with
-                            | Some value ->
-                                if not (usedOperationIds.Add value) then
-                                    report
-                                        InvalidDocument
-                                        ($"%s{operation.Location}/operationId")
-                                        $"Operation id '%s{value}' is duplicated."
-
-                                value
+                            | Some value -> value, $"%s{operation.Location}/operationId"
                             | None ->
                                 let methodName = httpMethod.ToString().ToLowerInvariant ()
-                                $"%s{methodName}-%s{path}"
+                                $"%s{methodName}-%s{path}", operation.Location
+
+                        if not (usedOperationIds.Add operationId) then
+                            report InvalidDocument operationIdLocation $"Operation id '%s{operationId}' is duplicated."
 
                         let operationFSharpName =
                             allocateUniqueName usedMethodNames "Operation" sanitiseTypeName operationId
