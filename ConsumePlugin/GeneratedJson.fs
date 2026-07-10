@@ -72,6 +72,46 @@ module internal InternalTypeExtensionJsonSerializeExtension =
                 )
 
             node :> _
+namespace ConsumePlugin
+
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing extension members for the ContainsABigInt type
+[<AutoOpen>]
+module ContainsABigIntJsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type ContainsABigInt with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : ContainsABigInt) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                node.Add (
+                    "bigNum",
+                    (input.BigNum
+                     |> (fun field ->
+                         let value = field : bigint
+
+                         let node =
+                             System.Text.Json.Nodes.JsonNode.Parse (
+                                 value.ToString ("D", System.Globalization.CultureInfo.InvariantCulture)
+                             )
+
+                         (match node with
+                          | null ->
+                              raise (
+                                  System.ArgumentNullException (
+                                      "node",
+                                      "Invariant BigInteger text unexpectedly parsed as JSON null."
+                                  )
+                              )
+                          | node -> node)
+                     ))
+                )
+
+            node :> _
 
 namespace ConsumePlugin
 
@@ -522,26 +562,29 @@ module ToGetExtensionMethodJsonParseExtension =
             }
 namespace ConsumePlugin
 
-/// Module containing JSON parsing methods for the ContainsABigInt type
-[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module ContainsABigInt =
-    /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : ContainsABigInt =
-        let arg_0 =
-            match node.["bigNum"] |> Option.ofObj with
-            | None ->
-                raise (
-                    System.Collections.Generic.KeyNotFoundException (
-                        sprintf "Required key '%s' not found on JSON object" ("bigNum")
-                    )
-                )
-            | Some node ->
-                System.Numerics.BigInteger.Parse (
-                    node.ToJsonString (),
-                    System.Globalization.NumberStyles.Float,
-                    System.Globalization.CultureInfo.InvariantCulture
-                )
+/// Module containing JSON parsing extension members for the ContainsABigInt type
+[<AutoOpen>]
+module ContainsABigIntJsonParseExtension =
+    /// Extension methods for JSON parsing
+    type ContainsABigInt with
 
-        {
-            BigNum = arg_0
-        }
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : ContainsABigInt =
+            let arg_0 =
+                match node.["bigNum"] |> Option.ofObj with
+                | None ->
+                    raise (
+                        System.Collections.Generic.KeyNotFoundException (
+                            sprintf "Required key '%s' not found on JSON object" ("bigNum")
+                        )
+                    )
+                | Some node ->
+                    System.Numerics.BigInteger.Parse (
+                        node.ToJsonString (),
+                        System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture
+                    )
+
+            {
+                BigNum = arg_0
+            }

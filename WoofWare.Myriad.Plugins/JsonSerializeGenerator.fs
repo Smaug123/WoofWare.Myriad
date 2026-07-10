@@ -128,6 +128,35 @@ module internal JsonSerializeGenerator =
                 ]
             |> SynExpr.createLambda "field"
             |> fun e -> e, false
+        | BigInt ->
+            // JsonValue.Create<BigInteger> serialises BigInteger's public properties as an object.
+            // Parse its invariant decimal representation to force a JSON numeric node instead.
+            SynExpr.createIdent "value"
+            |> SynExpr.callMethodArg
+                "ToString"
+                (SynExpr.tuple
+                    [
+                        SynExpr.CreateConst "D"
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture" ]
+                    ])
+            |> SynExpr.paren
+            |> SynExpr.applyFunction (
+                SynExpr.createLongIdent [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ; "Parse" ]
+            )
+            |> fun parsed ->
+                assertNotNull
+                    (Ident.create "node")
+                    (SynExpr.CreateConst "Invariant BigInteger text unexpectedly parsed as JSON null.")
+                    (SynExpr.createIdent "node")
+                |> SynExpr.createLet [ SynBinding.basic [ Ident.create "node" ] [] parsed ]
+            |> SynExpr.createLet
+                [
+                    SynExpr.createIdent "field"
+                    |> SynExpr.typeAnnotate fieldType
+                    |> SynBinding.basic [ Ident.create "value" ] []
+                ]
+            |> SynExpr.createLambda "field"
+            |> fun expr -> expr, true
         | DateTimeOffset ->
             // fun field -> field.ToString("o") |> JsonValue.Create<string>
             let create =
