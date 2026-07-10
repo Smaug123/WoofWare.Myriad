@@ -148,6 +148,43 @@ module TestJsonSerde =
 
         property |> Prop.forAll (Arb.fromGen outerGen) |> Check.QuickThrowOnFailure
 
+    let private twoPow64 : bigint = 18446744073709551616I
+
+    /// Generates BigIntegers across a wide magnitude range, including values far outside Int64/UInt64.
+    let bigIntGen : Gen<bigint> =
+        gen {
+            let! isNegative = ArbMap.generate<bool> ArbMap.defaults
+            let! chunks = Gen.nonEmptyListOf (ArbMap.generate<uint64> ArbMap.defaults)
+
+            let magnitude =
+                chunks |> List.fold (fun acc chunk -> acc * twoPow64 + bigint chunk) 0I
+
+            return (if isNegative then -magnitude else magnitude)
+        }
+
+    [<Test>]
+    let ``BigInteger serialises as a JSON number and roundtrips`` () =
+        let property (n : bigint) : bool =
+            let record =
+                {
+                    BigNum = n
+                }
+
+            let serialised = (ContainsABigInt.toJsonNode record).ToJsonString ()
+
+            // A JSON number, not an object: JsonValue.Create<BigInteger> would serialise the struct's
+            // public properties as an object, which is both wrong and non-roundtrippable.
+            let expectedText =
+                n.ToString ("D", System.Globalization.CultureInfo.InvariantCulture)
+
+            serialised |> shouldEqual ("{\"bigNum\":" + expectedText + "}")
+
+            JsonNode.Parse serialised |> ContainsABigInt.jsonParse |> shouldEqual record
+
+            true
+
+        property |> Prop.forAll (Arb.fromGen bigIntGen) |> Check.QuickThrowOnFailure
+
     [<Test>]
     let ``Single example of big record`` () =
         let guid = Guid.Parse "dfe24db5-9f8d-447b-8463-4c0bcf1166d5"

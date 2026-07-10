@@ -83,7 +83,8 @@ type ToGetExtensionMethod =
 module ToGetExtensionMethod =
     let thisModuleWouldClash = 3
 
-[<WoofWare.Myriad.Plugins.JsonParse>]
+[<WoofWare.Myriad.Plugins.JsonParse true>]
+[<WoofWare.Myriad.Plugins.JsonSerialize true>]
 type ContainsABigInt =
     {
         BigNum : bigint
