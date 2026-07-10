@@ -446,6 +446,18 @@ module TestJsonSerde =
         actual |> shouldEqual expected
 
     [<Test>]
+    let ``Nullable-valued extension data writes None as JSON null`` () =
+        let toWrite =
+            {
+                Rest = [ "present", Some 3 ; "absent", None ] |> dict
+            }
+
+        // A None value must become a JSON null; without Option.toObj the Option<JsonNode>
+        // couldn't even be handed to JsonObject.Add.
+        CollectRemainingNullable.toJsonNode(toWrite).ToJsonString ()
+        |> shouldEqual """{"present":3,"absent":null}"""
+
+    [<Test>]
     let ``Can collect extension data, nested`` () =
         let str =
             """{
