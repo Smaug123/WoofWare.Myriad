@@ -17,6 +17,7 @@ Currently implemented:
 * `ArgParser` (to stamp out a basic argument parser).
 * `SwaggerClient` (to stamp out an HTTP client for a Swagger API).
 * `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
+* `GenerateRecordConstructor` (to stamp out a constructor which defaults every `option` field to `None`).
 * `RemoveOptions` (to strip `option` modifiers from a type) - this one is particularly half-baked!
 
 If you would like to ensure that your particular use-case remains unbroken, please do contribute tests to this repository.
@@ -305,6 +306,41 @@ Also, builds using `SwaggerProvider` appear to be inherently nondeterministic, e
 Swagger API specs appear to be pretty cowboy in the wild.
 I try to cope with invalid schemas I have seen, but I can't guarantee I do so correctly.
 Definitely do perform integration tests and let me know of weird specs you encounter, and bits of the (very extensive) Swagger spec I have omitted!
+
+## `GenerateRecordConstructor`
+
+Takes an annotated record like this:
+
+```fsharp
+[<WoofWare.Myriad.Plugins.GenerateRecordConstructor>]
+type Request =
+    {
+        Name : string
+        RetryCount : int option
+        Enabled : bool
+    }
+```
+
+and stamps out a companion module whose `create` function accepts only the required fields:
+
+```fsharp
+[<RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module Request =
+    /// Create a Request with every optional field set to None.
+    let create (arg_0 : string) (arg_1 : bool) : Request =
+        {
+            Name = arg_0
+            RetryCount = None
+            Enabled = arg_1
+        }
+```
+
+Arguments are curried and remain in field-declaration order. Their generated names are always `arg_0`, `arg_1`, and so on, so unusual field labels and labels which differ only by casing cannot collide. If every field is optional, the function takes `unit`, as in `Request.create ()`.
+
+Only an outermost, syntactically visible F# `option` is defaulted. Nested options are still optional at the outermost level, but an alias of `option`, `voption`, `Nullable`, and an option nested inside another container are required arguments. This distinction is unavoidable in an untyped syntax-based generator.
+
+The generator supports generic and internal namespace-level records. It rejects non-record types, records nested inside modules, and records with private accessibility. F# modules cannot be reopened from a separate generated file, and a private record cannot safely be constructed there.
 
 ## `RemoveOptions`
 
@@ -690,7 +726,7 @@ For example, this specifies that Myriad is to use the contents of `Client.fs` to
 ## Alternative use without the attributes
 
 You can avoid taking a reference on the `WoofWare.Myriad.Plugins.Attributes` assembly, instead putting all the configuration into the project file.
-This is implemented for everything except the SwaggerClientGenerator.
+This is currently implemented for `GenerateMock`, `GenerateCapturingMock`, `JsonParse`, `JsonSerialize`, `HttpClient`, and `CreateCatamorphism`.
 
 ```xml
 <Project>

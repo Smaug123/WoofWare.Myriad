@@ -17,6 +17,10 @@
     <Compile Include="GeneratedRecord.fs">
       <MyriadFile>RecordFile.fs</MyriadFile>
     </Compile>
+    <Compile Include="RecordConstructor.fs"/>
+    <Compile Include="GeneratedRecordConstructor.fs">
+      <MyriadFile>RecordConstructor.fs</MyriadFile>
+    </Compile>
     <Compile Include="JsonRecord.fs"/>
     <Compile Include="GeneratedJson.fs">
       <MyriadFile>JsonRecord.fs</MyriadFile>

@@ -27,6 +27,8 @@ WoofWare.Myriad.Plugins.GenerateMockAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.GenerateMockAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.GenerateMockAttribute.DefaultIsInternal [static property]: [read-only] bool
 WoofWare.Myriad.Plugins.GenerateMockAttribute.get_DefaultIsInternal [static method]: unit -> bool
+WoofWare.Myriad.Plugins.GenerateRecordConstructorAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.GenerateRecordConstructorAttribute..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.HttpClientAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.HttpClientAttribute..ctor [constructor]: bool
 WoofWare.Myriad.Plugins.HttpClientAttribute..ctor [constructor]: unit

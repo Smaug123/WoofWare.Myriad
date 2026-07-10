@@ -51,6 +51,9 @@
     <EmbeddedResource Include="TestSwagger\uspto.json" />
     <EmbeddedResource Include="TestSwagger\webhook-example.json" />
     <Compile Include="TestRemoveOptions.fs" />
+    <Compile Include="TestRecordConstructor\TestConstructorPlan.fs" />
+    <Compile Include="TestRecordConstructor\TestRecordConstructorGenerator.fs" />
+    <Compile Include="TestRecordConstructor.fs" />
     <Compile Include="TestSurface.fs" />
     <None Include="../.github/workflows/dotnet.yaml" />
   </ItemGroup>

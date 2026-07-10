@@ -8,6 +8,12 @@ open System
 type RemoveOptionsAttribute () =
     inherit Attribute ()
 
+/// Attribute indicating a record type for which the "Generate Record Constructor" Myriad
+/// generator should create a `create` function.
+/// The function takes every non-option field as an argument and initializes every option field to `None`.
+type GenerateRecordConstructorAttribute () =
+    inherit Attribute ()
+
 /// Attribute indicating an interface type for which the "Generate Mock" Myriad
 /// generator should apply during build.
 /// This generator creates a record which implements the interface,
