@@ -254,40 +254,53 @@ module internal SwaggerClientGenerator =
         (endpointLevel : SwaggerV2.MimeType list option)
         : SwaggerV2.MimeType option
         =
-        match payload with
-        | None -> None
-        | Some payload ->
+        let selected =
+            match payload with
+            | None -> None
+            | Some payload ->
 
-        match endpointLevel with
-        | Some [] -> failwith $"API specified empty %O{what}: %s{path} (%O{method})"
-        | Some [ m ] -> Some m
-        | Some (_ :: _ :: _) -> failwith $"we don't support multiple %O{what} right now, at %s{path} (%O{method})"
-        | None ->
+            match endpointLevel with
+            | Some [] -> failwith $"API specified empty %O{what}: %s{path} (%O{method})"
+            | Some [ m ] -> Some m
+            | Some (_ :: _ :: _) -> failwith $"we don't support multiple %O{what} right now, at %s{path} (%O{method})"
+            | None ->
 
-        match globalLevel with
-        | [] -> None
-        | [ m ] -> Some m
-        | many ->
-            // The global list is ambiguous for this endpoint. Keep only the types the
-            // generated client could honour for this payload: JSON payloads need a JSON type,
-            // verbatim strings need a non-JSON one, and raw bytes travel under anything.
-            let compatible =
-                match payload with
-                | PayloadShape.Json -> many |> List.filter isJsonMimeType
-                | PayloadShape.RawText -> many |> List.filter (isJsonMimeType >> not)
-                | PayloadShape.Opaque -> many
-
-            match compatible with
-            | [] ->
-                failwith
-                    $"none of the multiple global %O{what} can carry this endpoint's payload: %s{path} (%O{method})"
+            match globalLevel with
+            | [] -> None
             | [ m ] -> Some m
-            | several ->
+            | many ->
+                // The global list is ambiguous for this endpoint. Keep only the types the
+                // generated client could honour for this payload: JSON payloads need a JSON type,
+                // verbatim strings need a non-JSON one, and raw bytes travel under anything.
+                let compatible =
+                    match payload with
+                    | PayloadShape.Json -> many |> List.filter isJsonMimeType
+                    | PayloadShape.RawText -> many |> List.filter (isJsonMimeType >> not)
+                    | PayloadShape.Opaque -> many
 
-            // Canonical `application/json` beats more exotic JSON flavours.
-            match several |> List.tryFind (fun m -> normalisedMediaType m = "application/json") with
-            | Some canonical -> Some canonical
-            | None -> failwith $"can't choose between multiple viable global %O{what} for %s{path} (%O{method})"
+                match compatible with
+                | [] ->
+                    failwith
+                        $"none of the multiple global %O{what} can carry this endpoint's payload: %s{path} (%O{method})"
+                | [ m ] -> Some m
+                | several ->
+
+                // Canonical `application/json` beats more exotic JSON flavours.
+                match several |> List.tryFind (fun m -> normalisedMediaType m = "application/json") with
+                | Some canonical -> Some canonical
+                | None -> failwith $"can't choose between multiple viable global %O{what} for %s{path} (%O{method})"
+
+        // Whatever we selected is emitted verbatim into a Content-Type or Accept header; a
+        // value that isn't a parseable media type would make the generated client throw
+        // FormatException on every request, so refuse it now instead.
+        match selected with
+        | None -> None
+        | Some (SwaggerV2.MimeType raw as mime) ->
+            match System.Net.Http.Headers.MediaTypeHeaderValue.TryParse raw with
+            | true, _ -> Some mime
+            | false, _ ->
+                failwith
+                    $"%O{what} value '%s{raw}' for %s{path} (%O{method}) is not a parseable media type; the generated client could not send it as a header."
 
     /// Returns None if we lacked the information required to do this.
     /// nextAnonymousTypeName must return a fresh unused type name on each call.

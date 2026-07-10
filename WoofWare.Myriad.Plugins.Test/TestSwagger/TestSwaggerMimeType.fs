@@ -355,6 +355,17 @@ module TestSwaggerMimeType =
         |> ignore<exn>
 
     [<Test>]
+    let ``a selected MIME value must be a parseable media type`` () : unit =
+        // Every selected value is emitted into a Content-Type or Accept header; a malformed
+        // one would make the generated client throw FormatException on every request, so it
+        // must fail generation instead — wherever it was declared.
+        Assert.Throws<exn> (fun () -> select [ "not-a-media-type" ] None |> ignore)
+        |> ignore<exn>
+
+        Assert.Throws<exn> (fun () -> select [] (Some [ "utter garbage" ]) |> ignore)
+        |> ignore<exn>
+
+    [<Test>]
     let ``whatever selection makes of an ambiguous global list, it never invents or mislabels`` () : unit =
         let mimeGen : Gen<string> =
             Gen.elements
