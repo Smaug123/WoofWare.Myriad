@@ -303,6 +303,59 @@ module internal JsonSerializeGenerator =
 
             SynExpr.createLongIdent' (typeName @ [ Ident.create "toJsonNode" ]), true
 
+    let private trySerializeNonNullableNodeToJsonString (fieldType : SynType) : SynExpr option =
+        match fieldType with
+        | BigInt ->
+            SynExpr.createIdent "value"
+            |> SynExpr.callMethodArg
+                "ToString"
+                (SynExpr.tuple
+                    [
+                        SynExpr.CreateConst "D"
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture" ]
+                    ])
+            |> SynExpr.createLet
+                [
+                    SynExpr.createIdent "field"
+                    |> SynExpr.typeAnnotate fieldType
+                    |> SynBinding.basic [ Ident.create "value" ] []
+                ]
+            |> SynExpr.createLambda "field"
+            |> Some
+        | JsonNode ->
+            SynExpr.createIdent "node"
+            |> SynExpr.typeAnnotate (SynType.createLongIdent' [ "System" ; "Text" ; "Json" ; "Nodes" ; "JsonNode" ])
+            |> SynExpr.paren
+            |> SynExpr.callMethod "ToJsonString"
+            |> SynExpr.createLambda "node"
+            |> Some
+        | _ -> None
+
+    /// Avoid constructing an intermediate JsonNode when an HTTP request body already has a direct JSON-text form.
+    let trySerializeNodeToJsonString (fieldType : SynType) : SynExpr option =
+        match fieldType with
+        | OptionType ty ->
+            trySerializeNonNullableNodeToJsonString ty
+            |> Option.map (fun serialize ->
+                [
+                    SynMatchClause.create (SynPat.named "None") (SynExpr.CreateConst "null")
+                    SynExpr.createIdent "field"
+                    |> SynExpr.applyFunction serialize
+                    |> SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "field" ])
+                ]
+                |> SynExpr.createMatch (SynExpr.createIdent "field")
+                |> SynExpr.createLambda "field"
+            )
+        | NullableType ty ->
+            trySerializeNonNullableNodeToJsonString ty
+            |> Option.map (fun serialize ->
+                SynExpr.createLongIdent [ "field" ; "Value" ]
+                |> SynExpr.applyFunction serialize
+                |> SynExpr.ifThenElse (SynExpr.createLongIdent [ "field" ; "HasValue" ]) (SynExpr.CreateConst "null")
+                |> SynExpr.createLambda "field"
+            )
+        | _ -> trySerializeNonNullableNodeToJsonString fieldType
+
     /// propertyName is probably a string literal, but it could be a [<Literal>] variable
     /// `node.Add ({propertyName}, {toJsonNode})`
     let createSerializeRhsRecord (propertyName : SynExpr) (fieldId : Ident) (fieldType : SynType) : SynExpr =

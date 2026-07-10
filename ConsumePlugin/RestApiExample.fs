@@ -71,6 +71,13 @@ type IPureGymApi =
     abstract CreateUserSerialisedIntBody : [<Body>] user : int * ?ct : CancellationToken -> Task<string>
 
     [<Post "users/new">]
+    abstract CreateUserSerialisedJsonNodeBody :
+        [<Body>] user : System.Text.Json.Nodes.JsonNode * ?ct : CancellationToken -> Task<string>
+
+    [<Post "users/new">]
+    abstract CreateUserSerialisedBigIntBody : [<Body>] user : bigint * ?ct : CancellationToken -> Task<string>
+
+    [<Post "users/new">]
     abstract CreateUserHttpContent :
         [<Body>] user : System.Net.Http.HttpContent * ?ct : CancellationToken -> Task<string>
 
