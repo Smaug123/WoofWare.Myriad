@@ -54,8 +54,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Gym list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -65,8 +67,10 @@ module PureGymApi =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Gym) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Gym.jsonParse elt)
                         )
@@ -109,8 +113,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GymAttendance"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -153,8 +159,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GymAttendance"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -193,8 +201,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Member"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -236,8 +246,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Gym"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -276,8 +288,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type MemberActivityDto"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -316,8 +330,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type UriThing"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -366,8 +382,10 @@ module PureGymApi =
                                                      (match field with
                                                       | null ->
                                                           raise (
-                                                              System.ArgumentNullException
+                                                              System.ArgumentNullException (
+                                                                  "field",
                                                                   "Expected type string to be non-null, but received a null value when serialising"
+                                                              )
                                                           )
                                                       | field -> field)
                                                  )
@@ -415,8 +433,10 @@ module PureGymApi =
                                 (match value with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException
+                                         System.ArgumentNullException (
+                                             "value",
                                              "Expected dictionary value of type string to be non-null, but it was null"
+                                         )
                                      )
                                  | value -> value.AsValue().GetValue<System.String> ())
                             )
@@ -477,8 +497,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Sessions"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -538,8 +560,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Sessions"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -746,8 +770,10 @@ module PureGymApi =
                                 (match field with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException
+                                         System.ArgumentNullException (
+                                             "field",
                                              "Expected type URI to be non-null, but received a null value when serialising"
+                                         )
                                      )
                                  | field -> field)
                             )
@@ -794,8 +820,10 @@ module PureGymApi =
                                 (match field with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException
+                                         System.ArgumentNullException (
+                                             "field",
                                              "Expected type int32 to be non-null, but received a null value when serialising"
+                                         )
                                      )
                                  | field -> field)
                             )
@@ -1074,8 +1102,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Response<MemberActivityDto>"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -1119,8 +1149,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type RestEase.Response<MemberActivityDto>"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -1164,8 +1196,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Response<MemberActivityDto>"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -1209,8 +1243,10 @@ module PureGymApi =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type RestEase.Response<MemberActivityDto>"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 

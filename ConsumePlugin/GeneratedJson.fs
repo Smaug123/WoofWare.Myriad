@@ -27,8 +27,10 @@ module internal InternalTypeNotExtensionSerial =
                      (match field with
                       | null ->
                           raise (
-                              System.ArgumentNullException
+                              System.ArgumentNullException (
+                                  "field",
                                   "Expected type string to be non-null, but received a null value when serialising"
+                              )
                           )
                       | field -> field)
                  ))
@@ -60,8 +62,10 @@ module internal InternalTypeExtensionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -131,8 +135,10 @@ module JsonRecordType =
                     (match elt with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "elt",
                                  "Expected element of array (element type int32) to be non-null, but found a null element"
+                             )
                          )
                      | elt -> elt.AsValue().GetValue<System.Int32> ())
                 )
@@ -152,8 +158,10 @@ module JsonRecordType =
                     (match elt with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "elt",
                                  "Expected element of array (element type string) to be non-null, but found a null element"
+                             )
                          )
                      | elt -> elt.AsValue().GetValue<System.String> ())
                 )
@@ -183,8 +191,10 @@ module JsonRecordType =
                     (match elt with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "elt",
                                  "Expected element of array (element type int32) to be non-null, but found a null element"
+                             )
                          )
                      | elt -> elt.AsValue().GetValue<System.Int32> ())
                 )

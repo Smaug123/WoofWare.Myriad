@@ -31,8 +31,10 @@ module InnerTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type GUID to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -55,8 +57,10 @@ module InnerTypeWithBothJsonSerializeExtension =
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException
+                                              System.ArgumentNullException (
+                                                  "field",
                                                   "Expected type URI to be non-null, but received a null value when serialising"
+                                              )
                                           )
                                       | field -> field)
                                  )
@@ -89,8 +93,10 @@ module InnerTypeWithBothJsonSerializeExtension =
                                                  (match field with
                                                   | null ->
                                                       raise (
-                                                          System.ArgumentNullException
+                                                          System.ArgumentNullException (
+                                                              "field",
                                                               "Expected type char to be non-null, but received a null value when serialising"
+                                                          )
                                                       )
                                                   | field -> field)
                                              )
@@ -123,8 +129,10 @@ module InnerTypeWithBothJsonSerializeExtension =
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException
+                                              System.ArgumentNullException (
+                                                  "field",
                                                   "Expected type bool to be non-null, but received a null value when serialising"
+                                              )
                                           )
                                       | field -> field)
                                  )
@@ -194,8 +202,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type int32 to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -210,8 +220,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -231,8 +243,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException
+                                              System.ArgumentNullException (
+                                                  "field",
                                                   "Expected type int32 to be non-null, but received a null value when serialising"
+                                              )
                                           )
                                       | field -> field)
                                  )
@@ -259,8 +273,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException
+                                              System.ArgumentNullException (
+                                                  "field",
                                                   "Expected type string to be non-null, but received a null value when serialising"
+                                              )
                                           )
                                       | field -> field)
                                  )
@@ -285,8 +301,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException
+                                              System.ArgumentNullException (
+                                                  "field",
                                                   "Expected type int32 to be non-null, but received a null value when serialising"
+                                              )
                                           )
                                       | field -> field)
                                  )
@@ -306,8 +324,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type byte<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -322,8 +342,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type signed byte<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -338,8 +360,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type int32<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -354,8 +378,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type int32<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -370,8 +396,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type int64<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -386,8 +414,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type uint32<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -402,8 +432,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type uint32<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -418,8 +450,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type uint64<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -434,8 +468,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type double<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -450,8 +486,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type single<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -466,8 +504,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type single<measure> to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -487,8 +527,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int32<measure> to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -509,8 +551,10 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                                  (match field with
                                   | null ->
                                       raise (
-                                          System.ArgumentNullException
+                                          System.ArgumentNullException (
+                                              "field",
                                               "Expected type int32<measure> to be non-null, but received a null value when serialising"
+                                          )
                                       )
                                   | field -> field)
                              )
@@ -564,8 +608,10 @@ module FirstDuJsonSerializeExtension =
                         (match field with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "field",
                                      "Expected type string to be non-null, but received a null value when serialising"
+                                 )
                              )
                          | field -> field)
                     )
@@ -586,8 +632,10 @@ module FirstDuJsonSerializeExtension =
                         (match field with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "field",
                                      "Expected type int32 to be non-null, but received a null value when serialising"
+                                 )
                              )
                          | field -> field)
                     )
@@ -623,8 +671,10 @@ module HeaderAndValueJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -639,8 +689,10 @@ module HeaderAndValueJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -734,8 +786,10 @@ module OuterCollectRemainingJsonSerializeExtension =
                             (match field with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "field",
                                          "Expected type int32 to be non-null, but received a null value when serialising"
+                                     )
                                  )
                              | field -> field)
                         )
@@ -774,8 +828,10 @@ module InnerTypeWithBothJsonParseExtension =
                         (match value with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "value",
                                      "Expected dictionary value of type InnerTypeWithBoth to be non-null, but it was null"
+                                 )
                              )
                          | value -> InnerTypeWithBoth.jsonParse value)
                     )
@@ -800,8 +856,10 @@ module InnerTypeWithBothJsonParseExtension =
                         (match value with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "value",
                                      "Expected dictionary value of type bool to be non-null, but it was null"
+                                 )
                              )
                          | value -> value.AsValue().GetValue<System.Boolean> ())
                     )
@@ -825,8 +883,10 @@ module InnerTypeWithBothJsonParseExtension =
                         (match value with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "value",
                                      "Expected dictionary value of type char list to be non-null, but it was null"
+                                 )
                              )
                          | value ->
                              value.AsArray ()
@@ -834,8 +894,10 @@ module InnerTypeWithBothJsonParseExtension =
                                  (match elt with
                                   | null ->
                                       raise (
-                                          System.ArgumentNullException
+                                          System.ArgumentNullException (
+                                              "elt",
                                               "Expected element of array (element type char) to be non-null, but found a null element"
+                                          )
                                       )
                                   | elt -> elt.AsValue().GetValue<System.Char> ())
                              )
@@ -861,8 +923,10 @@ module InnerTypeWithBothJsonParseExtension =
                         (match value with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "value",
                                      "Expected dictionary value of type URI to be non-null, but it was null"
+                                 )
                              )
                          | value -> value.AsValue().GetValue<string> () |> System.Uri)
                     )
@@ -1093,8 +1157,10 @@ module JsonRecordTypeWithBothJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type int32) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.Int32> ())
                     )
@@ -1114,8 +1180,10 @@ module JsonRecordTypeWithBothJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -1145,8 +1213,10 @@ module JsonRecordTypeWithBothJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type int32) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.Int32> ())
                     )
