@@ -221,13 +221,22 @@ module TestSwaggerMimeType =
 
     // ---- selectMimeType: boiling a Consumes/Produces list down to one MIME type ----
 
-    let private select (globalLevel : string list) (endpointLevel : string list option) : MimeType option =
+    let private selectFor
+        (payload : PayloadShape option)
+        (globalLevel : string list)
+        (endpointLevel : string list option)
+        : MimeType option
+        =
         SwaggerClientGenerator.selectMimeType
             MimeUsage.Consumes
             "/thing"
             HttpMethod.Get
+            payload
             (globalLevel |> List.map MimeType)
             (endpointLevel |> Option.map (List.map MimeType))
+
+    /// Most selection behaviour is payload-independent; exercise it with a JSON payload.
+    let private select = selectFor (Some PayloadShape.Json)
 
     [<Test>]
     let ``an endpoint-level MIME type overrides the global list entirely`` () : unit =
@@ -254,7 +263,7 @@ module TestSwaggerMimeType =
     [<Test>]
     let ``an ambiguous global list is resolved by the sole JSON-capable entry`` () : unit =
         // `isJsonMimeType` accepts the +json structured-suffix family, so this list has
-        // exactly one entry the generated client can honour.
+        // exactly one entry the generated client can honour for a JSON payload.
         select [ "application/vnd.api+json" ; "application/xml" ] None
         |> shouldEqual (Some (MimeType "application/vnd.api+json"))
 
@@ -275,7 +284,7 @@ module TestSwaggerMimeType =
         |> shouldEqual (Some (MimeType "application/json"))
 
     [<Test>]
-    let ``an ambiguous global list with no JSON entry is rejected`` () : unit =
+    let ``an ambiguous global list with no entry fitting a JSON payload is rejected`` () : unit =
         Assert.Throws<exn> (fun () -> select [ "text/html" ; "application/xml" ] None |> ignore)
         |> ignore<exn>
 
@@ -283,6 +292,43 @@ module TestSwaggerMimeType =
     let ``an ambiguous global list with several non-canonical JSON entries is rejected`` () : unit =
         Assert.Throws<exn> (fun () ->
             select [ "application/vnd.api+json" ; "application/problem+json" ] None
+            |> ignore
+        )
+        |> ignore<exn>
+
+    [<Test>]
+    let ``no payload means no MIME type, whatever the spec offers`` () : unit =
+        // A bodyless endpoint has no Consumes negotiation to resolve, so ambiguity in the
+        // global list is irrelevant to it — even an otherwise-unresolvable one.
+        selectFor None [ "text/plain" ; "application/xml" ] None |> shouldEqual None
+
+        selectFor None [ "text/plain" ; "application/xml" ] (Some [ "text/plain" ])
+        |> shouldEqual None
+
+    [<Test>]
+    let ``a raw string payload selects the sole non-JSON option`` () : unit =
+        // The generated client sends/receives strings verbatim, so application/json (which
+        // would demand JSON quoting) is not an option for it.
+        selectFor (Some PayloadShape.RawText) [ "application/json" ; "text/plain" ] None
+        |> shouldEqual (Some (MimeType "text/plain"))
+
+    [<Test>]
+    let ``a raw string payload with several non-JSON options is rejected`` () : unit =
+        Assert.Throws<exn> (fun () ->
+            selectFor (Some PayloadShape.RawText) [ "application/json" ; "text/plain" ; "text/html" ] None
+            |> ignore
+        )
+        |> ignore<exn>
+
+    [<Test>]
+    let ``an opaque payload accepts anything and prefers canonical application/json`` () : unit =
+        selectFor (Some PayloadShape.Opaque) [ "text/plain" ; "application/json" ] None
+        |> shouldEqual (Some (MimeType "application/json"))
+
+    [<Test>]
+    let ``an opaque payload with no canonical JSON entry is rejected when ambiguous`` () : unit =
+        Assert.Throws<exn> (fun () ->
+            selectFor (Some PayloadShape.Opaque) [ "text/plain" ; "text/html" ] None
             |> ignore
         )
         |> ignore<exn>
@@ -303,25 +349,45 @@ module TestSwaggerMimeType =
                     "text/html"
                 ]
 
-        let globalGen : Gen<string list> = Gen.listOf mimeGen
+        let payloadGen : Gen<PayloadShape option> =
+            Gen.elements
+                [
+                    None
+                    Some PayloadShape.Json
+                    Some PayloadShape.RawText
+                    Some PayloadShape.Opaque
+                ]
 
-        let property (globalLevel : string list) : bool =
+        let inputGen : Gen<PayloadShape option * string list> =
+            Gen.zip payloadGen (Gen.listOf mimeGen)
+
+        /// Could the generated client honour this MIME type for this payload?
+        let compatible (payload : PayloadShape) (m : MimeType) : bool =
+            match payload with
+            | PayloadShape.Json -> SwaggerClientGenerator.isJsonMimeType m
+            | PayloadShape.RawText -> not (SwaggerClientGenerator.isJsonMimeType m)
+            | PayloadShape.Opaque -> true
+
+        let property (payload : PayloadShape option, globalLevel : string list) : bool =
             match
                 (try
-                    select globalLevel None |> Ok
+                    selectFor payload globalLevel None |> Ok
                  with e ->
                      Error e)
             with
             | Error _ ->
-                // Refusing to choose is always sound.
+                // Refusing to choose is always sound (the caller fails generation loudly).
                 true
             | Ok None ->
-                // Only an empty list expresses no preference.
-                List.isEmpty globalLevel
+                // Only "no payload" or "no preference" produce no MIME type.
+                payload.IsNone || List.isEmpty globalLevel
             | Ok (Some m) ->
-                // Anything we choose must have been on offer, and a choice among several
-                // must be one the generated client's JSON serialiser can honour.
-                List.contains m (List.map MimeType globalLevel)
-                && (globalLevel.Length = 1 || SwaggerClientGenerator.isJsonMimeType m)
+                // Anything we choose must have been on offer, for an actual payload; and a
+                // choice among several must be one the generated client can honour.
+                match payload with
+                | None -> false
+                | Some payload ->
+                    List.contains m (List.map MimeType globalLevel)
+                    && (globalLevel.Length = 1 || compatible payload m)
 
-        Prop.forAll (Arb.fromGen globalGen) property |> Check.QuickThrowOnFailure
+        Prop.forAll (Arb.fromGen inputGen) property |> Check.QuickThrowOnFailure

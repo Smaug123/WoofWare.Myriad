@@ -94,6 +94,37 @@ module internal HttpClientGenerator =
         elif m = HttpMethod.Trace then "Trace"
         else failwith $"Unrecognised method: %+A{m}"
 
+    /// The Content-Type header value to declare on a StringContent body, whose text the
+    /// generated code always UTF-8-encodes. When the declaration is a compile-time constant:
+    /// if it pins no charset we append the UTF-8 we actually send, if it pins UTF-8 it passes
+    /// through, and if it pins anything else we refuse to generate — relabelling UTF-8 bytes
+    /// as another charset would corrupt every non-ASCII body. A computed value passes through
+    /// untouched (we can't inspect it).
+    let withStringContentCharset (contentType : SynExpr) : SynExpr =
+        match contentType with
+        | SynExpr.Const (SynConst.String (s, _, _), _) ->
+            let declaredCharset =
+                s.Split ';'
+                |> Seq.skip 1
+                |> Seq.tryPick (fun p ->
+                    match p.Split '=' with
+                    | [| name ; value |] when name.Trim().Equals ("charset", System.StringComparison.OrdinalIgnoreCase) ->
+                        Some (value.Trim().Trim '"')
+                    | _ -> None
+                )
+
+            match declaredCharset with
+            | None -> SynExpr.CreateConst (s + "; charset=utf-8")
+            | Some cs when
+                cs.Equals ("utf-8", System.StringComparison.OrdinalIgnoreCase)
+                || cs.Equals ("utf8", System.StringComparison.OrdinalIgnoreCase)
+                ->
+                contentType
+            | Some cs ->
+                failwith
+                    $"Content-Type '%s{s}' declares charset '%s{cs}', but generated string bodies are always UTF-8-encoded; refusing to mislabel them. Declare charset=utf-8 or drop the parameter."
+        | _ -> contentType
+
     /// E.g. converts `[<Get "blah">]` to (HttpMethod.Get, SynExpr.Const "blah")
     let extractHttpInformation (attrs : SynAttribute list) : HttpMethod * SynExpr =
         let matchingAttrs =
@@ -541,20 +572,6 @@ module internal HttpClientGenerator =
                 | ct -> Some ct
             | _ -> failwith "Unexpectedly got multiple Content-Type headers"
 
-        /// StringContent UTF-8-encodes its body, so when the declared Content-Type doesn't pin
-        /// a charset, declare the one we actually send. (Only possible when the declaration is
-        /// a compile-time constant; a computed value passes through untouched.)
-        let withDefaultCharset (contentType : SynExpr) : SynExpr =
-            match contentType with
-            | SynExpr.Const (SynConst.String (s, _, _), _) when
-                s.Split ';'
-                |> Seq.skip 1
-                |> Seq.exists (fun p -> p.TrimStart().StartsWith ("charset", System.StringComparison.OrdinalIgnoreCase))
-                |> not
-                ->
-                SynExpr.CreateConst (s + "; charset=utf-8")
-            | _ -> contentType
-
         // Assign the declared Content-Type to content the generated code has just constructed.
         // StringContent's `mediaType` constructor argument throws FormatException on
         // parameterised values like "application/json; charset=utf-8", so we parse the full
@@ -581,7 +598,7 @@ module internal HttpClientGenerator =
                         Let ("queryParams", createStringContent (SynExpr.createIdent' bodyParamName))
                         match contentTypeHeader with
                         | None -> ()
-                        | Some ct -> setContentType (withDefaultCharset ct)
+                        | Some ct -> setContentType (withStringContentCharset ct)
                         Do (
                             SynExpr.assign
                                 (SynLongIdent.createS' [ "httpMessage" ; "Content" ])
@@ -665,7 +682,7 @@ module internal HttpClientGenerator =
                         // application/json for a serialised body.
                         match contentTypeHeader with
                         | None -> ()
-                        | Some ct -> setContentType (withDefaultCharset ct)
+                        | Some ct -> setContentType (withStringContentCharset ct)
                         Do (
                             SynExpr.assign
                                 (SynLongIdent.createS' [ "httpMessage" ; "Content" ])
