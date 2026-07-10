@@ -108,6 +108,87 @@ module internal SwaggerClientGenerator =
         | SwaggerV2.Definition.Integer _ -> SynType.int |> Some
         | SwaggerV2.Definition.File -> SynType.createLongIdent' [ "System" ; "IO" ; "Stream" ] |> Some
 
+    /// The generated client's only structured serialiser is JSON: it serialises request
+    /// bodies with System.Text.Json and parses responses with `JsonNode`. This recognises the
+    /// MIME types that serialiser can honour: `application/json`, and the `+json`
+    /// structured-suffix family (RFC 6839), ignoring any parameters such as "; charset=utf-8".
+    let isJsonMimeType (SwaggerV2.MimeType mime : SwaggerV2.MimeType) : bool =
+        let mediaType = (mime.Split ';').[0].Trim().ToLowerInvariant ()
+
+        mediaType = "application/json"
+        || mediaType.EndsWith ("+json", System.StringComparison.Ordinal)
+
+    /// True when a payload described by `defn` would be handed to the JSON (de)serialiser by
+    /// the generated client, as opposed to being passed through raw (a `string` body, or a
+    /// `Stream` file body) or absent entirely. When this is true, only a JSON MIME type can
+    /// carry the payload correctly: a non-JSON type would be mislabelled on the way out or
+    /// misparsed on the way back in.
+    ///
+    /// `resolveHandle` looks up a `$ref` (e.g. "#/definitions/Foo") to the definition it names.
+    let requiresJsonSerialisation
+        (resolveHandle : string -> SwaggerV2.Definition option)
+        (defn : SwaggerV2.Definition)
+        : bool
+        =
+        // Guard against `$ref` cycles: if we chase our own tail we can't prove the payload is
+        // raw, so we fall back to "requires JSON", which is the safe, fail-loud default.
+        let visited = HashSet<string> ()
+
+        let rec go (defn : SwaggerV2.Definition) : bool =
+            match defn with
+            | SwaggerV2.Definition.String
+            | SwaggerV2.Definition.File
+            | SwaggerV2.Definition.Unspecified -> false
+            | SwaggerV2.Definition.Object _
+            | SwaggerV2.Definition.Array _
+            | SwaggerV2.Definition.Boolean
+            | SwaggerV2.Definition.Integer _ -> true
+            | SwaggerV2.Definition.Handle h ->
+                // A `$ref` usually points at an object, but can alias a raw type; follow it so we
+                // don't reject a legitimate text/* string alias.
+                if not (visited.Add h) then
+                    true
+                else
+                    match resolveHandle h with
+                    | None -> true
+                    | Some target -> go target
+
+        go defn
+
+    /// Fail loudly if a negotiated MIME type can't carry the payload the generated client would
+    /// (de)serialise for it (see `requiresJsonSerialisation`). Otherwise the emitted client would
+    /// mislabel a JSON request body, or request a non-JSON response and then parse it as JSON.
+    ///
+    /// `bodyType` is the request body's schema, if the endpoint has a body parameter; `returnType`
+    /// is the success response schema.
+    let checkMimeCompatibility
+        (resolveHandle : string -> SwaggerV2.Definition option)
+        (path : string)
+        (method : WoofWare.Myriad.Plugins.HttpMethod)
+        (consumes : SwaggerV2.MimeType option)
+        (produces : SwaggerV2.MimeType option)
+        (bodyType : SwaggerV2.Definition option)
+        (returnType : SwaggerV2.Definition)
+        : unit
+        =
+        match produces with
+        | Some (SwaggerV2.MimeType producesStr as producesMime) when
+            requiresJsonSerialisation resolveHandle returnType
+            && not (isJsonMimeType producesMime)
+            ->
+            failwith
+                $"Endpoint %s{path} (%O{method}) declares it produces %s{producesStr}, but its success response is an object/array/scalar body that the generated client can only parse as JSON. Refusing to emit a client that would send Accept: %s{producesStr} and then parse the response as JSON."
+        | _ -> ()
+
+        match consumes, bodyType with
+        | Some (SwaggerV2.MimeType consumesStr as consumesMime), Some bodyType when
+            requiresJsonSerialisation resolveHandle bodyType
+            && not (isJsonMimeType consumesMime)
+            ->
+            failwith
+                $"Endpoint %s{path} (%O{method}) declares it consumes %s{consumesStr}, but its request body is an object/array/scalar that the generated client can only serialise as JSON. Refusing to emit a client that would send Content-Type: %s{consumesStr} with a JSON-serialised body."
+        | _ -> ()
+
     /// Returns None if we lacked the information required to do this.
     /// nextAnonymousTypeName must return a fresh unused type name on each call.
     /// bigCache is a map of e.g. {"securityDefinition": {Defn : F# type}}.
@@ -721,6 +802,14 @@ module internal SwaggerV2Generator =
                 else
                     failwith $"can't choose between multiple global %O{what} for %s{path} (%O{method})"
 
+        /// Resolve a `$ref` handle (e.g. "#/definitions/Foo" or "#/responses/Bar") to the
+        /// definition it names, so we can tell whether the payload behind it is JSON-serialised.
+        let resolveHandle (h : string) : SwaggerV2.Definition option =
+            match h.Split '/' |> List.ofArray with
+            | [ "#" ; "definitions" ; name ] -> Map.tryFind name contents.Definitions
+            | [ "#" ; "responses" ; name ] -> contents.Responses |> Map.tryFind name |> Option.map (fun r -> r.Schema)
+            | _ -> None
+
         let summary =
             contents.Paths
             |> Seq.collect (fun (KeyValue (path, endpoints)) ->
@@ -746,6 +835,28 @@ module internal SwaggerV2Generator =
                     match returnType with
                     | None -> None
                     | Some returnType ->
+
+                    // The generated client can only (de)serialise object/array/scalar payloads as
+                    // JSON, regardless of the negotiated MIME type. Reject any endpoint whose MIME
+                    // type disagrees with that, rather than emitting a client that mislabels its
+                    // request body or misparses the response.
+                    let requestBodyType =
+                        endpoint.Parameters
+                        |> Option.defaultValue []
+                        |> List.tryPick (fun par ->
+                            match par.In with
+                            | SwaggerV2.ParameterIn.Body -> Some par.Type
+                            | _ -> None
+                        )
+
+                    SwaggerClientGenerator.checkMimeCompatibility
+                        resolveHandle
+                        path
+                        method
+                        consumes
+                        produces
+                        requestBodyType
+                        returnType
 
                     {
                         Method = method
