@@ -27,6 +27,7 @@ type JsonRecordType =
         D : InnerType
         E : string array
         F : int[]
+        G : System.Nullable<int>
     }
 
 [<WoofWare.Myriad.Plugins.JsonParse>]

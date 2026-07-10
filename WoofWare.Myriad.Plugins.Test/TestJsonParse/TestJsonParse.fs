@@ -30,6 +30,61 @@ module TestJsonParse =
                     }
                 E = [| "something" ; "else" |]
                 F = [||]
+                G = System.Nullable ()
+            }
+
+        let actual = s |> JsonNode.Parse |> JsonRecordType.jsonParse
+        actual |> shouldEqual expected
+
+    [<Test>]
+    let ``Single example with explicit null`` () =
+        let s =
+            """
+{
+    "a": 3, "another-thing": "hello", "hi": [6, 1], "d": {"something": "oh hi"}, "g": null,
+    "e": ["something", "else"], "f": []
+}
+"""
+
+        let expected =
+            {
+                A = 3
+                B = "hello"
+                C = [ 6 ; 1 ]
+                D =
+                    {
+                        Thing = "oh hi"
+                    }
+                E = [| "something" ; "else" |]
+                F = [||]
+                G = System.Nullable ()
+            }
+
+        let actual = s |> JsonNode.Parse |> JsonRecordType.jsonParse
+        actual |> shouldEqual expected
+
+    [<Test>]
+    let ``Single example, nullable provided`` () =
+        let s =
+            """
+{
+    "a": 3, "another-thing": "hello", "hi": [6, 1], "d": {"something": "oh hi"}, "g": 3,
+    "e": ["something", "else"], "f": []
+}
+"""
+
+        let expected =
+            {
+                A = 3
+                B = "hello"
+                C = [ 6 ; 1 ]
+                D =
+                    {
+                        Thing = "oh hi"
+                    }
+                E = [| "something" ; "else" |]
+                F = [||]
+                G = System.Nullable 3
             }
 
         let actual = s |> JsonNode.Parse |> JsonRecordType.jsonParse
