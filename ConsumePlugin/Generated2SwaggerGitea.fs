@@ -37,8 +37,10 @@ module APIErrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -62,8 +64,10 @@ module APIErrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -106,8 +110,10 @@ module AccessTokenJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -131,8 +137,10 @@ module AccessTokenJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -161,8 +169,10 @@ module AccessTokenJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -191,8 +201,10 @@ module AccessTokenJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -216,8 +228,10 @@ module AccessTokenJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -260,8 +274,10 @@ module ActivityPubJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -304,8 +320,10 @@ module AddCollaboratorOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -348,8 +366,10 @@ module AddTimeOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -368,8 +388,10 @@ module AddTimeOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type int64 to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -389,8 +411,10 @@ module AddTimeOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -433,8 +457,10 @@ module AnnotatedTagObjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -458,8 +484,10 @@ module AnnotatedTagObjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -483,8 +511,10 @@ module AnnotatedTagObjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -527,8 +557,10 @@ module AttachmentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -552,8 +584,10 @@ module AttachmentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -577,8 +611,10 @@ module AttachmentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -602,8 +638,10 @@ module AttachmentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -627,8 +665,10 @@ module AttachmentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -652,8 +692,10 @@ module AttachmentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -677,8 +719,10 @@ module AttachmentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -726,8 +770,10 @@ module BranchProtectionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -761,8 +807,10 @@ module BranchProtectionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -791,8 +839,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -816,8 +866,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -841,8 +893,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -866,8 +920,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -891,8 +947,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -916,8 +974,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -941,8 +1001,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -966,8 +1028,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -991,8 +1055,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1016,8 +1082,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1041,8 +1109,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1071,8 +1141,10 @@ module BranchProtectionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -1106,8 +1178,10 @@ module BranchProtectionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -1136,8 +1210,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1161,8 +1237,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1191,8 +1269,10 @@ module BranchProtectionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -1226,8 +1306,10 @@ module BranchProtectionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -1256,8 +1338,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1281,8 +1365,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1306,8 +1392,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1336,8 +1424,10 @@ module BranchProtectionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -1366,8 +1456,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1391,8 +1483,10 @@ module BranchProtectionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1435,8 +1529,10 @@ module ChangedFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1460,8 +1556,10 @@ module ChangedFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1485,8 +1583,10 @@ module ChangedFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1510,8 +1610,10 @@ module ChangedFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1535,8 +1637,10 @@ module ChangedFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1560,8 +1664,10 @@ module ChangedFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1585,8 +1691,10 @@ module ChangedFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1610,8 +1718,10 @@ module ChangedFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1635,8 +1745,10 @@ module ChangedFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1679,8 +1791,10 @@ module CommitAffectedFilesJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1723,8 +1837,10 @@ module CommitDateOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1748,8 +1864,10 @@ module CommitDateOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1792,8 +1910,10 @@ module CommitMetaJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1817,8 +1937,10 @@ module CommitMetaJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1842,8 +1964,10 @@ module CommitMetaJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1886,8 +2010,10 @@ module CommitStatsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1911,8 +2037,10 @@ module CommitStatsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1936,8 +2064,10 @@ module CommitStatsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -1980,8 +2110,10 @@ module CommitUserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2005,8 +2137,10 @@ module CommitUserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2030,8 +2164,10 @@ module CommitUserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2069,8 +2205,10 @@ module CreateAccessTokenOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -2095,8 +2233,10 @@ module CreateAccessTokenOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -2149,8 +2289,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -2184,8 +2326,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -2214,8 +2358,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2239,8 +2385,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2264,8 +2412,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2289,8 +2439,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2314,8 +2466,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2339,8 +2493,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2364,8 +2520,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2389,8 +2547,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2414,8 +2574,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2439,8 +2601,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2469,8 +2633,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -2504,8 +2670,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -2534,8 +2702,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2559,8 +2729,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2589,8 +2761,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -2624,8 +2798,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -2654,8 +2830,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2679,8 +2857,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2704,8 +2884,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2734,8 +2916,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -2764,8 +2948,10 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2803,8 +2989,10 @@ module CreateBranchRepoOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -2824,8 +3012,10 @@ module CreateBranchRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2873,8 +3063,10 @@ module CreateEmailOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -2922,8 +3114,10 @@ module CreateForkOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2947,8 +3141,10 @@ module CreateForkOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -2986,8 +3182,10 @@ module CreateGPGKeyOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -3007,8 +3205,10 @@ module CreateGPGKeyOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3043,8 +3243,10 @@ module CreateHookOptionConfigJsonSerializeExtension =
                             (match field with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "field",
                                          "Expected type string to be non-null, but received a null value when serialising"
+                                     )
                                  )
                              | field -> field)
                         )
@@ -3079,8 +3281,10 @@ module CreateIssueCommentOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -3119,8 +3323,10 @@ module CreateIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3149,8 +3355,10 @@ module CreateIssueOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -3179,8 +3387,10 @@ module CreateIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3204,8 +3414,10 @@ module CreateIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3229,8 +3441,10 @@ module CreateIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3259,8 +3473,10 @@ module CreateIssueOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type int64 to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -3289,8 +3505,10 @@ module CreateIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3314,8 +3532,10 @@ module CreateIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3334,8 +3554,10 @@ module CreateIssueOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -3369,8 +3591,10 @@ module CreateKeyOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -3390,8 +3614,10 @@ module CreateKeyOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3410,8 +3636,10 @@ module CreateKeyOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -3445,8 +3673,10 @@ module CreateLabelOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -3466,8 +3696,10 @@ module CreateLabelOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3491,8 +3723,10 @@ module CreateLabelOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3511,8 +3745,10 @@ module CreateLabelOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -3551,8 +3787,10 @@ module CreateMilestoneOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3576,8 +3814,10 @@ module CreateMilestoneOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3601,8 +3841,10 @@ module CreateMilestoneOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3626,8 +3868,10 @@ module CreateMilestoneOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3670,8 +3914,10 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3695,8 +3941,10 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3725,8 +3973,10 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -3774,8 +4024,10 @@ module CreateOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3799,8 +4051,10 @@ module CreateOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3824,8 +4078,10 @@ module CreateOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3849,8 +4105,10 @@ module CreateOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3869,8 +4127,10 @@ module CreateOrgOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -3890,8 +4150,10 @@ module CreateOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3915,8 +4177,10 @@ module CreateOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3959,8 +4223,10 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -3989,8 +4255,10 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -4019,8 +4287,10 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4044,8 +4314,10 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4069,8 +4341,10 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4094,8 +4368,10 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4124,8 +4400,10 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type int64 to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -4154,8 +4432,10 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4179,8 +4459,10 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4223,8 +4505,10 @@ module CreatePullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4248,8 +4532,10 @@ module CreatePullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4273,8 +4559,10 @@ module CreatePullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4298,8 +4586,10 @@ module CreatePullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4342,8 +4632,10 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4367,8 +4659,10 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4392,8 +4686,10 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4417,8 +4713,10 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4442,8 +4740,10 @@ module CreatePushMirrorOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4486,8 +4786,10 @@ module CreateReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4511,8 +4813,10 @@ module CreateReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4536,8 +4840,10 @@ module CreateReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4561,8 +4867,10 @@ module CreateReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4581,8 +4889,10 @@ module CreateReleaseOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -4602,8 +4912,10 @@ module CreateReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4646,8 +4958,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4671,8 +4985,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4696,8 +5012,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4721,8 +5039,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4746,8 +5066,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4771,8 +5093,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4791,8 +5115,10 @@ module CreateRepoOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -4812,8 +5138,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4837,8 +5165,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4862,8 +5192,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4887,8 +5219,10 @@ module CreateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4931,8 +5265,10 @@ module CreateStatusOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4956,8 +5292,10 @@ module CreateStatusOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -4981,8 +5319,10 @@ module CreateStatusOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5006,8 +5346,10 @@ module CreateStatusOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5050,8 +5392,10 @@ module CreateTagOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5070,8 +5414,10 @@ module CreateTagOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -5091,8 +5437,10 @@ module CreateTagOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5127,8 +5475,10 @@ module Type1JsonSerializeExtension =
                             (match field with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "field",
                                          "Expected type string to be non-null, but received a null value when serialising"
+                                     )
                                  )
                              | field -> field)
                         )
@@ -5168,8 +5518,10 @@ module CreateTeamOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5193,8 +5545,10 @@ module CreateTeamOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5218,8 +5572,10 @@ module CreateTeamOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5238,8 +5594,10 @@ module CreateTeamOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -5259,8 +5617,10 @@ module CreateTeamOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5289,8 +5649,10 @@ module CreateTeamOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -5349,8 +5711,10 @@ module CreateUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5369,8 +5733,10 @@ module CreateUserOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -5390,8 +5756,10 @@ module CreateUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5415,8 +5783,10 @@ module CreateUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5440,8 +5810,10 @@ module CreateUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5460,8 +5832,10 @@ module CreateUserOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -5481,8 +5855,10 @@ module CreateUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5506,8 +5882,10 @@ module CreateUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5531,8 +5909,10 @@ module CreateUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5551,8 +5931,10 @@ module CreateUserOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -5572,8 +5954,10 @@ module CreateUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5616,8 +6000,10 @@ module CreateWikiPageOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5641,8 +6027,10 @@ module CreateWikiPageOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5666,8 +6054,10 @@ module CreateWikiPageOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5710,8 +6100,10 @@ module CronJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5735,8 +6127,10 @@ module CronJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5760,8 +6154,10 @@ module CronJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5785,8 +6181,10 @@ module CronJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5810,8 +6208,10 @@ module CronJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5859,8 +6259,10 @@ module DeleteEmailOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -5908,8 +6310,10 @@ module DismissPullReviewOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5933,8 +6337,10 @@ module DismissPullReviewOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -5977,8 +6383,10 @@ module EditAttachmentOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6026,8 +6434,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -6061,8 +6471,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -6091,8 +6503,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6116,8 +6530,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6141,8 +6557,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6166,8 +6584,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6191,8 +6611,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6216,8 +6638,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6241,8 +6665,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6266,8 +6692,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6291,8 +6719,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6321,8 +6751,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -6356,8 +6788,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -6386,8 +6820,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6411,8 +6847,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6441,8 +6879,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -6476,8 +6916,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -6506,8 +6948,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6531,8 +6975,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6561,8 +7007,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -6591,8 +7039,10 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6630,8 +7080,10 @@ module EditDeadlineOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -6670,8 +7122,10 @@ module EditGitHookOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6706,8 +7160,10 @@ module Type2JsonSerializeExtension =
                             (match field with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "field",
                                          "Expected type string to be non-null, but received a null value when serialising"
+                                     )
                                  )
                              | field -> field)
                         )
@@ -6747,8 +7203,10 @@ module EditHookOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6772,8 +7230,10 @@ module EditHookOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6797,8 +7257,10 @@ module EditHookOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6838,8 +7300,10 @@ module EditHookOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -6882,8 +7346,10 @@ module EditIssueCommentOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -6922,8 +7388,10 @@ module EditIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -6952,8 +7420,10 @@ module EditIssueOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -6982,8 +7452,10 @@ module EditIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7007,8 +7479,10 @@ module EditIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7032,8 +7506,10 @@ module EditIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7057,8 +7533,10 @@ module EditIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7082,8 +7560,10 @@ module EditIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7107,8 +7587,10 @@ module EditIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7132,8 +7614,10 @@ module EditIssueOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7176,8 +7660,10 @@ module EditLabelOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7201,8 +7687,10 @@ module EditLabelOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7226,8 +7714,10 @@ module EditLabelOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7251,8 +7741,10 @@ module EditLabelOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7295,8 +7787,10 @@ module EditMilestoneOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7320,8 +7814,10 @@ module EditMilestoneOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7345,8 +7841,10 @@ module EditMilestoneOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7370,8 +7868,10 @@ module EditMilestoneOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7414,8 +7914,10 @@ module EditOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7439,8 +7941,10 @@ module EditOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7464,8 +7968,10 @@ module EditOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7489,8 +7995,10 @@ module EditOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7514,8 +8022,10 @@ module EditOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7539,8 +8049,10 @@ module EditOrgOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7583,8 +8095,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7608,8 +8122,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7638,8 +8154,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -7668,8 +8186,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7693,8 +8213,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7718,8 +8240,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7748,8 +8272,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type int64 to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -7778,8 +8304,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7803,8 +8331,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7828,8 +8358,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7853,8 +8385,10 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7897,8 +8431,10 @@ module EditReactionOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7941,8 +8477,10 @@ module EditReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7966,8 +8504,10 @@ module EditReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -7991,8 +8531,10 @@ module EditReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8016,8 +8558,10 @@ module EditReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8041,8 +8585,10 @@ module EditReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8066,8 +8612,10 @@ module EditReleaseOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8102,8 +8650,10 @@ module Type3JsonSerializeExtension =
                             (match field with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "field",
                                          "Expected type string to be non-null, but received a null value when serialising"
+                                     )
                                  )
                              | field -> field)
                         )
@@ -8143,8 +8693,10 @@ module EditTeamOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8168,8 +8720,10 @@ module EditTeamOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8193,8 +8747,10 @@ module EditTeamOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8213,8 +8769,10 @@ module EditTeamOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -8234,8 +8792,10 @@ module EditTeamOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8264,8 +8824,10 @@ module EditTeamOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -8324,8 +8886,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8349,8 +8913,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8374,8 +8940,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8399,8 +8967,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8424,8 +8994,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8449,8 +9021,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8474,8 +9048,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8499,8 +9075,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8524,8 +9102,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8544,8 +9124,10 @@ module EditUserOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -8565,8 +9147,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8590,8 +9174,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8615,8 +9201,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8640,8 +9228,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8665,8 +9255,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8685,8 +9277,10 @@ module EditUserOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type int64 to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -8706,8 +9300,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8731,8 +9327,10 @@ module EditUserOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8775,8 +9373,10 @@ module EmailJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8800,8 +9400,10 @@ module EmailJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8825,8 +9427,10 @@ module EmailJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8869,8 +9473,10 @@ module ExternalTrackerJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8894,8 +9500,10 @@ module ExternalTrackerJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8919,8 +9527,10 @@ module ExternalTrackerJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8944,8 +9554,10 @@ module ExternalTrackerJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -8988,8 +9600,10 @@ module ExternalWikiJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9054,8 +9668,10 @@ module FileCommitResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9079,8 +9695,10 @@ module FileCommitResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9104,8 +9722,10 @@ module FileCommitResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9151,8 +9771,10 @@ module FileCommitResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9187,8 +9809,10 @@ module FileCommitResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9231,8 +9855,10 @@ module FileLinksResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9256,8 +9882,10 @@ module FileLinksResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9281,8 +9909,10 @@ module FileLinksResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9325,8 +9955,10 @@ module GPGKeyEmailJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9350,8 +9982,10 @@ module GPGKeyEmailJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9394,8 +10028,10 @@ module GeneralAPISettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9419,8 +10055,10 @@ module GeneralAPISettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9444,8 +10082,10 @@ module GeneralAPISettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9469,8 +10109,10 @@ module GeneralAPISettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9513,8 +10155,10 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9538,8 +10182,10 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9563,8 +10209,10 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9588,8 +10236,10 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9632,8 +10282,10 @@ module GeneralRepoSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9657,8 +10309,10 @@ module GeneralRepoSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9682,8 +10336,10 @@ module GeneralRepoSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9707,8 +10363,10 @@ module GeneralRepoSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9732,8 +10390,10 @@ module GeneralRepoSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9757,8 +10417,10 @@ module GeneralRepoSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9806,8 +10468,10 @@ module GeneralUISettingsJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -9841,8 +10505,10 @@ module GeneralUISettingsJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -9871,8 +10537,10 @@ module GeneralUISettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9915,8 +10583,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9940,8 +10610,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9965,8 +10637,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -9990,8 +10664,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10015,8 +10691,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10040,8 +10718,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10060,8 +10740,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -10076,8 +10758,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -10097,8 +10781,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10122,8 +10808,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10147,8 +10835,10 @@ module GenerateRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10191,8 +10881,10 @@ module GitBlobResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10216,8 +10908,10 @@ module GitBlobResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10241,8 +10935,10 @@ module GitBlobResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10266,8 +10962,10 @@ module GitBlobResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10291,8 +10989,10 @@ module GitBlobResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10335,8 +11035,10 @@ module GitEntryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10360,8 +11062,10 @@ module GitEntryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10385,8 +11089,10 @@ module GitEntryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10410,8 +11116,10 @@ module GitEntryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10435,8 +11143,10 @@ module GitEntryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10460,8 +11170,10 @@ module GitEntryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10504,8 +11216,10 @@ module GitHookJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10529,8 +11243,10 @@ module GitHookJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10554,8 +11270,10 @@ module GitHookJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10598,8 +11316,10 @@ module GitObjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10623,8 +11343,10 @@ module GitObjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10648,8 +11370,10 @@ module GitObjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10692,8 +11416,10 @@ module GitTreeResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10717,8 +11443,10 @@ module GitTreeResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10742,8 +11470,10 @@ module GitTreeResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10789,8 +11519,10 @@ module GitTreeResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10814,8 +11546,10 @@ module GitTreeResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10850,8 +11584,10 @@ module Type4JsonSerializeExtension =
                             (match field with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "field",
                                          "Expected type string to be non-null, but received a null value when serialising"
+                                     )
                                  )
                              | field -> field)
                         )
@@ -10891,8 +11627,10 @@ module HookJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10916,8 +11654,10 @@ module HookJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10952,8 +11692,10 @@ module HookJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -10982,8 +11724,10 @@ module HookJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -11012,8 +11756,10 @@ module HookJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11037,8 +11783,10 @@ module HookJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11062,8 +11810,10 @@ module HookJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11106,8 +11856,10 @@ module IdentityJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11131,8 +11883,10 @@ module IdentityJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11175,8 +11929,10 @@ module InternalTrackerJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11200,8 +11956,10 @@ module InternalTrackerJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11225,8 +11983,10 @@ module InternalTrackerJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11269,8 +12029,10 @@ module IssueDeadlineJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11356,8 +12118,10 @@ module IssueLabelsOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type int64 to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -11405,8 +12169,10 @@ module LabelJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11430,8 +12196,10 @@ module LabelJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11455,8 +12223,10 @@ module LabelJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11480,8 +12250,10 @@ module LabelJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11505,8 +12277,10 @@ module LabelJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11530,8 +12304,10 @@ module LabelJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11574,8 +12350,10 @@ module MarkdownOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11599,8 +12377,10 @@ module MarkdownOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11624,8 +12404,10 @@ module MarkdownOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11649,8 +12431,10 @@ module MarkdownOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11688,8 +12472,10 @@ module MergePullRequestOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -11709,8 +12495,10 @@ module MergePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11734,8 +12522,10 @@ module MergePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11759,8 +12549,10 @@ module MergePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11784,8 +12576,10 @@ module MergePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11809,8 +12603,10 @@ module MergePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11834,8 +12630,10 @@ module MergePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11859,8 +12657,10 @@ module MergePullRequestOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11903,8 +12703,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11928,8 +12730,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11953,8 +12757,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -11973,8 +12779,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -11994,8 +12802,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12019,8 +12829,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12044,8 +12856,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12069,8 +12883,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12094,8 +12910,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12119,8 +12937,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12144,8 +12964,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12169,8 +12991,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12194,8 +13018,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12219,8 +13045,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12244,8 +13072,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12264,8 +13094,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -12285,8 +13117,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12310,8 +13144,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12335,8 +13171,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12360,8 +13198,10 @@ module MigrateRepoOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12428,8 +13268,10 @@ module NodeInfoServicesJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -12463,8 +13305,10 @@ module NodeInfoServicesJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -12512,8 +13356,10 @@ module NodeInfoSoftwareJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12537,8 +13383,10 @@ module NodeInfoSoftwareJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12562,8 +13410,10 @@ module NodeInfoSoftwareJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12587,8 +13437,10 @@ module NodeInfoSoftwareJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12631,8 +13483,10 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12656,8 +13510,10 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12681,8 +13537,10 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12725,8 +13583,10 @@ module NotificationCountJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12769,8 +13629,10 @@ module OAuth2ApplicationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12794,8 +13656,10 @@ module OAuth2ApplicationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12819,8 +13683,10 @@ module OAuth2ApplicationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12844,8 +13710,10 @@ module OAuth2ApplicationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12869,8 +13737,10 @@ module OAuth2ApplicationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12894,8 +13764,10 @@ module OAuth2ApplicationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12924,8 +13796,10 @@ module OAuth2ApplicationJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -12973,8 +13847,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -12998,8 +13874,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13023,8 +13901,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13048,8 +13928,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13073,8 +13955,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13098,8 +13982,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13123,8 +14009,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13148,8 +14036,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13173,8 +14063,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13198,8 +14090,10 @@ module OrganizationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13242,8 +14136,10 @@ module OrganizationPermissionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13267,8 +14163,10 @@ module OrganizationPermissionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13292,8 +14190,10 @@ module OrganizationPermissionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13317,8 +14217,10 @@ module OrganizationPermissionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13342,8 +14244,10 @@ module OrganizationPermissionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13386,8 +14290,10 @@ module PackageFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13411,8 +14317,10 @@ module PackageFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13436,8 +14344,10 @@ module PackageFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13461,8 +14371,10 @@ module PackageFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13486,8 +14398,10 @@ module PackageFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13511,8 +14425,10 @@ module PackageFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13536,8 +14452,10 @@ module PackageFileJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13580,8 +14498,10 @@ module PayloadUserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13605,8 +14525,10 @@ module PayloadUserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13630,8 +14552,10 @@ module PayloadUserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13674,8 +14598,10 @@ module PermissionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13699,8 +14625,10 @@ module PermissionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13724,8 +14652,10 @@ module PermissionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13768,8 +14698,10 @@ module PullRequestMetaJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13793,8 +14725,10 @@ module PullRequestMetaJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13842,8 +14776,10 @@ module PullReviewRequestOptionsJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -13877,8 +14813,10 @@ module PullReviewRequestOptionsJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -13926,8 +14864,10 @@ module PushMirrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13951,8 +14891,10 @@ module PushMirrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -13976,8 +14918,10 @@ module PushMirrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14001,8 +14945,10 @@ module PushMirrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14026,8 +14972,10 @@ module PushMirrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14051,8 +14999,10 @@ module PushMirrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14076,8 +15026,10 @@ module PushMirrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14101,8 +15053,10 @@ module PushMirrorJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14156,8 +15110,10 @@ module ReferenceJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14181,8 +15137,10 @@ module ReferenceJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14230,8 +15188,10 @@ module RepoTopicOptionsJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -14279,8 +15239,10 @@ module RepositoryMetaJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14304,8 +15266,10 @@ module RepositoryMetaJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14329,8 +15293,10 @@ module RepositoryMetaJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14354,8 +15320,10 @@ module RepositoryMetaJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14398,8 +15366,10 @@ module ServerVersionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14442,8 +15412,10 @@ module StopWatchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14467,8 +15439,10 @@ module StopWatchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14492,8 +15466,10 @@ module StopWatchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14517,8 +15493,10 @@ module StopWatchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14542,8 +15520,10 @@ module StopWatchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14567,8 +15547,10 @@ module StopWatchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14592,8 +15574,10 @@ module StopWatchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14636,8 +15620,10 @@ module SubmitPullReviewOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14661,8 +15647,10 @@ module SubmitPullReviewOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14716,8 +15704,10 @@ module TagJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14741,8 +15731,10 @@ module TagJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14766,8 +15758,10 @@ module TagJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14791,8 +15785,10 @@ module TagJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14816,8 +15812,10 @@ module TagJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14852,8 +15850,10 @@ module Type8JsonSerializeExtension =
                             (match field with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "field",
                                          "Expected type string to be non-null, but received a null value when serialising"
+                                     )
                                  )
                              | field -> field)
                         )
@@ -14893,8 +15893,10 @@ module TeamJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14918,8 +15920,10 @@ module TeamJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14943,8 +15947,10 @@ module TeamJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14968,8 +15974,10 @@ module TeamJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -14993,8 +16001,10 @@ module TeamJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15029,8 +16039,10 @@ module TeamJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15059,8 +16071,10 @@ module TeamJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -15124,8 +16138,10 @@ module TopicNameJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -15173,8 +16189,10 @@ module TopicResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15198,8 +16216,10 @@ module TopicResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15223,8 +16243,10 @@ module TopicResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15248,8 +16270,10 @@ module TopicResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15273,8 +16297,10 @@ module TopicResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15312,8 +16338,10 @@ module TransferRepoOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -15338,8 +16366,10 @@ module TransferRepoOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type int64 to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -15398,8 +16428,10 @@ module UpdateFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15429,8 +16461,10 @@ module UpdateFileOptionsJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -15461,8 +16495,10 @@ module UpdateFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15486,8 +16522,10 @@ module UpdateFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15511,8 +16549,10 @@ module UpdateFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15531,8 +16571,10 @@ module UpdateFileOptionsJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -15552,8 +16594,10 @@ module UpdateFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15596,8 +16640,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15621,8 +16667,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15646,8 +16694,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15671,8 +16721,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15696,8 +16748,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15721,8 +16775,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15746,8 +16802,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15771,8 +16829,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15796,8 +16856,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15821,8 +16883,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15846,8 +16910,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15871,8 +16937,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15896,8 +16964,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15921,8 +16991,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15946,8 +17018,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15971,8 +17045,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -15996,8 +17072,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16021,8 +17099,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16046,8 +17126,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16071,8 +17153,10 @@ module UserJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16115,8 +17199,10 @@ module UserHeatmapDataJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16140,8 +17226,10 @@ module UserHeatmapDataJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16184,8 +17272,10 @@ module UserSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16209,8 +17299,10 @@ module UserSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16234,8 +17326,10 @@ module UserSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16259,8 +17353,10 @@ module UserSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16284,8 +17380,10 @@ module UserSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16309,8 +17407,10 @@ module UserSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16334,8 +17434,10 @@ module UserSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16359,8 +17461,10 @@ module UserSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16384,8 +17488,10 @@ module UserSettingsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16428,8 +17534,10 @@ module UserSettingsOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16453,8 +17561,10 @@ module UserSettingsOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16478,8 +17588,10 @@ module UserSettingsOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16503,8 +17615,10 @@ module UserSettingsOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16528,8 +17642,10 @@ module UserSettingsOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16553,8 +17669,10 @@ module UserSettingsOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16578,8 +17696,10 @@ module UserSettingsOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16603,8 +17723,10 @@ module UserSettingsOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16628,8 +17750,10 @@ module UserSettingsOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16672,8 +17796,10 @@ module WatchInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16697,8 +17823,10 @@ module WatchInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16736,8 +17864,10 @@ module WatchInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16761,8 +17891,10 @@ module WatchInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16786,8 +17918,10 @@ module WatchInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16852,8 +17986,10 @@ module WikiCommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16877,8 +18013,10 @@ module WikiCommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16943,8 +18081,10 @@ module WikiCommitListJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -16987,8 +18127,10 @@ module WikiPageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17012,8 +18154,10 @@ module WikiPageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17037,8 +18181,10 @@ module WikiPageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17062,8 +18208,10 @@ module WikiPageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17098,8 +18246,10 @@ module WikiPageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17123,8 +18273,10 @@ module WikiPageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17148,8 +18300,10 @@ module WikiPageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17192,8 +18346,10 @@ module WikiPageMetaDataJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17228,8 +18384,10 @@ module WikiPageMetaDataJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17253,8 +18411,10 @@ module WikiPageMetaDataJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17319,8 +18479,10 @@ module CommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17344,8 +18506,10 @@ module CommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17369,8 +18533,10 @@ module CommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17394,8 +18560,10 @@ module CommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17419,8 +18587,10 @@ module CommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17444,8 +18614,10 @@ module CommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17469,8 +18641,10 @@ module CommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17494,8 +18668,10 @@ module CommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17519,8 +18695,10 @@ module CommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17574,8 +18752,10 @@ module CommitStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17599,8 +18779,10 @@ module CommitStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17635,8 +18817,10 @@ module CommitStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17660,8 +18844,10 @@ module CommitStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17685,8 +18871,10 @@ module CommitStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17710,8 +18898,10 @@ module CommitStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17735,8 +18925,10 @@ module CommitStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17760,8 +18952,10 @@ module CommitStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17815,8 +19009,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17840,8 +19036,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17865,8 +19063,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17890,8 +19090,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17915,8 +19117,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17940,8 +19144,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17965,8 +19171,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -17990,8 +19198,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18015,8 +19225,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18040,8 +19252,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18065,8 +19279,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18090,8 +19306,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18115,8 +19333,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18140,8 +19360,10 @@ module ContentsResponseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18195,8 +19417,10 @@ module CreateFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18226,8 +19450,10 @@ module CreateFileOptionsJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -18258,8 +19484,10 @@ module CreateFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18283,8 +19511,10 @@ module CreateFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18308,8 +19538,10 @@ module CreateFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18352,8 +19584,10 @@ module CreateHookOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18377,8 +19611,10 @@ module CreateHookOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18402,8 +19638,10 @@ module CreateHookOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18434,8 +19672,10 @@ module CreateHookOptionJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -18459,8 +19699,10 @@ module CreateHookOptionJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -18499,8 +19741,10 @@ module CreatePullReviewOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18546,8 +19790,10 @@ module CreatePullReviewOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18571,8 +19817,10 @@ module CreatePullReviewOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18626,8 +19874,10 @@ module DeleteFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18673,8 +19923,10 @@ module DeleteFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18698,8 +19950,10 @@ module DeleteFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18718,8 +19972,10 @@ module DeleteFileOptionsJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException
+                                  System.ArgumentNullException (
+                                      "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
+                                  )
                               )
                           | field -> field)
                      ))
@@ -18739,8 +19995,10 @@ module DeleteFileOptionsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18783,8 +20041,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18808,8 +20068,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18833,8 +20095,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18858,8 +20122,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18883,8 +20149,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18908,8 +20176,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18933,8 +20203,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18958,8 +20230,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -18983,8 +20257,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19008,8 +20284,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19033,8 +20311,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19058,8 +20338,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19083,8 +20365,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19108,8 +20392,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19155,8 +20441,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19180,8 +20468,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19205,8 +20495,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19230,8 +20522,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19255,8 +20549,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19291,8 +20587,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19316,8 +20614,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19341,8 +20641,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19366,8 +20668,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19391,8 +20695,10 @@ module EditRepoOptionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19446,8 +20752,10 @@ module IssueFormFieldJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19471,8 +20779,10 @@ module IssueFormFieldJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19526,8 +20836,10 @@ module IssueTemplateJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19573,8 +20885,10 @@ module IssueTemplateJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19598,8 +20912,10 @@ module IssueTemplateJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19628,8 +20944,10 @@ module IssueTemplateJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -19658,8 +20976,10 @@ module IssueTemplateJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19683,8 +21003,10 @@ module IssueTemplateJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19708,8 +21030,10 @@ module IssueTemplateJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19752,8 +21076,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19777,8 +21103,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19802,8 +21130,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19827,8 +21157,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19852,8 +21184,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19877,8 +21211,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19902,8 +21238,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19927,8 +21265,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19952,8 +21292,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -19977,8 +21319,10 @@ module MilestoneJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20021,8 +21365,10 @@ module NodeInfoUsageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20046,8 +21392,10 @@ module NodeInfoUsageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20101,8 +21449,10 @@ module NotificationSubjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20126,8 +21476,10 @@ module NotificationSubjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20151,8 +21503,10 @@ module NotificationSubjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20176,8 +21530,10 @@ module NotificationSubjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20201,8 +21557,10 @@ module NotificationSubjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20226,8 +21584,10 @@ module NotificationSubjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20251,8 +21611,10 @@ module NotificationSubjectJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20295,8 +21657,10 @@ module PayloadCommitVerificationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20320,8 +21684,10 @@ module PayloadCommitVerificationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20345,8 +21711,10 @@ module PayloadCommitVerificationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20381,8 +21749,10 @@ module PayloadCommitVerificationJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20425,8 +21795,10 @@ module PublicKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20450,8 +21822,10 @@ module PublicKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20475,8 +21849,10 @@ module PublicKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20500,8 +21876,10 @@ module PublicKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20525,8 +21903,10 @@ module PublicKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20550,8 +21930,10 @@ module PublicKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20575,8 +21957,10 @@ module PublicKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20600,8 +21984,10 @@ module PublicKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20655,8 +22041,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20680,8 +22068,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20705,8 +22095,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20730,8 +22122,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20755,8 +22149,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20780,8 +22176,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20805,8 +22203,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20830,8 +22230,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20855,8 +22257,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20880,8 +22284,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20905,8 +22311,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20941,8 +22349,10 @@ module PullReviewJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -20996,8 +22406,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21021,8 +22433,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21046,8 +22460,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21071,8 +22487,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21096,8 +22514,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21121,8 +22541,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21146,8 +22568,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21171,8 +22595,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int32 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21196,8 +22622,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21221,8 +22649,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int32 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21246,8 +22676,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21271,8 +22703,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21307,8 +22741,10 @@ module PullReviewCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21362,8 +22798,10 @@ module ReactionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21387,8 +22825,10 @@ module ReactionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21475,8 +22915,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21500,8 +22942,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21525,8 +22969,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21550,8 +22996,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21575,8 +23023,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21600,8 +23050,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21625,8 +23077,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21650,8 +23104,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21675,8 +23131,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21700,8 +23158,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21725,8 +23185,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21750,8 +23212,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21775,8 +23239,10 @@ module ReleaseJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21819,8 +23285,10 @@ module RepoCollaboratorPermissionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21844,8 +23312,10 @@ module RepoCollaboratorPermissionJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21921,8 +23391,10 @@ module RepoCommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -21957,8 +23429,10 @@ module RepoCommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22075,8 +23549,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22100,8 +23576,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22125,8 +23603,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22150,8 +23630,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22175,8 +23657,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22200,8 +23684,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22225,8 +23711,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22250,8 +23738,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22275,8 +23765,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22300,8 +23792,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22325,8 +23819,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22350,8 +23846,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22375,8 +23873,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22400,8 +23900,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22425,8 +23927,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22472,8 +23976,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22497,8 +24003,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22522,8 +24030,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22547,8 +24057,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22572,8 +24084,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22597,8 +24111,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22622,8 +24138,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22647,8 +24165,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22672,8 +24192,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22697,8 +24219,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22722,8 +24246,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22758,8 +24284,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22783,8 +24311,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22808,8 +24338,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22833,8 +24365,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22858,8 +24392,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22883,8 +24419,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22908,8 +24446,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22933,8 +24473,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22958,8 +24500,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -22983,8 +24527,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23041,8 +24587,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23066,8 +24614,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23102,8 +24652,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23127,8 +24679,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23152,8 +24706,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23177,8 +24733,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23202,8 +24760,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23227,8 +24787,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23252,8 +24814,10 @@ module RepositoryJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23318,8 +24882,10 @@ module SearchResultsJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23362,8 +24928,10 @@ module AnnotatedTagJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23398,8 +24966,10 @@ module AnnotatedTagJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23423,8 +24993,10 @@ module AnnotatedTagJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23459,8 +25031,10 @@ module AnnotatedTagJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23514,8 +25088,10 @@ module CombinedStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23550,8 +25126,10 @@ module CombinedStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23575,8 +25153,10 @@ module CombinedStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23622,8 +25202,10 @@ module CombinedStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23647,8 +25229,10 @@ module CombinedStatusJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23724,8 +25308,10 @@ module CommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23771,8 +25357,10 @@ module CommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23818,8 +25406,10 @@ module CommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23854,8 +25444,10 @@ module CommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23898,8 +25490,10 @@ module DeployKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23923,8 +25517,10 @@ module DeployKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23948,8 +25544,10 @@ module DeployKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23973,8 +25571,10 @@ module DeployKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -23998,8 +25598,10 @@ module DeployKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24023,8 +25625,10 @@ module DeployKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24059,8 +25663,10 @@ module DeployKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24084,8 +25690,10 @@ module DeployKeyJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24290,8 +25898,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24315,8 +25925,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24340,8 +25952,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24365,8 +25979,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24390,8 +26006,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24415,8 +26033,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24440,8 +26060,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24465,8 +26087,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24523,8 +26147,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24548,8 +26174,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24573,8 +26201,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24609,8 +26239,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24645,8 +26277,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24670,8 +26304,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24695,8 +26331,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24720,8 +26358,10 @@ module IssueJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24786,8 +26426,10 @@ module NodeInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24816,8 +26458,10 @@ module NodeInfoJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -24879,8 +26523,10 @@ module NodeInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24934,8 +26580,10 @@ module NoteJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -24978,8 +26626,10 @@ module NotificationThreadJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25003,8 +26653,10 @@ module NotificationThreadJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25050,8 +26702,10 @@ module NotificationThreadJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25075,8 +26729,10 @@ module NotificationThreadJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25100,8 +26756,10 @@ module NotificationThreadJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25144,8 +26802,10 @@ module PRBranchInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25169,8 +26829,10 @@ module PRBranchInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25205,8 +26867,10 @@ module PRBranchInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25230,8 +26894,10 @@ module PRBranchInfoJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25274,8 +26940,10 @@ module PackageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25310,8 +26978,10 @@ module PackageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25335,8 +27005,10 @@ module PackageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25382,8 +27054,10 @@ module PackageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25407,8 +27081,10 @@ module PackageJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25456,8 +27132,10 @@ module PayloadCommitJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -25508,8 +27186,10 @@ module PayloadCommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25533,8 +27213,10 @@ module PayloadCommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25563,8 +27245,10 @@ module PayloadCommitJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -25598,8 +27282,10 @@ module PayloadCommitJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -25628,8 +27314,10 @@ module PayloadCommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25653,8 +27341,10 @@ module PayloadCommitJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25708,8 +27398,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25777,8 +27469,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25802,8 +27496,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25827,8 +27523,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25852,8 +27550,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25877,8 +27577,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25902,8 +27604,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25938,8 +27642,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25963,8 +27669,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -25988,8 +27696,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26035,8 +27745,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26060,8 +27772,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26085,8 +27799,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26110,8 +27826,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26135,8 +27853,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26182,8 +27902,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26207,8 +27929,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26232,8 +27956,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26257,8 +27983,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26282,8 +28010,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26307,8 +28037,10 @@ module PullRequestJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26362,8 +28094,10 @@ module TrackedTimeJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26387,8 +28121,10 @@ module TrackedTimeJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26423,8 +28159,10 @@ module TrackedTimeJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26448,8 +28186,10 @@ module TrackedTimeJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26473,8 +28213,10 @@ module TrackedTimeJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26498,8 +28240,10 @@ module TrackedTimeJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26553,8 +28297,10 @@ module BranchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26578,8 +28324,10 @@ module BranchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26603,8 +28351,10 @@ module BranchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26628,8 +28378,10 @@ module BranchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26653,8 +28405,10 @@ module BranchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26683,8 +28437,10 @@ module BranchJsonSerializeExtension =
                                               (match field with
                                                | null ->
                                                    raise (
-                                                       System.ArgumentNullException
+                                                       System.ArgumentNullException (
+                                                           "field",
                                                            "Expected type string to be non-null, but received a null value when serialising"
+                                                       )
                                                    )
                                                | field -> field)
                                           )
@@ -26713,8 +28469,10 @@ module BranchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26738,8 +28496,10 @@ module BranchJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26804,8 +28564,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26829,8 +28591,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26865,8 +28629,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26890,8 +28656,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26915,8 +28683,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26962,8 +28732,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -26987,8 +28759,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27023,8 +28797,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27048,8 +28824,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27073,8 +28851,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27098,8 +28878,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27123,8 +28905,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27148,8 +28932,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27184,8 +28970,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27220,8 +29008,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27256,8 +29046,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type int64 to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27292,8 +29084,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27317,8 +29111,10 @@ module TimelineCommentJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type string to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27364,8 +29160,10 @@ module LanguageStatisticsJsonSerializeExtension =
                             (match field with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "field",
                                          "Expected type int64 to be non-null, but received a null value when serialising"
+                                     )
                                  )
                              | field -> field)
                         )
@@ -27427,8 +29225,10 @@ module Type9JsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27493,8 +29293,10 @@ module Type10JsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException
+                                           System.ArgumentNullException (
+                                               "field",
                                                "Expected type bool to be non-null, but received a null value when serialising"
+                                           )
                                        )
                                    | field -> field)
                               ))
@@ -27584,8 +29386,10 @@ module AccessTokenJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -27957,8 +29761,10 @@ module BranchProtectionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -27989,8 +29795,10 @@ module BranchProtectionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28006,8 +29814,10 @@ module BranchProtectionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28033,8 +29843,10 @@ module BranchProtectionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28050,8 +29862,10 @@ module BranchProtectionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28122,8 +29936,10 @@ module BranchProtectionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28139,8 +29955,10 @@ module BranchProtectionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28602,8 +30420,10 @@ module CreateAccessTokenOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28673,8 +30493,10 @@ module CreateBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28705,8 +30527,10 @@ module CreateBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28722,8 +30546,10 @@ module CreateBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28749,8 +30575,10 @@ module CreateBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28766,8 +30594,10 @@ module CreateBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28833,8 +30663,10 @@ module CreateBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -28850,8 +30682,10 @@ module CreateBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -29005,8 +30839,10 @@ module CreateEmailOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -29266,8 +31102,10 @@ module CreateIssueOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type int64) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
@@ -29298,8 +31136,10 @@ module CreateIssueOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -29573,8 +31413,10 @@ module CreateOAuth2ApplicationOptionsJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -29742,8 +31584,10 @@ module CreatePullRequestOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type int64) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
@@ -29779,8 +31623,10 @@ module CreatePullRequestOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -30357,8 +32203,10 @@ module CreateTeamOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -30714,8 +32562,10 @@ module DeleteEmailOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -30866,8 +32716,10 @@ module EditBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -30893,8 +32745,10 @@ module EditBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -30910,8 +32764,10 @@ module EditBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -30937,8 +32793,10 @@ module EditBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -30954,8 +32812,10 @@ module EditBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -31016,8 +32876,10 @@ module EditBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -31033,8 +32895,10 @@ module EditBranchProtectionOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -31256,8 +33120,10 @@ module EditHookOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -31424,8 +33290,10 @@ module EditIssueOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -31724,8 +33592,10 @@ module EditPullRequestOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type int64) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
@@ -31756,8 +33626,10 @@ module EditPullRequestOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -32006,8 +33878,10 @@ module EditTeamOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -32458,8 +34332,10 @@ module FileCommitResponseJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type CommitMeta) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> CommitMeta.jsonParse elt)
                     )
@@ -32877,8 +34753,10 @@ module GeneralUISettingsJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -32894,8 +34772,10 @@ module GeneralUISettingsJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -33349,8 +35229,10 @@ module GitTreeResponseJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type GitEntry) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> GitEntry.jsonParse elt)
                     )
@@ -33481,8 +35363,10 @@ module HookJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -33793,8 +35677,10 @@ module IssueLabelsOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type int64) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
@@ -34313,8 +36199,10 @@ module NodeInfoServicesJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -34330,8 +36218,10 @@ module NodeInfoServicesJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -34545,8 +36435,10 @@ module OAuth2ApplicationJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -35071,8 +36963,10 @@ module PullReviewRequestOptionsJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -35088,8 +36982,10 @@ module PullReviewRequestOptionsJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -35293,8 +37189,10 @@ module RepoTopicOptionsJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -35708,8 +37606,10 @@ module TeamJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -35816,8 +37716,10 @@ module TopicNameJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -35944,8 +37846,10 @@ module TransferRepoOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type int64) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
@@ -36703,8 +38607,10 @@ module WikiCommitListJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type WikiCommit) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> WikiCommit.jsonParse elt)
                     )
@@ -36964,8 +38870,10 @@ module CommentJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type Attachment) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> Attachment.jsonParse elt)
                     )
@@ -37394,8 +39302,10 @@ module CreateHookOptionJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -37496,8 +39406,10 @@ module CreatePullReviewOptionsJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type CreatePullReviewComment) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> CreatePullReviewComment.jsonParse elt)
                     )
@@ -37961,8 +39873,10 @@ module IssueTemplateJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -37988,8 +39902,10 @@ module IssueTemplateJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type IssueFormField) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> IssueFormField.jsonParse elt)
                     )
@@ -38892,8 +40808,10 @@ module ReleaseJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type Attachment) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> Attachment.jsonParse elt)
                     )
@@ -39112,8 +41030,10 @@ module RepoTransferJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type Team) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> Team.jsonParse elt)
                     )
@@ -39586,8 +41506,10 @@ module SearchResultsJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> Repository.jsonParse elt)
                     )
@@ -39739,8 +41661,10 @@ module CombinedStatusJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type CommitStatus) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> CommitStatus.jsonParse elt)
                     )
@@ -39843,8 +41767,10 @@ module CommitJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type CommitMeta) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> CommitMeta.jsonParse elt)
                     )
@@ -39865,8 +41791,10 @@ module CommitJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type CommitAffectedFiles) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> CommitAffectedFiles.jsonParse elt)
                     )
@@ -40231,8 +42159,10 @@ module IssueJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type Label) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> Label.jsonParse elt)
                     )
@@ -40288,8 +42218,10 @@ module IssueJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type User) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> User.jsonParse elt)
                     )
@@ -40310,8 +42242,10 @@ module IssueJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type Attachment) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> Attachment.jsonParse elt)
                     )
@@ -40433,8 +42367,10 @@ module NodeInfoJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -40824,8 +42760,10 @@ module PayloadCommitJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -40841,8 +42779,10 @@ module PayloadCommitJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -40878,8 +42818,10 @@ module PayloadCommitJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -41023,8 +42965,10 @@ module PullRequestJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type Label) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> Label.jsonParse elt)
                     )
@@ -41095,8 +43039,10 @@ module PullRequestJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type User) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> User.jsonParse elt)
                     )
@@ -41315,8 +43261,10 @@ module BranchJsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> elt.AsValue().GetValue<System.String> ())
                     )
@@ -41699,8 +43647,10 @@ module Type9JsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type Team) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> Team.jsonParse elt)
                     )
@@ -41760,8 +43710,10 @@ module Type10JsonParseExtension =
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "elt",
                                      "Expected element of array (element type User) to be non-null, but found a null element"
+                                 )
                              )
                          | elt -> User.jsonParse elt)
                     )
@@ -41853,8 +43805,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type ActivityPub"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -41956,8 +43910,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Cron list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -41967,8 +43923,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Cron) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Cron.jsonParse elt)
                         )
@@ -42069,8 +44027,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42080,8 +44040,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Hook) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Hook.jsonParse elt)
                         )
@@ -42140,8 +44102,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42193,8 +44157,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42256,8 +44222,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42321,8 +44289,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Organization list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42332,8 +44302,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Organization) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Organization.jsonParse elt)
                         )
@@ -42404,8 +44376,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type string list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42415,8 +44389,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type string) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> elt.AsValue().GetValue<System.String> ())
                         )
@@ -42562,8 +44538,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42573,8 +44551,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -42633,8 +44613,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42750,8 +44732,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42816,8 +44800,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PublicKey"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42923,8 +44909,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Organization"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -42989,8 +44977,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43165,8 +45155,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type NodeInfo"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43255,8 +45247,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type NotificationThread list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43266,8 +45260,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type NotificationThread) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> NotificationThread.jsonParse elt)
                         )
@@ -43347,8 +45343,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type NotificationThread list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43358,8 +45356,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type NotificationThread) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> NotificationThread.jsonParse elt)
                         )
@@ -43408,8 +45408,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type NotificationCount"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43462,8 +45464,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type NotificationThread"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43531,8 +45535,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type NotificationThread"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43596,8 +45602,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43661,8 +45669,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Organization list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43672,8 +45682,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Organization) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Organization.jsonParse elt)
                         )
@@ -43732,8 +45744,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Organization"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43785,8 +45799,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Organization"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43885,8 +45901,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Organization"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43956,8 +45974,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -43967,8 +45987,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Hook) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Hook.jsonParse elt)
                         )
@@ -44032,8 +46054,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44087,8 +46111,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44193,8 +46219,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44264,8 +46292,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44275,8 +46305,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Label) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Label.jsonParse elt)
                         )
@@ -44340,8 +46372,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44395,8 +46429,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44501,8 +46537,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44572,8 +46610,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44583,8 +46623,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -44733,8 +46775,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44744,8 +46788,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -44938,8 +46984,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -44949,8 +46997,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Repository.jsonParse elt)
                         )
@@ -45014,8 +47064,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45085,8 +47137,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Team list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45096,8 +47150,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Team) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Team.jsonParse elt)
                         )
@@ -45161,8 +47217,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Team"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45244,8 +47302,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Type9"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45325,8 +47385,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Package list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45336,8 +47398,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Package) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Package.jsonParse elt)
                         )
@@ -45401,8 +47465,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Package"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45515,8 +47581,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PackageFile list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45526,8 +47594,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type PackageFile) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> PackageFile.jsonParse elt)
                         )
@@ -45639,8 +47709,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Issue list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45650,8 +47722,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Issue) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Issue.jsonParse elt)
                         )
@@ -45710,8 +47784,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45816,8 +47892,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type SearchResults"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45871,8 +47949,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -45977,8 +48057,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46074,8 +48156,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46085,8 +48169,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -46142,8 +48228,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type BranchProtection list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46153,8 +48241,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type BranchProtection) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> BranchProtection.jsonParse elt)
                         )
@@ -46227,8 +48317,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type BranchProtection"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46285,8 +48377,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type BranchProtection"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46403,8 +48497,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type BranchProtection"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46476,8 +48572,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Branch list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46487,8 +48585,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Branch) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Branch.jsonParse elt)
                         )
@@ -46559,8 +48659,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Branch"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46617,8 +48719,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Branch"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46732,8 +48836,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -46743,8 +48849,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -46943,8 +49051,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type RepoCollaboratorPermission"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47028,8 +49138,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Commit list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47039,8 +49151,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Commit) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Commit.jsonParse elt)
                         )
@@ -47120,8 +49234,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type CombinedStatus"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47205,8 +49321,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type CommitStatus list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47216,8 +49334,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type CommitStatus) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> CommitStatus.jsonParse elt)
                         )
@@ -47286,8 +49406,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type ContentsResponse list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47297,8 +49419,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type ContentsResponse) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> ContentsResponse.jsonParse elt)
                         )
@@ -47374,8 +49498,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type ContentsResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47448,8 +49574,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type FileResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47522,8 +49650,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type FileDeleteResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47596,8 +49726,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type FileResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47663,8 +49795,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type FileResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47797,8 +49931,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47808,8 +49944,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Repository.jsonParse elt)
                         )
@@ -47875,8 +50013,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47933,8 +50073,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GitBlobResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -47991,8 +50133,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Commit"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48100,8 +50244,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Note"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48157,8 +50303,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Reference list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48168,8 +50316,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Reference) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Reference.jsonParse elt)
                         )
@@ -48226,8 +50376,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Reference list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48237,8 +50389,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Reference) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Reference.jsonParse elt)
                         )
@@ -48295,8 +50449,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type AnnotatedTag"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48378,8 +50534,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GitTreeResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48451,8 +50609,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48462,8 +50622,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Hook) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Hook.jsonParse elt)
                         )
@@ -48529,8 +50691,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48584,8 +50748,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GitHook list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48595,8 +50761,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type GitHook) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> GitHook.jsonParse elt)
                         )
@@ -48653,8 +50821,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GitHook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48769,8 +50939,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GitHook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48827,8 +50999,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -48943,8 +51117,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Hook"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49055,8 +51231,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type IssueTemplate list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49066,8 +51244,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type IssueTemplate) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> IssueTemplate.jsonParse elt)
                         )
@@ -49167,8 +51347,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Issue list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49178,8 +51360,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Issue) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Issue.jsonParse elt)
                         )
@@ -49245,8 +51429,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Issue"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49328,8 +51514,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Comment list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49339,8 +51527,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Comment) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Comment.jsonParse elt)
                         )
@@ -49439,8 +51629,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Attachment list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49450,8 +51642,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Attachment) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Attachment.jsonParse elt)
                         )
@@ -49518,8 +51712,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Attachment"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49649,8 +51845,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Attachment"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49707,8 +51905,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Reaction list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49718,8 +51918,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Reaction) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Reaction.jsonParse elt)
                         )
@@ -49834,8 +52036,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Issue"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -49950,8 +52154,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Issue"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50008,8 +52214,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Attachment list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50019,8 +52227,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Attachment) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Attachment.jsonParse elt)
                         )
@@ -50087,8 +52297,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Attachment"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50218,8 +52430,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Attachment"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50299,8 +52513,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Comment list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50310,8 +52526,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Comment) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Comment.jsonParse elt)
                         )
@@ -50386,8 +52604,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Comment"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50503,8 +52723,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type IssueDeadline"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50561,8 +52783,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50572,8 +52796,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Label) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Label.jsonParse elt)
                         )
@@ -50646,8 +52872,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50657,8 +52885,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Label) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Label.jsonParse elt)
                         )
@@ -50773,8 +53003,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50784,8 +53016,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Label) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Label.jsonParse elt)
                         )
@@ -50914,8 +53148,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Reaction list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -50925,8 +53161,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Reaction) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Reaction.jsonParse elt)
                         )
@@ -51192,8 +53430,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -51203,8 +53443,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -51261,8 +53503,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type WatchInfo"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -51346,8 +53590,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type TimelineComment list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -51357,8 +53603,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type TimelineComment) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> TimelineComment.jsonParse elt)
                         )
@@ -51444,8 +53692,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type TrackedTime list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -51455,8 +53705,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type TrackedTime) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> TrackedTime.jsonParse elt)
                         )
@@ -51529,8 +53781,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type TrackedTime"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -51703,8 +53957,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type DeployKey list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -51714,8 +53970,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type DeployKey) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> DeployKey.jsonParse elt)
                         )
@@ -51781,8 +54039,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type DeployKey"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -51839,8 +54099,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type DeployKey"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -51954,8 +54216,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -51965,8 +54229,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Label) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Label.jsonParse elt)
                         )
@@ -52032,8 +54298,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52090,8 +54358,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52206,8 +54476,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Label"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52261,8 +54533,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type LanguageStatistics"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52405,8 +54679,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Milestone list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52416,8 +54692,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Milestone) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Milestone.jsonParse elt)
                         )
@@ -52488,8 +54766,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Milestone"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52546,8 +54826,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Milestone"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52662,8 +54944,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Milestone"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52799,8 +55083,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type NotificationThread list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52810,8 +55096,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type NotificationThread) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> NotificationThread.jsonParse elt)
                         )
@@ -52900,8 +55188,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type NotificationThread list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -52911,8 +55201,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type NotificationThread) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> NotificationThread.jsonParse elt)
                         )
@@ -53003,8 +55295,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullRequest list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -53014,8 +55308,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type PullRequest) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> PullRequest.jsonParse elt)
                         )
@@ -53086,8 +55382,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullRequest"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -53144,8 +55442,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullRequest"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -53218,8 +55518,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullRequest"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -53364,8 +55666,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Commit list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -53375,8 +55679,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Commit) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Commit.jsonParse elt)
                         )
@@ -53460,8 +55766,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type ChangedFile list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -53471,8 +55779,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type ChangedFile) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> ChangedFile.jsonParse elt)
                         )
@@ -53689,8 +55999,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullReview list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -53700,8 +56012,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type PullReview) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> PullReview.jsonParse elt)
                         )
@@ -53841,8 +56155,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullReview list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -53852,8 +56168,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type PullReview) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> PullReview.jsonParse elt)
                         )
@@ -53926,8 +56244,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullReview"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -53991,8 +56311,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullReview"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54067,8 +56389,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullReview"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54181,8 +56505,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullReviewComment list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54192,8 +56518,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type PullReviewComment) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> PullReviewComment.jsonParse elt)
                         )
@@ -54270,8 +56598,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullReview"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54335,8 +56665,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PullReview"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54469,8 +56801,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PushMirror list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54480,8 +56814,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type PushMirror) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> PushMirror.jsonParse elt)
                         )
@@ -54552,8 +56888,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PushMirror"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54651,8 +56989,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PushMirror"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54839,8 +57179,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Release list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54850,8 +57192,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Release) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Release.jsonParse elt)
                         )
@@ -54922,8 +57266,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Release"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -54979,8 +57325,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Release"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55037,8 +57385,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Release"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55137,8 +57487,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Release"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55253,8 +57605,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Release"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55311,8 +57665,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Attachment list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55322,8 +57678,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Attachment) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Attachment.jsonParse elt)
                         )
@@ -55390,8 +57748,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Attachment"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55521,8 +57881,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Attachment"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55576,8 +57938,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55587,8 +57951,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -55701,8 +58067,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55712,8 +58080,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -55797,8 +58167,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type CommitStatus list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55808,8 +58180,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type CommitStatus) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> CommitStatus.jsonParse elt)
                         )
@@ -55882,8 +58256,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type CommitStatus"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55955,8 +58331,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -55966,8 +58344,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -56023,8 +58403,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type WatchInfo"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -56121,8 +58503,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type WatchInfo"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -56194,8 +58578,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Tag list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -56205,8 +58591,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Tag) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Tag.jsonParse elt)
                         )
@@ -56272,8 +58660,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Tag"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -56330,8 +58720,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Tag"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -56427,8 +58819,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Team list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -56438,8 +58832,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Team) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Team.jsonParse elt)
                         )
@@ -56496,8 +58892,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Team"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -56665,8 +59063,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type TrackedTime list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -56676,8 +59076,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type TrackedTime) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> TrackedTime.jsonParse elt)
                         )
@@ -56734,8 +59136,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type TrackedTime list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -56745,8 +59149,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type TrackedTime) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> TrackedTime.jsonParse elt)
                         )
@@ -56818,8 +59224,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type TopicName"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57025,8 +59433,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57082,8 +59492,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57139,8 +59551,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57211,8 +59625,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type WikiPage"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57269,8 +59685,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type WikiPage"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57385,8 +59803,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type WikiPage"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57458,8 +59878,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type WikiPageMetaData list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57469,8 +59891,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type WikiPageMetaData) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> WikiPageMetaData.jsonParse elt)
                         )
@@ -57548,8 +59972,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type WikiCommitList"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57626,8 +60052,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57679,8 +60107,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57729,8 +60159,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GeneralAPISettings"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57779,8 +60211,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GeneralAttachmentSettings"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57829,8 +60263,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GeneralRepoSettings"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57879,8 +60315,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GeneralUISettings"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -57968,8 +60406,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Team"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58068,8 +60508,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Team"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58139,8 +60581,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58150,8 +60594,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -58205,8 +60651,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58356,8 +60804,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58367,8 +60817,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Repository.jsonParse elt)
                         )
@@ -58425,8 +60877,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58575,8 +61029,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type TopicResponse list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58586,8 +61042,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type TopicResponse) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> TopicResponse.jsonParse elt)
                         )
@@ -58636,8 +61094,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58707,8 +61167,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type OAuth2Application list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58718,8 +61180,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type OAuth2Application) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> OAuth2Application.jsonParse elt)
                         )
@@ -58782,8 +61246,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type OAuth2Application"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58836,8 +61302,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type OAuth2Application"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58942,8 +61410,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type OAuth2Application"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -58992,8 +61462,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Email list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59003,8 +61475,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Email) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Email.jsonParse elt)
                         )
@@ -59063,8 +61537,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Email list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59074,8 +61550,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Email) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Email.jsonParse elt)
                         )
@@ -59185,8 +61663,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59196,8 +61676,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -59263,8 +61745,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59274,8 +61758,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -59529,8 +62015,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PublicKey list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59540,8 +62028,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type PublicKey) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> PublicKey.jsonParse elt)
                         )
@@ -59600,8 +62090,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PublicKey"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59653,8 +62145,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PublicKey"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59755,8 +62249,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Organization list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59766,8 +62262,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Organization) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Organization.jsonParse elt)
                         )
@@ -59831,8 +62329,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59842,8 +62342,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Repository.jsonParse elt)
                         )
@@ -59902,8 +62404,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59952,8 +62456,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type UserSettings list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -59963,8 +62469,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type UserSettings) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> UserSettings.jsonParse elt)
                         )
@@ -60023,8 +62531,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type UserSettings list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60034,8 +62544,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type UserSettings) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> UserSettings.jsonParse elt)
                         )
@@ -60099,8 +62611,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60110,8 +62624,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Repository.jsonParse elt)
                         )
@@ -60302,8 +62818,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type StopWatch list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60313,8 +62831,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type StopWatch) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> StopWatch.jsonParse elt)
                         )
@@ -60384,8 +62904,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60395,8 +62917,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Repository.jsonParse elt)
                         )
@@ -60460,8 +62984,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Team list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60471,8 +62997,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Team) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Team.jsonParse elt)
                         )
@@ -60546,8 +63074,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type TrackedTime list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60557,8 +63087,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type TrackedTime) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> TrackedTime.jsonParse elt)
                         )
@@ -60626,8 +63158,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Type10"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60680,8 +63214,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60752,8 +63288,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60763,8 +63301,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -60835,8 +63375,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type User list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60846,8 +63388,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type User) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> User.jsonParse elt)
                         )
@@ -60941,8 +63485,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type UserHeatmapData list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -60952,8 +63498,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type UserHeatmapData) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> UserHeatmapData.jsonParse elt)
                         )
@@ -61031,8 +63579,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type PublicKey list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -61042,8 +63592,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type PublicKey) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> PublicKey.jsonParse elt)
                         )
@@ -61114,8 +63666,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Organization list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -61125,8 +63679,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Organization) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Organization.jsonParse elt)
                         )
@@ -61182,8 +63738,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type OrganizationPermissions"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -61254,8 +63812,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -61265,8 +63825,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Repository.jsonParse elt)
                         )
@@ -61337,8 +63899,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -61348,8 +63912,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Repository.jsonParse elt)
                         )
@@ -61420,8 +63986,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Repository list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -61431,8 +63999,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type Repository) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> Repository.jsonParse elt)
                         )
@@ -61503,8 +64073,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type AccessToken list"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -61514,8 +64086,10 @@ module Gitea =
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "elt",
                                          "Expected element of array (element type AccessToken) to be non-null, but found a null element"
+                                     )
                                  )
                              | elt -> AccessToken.jsonParse elt)
                         )
@@ -61580,8 +64154,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type AccessToken"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -61671,8 +64247,10 @@ module Gitea =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type ServerVersion"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 

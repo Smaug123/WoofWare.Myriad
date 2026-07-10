@@ -87,8 +87,10 @@ module JwtVaultAuthResponse =
                     (match elt with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "elt",
                                  "Expected element of array (element type string) to be non-null, but found a null element"
+                             )
                          )
                      | elt -> elt.AsValue().GetValue<System.String> ())
                 )
@@ -108,8 +110,10 @@ module JwtVaultAuthResponse =
                     (match elt with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "elt",
                                  "Expected element of array (element type string) to be non-null, but found a null element"
+                             )
                          )
                      | elt -> elt.AsValue().GetValue<System.String> ())
                 )
@@ -129,8 +133,10 @@ module JwtVaultAuthResponse =
                     (match elt with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "elt",
                                  "Expected element of array (element type string) to be non-null, but found a null element"
+                             )
                          )
                      | elt -> elt.AsValue().GetValue<System.String> ())
                 )
@@ -258,8 +264,10 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "value",
                                  "Expected dictionary value of type URI to be non-null, but it was null"
+                             )
                          )
                      | value -> value.AsValue().GetValue<string> () |> System.Uri)
                 )
@@ -284,8 +292,10 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "value",
                                  "Expected dictionary value of type int32 to be non-null, but it was null"
+                             )
                          )
                      | value -> value.AsValue().GetValue<System.Int32> ())
                 )
@@ -309,8 +319,10 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
+                             )
                          )
                      | value -> value.AsValue().GetValue<System.String> ())
                 )
@@ -334,8 +346,10 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
+                             )
                          )
                      | value -> value.AsValue().GetValue<System.String> ())
                 )
@@ -359,8 +373,10 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
+                             )
                          )
                      | value -> value.AsValue().GetValue<System.String> ())
                 )
@@ -384,8 +400,10 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
+                             )
                          )
                      | value -> value.AsValue().GetValue<System.String> ())
                 )
@@ -410,8 +428,10 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
+                             )
                          )
                      | value -> value.AsValue().GetValue<System.String> ())
                 )
@@ -435,8 +455,10 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException
+                             System.ArgumentNullException (
+                                 "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
+                             )
                          )
                      | value -> value.AsValue().GetValue<System.String> ())
                 )
@@ -556,8 +578,10 @@ module VaultClient =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type JwtSecretResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -602,8 +626,10 @@ module VaultClient =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type JwtVaultResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -670,8 +696,10 @@ module VaultClientNonExtensionMethod =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type JwtSecretResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -716,8 +744,10 @@ module VaultClientNonExtensionMethod =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException
+                                 System.ArgumentNullException (
+                                     "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type JwtVaultResponse"
+                                 )
                              )
                          | jsonNode -> jsonNode)
 
@@ -787,8 +817,10 @@ module VaultClientExtensionMethodHttpClientExtension =
                             (match jsonNode with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "jsonNode",
                                          "Response from server was the JSON null object; expected a non-nullable type JwtSecretResponse"
+                                     )
                                  )
                              | jsonNode -> jsonNode)
 
@@ -833,8 +865,10 @@ module VaultClientExtensionMethodHttpClientExtension =
                             (match jsonNode with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException
+                                     System.ArgumentNullException (
+                                         "jsonNode",
                                          "Response from server was the JSON null object; expected a non-nullable type JwtVaultResponse"
+                                     )
                                  )
                              | jsonNode -> jsonNode)
 
