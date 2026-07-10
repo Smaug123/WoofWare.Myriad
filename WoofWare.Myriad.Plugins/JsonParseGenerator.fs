@@ -125,7 +125,14 @@ module internal JsonParseGenerator =
         =
         let keyArg = SynExpr.createLongIdent [ "kvp" ; "Key" ] |> SynExpr.paren
 
-        let valueArg = SynExpr.createLongIdent [ "kvp" ; "Value" ]
+        let valueArg =
+            let value = SynExpr.createLongIdent [ "kvp" ; "Value" ]
+
+            if valueTypeIsNullable then
+                value
+                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Option" ; "ofObj" ])
+            else
+                value
 
         let value =
             if valueTypeIsNullable then

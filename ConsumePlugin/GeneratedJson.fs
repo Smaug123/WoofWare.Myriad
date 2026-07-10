@@ -7,6 +7,7 @@
 
 namespace ConsumePlugin
 
+open System.Collections.Generic
 open System.Text.Json.Serialization
 
 /// Module containing JSON serializing methods for the InternalTypeNotExtensionSerial type
@@ -36,6 +37,7 @@ module internal InternalTypeNotExtensionSerial =
         node :> _
 namespace ConsumePlugin
 
+open System.Collections.Generic
 open System.Text.Json.Serialization
 
 /// Module containing JSON serializing extension members for the InternalTypeExtension type
@@ -94,6 +96,27 @@ namespace ConsumePlugin
 module JsonRecordType =
     /// Parse from a JSON node.
     let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordType =
+        let arg_6 =
+            match node.["g"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("g")
+                    )
+                )
+            | Some node ->
+                node.AsObject ()
+                |> Seq.map (fun kvp ->
+                    let key = (kvp.Key)
+                    let value = kvp.Value |> Option.ofObj
+
+                    key,
+                    match value with
+                    | None -> System.Nullable ()
+                    | Some v -> v.AsValue().GetValue<System.Int32> () |> System.Nullable
+                )
+                |> dict
+
         let arg_5 =
             match node.["f"] |> Option.ofObj with
             | None ->
@@ -194,6 +217,7 @@ module JsonRecordType =
             D = arg_3
             E = arg_4
             F = arg_5
+            G = arg_6
         }
 namespace ConsumePlugin
 

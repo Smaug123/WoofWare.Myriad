@@ -1,5 +1,6 @@
 namespace ConsumePlugin
 
+open System.Collections.Generic
 open System.Text.Json.Serialization
 
 module Literals =
@@ -27,6 +28,7 @@ type JsonRecordType =
         D : InnerType
         E : string array
         F : int[]
+        G : IDictionary<string, System.Nullable<int>>
     }
 
 [<WoofWare.Myriad.Plugins.JsonParse>]
