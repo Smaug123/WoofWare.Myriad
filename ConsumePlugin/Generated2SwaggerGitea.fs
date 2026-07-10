@@ -101,13 +101,13 @@ module AccessTokenJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -363,13 +363,13 @@ module AddTimeOptionJsonSerializeExtension =
                     "time",
                     (input.Time
                      |> (fun field ->
-                         let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                         let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                          (match field with
                           | null ->
                               raise (
                                   System.ArgumentNullException
-                                      "Expected type int32 to be non-null, but received a null value when serialising"
+                                      "Expected type int64 to be non-null, but received a null value when serialising"
                               )
                           | field -> field)
                      ))
@@ -572,13 +572,13 @@ module AttachmentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -597,13 +597,13 @@ module AttachmentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -647,13 +647,13 @@ module AttachmentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1276,13 +1276,13 @@ module BranchProtectionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1430,13 +1430,13 @@ module ChangedFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1455,13 +1455,13 @@ module ChangedFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1505,13 +1505,13 @@ module ChangedFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1881,13 +1881,13 @@ module CommitStatsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1906,13 +1906,13 @@ module CommitStatsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -1931,13 +1931,13 @@ module CommitStatsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -2674,13 +2674,13 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -3254,13 +3254,13 @@ module CreateIssueOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -3284,13 +3284,13 @@ module CreateIssueOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -4119,13 +4119,13 @@ module CreatePullRequestOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -4149,13 +4149,13 @@ module CreatePullRequestOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -4243,13 +4243,13 @@ module CreatePullReviewCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -4268,13 +4268,13 @@ module CreatePullReviewCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -5526,13 +5526,13 @@ module CreateUserOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -5705,13 +5705,13 @@ module CronJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -6526,13 +6526,13 @@ module EditBranchProtectionOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -7027,13 +7027,13 @@ module EditIssueOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -7743,13 +7743,13 @@ module EditPullRequestOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -7773,13 +7773,13 @@ module EditPullRequestOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -8560,13 +8560,13 @@ module EditUserOptionJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -8680,13 +8680,13 @@ module EditUserOptionJsonSerializeExtension =
                     "source_id",
                     (input.SourceId
                      |> (fun field ->
-                         let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                         let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                          (match field with
                           | null ->
                               raise (
                                   System.ArgumentNullException
-                                      "Expected type int32 to be non-null, but received a null value when serialising"
+                                      "Expected type int64 to be non-null, but received a null value when serialising"
                               )
                           | field -> field)
                      ))
@@ -9389,13 +9389,13 @@ module GeneralAPISettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9414,13 +9414,13 @@ module GeneralAPISettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9439,13 +9439,13 @@ module GeneralAPISettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9464,13 +9464,13 @@ module GeneralAPISettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9558,13 +9558,13 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -9583,13 +9583,13 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -10261,13 +10261,13 @@ module GitBlobResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -10405,13 +10405,13 @@ module GitEntryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -10687,13 +10687,13 @@ module GitTreeResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -10737,13 +10737,13 @@ module GitTreeResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -11007,13 +11007,13 @@ module HookJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -11351,13 +11351,13 @@ module IssueLabelsOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -11475,13 +11475,13 @@ module LabelJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12330,13 +12330,13 @@ module MigrateRepoOptionsJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12626,13 +12626,13 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12651,13 +12651,13 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12676,13 +12676,13 @@ module NodeInfoUsageUsersJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12720,13 +12720,13 @@ module NotificationCountJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -12864,13 +12864,13 @@ module OAuth2ApplicationJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -13043,13 +13043,13 @@ module OrganizationJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -13381,13 +13381,13 @@ module PackageFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -13406,13 +13406,13 @@ module PackageFileJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -14299,13 +14299,13 @@ module RepositoryMetaJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -14487,13 +14487,13 @@ module StopWatchJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -14587,13 +14587,13 @@ module StopWatchJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -14938,13 +14938,13 @@ module TeamJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15193,13 +15193,13 @@ module TopicResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15218,13 +15218,13 @@ module TopicResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15333,13 +15333,13 @@ module TransferRepoOptionJsonSerializeExtension =
                                   for mem in field do
                                       arr.Add (
                                           (fun field ->
-                                              let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                              let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                               (match field with
                                                | null ->
                                                    raise (
                                                        System.ArgumentNullException
-                                                           "Expected type int32 to be non-null, but received a null value when serialising"
+                                                           "Expected type int64 to be non-null, but received a null value when serialising"
                                                    )
                                                | field -> field)
                                           )
@@ -15716,13 +15716,13 @@ module UserJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15741,13 +15741,13 @@ module UserJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -15791,13 +15791,13 @@ module UserJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16016,13 +16016,13 @@ module UserJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16110,13 +16110,13 @@ module UserHeatmapDataJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16135,13 +16135,13 @@ module UserHeatmapDataJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16938,13 +16938,13 @@ module WikiCommitListJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -16982,13 +16982,13 @@ module WikiPageJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -17389,13 +17389,13 @@ module CommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -17464,13 +17464,13 @@ module CommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -17655,13 +17655,13 @@ module CommitStatusJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -18035,13 +18035,13 @@ module ContentsResponseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -19772,13 +19772,13 @@ module MilestoneJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -19872,13 +19872,13 @@ module MilestoneJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -19897,13 +19897,13 @@ module MilestoneJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20016,13 +20016,13 @@ module NodeInfoUsageJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20041,13 +20041,13 @@ module NodeInfoUsageJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20470,13 +20470,13 @@ module PublicKeyJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20675,13 +20675,13 @@ module PullReviewJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -20775,13 +20775,13 @@ module PullReviewJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -21116,13 +21116,13 @@ module PullReviewCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -21241,13 +21241,13 @@ module PullReviewCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -21570,13 +21570,13 @@ module ReleaseJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -22492,13 +22492,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -22667,13 +22667,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -22928,13 +22928,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -22953,13 +22953,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23061,13 +23061,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23097,13 +23097,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23147,13 +23147,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23222,13 +23222,13 @@ module RepositoryJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23617,13 +23617,13 @@ module CombinedStatusJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23943,13 +23943,13 @@ module DeployKeyJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -23993,13 +23993,13 @@ module DeployKeyJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24335,13 +24335,13 @@ module IssueJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24435,13 +24435,13 @@ module IssueJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24518,13 +24518,13 @@ module IssueJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24568,13 +24568,13 @@ module IssueJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -24973,13 +24973,13 @@ module NotificationThreadJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -25200,13 +25200,13 @@ module PRBranchInfoJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -25305,13 +25305,13 @@ module PackageJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -25822,13 +25822,13 @@ module PullRequestJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -25958,13 +25958,13 @@ module PullRequestJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26177,13 +26177,13 @@ module PullRequestJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26382,13 +26382,13 @@ module TrackedTimeJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26418,13 +26418,13 @@ module TrackedTimeJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26443,13 +26443,13 @@ module TrackedTimeJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26468,13 +26468,13 @@ module TrackedTimeJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26648,13 +26648,13 @@ module BranchJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -26885,13 +26885,13 @@ module TimelineCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -27018,13 +27018,13 @@ module TimelineCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -27093,13 +27093,13 @@ module TimelineCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -27251,13 +27251,13 @@ module TimelineCommentJsonSerializeExtension =
                          | Some field ->
                              (field
                               |> (fun field ->
-                                  let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                                   (match field with
                                    | null ->
                                        raise (
                                            System.ArgumentNullException
-                                               "Expected type int32 to be non-null, but received a null value when serialising"
+                                               "Expected type int64 to be non-null, but received a null value when serialising"
                                        )
                                    | field -> field)
                               ))
@@ -27359,13 +27359,13 @@ module LanguageStatisticsJsonSerializeExtension =
                     node.Add (
                         key,
                         (fun field ->
-                            let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                            let field = System.Text.Json.Nodes.JsonValue.Create<int64> field
 
                             (match field with
                              | null ->
                                  raise (
                                      System.ArgumentNullException
-                                         "Expected type int32 to be non-null, but received a null value when serialising"
+                                         "Expected type int64 to be non-null, but received a null value when serialising"
                                  )
                              | field -> field)
                         )
@@ -27600,7 +27600,7 @@ module AccessTokenJsonParseExtension =
             let arg_1 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -27749,7 +27749,7 @@ module AddTimeOptionJsonParseExtension =
                             sprintf "Required key '%s' not found on JSON object" ("time")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Int32> ()
+                | Some node -> node.AsValue().GetValue<System.Int64> ()
 
             let arg_1 =
                 match node.["created"] |> Option.ofObj with
@@ -27859,7 +27859,7 @@ module AttachmentJsonParseExtension =
             let arg_6 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["name"] |> Option.ofObj with
@@ -27869,12 +27869,12 @@ module AttachmentJsonParseExtension =
             let arg_4 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["download_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["created_at"] |> Option.ofObj with
@@ -27973,7 +27973,7 @@ module BranchProtectionJsonParseExtension =
             let arg_21 =
                 match node.["required_approvals"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_20 =
                 match node.["require_signed_commits"] |> Option.ofObj with
@@ -28263,7 +28263,7 @@ module ChangedFileJsonParseExtension =
             let arg_4 =
                 match node.["deletions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["contents_url"] |> Option.ofObj with
@@ -28273,12 +28273,12 @@ module ChangedFileJsonParseExtension =
             let arg_2 =
                 match node.["changes"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["additions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -28486,17 +28486,17 @@ module CommitStatsJsonParseExtension =
             let arg_3 =
                 match node.["total"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["deletions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["additions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -28689,7 +28689,7 @@ module CreateBranchProtectionOptionJsonParseExtension =
             let arg_20 =
                 match node.["required_approvals"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_19 =
                 match node.["require_signed_commits"] |> Option.ofObj with
@@ -29255,7 +29255,7 @@ module CreateIssueOptionJsonParseExtension =
             let arg_7 =
                 match node.["milestone"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["labels"] |> Option.ofObj with
@@ -29267,9 +29267,9 @@ module CreateIssueOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -29731,7 +29731,7 @@ module CreatePullRequestOptionJsonParseExtension =
             let arg_8 =
                 match node.["milestone"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_7 =
                 match node.["labels"] |> Option.ofObj with
@@ -29743,9 +29743,9 @@ module CreatePullRequestOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -29856,12 +29856,12 @@ module CreatePullReviewCommentJsonParseExtension =
             let arg_3 =
                 match node.["old_position"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["new_position"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["body"] |> Option.ofObj with
@@ -30465,7 +30465,7 @@ module CreateUserOptionJsonParseExtension =
             let arg_9 =
                 match node.["source_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_8 =
                 match node.["send_notify"] |> Option.ofObj with
@@ -30655,7 +30655,7 @@ module CronJsonParseExtension =
             let arg_1 =
                 match node.["exec_times"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -30877,7 +30877,7 @@ module EditBranchProtectionOptionJsonParseExtension =
             let arg_19 =
                 match node.["required_approvals"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_18 =
                 match node.["require_signed_commits"] |> Option.ofObj with
@@ -31403,7 +31403,7 @@ module EditIssueOptionJsonParseExtension =
             let arg_5 =
                 match node.["milestone"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["due_date"] |> Option.ofObj with
@@ -31713,7 +31713,7 @@ module EditPullRequestOptionJsonParseExtension =
             let arg_8 =
                 match node.["milestone"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_7 =
                 match node.["labels"] |> Option.ofObj with
@@ -31725,9 +31725,9 @@ module EditPullRequestOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -32114,7 +32114,7 @@ module EditUserOptionJsonParseExtension =
                             sprintf "Required key '%s' not found on JSON object" ("source_id")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Int32> ()
+                | Some node -> node.AsValue().GetValue<System.Int64> ()
 
             let arg_15 =
                 match node.["restricted"] |> Option.ofObj with
@@ -32139,7 +32139,7 @@ module EditUserOptionJsonParseExtension =
             let arg_11 =
                 match node.["max_repo_creation"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_10 =
                 match node.["login_name"] |> Option.ofObj with
@@ -32654,22 +32654,22 @@ module GeneralAPISettingsJsonParseExtension =
             let arg_4 =
                 match node.["max_response_items"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["default_paging_num"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["default_max_blob_size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["default_git_trees_per_page"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -32720,12 +32720,12 @@ module GeneralAttachmentSettingsJsonParseExtension =
             let arg_4 =
                 match node.["max_size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["max_files"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["enabled"] |> Option.ofObj with
@@ -33075,7 +33075,7 @@ module GitBlobResponseJsonParseExtension =
             let arg_4 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["sha"] |> Option.ofObj with
@@ -33153,7 +33153,7 @@ module GitEntryJsonParseExtension =
             let arg_4 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["sha"] |> Option.ofObj with
@@ -33360,7 +33360,7 @@ module GitTreeResponseJsonParseExtension =
             let arg_3 =
                 match node.["total_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["sha"] |> Option.ofObj with
@@ -33370,7 +33370,7 @@ module GitTreeResponseJsonParseExtension =
             let arg_1 =
                 match node.["page"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -33470,7 +33470,7 @@ module HookJsonParseExtension =
             let arg_6 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["events"] |> Option.ofObj with
@@ -33794,9 +33794,9 @@ module IssueLabelsOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -33852,7 +33852,7 @@ module LabelJsonParseExtension =
             let arg_4 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["exclusive"] |> Option.ofObj with
@@ -34087,7 +34087,7 @@ module MigrateRepoOptionsJsonParseExtension =
             let arg_19 =
                 match node.["uid"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_18 =
                 match node.["service"] |> Option.ofObj with
@@ -34441,17 +34441,17 @@ module NodeInfoUsageUsersJsonParseExtension =
             let arg_3 =
                 match node.["total"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["activeMonth"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["activeHalfyear"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -34496,7 +34496,7 @@ module NotificationCountJsonParseExtension =
             let arg_1 =
                 match node.["new"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -34561,7 +34561,7 @@ module OAuth2ApplicationJsonParseExtension =
             let arg_5 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["created"] |> Option.ofObj with
@@ -34668,7 +34668,7 @@ module OrganizationJsonParseExtension =
             let arg_4 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["full_name"] |> Option.ofObj with
@@ -34844,12 +34844,12 @@ module PackageFileJsonParseExtension =
             let arg_2 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["Size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -35352,7 +35352,7 @@ module RepositoryMetaJsonParseExtension =
             let arg_2 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["full_name"] |> Option.ofObj with
@@ -35446,7 +35446,7 @@ module StopWatchJsonParseExtension =
             let arg_7 =
                 match node.["seconds"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["repo_owner_name"] |> Option.ofObj with
@@ -35466,7 +35466,7 @@ module StopWatchJsonParseExtension =
             let arg_3 =
                 match node.["issue_index"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["duration"] |> Option.ofObj with
@@ -35739,7 +35739,7 @@ module TeamJsonParseExtension =
             let arg_3 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["description"] |> Option.ofObj with
@@ -35875,12 +35875,12 @@ module TopicResponseJsonParseExtension =
             let arg_3 =
                 match node.["repo_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["created"] |> Option.ofObj with
@@ -35945,9 +35945,9 @@ module TransferRepoOptionJsonParseExtension =
                          | null ->
                              raise (
                                  System.ArgumentNullException
-                                     "Expected element of array (element type int32) to be non-null, but found a null element"
+                                     "Expected element of array (element type int64) to be non-null, but found a null element"
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                         | elt -> elt.AsValue().GetValue<System.Int64> ())
                     )
                     |> List.ofSeq
                     |> Some
@@ -36132,7 +36132,7 @@ module UserJsonParseExtension =
             let arg_18 =
                 match node.["starred_repos_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_17 =
                 match node.["restricted"] |> Option.ofObj with
@@ -36177,7 +36177,7 @@ module UserJsonParseExtension =
             let arg_9 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_8 =
                 match node.["full_name"] |> Option.ofObj with
@@ -36187,12 +36187,12 @@ module UserJsonParseExtension =
             let arg_7 =
                 match node.["following_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["followers_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["email"] |> Option.ofObj with
@@ -36300,12 +36300,12 @@ module UserHeatmapDataJsonParseExtension =
             let arg_2 =
                 match node.["timestamp"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["contributions"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -36692,7 +36692,7 @@ module WikiCommitListJsonParseExtension =
             let arg_2 =
                 match node.["count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["commits"] |> Option.ofObj with
@@ -36788,7 +36788,7 @@ module WikiPageJsonParseExtension =
             let arg_1 =
                 match node.["commit_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -36923,7 +36923,7 @@ module CommentJsonParseExtension =
             let arg_8 =
                 match node.["original_author_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_7 =
                 match node.["original_author"] |> Option.ofObj with
@@ -36938,7 +36938,7 @@ module CommentJsonParseExtension =
             let arg_5 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["html_url"] |> Option.ofObj with
@@ -37055,7 +37055,7 @@ module CommitStatusJsonParseExtension =
             let arg_5 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["description"] |> Option.ofObj with
@@ -37156,7 +37156,7 @@ module ContentsResponseJsonParseExtension =
             let arg_11 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_10 =
                 match node.["sha"] |> Option.ofObj with
@@ -38073,12 +38073,12 @@ module MilestoneJsonParseExtension =
             let arg_7 =
                 match node.["open_issues"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["due_on"] |> Option.ofObj with
@@ -38098,7 +38098,7 @@ module MilestoneJsonParseExtension =
             let arg_2 =
                 match node.["closed_issues"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["closed_at"] |> Option.ofObj with
@@ -38171,12 +38171,12 @@ module NodeInfoUsageJsonParseExtension =
             let arg_2 =
                 match node.["localPosts"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["localComments"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -38411,7 +38411,7 @@ module PublicKeyJsonParseExtension =
             let arg_3 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["fingerprint"] |> Option.ofObj with
@@ -38522,7 +38522,7 @@ module PullReviewJsonParseExtension =
             let arg_6 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["html_url"] |> Option.ofObj with
@@ -38542,7 +38542,7 @@ module PullReviewJsonParseExtension =
             let arg_2 =
                 match node.["comments_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["body"] |> Option.ofObj with
@@ -38638,7 +38638,7 @@ module PullReviewCommentJsonParseExtension =
             let arg_11 =
                 match node.["pull_request_review_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_10 =
                 match node.["position"] |> Option.ofObj with
@@ -38663,7 +38663,7 @@ module PullReviewCommentJsonParseExtension =
             let arg_6 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["html_url"] |> Option.ofObj with
@@ -38856,7 +38856,7 @@ module ReleaseJsonParseExtension =
             let arg_7 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["html_url"] |> Option.ofObj with
@@ -39178,7 +39178,7 @@ module RepositoryJsonParseExtension =
             let arg_51 =
                 match node.["watchers_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_50 =
                 match node.["updated_at"] |> Option.ofObj with
@@ -39193,7 +39193,7 @@ module RepositoryJsonParseExtension =
             let arg_48 =
                 match node.["stars_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_47 =
                 match node.["ssh_url"] |> Option.ofObj with
@@ -39203,7 +39203,7 @@ module RepositoryJsonParseExtension =
             let arg_46 =
                 match node.["size"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_45 =
                 match node.["repo_transfer"] |> Option.ofObj with
@@ -39213,7 +39213,7 @@ module RepositoryJsonParseExtension =
             let arg_44 =
                 match node.["release_counter"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_43 =
                 match node.["private"] |> Option.ofObj with
@@ -39243,12 +39243,12 @@ module RepositoryJsonParseExtension =
             let arg_38 =
                 match node.["open_pr_counter"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_37 =
                 match node.["open_issues_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_36 =
                 match node.["name"] |> Option.ofObj with
@@ -39303,7 +39303,7 @@ module RepositoryJsonParseExtension =
             let arg_26 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_25 =
                 match node.["html_url"] |> Option.ofObj with
@@ -39338,7 +39338,7 @@ module RepositoryJsonParseExtension =
             let arg_19 =
                 match node.["forks_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_18 =
                 match node.["fork"] |> Option.ofObj with
@@ -39728,7 +39728,7 @@ module CombinedStatusJsonParseExtension =
             let arg_6 =
                 match node.["total_count"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["statuses"] |> Option.ofObj with
@@ -39974,7 +39974,7 @@ module DeployKeyJsonParseExtension =
             let arg_5 =
                 match node.["key_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["key"] |> Option.ofObj with
@@ -39984,7 +39984,7 @@ module DeployKeyJsonParseExtension =
             let arg_3 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["fingerprint"] |> Option.ofObj with
@@ -40205,7 +40205,7 @@ module IssueJsonParseExtension =
             let arg_16 =
                 match node.["original_author_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_15 =
                 match node.["original_author"] |> Option.ofObj with
@@ -40215,7 +40215,7 @@ module IssueJsonParseExtension =
             let arg_14 =
                 match node.["number"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_13 =
                 match node.["milestone"] |> Option.ofObj with
@@ -40247,7 +40247,7 @@ module IssueJsonParseExtension =
             let arg_10 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_9 =
                 match node.["html_url"] |> Option.ofObj with
@@ -40267,7 +40267,7 @@ module IssueJsonParseExtension =
             let arg_6 =
                 match node.["comments"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["closed_at"] |> Option.ofObj with
@@ -40585,7 +40585,7 @@ module NotificationThreadJsonParseExtension =
             let arg_1 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_0 =
                 let result =
@@ -40647,7 +40647,7 @@ module PRBranchInfoJsonParseExtension =
             let arg_4 =
                 match node.["repo_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["repo"] |> Option.ofObj with
@@ -40734,7 +40734,7 @@ module PackageJsonParseExtension =
             let arg_3 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_2 =
                 match node.["creator"] |> Option.ofObj with
@@ -40977,7 +40977,7 @@ module PullRequestJsonParseExtension =
             let arg_23 =
                 match node.["number"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_22 =
                 match node.["milestone"] |> Option.ofObj with
@@ -41039,7 +41039,7 @@ module PullRequestJsonParseExtension =
             let arg_13 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_12 =
                 match node.["html_url"] |> Option.ofObj with
@@ -41069,7 +41069,7 @@ module PullRequestJsonParseExtension =
             let arg_7 =
                 match node.["comments"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["closed_at"] |> Option.ofObj with
@@ -41217,17 +41217,17 @@ module TrackedTimeJsonParseExtension =
             let arg_6 =
                 match node.["user_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["time"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_4 =
                 match node.["issue_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_3 =
                 match node.["issue"] |> Option.ofObj with
@@ -41237,7 +41237,7 @@ module TrackedTimeJsonParseExtension =
             let arg_2 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_1 =
                 match node.["created"] |> Option.ofObj with
@@ -41326,7 +41326,7 @@ module BranchJsonParseExtension =
             let arg_6 =
                 match node.["required_approvals"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_5 =
                 match node.["protected"] |> Option.ofObj with
@@ -41432,7 +41432,7 @@ module TimelineCommentJsonParseExtension =
             let arg_25 =
                 match node.["review_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_24 =
                 match node.["resolve_doer"] |> Option.ofObj with
@@ -41472,7 +41472,7 @@ module TimelineCommentJsonParseExtension =
             let arg_17 =
                 match node.["project_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_16 =
                 match node.["old_title"] |> Option.ofObj with
@@ -41487,7 +41487,7 @@ module TimelineCommentJsonParseExtension =
             let arg_14 =
                 match node.["old_project_id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_13 =
                 match node.["old_milestone"] |> Option.ofObj with
@@ -41522,7 +41522,7 @@ module TimelineCommentJsonParseExtension =
             let arg_7 =
                 match node.["id"] |> Option.ofObj with
                 | None -> None
-                | Some v -> v.AsValue().GetValue<System.Int32> () |> Some
+                | Some v -> v.AsValue().GetValue<System.Int64> () |> Some
 
             let arg_6 =
                 match node.["html_url"] |> Option.ofObj with
@@ -41651,7 +41651,7 @@ module LanguageStatisticsJsonParseExtension =
         /// Parse from a JSON node.
         static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : LanguageStatistics =
             let arg_0 =
-                let result = System.Collections.Generic.Dictionary<string, int> ()
+                let result = System.Collections.Generic.Dictionary<string, int64> ()
                 let node = node.AsObject ()
 
                 for KeyValue (key, value) in node do
@@ -41667,7 +41667,7 @@ module LanguageStatisticsJsonParseExtension =
                                         sprintf "Required key '%s' not found on JSON object" (key)
                                     )
                                 )
-                            | Some node -> node.AsValue().GetValue<System.Int32> ()
+                            | Some node -> node.AsValue().GetValue<System.Int64> ()
                         )
 
                 result
@@ -42143,7 +42143,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminGetHook (id : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminGetHook (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -42195,7 +42195,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminEditHook (id : int, body : EditHookOption, ct : System.Threading.CancellationToken option) =
+            member _.AdminEditHook (id : int64, body : EditHookOption, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -42804,7 +42804,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.AdminDeleteUserPublicKey
-                (username : string, id : int, ct : System.Threading.CancellationToken option)
+                (username : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -42970,7 +42970,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.AdminDeleteHook (id : int, ct : System.Threading.CancellationToken option) =
+            member _.AdminDeleteHook (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -43983,7 +43983,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgGetHook (org : string, id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgGetHook (org : string, id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -44037,7 +44037,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgDeleteHook (org : string, id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgDeleteHook (org : string, id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -44077,7 +44077,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgEditHook
-                (org : string, id : int, body : EditHookOption, ct : System.Threading.CancellationToken option)
+                (org : string, id : int64, body : EditHookOption, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -44283,7 +44283,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgGetLabel (org : string, id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgGetLabel (org : string, id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -44337,7 +44337,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgDeleteLabel (org : string, id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgDeleteLabel (org : string, id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -44377,7 +44377,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgEditLabel
-                (org : string, id : int, body : EditLabelOption, ct : System.Threading.CancellationToken option)
+                (org : string, id : int64, body : EditLabelOption, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -45457,7 +45457,7 @@ module Gitea =
                     labels : string,
                     milestones : string,
                     q : string,
-                    priority_repo_id : int,
+                    priority_repo_id : int64,
                     type' : string,
                     since : string,
                     before : string,
@@ -45636,10 +45636,10 @@ module Gitea =
                     q : string,
                     topic : bool,
                     includeDesc : bool,
-                    uid : int,
-                    priority_owner_id : int,
-                    team_id : int,
-                    starredBy : int,
+                    uid : int64,
+                    priority_owner_id : int64,
+                    team_id : int64,
+                    starredBy : int64,
                     private' : bool,
                     is_private : bool,
                     template : bool,
@@ -48630,7 +48630,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetHook
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -48687,7 +48687,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoDeleteHook
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -48732,7 +48732,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
+                    id : int64,
                     body : EditHookOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -48800,7 +48800,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoTestHook
-                (owner : string, repo : string, id : int, ref : string, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ref : string, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49190,7 +49190,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteComment
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49232,7 +49232,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueListIssueCommentAttachments
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49303,8 +49303,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -49370,8 +49370,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -49422,8 +49422,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     body : EditAttachmentOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -49495,7 +49495,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueGetCommentReactions
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49566,7 +49566,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
+                    id : int64,
                     content : EditReactionOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -49619,7 +49619,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueGetIssue
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49676,7 +49676,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDelete
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49721,7 +49721,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : EditIssueOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -49789,7 +49789,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueListIssueAttachments
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -49860,8 +49860,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    attachment_id : int,
+                    index : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -49927,8 +49927,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    attachment_id : int,
+                    index : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -49979,8 +49979,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    attachment_id : int,
+                    index : int64,
+                    attachment_id : int64,
                     body : EditAttachmentOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -50055,7 +50055,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     since : string,
                     before : string,
                     ct : System.Threading.CancellationToken option
@@ -50146,7 +50146,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : CreateIssueCommentOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -50216,7 +50216,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteCommentDeprecated
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50262,7 +50262,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : EditDeadlineOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -50330,7 +50330,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueGetLabels
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50401,7 +50401,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : IssueLabelsOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -50480,7 +50480,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueClearLabels
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50525,7 +50525,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : IssueLabelsOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -50604,7 +50604,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueRemoveLabel
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50650,7 +50656,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     page : int,
                     limit : int,
                     ct : System.Threading.CancellationToken option
@@ -50741,7 +50747,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     content : EditReactionOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -50794,7 +50800,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteStopWatch
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50836,7 +50842,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueStartStopWatch
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50878,7 +50884,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueStopStopWatch
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -50923,7 +50929,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     page : int,
                     limit : int,
                     ct : System.Threading.CancellationToken option
@@ -51013,7 +51019,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueCheckSubscription
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51073,7 +51079,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     since : string,
                     page : int,
                     limit : int,
@@ -51168,7 +51174,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     user : string,
                     since : string,
                     before : string,
@@ -51265,7 +51271,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : AddTimeOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -51333,7 +51339,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueResetTime
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51375,7 +51381,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteTime
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51575,7 +51587,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetKey
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51632,7 +51644,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoDeleteKey
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51821,7 +51833,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueGetLabel
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51878,7 +51890,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.IssueDeleteLabel
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -51923,7 +51935,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
+                    id : int64,
                     body : EditLabelOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -52690,8 +52702,8 @@ module Gitea =
                     repo : string,
                     state : string,
                     sort : string,
-                    milestone : int,
-                    labels : int list,
+                    milestone : int64,
+                    labels : int64 list,
                     page : int,
                     limit : int,
                     ct : System.Threading.CancellationToken option
@@ -52856,7 +52868,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetPullRequest
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -52916,7 +52928,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : EditPullRequestOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -52987,7 +52999,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     diffType : string,
                     binary : bool,
                     ct : System.Threading.CancellationToken option
@@ -53051,7 +53063,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     page : int,
                     limit : int,
                     ct : System.Threading.CancellationToken option
@@ -53142,7 +53154,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     skip_to : string,
                     whitespace : string,
                     page : int,
@@ -53234,7 +53246,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoPullRequestIsMerged
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -53279,7 +53291,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : MergePullRequestOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -53332,7 +53344,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoCancelScheduledAutoMerge
-                (owner : string, repo : string, index : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, index : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -53377,7 +53389,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : PullReviewRequestOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -53461,7 +53473,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : PullReviewRequestOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -53519,7 +53531,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     page : int,
                     limit : int,
                     ct : System.Threading.CancellationToken option
@@ -53610,7 +53622,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     body : CreatePullReviewOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -53678,7 +53690,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetPullReview
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -53739,8 +53757,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    id : int,
+                    index : int64,
+                    id : int64,
                     body : SubmitPullReviewOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -53809,7 +53827,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoDeletePullReview
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -53852,7 +53876,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetPullReviewComments
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -53924,8 +53954,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
-                    id : int,
+                    index : int64,
+                    id : int64,
                     body : DismissPullReviewOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -53996,7 +54026,13 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoUnDismissPullReview
-                (owner : string, repo : string, index : int, id : int, ct : System.Threading.CancellationToken option)
+                (
+                    owner : string,
+                    repo : string,
+                    index : int64,
+                    id : int64,
+                    ct : System.Threading.CancellationToken option
+                )
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -54057,7 +54093,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    index : int,
+                    index : int64,
                     style : string,
                     ct : System.Threading.CancellationToken option
                 )
@@ -54787,7 +54823,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoGetRelease
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -54844,7 +54880,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoDeleteRelease
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -54889,7 +54925,7 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
+                    id : int64,
                     body : EditReleaseOption,
                     ct : System.Threading.CancellationToken option
                 )
@@ -54957,7 +54993,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.RepoListReleaseAttachments
-                (owner : string, repo : string, id : int, ct : System.Threading.CancellationToken option)
+                (owner : string, repo : string, id : int64, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -55028,8 +55064,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -55095,8 +55131,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     ct : System.Threading.CancellationToken option
                 )
                 =
@@ -55147,8 +55183,8 @@ module Gitea =
                 (
                     owner : string,
                     repo : string,
-                    id : int,
-                    attachment_id : int,
+                    id : int64,
+                    attachment_id : int64,
                     body : EditAttachmentOptions,
                     ct : System.Threading.CancellationToken option
                 )
@@ -57285,7 +57321,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.RepoGetByID (id : int, ct : System.Threading.CancellationToken option) =
+            member _.RepoGetByID (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57568,7 +57604,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgGetTeam (id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgGetTeam (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57620,7 +57656,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgDeleteTeam (id : int, ct : System.Threading.CancellationToken option) =
+            member _.OrgDeleteTeam (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57718,7 +57754,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeamMembers
-                (id : int, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (id : int64, page : int, limit : int, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -57798,7 +57834,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgListTeamMember (id : int, username : string, ct : System.Threading.CancellationToken option) =
+            member _.OrgListTeamMember (id : int64, username : string, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57852,7 +57888,9 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgRemoveTeamMember (id : int, username : string, ct : System.Threading.CancellationToken option) =
+            member _.OrgRemoveTeamMember
+                (id : int64, username : string, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57891,7 +57929,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.OrgAddTeamMember (id : int, username : string, ct : System.Threading.CancellationToken option) =
+            member _.OrgAddTeamMember (id : int64, username : string, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -57931,7 +57969,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeamRepos
-                (id : int, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (id : int64, page : int, limit : int, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -58012,7 +58050,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgListTeamRepo
-                (id : int, org : string, repo : string, ct : System.Threading.CancellationToken option)
+                (id : int64, org : string, repo : string, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -58069,7 +58107,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgRemoveTeamRepository
-                (id : int, org : string, repo : string, ct : System.Threading.CancellationToken option)
+                (id : int64, org : string, repo : string, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -58111,7 +58149,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.OrgAddTeamRepository
-                (id : int, org : string, repo : string, ct : System.Threading.CancellationToken option)
+                (id : int64, org : string, repo : string, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -58419,7 +58457,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserGetOAuth2Application (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserGetOAuth2Application (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -58472,7 +58510,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserDeleteOAuth2Application (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserDeleteOAuth2Application (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -58511,7 +58549,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserUpdateOAuth2Application
-                (id : int, body : CreateOAuth2ApplicationOptions, ct : System.Threading.CancellationToken option)
+                (id : int64, body : CreateOAuth2ApplicationOptions, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken
@@ -59048,7 +59086,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentDeleteGPGKey (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentDeleteGPGKey (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -59220,7 +59258,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentGetKey (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentGetKey (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -59272,7 +59310,7 @@ module Gitea =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.UserCurrentDeleteKey (id : int, ct : System.Threading.CancellationToken option) =
+            member _.UserCurrentDeleteKey (id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -60163,7 +60201,7 @@ module Gitea =
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
             member _.UserSearch
-                (q : string, uid : int, page : int, limit : int, ct : System.Threading.CancellationToken option)
+                (q : string, uid : int64, page : int, limit : int, ct : System.Threading.CancellationToken option)
                 =
                 async {
                     let! ct = Async.CancellationToken

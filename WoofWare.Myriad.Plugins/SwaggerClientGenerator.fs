@@ -104,6 +104,7 @@ module internal SwaggerClientGenerator =
         | SwaggerV2.Definition.Unspecified -> failwith "should not hit"
         | SwaggerV2.Definition.String -> SynType.string |> Some
         | SwaggerV2.Definition.Boolean -> SynType.bool |> Some
+        | SwaggerV2.Definition.Integer (Some "int64") -> SynType.createLongIdent' [ "int64" ] |> Some
         | SwaggerV2.Definition.Integer _ -> SynType.int |> Some
         | SwaggerV2.Definition.File -> SynType.createLongIdent' [ "System" ; "IO" ; "Stream" ] |> Some
 
@@ -349,9 +350,14 @@ module internal SwaggerClientGenerator =
                     FSharpDefinition = None
                 }
                 |> Some
-            | SwaggerV2.Definition.Integer _ ->
+            | SwaggerV2.Definition.Integer format ->
+                let repr =
+                    match format with
+                    | Some "int64" -> "int64"
+                    | _ -> "int"
+
                 {
-                    Signature = SynType.createLongIdent' [ "int" ]
+                    Signature = SynType.createLongIdent' [ repr ]
                     FSharpDefinition = None
                 }
                 |> Some
