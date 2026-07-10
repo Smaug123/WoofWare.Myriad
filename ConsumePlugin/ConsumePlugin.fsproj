@@ -118,6 +118,16 @@
     <Compile Include="Generated2SwaggerGitea.fs">
       <MyriadFile>GeneratedSwaggerGitea.fs</MyriadFile>
     </Compile>
+    <!-- Regression test: this spec defines a type named "Type1", which must not
+         collide with the names invented for anonymous inline schemas. If they
+         collide, this project fails to compile with a duplicate-definition error. -->
+    <None Include="swagger-anonymous-types.json" />
+    <Compile Include="GeneratedSwaggerAnonymousTypes.fs">
+      <MyriadFile>swagger-anonymous-types.json</MyriadFile>
+      <MyriadParams>
+        <ClassName>AnonymousTypes</ClassName>
+      </MyriadParams>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

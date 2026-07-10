@@ -27373,6 +27373,138 @@ module LanguageStatisticsJsonSerializeExtension =
                     )
 
             node :> _
+namespace Gitea
+
+open WoofWare.Myriad.Plugins
+
+/// Module containing JSON serializing extension members for the Type9 type
+[<AutoOpen>]
+module Type9JsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type Type9 with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : Type9) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                for KeyValue (key, value) in input.AdditionalProperties do
+                    node.Add (key, id value)
+
+                node.Add (
+                    "data",
+                    (input.Data
+                     |> (fun field ->
+                         match field with
+                         | None -> None
+                         | Some field ->
+                             (field
+                              |> (fun field ->
+                                  let arr = System.Text.Json.Nodes.JsonArray ()
+
+                                  for mem in field do
+                                      arr.Add (Team.toJsonNode mem)
+
+                                  arr
+                              ))
+                             :> System.Text.Json.Nodes.JsonNode
+                             |> Some
+                     )
+                     |> Option.toObj)
+                )
+
+                node.Add (
+                    "ok",
+                    (input.Ok
+                     |> (fun field ->
+                         match field with
+                         | None -> None
+                         | Some field ->
+                             (field
+                              |> (fun field ->
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<bool> field
+
+                                  (match field with
+                                   | null ->
+                                       raise (
+                                           System.ArgumentNullException
+                                               "Expected type bool to be non-null, but received a null value when serialising"
+                                       )
+                                   | field -> field)
+                              ))
+                             :> System.Text.Json.Nodes.JsonNode
+                             |> Some
+                     )
+                     |> Option.toObj)
+                )
+
+            node :> _
+namespace Gitea
+
+open WoofWare.Myriad.Plugins
+
+/// Module containing JSON serializing extension members for the Type10 type
+[<AutoOpen>]
+module Type10JsonSerializeExtension =
+    /// Extension methods for JSON parsing
+    type Type10 with
+
+        /// Serialize to a JSON node
+        static member toJsonNode (input : Type10) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
+
+            do
+                for KeyValue (key, value) in input.AdditionalProperties do
+                    node.Add (key, id value)
+
+                node.Add (
+                    "data",
+                    (input.Data
+                     |> (fun field ->
+                         match field with
+                         | None -> None
+                         | Some field ->
+                             (field
+                              |> (fun field ->
+                                  let arr = System.Text.Json.Nodes.JsonArray ()
+
+                                  for mem in field do
+                                      arr.Add (User.toJsonNode mem)
+
+                                  arr
+                              ))
+                             :> System.Text.Json.Nodes.JsonNode
+                             |> Some
+                     )
+                     |> Option.toObj)
+                )
+
+                node.Add (
+                    "ok",
+                    (input.Ok
+                     |> (fun field ->
+                         match field with
+                         | None -> None
+                         | Some field ->
+                             (field
+                              |> (fun field ->
+                                  let field = System.Text.Json.Nodes.JsonValue.Create<bool> field
+
+                                  (match field with
+                                   | null ->
+                                       raise (
+                                           System.ArgumentNullException
+                                               "Expected type bool to be non-null, but received a null value when serialising"
+                                       )
+                                   | field -> field)
+                              ))
+                             :> System.Text.Json.Nodes.JsonNode
+                             |> Some
+                     )
+                     |> Option.toObj)
+                )
+
+            node :> _
 
 namespace Gitea
 
@@ -41543,6 +41675,128 @@ module LanguageStatisticsJsonParseExtension =
             {
                 AdditionalProperties = arg_0
             }
+namespace Gitea
+
+/// Module containing JSON parsing extension members for the Type9 type
+[<AutoOpen>]
+module Type9JsonParseExtension =
+    /// Extension methods for JSON parsing
+    type Type9 with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Type9 =
+            let arg_2 =
+                match node.["ok"] |> Option.ofObj with
+                | None -> None
+                | Some v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
+            let arg_1 =
+                match node.["data"] |> Option.ofObj with
+                | None -> None
+                | Some v ->
+                    v.AsArray ()
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Expected element of array (element type Team) to be non-null, but found a null element"
+                             )
+                         | elt -> Team.jsonParse elt)
+                    )
+                    |> List.ofSeq
+                    |> Some
+
+            let arg_0 =
+                let result =
+                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode> ()
+
+                let node = node.AsObject ()
+
+                for KeyValue (key, value) in node do
+                    if key = "data" || key = "ok" then
+                        ()
+                    else
+                        result.Add (
+                            key,
+                            match node.[key] |> Option.ofObj with
+                            | None ->
+                                raise (
+                                    System.Collections.Generic.KeyNotFoundException (
+                                        sprintf "Required key '%s' not found on JSON object" (key)
+                                    )
+                                )
+                            | Some node -> node
+                        )
+
+                result
+
+            {
+                AdditionalProperties = arg_0
+                Data = arg_1
+                Ok = arg_2
+            }
+namespace Gitea
+
+/// Module containing JSON parsing extension members for the Type10 type
+[<AutoOpen>]
+module Type10JsonParseExtension =
+    /// Extension methods for JSON parsing
+    type Type10 with
+
+        /// Parse from a JSON node.
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Type10 =
+            let arg_2 =
+                match node.["ok"] |> Option.ofObj with
+                | None -> None
+                | Some v -> v.AsValue().GetValue<System.Boolean> () |> Some
+
+            let arg_1 =
+                match node.["data"] |> Option.ofObj with
+                | None -> None
+                | Some v ->
+                    v.AsArray ()
+                    |> Seq.map (fun elt ->
+                        (match elt with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Expected element of array (element type User) to be non-null, but found a null element"
+                             )
+                         | elt -> User.jsonParse elt)
+                    )
+                    |> List.ofSeq
+                    |> Some
+
+            let arg_0 =
+                let result =
+                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode> ()
+
+                let node = node.AsObject ()
+
+                for KeyValue (key, value) in node do
+                    if key = "data" || key = "ok" then
+                        ()
+                    else
+                        result.Add (
+                            key,
+                            match node.[key] |> Option.ofObj with
+                            | None ->
+                                raise (
+                                    System.Collections.Generic.KeyNotFoundException (
+                                        sprintf "Required key '%s' not found on JSON object" (key)
+                                    )
+                                )
+                            | Some node -> node
+                        )
+
+                result
+
+            {
+                AdditionalProperties = arg_0
+                Data = arg_1
+                Ok = arg_2
+            }
 
 namespace Gitea
 
@@ -44765,7 +45019,22 @@ module Gitea =
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
-                    return ()
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Type9"
+                             )
+                         | jsonNode -> jsonNode)
+
+                    return Type9.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -54663,7 +54932,8 @@ module Gitea =
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
-                    return ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -56846,7 +57116,8 @@ module Gitea =
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
-                    return ()
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
@@ -59389,7 +59660,22 @@ module Gitea =
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
-                    return ()
+                    let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
+
+                    let! jsonNode =
+                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        |> Async.AwaitTask
+
+                    let jsonNode =
+                        (match jsonNode with
+                         | null ->
+                             raise (
+                                 System.ArgumentNullException
+                                     "Response from server was the JSON null object; expected a non-nullable type Type10"
+                             )
+                         | jsonNode -> jsonNode)
+
+                    return Type10.jsonParse jsonNode
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
