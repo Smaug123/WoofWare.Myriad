@@ -69,9 +69,10 @@ module internal SwaggerClientGenerator =
         | SwaggerV2.Definition.File -> SynType.createLongIdent' [ "System" ; "IO" ; "Stream" ] |> Some
 
     /// Returns None if we lacked the information required to do this.
+    /// nextAnonymousTypeName must return a fresh unused type name on each call.
     /// bigCache is a map of e.g. {"securityDefinition": {Defn : F# type}}.
     let rec defnToType
-        (anonymousTypeCount : int ref)
+        (nextAnonymousTypeName : unit -> string)
         (handlesMap : Dictionary<string, TypeEntry>)
         (bigCache : Dictionary<string, Dictionary<SwaggerV2.Definition, TypeEntry>>)
         (thisKey : string)
@@ -154,7 +155,7 @@ module internal SwaggerClientGenerator =
                             |> Some
                         | None ->
 
-                        let defn' = defnToType anonymousTypeCount handlesMap bigCache thisKey None defn
+                        let defn' = defnToType nextAnonymousTypeName handlesMap bigCache thisKey None defn
 
                         match defn' with
                         | None -> None
@@ -200,7 +201,7 @@ module internal SwaggerClientGenerator =
                         |> Some
                     | Some SwaggerV2.AdditionalProperties.Never -> Some []
                     | Some (SwaggerV2.AdditionalProperties.Constrained defn) ->
-                        let defn' = defnToType anonymousTypeCount handlesMap bigCache thisKey None defn
+                        let defn' = defnToType nextAnonymousTypeName handlesMap bigCache thisKey None defn
 
                         match defn' with
                         | None -> None
@@ -234,7 +235,7 @@ module internal SwaggerClientGenerator =
 
                 let fSharpTypeName =
                     match typeName with
-                    | None -> $"Type%i{Interlocked.Increment anonymousTypeCount}"
+                    | None -> nextAnonymousTypeName ()
                     | Some typeName -> typeName
 
                 let properties = additionalProperties @ namedProperties
@@ -278,7 +279,8 @@ module internal SwaggerClientGenerator =
                 defn |> Some
 
             | SwaggerV2.Definition.Array elt ->
-                let child = defnToType anonymousTypeCount handlesMap bigCache thisKey None elt.Items
+                let child =
+                    defnToType nextAnonymousTypeName handlesMap bigCache thisKey None elt.Items
 
                 match child with
                 | None -> None
@@ -540,21 +542,36 @@ module internal SwaggerV2Generator =
                 (0, bigCache) ||> Seq.fold (fun count (KeyValue (_, v)) -> count + v.Count)
 
             let byHandle = Dictionary ()
+
+            // A spec is free to define types whose (sanitised) names look like the
+            // "Type{N}" names we invent for anonymous inline schemas (including
+            // pathological ones like "Type2147483647", which would overflow a
+            // seeded counter); skip over any name that's already taken.
+            let takenNames = HashSet<string> ()
+
+            for KeyValue (k, _) in contents.Definitions do
+                takenNames.Add (Ident.createSanitisedTypeName k).idText |> ignore<bool>
+
+            for KeyValue (k, _) in contents.Responses do
+                takenNames.Add (Ident.createSanitisedTypeName k).idText |> ignore<bool>
+
             let anonymousTypeCount = ref 0
 
-            let rec go (contents : ((string * SwaggerV2.Definition) * string) list) =
+            let nextAnonymousTypeName () : string =
+                let mutable candidate = $"Type%i{Interlocked.Increment anonymousTypeCount}"
+
+                while takenNames.Contains candidate do
+                    candidate <- $"Type%i{Interlocked.Increment anonymousTypeCount}"
+
+                candidate
+
+            let rec go (contents : ((string option * SwaggerV2.Definition) * string) list) =
                 let lastRound = countAll ()
 
                 contents
                 |> List.filter (fun ((name, defn), defnClass) ->
                     let doIt =
-                        SwaggerClientGenerator.defnToType
-                            anonymousTypeCount
-                            byHandle
-                            bigCache
-                            defnClass
-                            (Some name)
-                            defn
+                        SwaggerClientGenerator.defnToType nextAnonymousTypeName byHandle bigCache defnClass name defn
 
                     match doIt with
                     | None -> true
@@ -566,6 +583,7 @@ module internal SwaggerV2Generator =
 
                         if currentCount = lastRound then
                             for (name, remaining), kind in remaining do
+                                let name = name |> Option.defaultValue "<anonymous>"
                                 SwaggerClientGenerator.log $"Remaining: %s{name} (%s{kind})"
 
                             SwaggerClientGenerator.log "--------"
@@ -584,15 +602,21 @@ module internal SwaggerV2Generator =
                             go remaining
 
             seq {
-                for defnClass in [ "definitions" ; "responses" ] do
-                    match defnClass with
-                    | "definitions" ->
-                        for KeyValue (k, v) in contents.Definitions do
-                            yield (k, v), defnClass
-                    | "responses" ->
-                        for KeyValue (k, v) in contents.Responses do
-                            yield (k, v.Schema), defnClass
-                    | _ -> failwith "oh no"
+                for KeyValue (k, v) in contents.Definitions do
+                    yield (Some k, v), "definitions"
+
+                for KeyValue (k, v) in contents.Responses do
+                    yield (Some k, v.Schema), "responses"
+
+                // Schemas declared inline on the endpoints themselves have no handle by
+                // which anything can refer to them, but we still need F# types for them.
+                for KeyValue (_, endpoints) in contents.Paths do
+                    for KeyValue (_, endpoint) in endpoints do
+                        for KeyValue (_, response) in endpoint.Responses do
+                            yield (None, response), "paths"
+
+                        for par in endpoint.Parameters |> Option.defaultValue [] do
+                            yield (None, par.Type), "paths"
             }
             |> Seq.toList
             |> go

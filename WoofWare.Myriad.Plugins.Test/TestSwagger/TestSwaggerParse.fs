@@ -82,3 +82,48 @@ module TestSwaggerParse =
                     ]
                     |> Map.ofList
             }
+
+    [<Test>]
+    let ``Can parse inline response schemas`` () : unit =
+        let s =
+            """{
+  "produces": [
+    "application/json"
+  ],
+  "tags": [
+    "repository"
+  ],
+  "summary": "Returns the names of the supported gitignore templates",
+  "operationId": "listGitignoresTemplates",
+  "responses": {
+    "200": {
+      "description": "GitignoreTemplateList",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "403": {
+      "$ref": "#/responses/forbidden"
+    }
+  }
+}
+"""
+            |> JsonNode.Parse
+
+        let endpoint = s.AsObject () |> SwaggerEndpoint.Parse
+
+        endpoint.Responses
+        |> shouldEqual (
+            [
+                200,
+                Definition.Array
+                    {
+                        Items = Definition.String
+                    }
+                403, Definition.Handle "#/responses/forbidden"
+            ]
+            |> Map.ofList
+        )
