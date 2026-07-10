@@ -36,6 +36,30 @@ module TestCapturingMockGenerator =
         mock.Mem3 (3, "hi") 'a' |> shouldEqual "hiahiahi"
 
     [<Test>]
+    let ``Property accesses are recorded in Calls`` () =
+        let mock =
+            { TypeWithPropertiesMock.Empty () with
+                Prop1 = fun () -> 44
+                Prop2 = fun () -> async { return () }
+            }
+
+        let itf = mock :> TypeWithProperties
+
+        mock.Calls.Prop1.Count |> shouldEqual 0
+        mock.Calls.Prop2.Count |> shouldEqual 0
+
+        itf.Prop1 |> shouldEqual 44
+        mock.Calls.Prop1.Count |> shouldEqual 1
+        mock.Calls.Prop2.Count |> shouldEqual 0
+
+        itf.Prop1 |> shouldEqual 44
+        mock.Calls.Prop1.Count |> shouldEqual 2
+
+        // note: we don't attempt to track async scheduling or anything
+        itf.Prop2 |> ignore<_ Async>
+        mock.Calls.Prop2.Count |> shouldEqual 1
+
+    [<Test>]
     let ``Example of use: properties`` () =
         let mock : TypeWithProperties =
             { TypeWithPropertiesMock.Empty () with
