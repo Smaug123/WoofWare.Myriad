@@ -505,3 +505,23 @@ module ToGetExtensionMethodJsonParseExtension =
                 Victor = arg_19
                 Whiskey = arg_20
             }
+namespace ConsumePlugin
+
+/// Module containing JSON parsing methods for the ContainsABigInt type
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module ContainsABigInt =
+    /// Parse from a JSON node.
+    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : ContainsABigInt =
+        let arg_0 =
+            match node.["bigNum"] |> Option.ofObj with
+            | None ->
+                raise (
+                    System.Collections.Generic.KeyNotFoundException (
+                        sprintf "Required key '%s' not found on JSON object" ("bigNum")
+                    )
+                )
+            | Some node -> System.Numerics.BigInteger.Parse (node.ToJsonString ())
+
+        {
+            BigNum = arg_0
+        }
