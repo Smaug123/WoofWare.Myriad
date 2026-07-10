@@ -66,6 +66,23 @@ module internal HttpClientGenerator =
             Headers : (SynExpr * SynExpr) list
         }
 
+    /// Allocate an identifier based on `desired` that does not clash with any name in `taken`.
+    /// Returns `desired` unchanged when it is free — so a caller that doesn't collide never
+    /// perturbs the generated output — and otherwise appends the least positive integer suffix
+    /// that avoids every taken name.
+    let freshName (desired : string) (taken : Set<string>) : string =
+        if not (taken.Contains desired) then
+            desired
+        else
+            let mutable suffix = 0
+            let mutable candidate = desired
+
+            while taken.Contains candidate do
+                suffix <- suffix + 1
+                candidate <- $"%s{desired}%i{suffix}"
+
+            candidate
+
     let httpMethodString (m : HttpMethod) : string =
         if m = HttpMethod.Get then "Get"
         elif m = HttpMethod.Post then "Post"
@@ -251,15 +268,22 @@ module internal HttpClientGenerator =
                 )
             )
 
-        let requestUriTrailer =
-            match queryParams with
-            | [] -> requestUriTrailer
-            | (firstKey, firstValue) :: queryParams ->
-                let firstValueId =
-                    match firstValue.Id with
-                    | None -> failwith "Unable to get parameter variable name from anonymous parameter"
-                    | Some id -> id
+        // The binding we emit below is in scope for the URI, body and header expressions, all of
+        // which may refer to the method's own parameters; so it must not capture any of them.
+        let queryStringName =
+            info.Args
+            |> List.choose (fun arg -> arg.Id |> Option.map (fun id -> id.idText))
+            |> Set.ofList
+            |> freshName "queryString"
 
+        // A list- or array-typed query parameter contributes one key=value pair per
+        // element ("multi" collection format, RestEase's convention), so the query
+        // string is a runtime computation: we emit a `queryString` binding and then
+        // splice it (with a separator, if it's nonempty) onto the URL.
+        let requestUriTrailer, queryStringBindings =
+            match queryParams with
+            | [] -> requestUriTrailer, []
+            | queryParams ->
                 let urlSeparator =
                     let questionMark = SynExpr.CreateConst '?'
 
@@ -271,29 +295,71 @@ module internal HttpClientGenerator =
                     SynExpr.ifThenElse containsQuestion (SynExpr.CreateConst "?") (SynExpr.CreateConst "&")
                     |> SynExpr.paren
 
-                let prefix =
-                    SynExpr.createIdent' firstValueId
-                    |> SynExpr.toString firstValue.Type
-                    |> SynExpr.paren
-                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Uri" ; "EscapeDataString" ])
-                    |> SynExpr.paren
-                    |> SynExpr.plus (SynExpr.plus urlSeparator (SynExpr.CreateConst (firstKey + "=")))
+                // Each component evaluates to a `string list` of key=value pairs.
+                let components =
+                    queryParams
+                    |> List.map (fun (paramKey, paramValue) ->
+                        let paramValueId =
+                            match paramValue.Id with
+                            | None -> failwith "Unable to get parameter variable name from anonymous parameter"
+                            | Some id -> id
 
-                (prefix, queryParams)
-                ||> List.fold (fun uri (paramKey, paramValue) ->
-                    let paramValueId =
-                        match paramValue.Id with
-                        | None -> failwith "Unable to get parameter variable name from anonymous parameter"
-                        | Some id -> id
+                        // "{paramKey}=" + (({value converted to string}) |> System.Uri.EscapeDataString)
+                        let keyEqualsValue (ty : SynType) (value : SynExpr) =
+                            SynExpr.toString ty value
+                            |> SynExpr.paren
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.createLongIdent [ "System" ; "Uri" ; "EscapeDataString" ]
+                            )
+                            |> SynExpr.paren
+                            |> SynExpr.plus (SynExpr.CreateConst (paramKey + "="))
 
-                    SynExpr.toString paramValue.Type (SynExpr.createIdent' paramValueId)
+                        match paramValue.Type with
+                        | ListType eltType ->
+                            SynExpr.createIdent' paramValueId
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.applyFunction
+                                    (SynExpr.createLongIdent [ "List" ; "map" ])
+                                    (SynExpr.createLambda
+                                        "queryParam"
+                                        (keyEqualsValue eltType (SynExpr.createIdent "queryParam")))
+                            )
+                        | ArrayType eltType ->
+                            SynExpr.createIdent' paramValueId
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.applyFunction
+                                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                                    (SynExpr.createLambda
+                                        "queryParam"
+                                        (keyEqualsValue eltType (SynExpr.createIdent "queryParam")))
+                            )
+                            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "List" ; "ofSeq" ])
+                        | ty ->
+                            keyEqualsValue ty (SynExpr.createIdent' paramValueId)
+                            |> List.singleton
+                            |> SynExpr.listLiteral
+                    )
+
+                let queryString =
+                    components
+                    |> SynExpr.listLiteral
+                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "List" ; "concat" ])
+                    |> SynExpr.pipeThroughFunction (
+                        SynExpr.applyFunction
+                            (SynExpr.createLongIdent [ "String" ; "concat" ])
+                            (SynExpr.CreateConst "&")
+                    )
+
+                let trailer =
+                    SynExpr.ifThenElse
+                        (SynExpr.equals (SynExpr.createIdent queryStringName) (SynExpr.CreateConst ""))
+                        (SynExpr.plus urlSeparator (SynExpr.createIdent queryStringName) |> SynExpr.paren)
+                        (SynExpr.CreateConst "")
                     |> SynExpr.paren
-                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "System" ; "Uri" ; "EscapeDataString" ])
+                    |> SynExpr.plus requestUriTrailer
                     |> SynExpr.paren
-                    |> SynExpr.plus (SynExpr.plus uri (SynExpr.CreateConst ("&" + paramKey + "=")))
-                )
-                |> SynExpr.plus requestUriTrailer
-                |> SynExpr.paren
+
+                trailer, [ CompExprBinding.Let (queryStringName, queryString) ]
 
         let requestUri =
             let uriIdent = SynExpr.createLongIdent [ "System" ; "Uri" ]
@@ -666,6 +732,7 @@ module internal HttpClientGenerator =
 
             [
                 yield LetBang ("ct", SynExpr.createLongIdent [ "Async" ; "CancellationToken" ])
+                yield! queryStringBindings
                 yield Let ("uri", requestUri)
                 // Disposing an HttpRequestMessage disposes its Content. When the body wraps a caller-owned resource
                 // (a Stream the caller supplied, or an HttpContent the caller constructed), disposing it would tear

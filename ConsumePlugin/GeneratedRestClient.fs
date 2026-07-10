@@ -427,6 +427,16 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [
+                                "fromDate=" + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
+                            ]
+                            [ "toDate=" + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
@@ -434,14 +444,14 @@ module PureGymApi =
                              | v -> v),
                             System.Uri (
                                 ("/v2/gymSessions/member"
-                                 + (if "/v2/gymSessions/member".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "fromDate="
-                                 + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
-                                 + "&toDate="
-                                 + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)),
+                                        ((if "/v2/gymSessions/member".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -478,6 +488,16 @@ module PureGymApi =
                 async {
                     let! ct = Async.CancellationToken
 
+                    let queryString =
+                        [
+                            [
+                                "fromDate=" + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
+                            ]
+                            [ "toDate=" + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
                     let uri =
                         System.Uri (
                             (match client.BaseAddress with
@@ -485,14 +505,14 @@ module PureGymApi =
                              | v -> v),
                             System.Uri (
                                 ("/v2/gymSessions/member?foo=1"
-                                 + (if "/v2/gymSessions/member?foo=1".IndexOf (char 63) >= 0 then
-                                        "&"
+                                 + (if queryString = "" then
+                                        ""
                                     else
-                                        "?")
-                                 + "fromDate="
-                                 + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
-                                 + "&toDate="
-                                 + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)),
+                                        ((if "/v2/gymSessions/member?foo=1".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString))),
                                 System.UriKind.Relative
                             )
                         )
@@ -1949,6 +1969,253 @@ module ClientWithJsonBodyOverridden =
                         )
 
                     do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithListQuery =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithListQuery =
+        { new IApiWithListQuery with
+            member _.GetWithListQuery (tags : string list, limit : int, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            tags
+                            |> List.map (fun queryParam ->
+                                "tag=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri (
+                                ("endpoint"
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetWithSoleListQuery (tags : string list, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            tags
+                            |> List.map (fun queryParam ->
+                                "tag=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri (
+                                ("endpoint"
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetWithArrayQuery (ids : int[], ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            ids
+                            |> Seq.map (fun queryParam ->
+                                "id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> List.ofSeq
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri (
+                                ("endpoint"
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiShadowingGeneratedNames =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiShadowingGeneratedNames =
+        { new IApiShadowingGeneratedNames with
+            member _.GetWithPathNamedQueryString (queryString : string, limit : int, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let queryString1 =
+                        [ [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        |> List.concat
+                        |> String.concat "&"
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri (
+                                ("endpoint/{queryString}"
+                                    .Replace ("{queryString}", queryString.ToString () |> System.Uri.EscapeDataString)
+                                 + (if queryString1 = "" then
+                                        ""
+                                    else
+                                        ((if "endpoint/{queryString}".IndexOf (char 63) >= 0 then
+                                              "&"
+                                          else
+                                              "?")
+                                         + queryString1))),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetWithQueryNamedQueryString (queryString : string, limit : int, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let queryString1 =
+                        [
+                            [ "queryString=" + ((queryString.ToString ()) |> System.Uri.EscapeDataString) ]
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri (
+                                ("endpoint"
+                                 + (if queryString1 = "" then
+                                        ""
+                                    else
+                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString1))),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
