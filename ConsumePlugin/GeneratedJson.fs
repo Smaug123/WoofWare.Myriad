@@ -280,7 +280,12 @@ module ToGetExtensionMethodJsonParseExtension =
                             sprintf "Required key '%s' not found on JSON object" ("whiskey")
                         )
                     )
-                | Some node -> System.Numerics.BigInteger.Parse (node.ToJsonString ())
+                | Some node ->
+                    System.Numerics.BigInteger.Parse (
+                        node.ToJsonString (),
+                        System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture
+                    )
 
             let arg_19 =
                 match node.["victor"] |> Option.ofObj with
@@ -520,7 +525,12 @@ module ContainsABigInt =
                         sprintf "Required key '%s' not found on JSON object" ("bigNum")
                     )
                 )
-            | Some node -> System.Numerics.BigInteger.Parse (node.ToJsonString ())
+            | Some node ->
+                System.Numerics.BigInteger.Parse (
+                    node.ToJsonString (),
+                    System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture
+                )
 
         {
             BigNum = arg_0
