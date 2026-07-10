@@ -66,6 +66,23 @@ module internal HttpClientGenerator =
             Headers : (SynExpr * SynExpr) list
         }
 
+    /// Allocate an identifier based on `desired` that does not clash with any name in `taken`.
+    /// Returns `desired` unchanged when it is free — so a caller that doesn't collide never
+    /// perturbs the generated output — and otherwise appends the least positive integer suffix
+    /// that avoids every taken name.
+    let freshName (desired : string) (taken : Set<string>) : string =
+        if not (taken.Contains desired) then
+            desired
+        else
+            let mutable suffix = 0
+            let mutable candidate = desired
+
+            while taken.Contains candidate do
+                suffix <- suffix + 1
+                candidate <- $"%s{desired}%i{suffix}"
+
+            candidate
+
     let httpMethodString (m : HttpMethod) : string =
         if m = HttpMethod.Get then "Get"
         elif m = HttpMethod.Post then "Post"
@@ -254,19 +271,10 @@ module internal HttpClientGenerator =
         // The binding we emit below is in scope for the URI, body and header expressions, all of
         // which may refer to the method's own parameters; so it must not capture any of them.
         let queryStringName =
-            let taken =
-                info.Args
-                |> List.choose (fun arg -> arg.Id |> Option.map (fun id -> id.idText))
-                |> Set.ofList
-
-            let mutable candidate = "queryString"
-            let mutable suffix = 0
-
-            while taken.Contains candidate do
-                suffix <- suffix + 1
-                candidate <- $"queryString%i{suffix}"
-
-            candidate
+            info.Args
+            |> List.choose (fun arg -> arg.Id |> Option.map (fun id -> id.idText))
+            |> Set.ofList
+            |> freshName "queryString"
 
         // A list- or array-typed query parameter contributes one key=value pair per
         // element ("multi" collection format, RestEase's convention), so the query
