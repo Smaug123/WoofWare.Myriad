@@ -1,5 +1,6 @@
 namespace WoofWare.Myriad.Plugins.Test
 
+open System
 open FsCheck
 open NUnit.Framework
 open WoofWare.Myriad.Plugins
@@ -29,12 +30,15 @@ module TestFreshName =
     let ``freshName leaves a free name unchanged`` () =
         let property (desired : string) (taken : string list) : bool =
             let desired = clean desired
-            let taken = taken |> List.map clean |> Set.ofList
 
-            if taken.Contains desired then
-                true // vacuous: this property only speaks to the collision-free case
-            else
-                HttpClientGenerator.freshName desired taken = desired
+            let taken =
+                taken
+                |> List.map clean
+                |> Set.ofList
+                // ensure the name is free
+                |> Set.remove desired
+
+            HttpClientGenerator.freshName desired taken = desired
 
         Check.QuickThrowOnFailure property
 
@@ -44,6 +48,6 @@ module TestFreshName =
         let property (desired : string) (taken : string list) : bool =
             let desired = clean desired
             let taken = taken |> List.map clean |> Set.ofList
-            (HttpClientGenerator.freshName desired taken).StartsWith desired
+            (HttpClientGenerator.freshName desired taken).StartsWith (desired, StringComparison.Ordinal)
 
         Check.QuickThrowOnFailure property
