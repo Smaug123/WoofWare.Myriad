@@ -455,10 +455,16 @@ module internal JsonParseGenerator =
                 )
                 |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Map" ; "ofSeq" ])
         | BigInt ->
-            node
-            |> SynExpr.callMethod "ToJsonString"
-            |> SynExpr.paren
-            |> SynExpr.applyFunction (SynExpr.createLongIdent [ "System" ; "Numerics" ; "BigInteger" ; "Parse" ])
+            SynExpr.createLongIdent [ "System" ; "Numerics" ; "BigInteger" ; "Parse" ]
+            |> SynExpr.applyTo (
+                SynExpr.tuple
+                    [
+                        node |> SynExpr.callMethod "ToJsonString"
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "NumberStyles" ; "Float" ]
+                        SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture" ]
+                    ]
+            )
+
         | Measure (_measure, primType) ->
             parseNumberType options propertyName node primType
             |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure primType)

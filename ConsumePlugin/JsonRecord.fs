@@ -82,3 +82,9 @@ type ToGetExtensionMethod =
 [<RequireQualifiedAccess>]
 module ToGetExtensionMethod =
     let thisModuleWouldClash = 3
+
+[<WoofWare.Myriad.Plugins.JsonParse>]
+type ContainsABigInt =
+    {
+        BigNum : bigint
+    }

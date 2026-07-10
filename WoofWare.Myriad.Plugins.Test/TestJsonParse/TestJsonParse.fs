@@ -2,6 +2,7 @@ namespace WoofWare.Myriad.Plugins.Test
 
 open System
 open System.Collections.Generic
+open System.Globalization
 open System.Text.Json.Nodes
 open ConsumePlugin
 open NUnit.Framework
@@ -118,3 +119,21 @@ module TestJsonParse =
         |> JsonNode.Parse
         |> SomeEnum.jsonParse
         |> shouldEqual expected
+
+    [<Test>]
+    [<NonParallelizable>]
+    let ``Bigints are parsed in the invariant culture`` () =
+        let currentCulture = CultureInfo.CurrentCulture
+        let desiredCulture = CultureInfo.CreateSpecificCulture "for-test"
+        desiredCulture.NumberFormat.NegativeSign <- "!"
+
+        CultureInfo.CurrentCulture <- desiredCulture
+
+        try
+            """{"bigNum": -3}"""
+            |> JsonNode.Parse
+            |> ContainsABigInt.jsonParse
+            |> _.BigNum
+            |> shouldEqual (bigint -3)
+        finally
+            CultureInfo.CurrentCulture <- currentCulture
