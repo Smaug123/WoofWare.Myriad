@@ -44,6 +44,7 @@
     <Compile Include="TestArgParser\TestArgParserNegation.fs" />
     <Compile Include="TestSwagger\TestSwaggerParse.fs" />
     <Compile Include="TestSwagger\TestSuccessResponse.fs" />
+    <Compile Include="TestSwagger\TestSwaggerTypeRender.fs" />
     <Compile Include="TestSwagger\TestOpenApi3Parse.fs" />
     <EmbeddedResource Include="TestSwagger\api-with-examples.json" />
     <EmbeddedResource Include="TestSwagger\callback-example.json" />

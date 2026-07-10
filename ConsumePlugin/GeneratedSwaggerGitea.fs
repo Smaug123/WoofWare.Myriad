@@ -33,7 +33,7 @@ type AccessToken =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
         Name : string option
         [<System.Text.Json.Serialization.JsonPropertyName "scopes">]
@@ -73,7 +73,7 @@ type AddTimeOption =
         [<System.Text.Json.Serialization.JsonPropertyName "created">]
         Created : string option
         [<System.Text.Json.Serialization.JsonPropertyName "time">]
-        Time : int
+        Time : int64
         [<System.Text.Json.Serialization.JsonPropertyName "user_name">]
         UserName : string option
     }
@@ -103,13 +103,13 @@ type Attachment =
         [<System.Text.Json.Serialization.JsonPropertyName "created_at">]
         CreatedAt : string option
         [<System.Text.Json.Serialization.JsonPropertyName "download_count">]
-        DownloadCount : int option
+        DownloadCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
         Name : string option
         [<System.Text.Json.Serialization.JsonPropertyName "size">]
-        Size : int option
+        Size : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "uuid">]
         Uuid : string option
     }
@@ -161,7 +161,7 @@ type BranchProtection =
         [<System.Text.Json.Serialization.JsonPropertyName "require_signed_commits">]
         RequireSignedCommits : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "required_approvals">]
-        RequiredApprovals : int option
+        RequiredApprovals : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "rule_name">]
         RuleName : string option
         [<System.Text.Json.Serialization.JsonPropertyName "status_check_contexts">]
@@ -179,13 +179,13 @@ type ChangedFile =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "additions">]
-        Additions : int option
+        Additions : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "changes">]
-        Changes : int option
+        Changes : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "contents_url">]
         ContentsUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "deletions">]
-        Deletions : int option
+        Deletions : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "filename">]
         Filename : string option
         [<System.Text.Json.Serialization.JsonPropertyName "html_url">]
@@ -241,11 +241,11 @@ type CommitStats =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "additions">]
-        Additions : int option
+        Additions : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "deletions">]
-        Deletions : int option
+        Deletions : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "total">]
-        Total : int option
+        Total : int64 option
     }
 
 /// CommitUser contains information of a user in the context of a commit.
@@ -319,7 +319,7 @@ type CreateBranchProtectionOption =
         [<System.Text.Json.Serialization.JsonPropertyName "require_signed_commits">]
         RequireSignedCommits : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "required_approvals">]
-        RequiredApprovals : int option
+        RequiredApprovals : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "rule_name">]
         RuleName : string option
         [<System.Text.Json.Serialization.JsonPropertyName "status_check_contexts">]
@@ -410,9 +410,9 @@ type CreateIssueOption =
         [<System.Text.Json.Serialization.JsonPropertyName "due_date">]
         DueDate : string option
         [<System.Text.Json.Serialization.JsonPropertyName "labels">]
-        Labels : int list option
+        Labels : int64 list option
         [<System.Text.Json.Serialization.JsonPropertyName "milestone">]
-        Milestone : int option
+        Milestone : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "ref">]
         Ref : string option
         [<System.Text.Json.Serialization.JsonPropertyName "title">]
@@ -520,9 +520,9 @@ type CreatePullRequestOption =
         [<System.Text.Json.Serialization.JsonPropertyName "head">]
         Head : string option
         [<System.Text.Json.Serialization.JsonPropertyName "labels">]
-        Labels : int list option
+        Labels : int64 list option
         [<System.Text.Json.Serialization.JsonPropertyName "milestone">]
-        Milestone : int option
+        Milestone : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "title">]
         Title : string option
     }
@@ -536,9 +536,9 @@ type CreatePullReviewComment =
         [<System.Text.Json.Serialization.JsonPropertyName "body">]
         Body : string option
         [<System.Text.Json.Serialization.JsonPropertyName "new_position">]
-        NewPosition : int option
+        NewPosition : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "old_position">]
-        OldPosition : int option
+        OldPosition : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "path">]
         Path : string option
     }
@@ -693,7 +693,7 @@ type CreateUserOption =
         [<System.Text.Json.Serialization.JsonPropertyName "send_notify">]
         SendNotify : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "source_id">]
-        SourceId : int option
+        SourceId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "username">]
         Username : string
         [<System.Text.Json.Serialization.JsonPropertyName "visibility">]
@@ -721,7 +721,7 @@ type Cron =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "exec_times">]
-        ExecTimes : int option
+        ExecTimes : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
         Name : string option
         [<System.Text.Json.Serialization.JsonPropertyName "next">]
@@ -807,7 +807,7 @@ type EditBranchProtectionOption =
         [<System.Text.Json.Serialization.JsonPropertyName "require_signed_commits">]
         RequireSignedCommits : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "required_approvals">]
-        RequiredApprovals : int option
+        RequiredApprovals : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "status_check_contexts">]
         StatusCheckContexts : string list option
         [<System.Text.Json.Serialization.JsonPropertyName "unprotected_file_patterns">]
@@ -884,7 +884,7 @@ type EditIssueOption =
         [<System.Text.Json.Serialization.JsonPropertyName "due_date">]
         DueDate : string option
         [<System.Text.Json.Serialization.JsonPropertyName "milestone">]
-        Milestone : int option
+        Milestone : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "ref">]
         Ref : string option
         [<System.Text.Json.Serialization.JsonPropertyName "state">]
@@ -966,9 +966,9 @@ type EditPullRequestOption =
         [<System.Text.Json.Serialization.JsonPropertyName "due_date">]
         DueDate : string option
         [<System.Text.Json.Serialization.JsonPropertyName "labels">]
-        Labels : int list option
+        Labels : int64 list option
         [<System.Text.Json.Serialization.JsonPropertyName "milestone">]
-        Milestone : int option
+        Milestone : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "state">]
         State : string option
         [<System.Text.Json.Serialization.JsonPropertyName "title">]
@@ -1063,7 +1063,7 @@ type EditUserOption =
         [<System.Text.Json.Serialization.JsonPropertyName "login_name">]
         LoginName : string
         [<System.Text.Json.Serialization.JsonPropertyName "max_repo_creation">]
-        MaxRepoCreation : int option
+        MaxRepoCreation : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "must_change_password">]
         MustChangePassword : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "password">]
@@ -1073,7 +1073,7 @@ type EditUserOption =
         [<System.Text.Json.Serialization.JsonPropertyName "restricted">]
         Restricted : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "source_id">]
-        SourceId : int
+        SourceId : int64
         [<System.Text.Json.Serialization.JsonPropertyName "visibility">]
         Visibility : string option
         [<System.Text.Json.Serialization.JsonPropertyName "website">]
@@ -1179,13 +1179,13 @@ type GeneralAPISettings =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "default_git_trees_per_page">]
-        DefaultGitTreesPerPage : int option
+        DefaultGitTreesPerPage : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "default_max_blob_size">]
-        DefaultMaxBlobSize : int option
+        DefaultMaxBlobSize : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "default_paging_num">]
-        DefaultPagingNum : int option
+        DefaultPagingNum : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "max_response_items">]
-        MaxResponseItems : int option
+        MaxResponseItems : int64 option
     }
 
 /// GeneralAttachmentSettings contains global Attachment settings exposed by API
@@ -1199,9 +1199,9 @@ type GeneralAttachmentSettings =
         [<System.Text.Json.Serialization.JsonPropertyName "enabled">]
         Enabled : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "max_files">]
-        MaxFiles : int option
+        MaxFiles : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "max_size">]
-        MaxSize : int option
+        MaxSize : int64 option
     }
 
 /// GeneralRepoSettings contains global repository settings exposed by API
@@ -1281,7 +1281,7 @@ type GitBlobResponse =
         [<System.Text.Json.Serialization.JsonPropertyName "sha">]
         Sha : string option
         [<System.Text.Json.Serialization.JsonPropertyName "size">]
-        Size : int option
+        Size : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "url">]
         Url : string option
     }
@@ -1299,7 +1299,7 @@ type GitEntry =
         [<System.Text.Json.Serialization.JsonPropertyName "sha">]
         Sha : string option
         [<System.Text.Json.Serialization.JsonPropertyName "size">]
-        Size : int option
+        Size : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "type">]
         Type : string option
         [<System.Text.Json.Serialization.JsonPropertyName "url">]
@@ -1341,11 +1341,11 @@ type GitTreeResponse =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "page">]
-        Page : int option
+        Page : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "sha">]
         Sha : string option
         [<System.Text.Json.Serialization.JsonPropertyName "total_count">]
-        TotalCount : int option
+        TotalCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "tree">]
         Tree : GitEntry list option
         [<System.Text.Json.Serialization.JsonPropertyName "truncated">]
@@ -1378,7 +1378,7 @@ type Hook =
         [<System.Text.Json.Serialization.JsonPropertyName "events">]
         Events : string list option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "type">]
         Type : string option
         [<System.Text.Json.Serialization.JsonPropertyName "updated_at">]
@@ -1442,7 +1442,7 @@ type IssueLabelsOption =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "labels">]
-        Labels : int list option
+        Labels : int64 list option
     }
 
 /// Label a label to an issue or a pr
@@ -1458,7 +1458,7 @@ type Label =
         [<System.Text.Json.Serialization.JsonPropertyName "exclusive">]
         Exclusive : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
         Name : string option
         [<System.Text.Json.Serialization.JsonPropertyName "url">]
@@ -1549,7 +1549,7 @@ type MigrateRepoOptions =
         [<System.Text.Json.Serialization.JsonPropertyName "service">]
         Service : string option
         [<System.Text.Json.Serialization.JsonPropertyName "uid">]
-        Uid : int option
+        Uid : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "wiki">]
         Wiki : bool option
     }
@@ -1596,11 +1596,11 @@ type NodeInfoUsageUsers =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "activeHalfyear">]
-        ActiveHalfyear : int option
+        ActiveHalfyear : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "activeMonth">]
-        ActiveMonth : int option
+        ActiveMonth : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "total">]
-        Total : int option
+        Total : int64 option
     }
 
 /// NotificationCount number of unread notifications
@@ -1610,7 +1610,7 @@ type NotificationCount =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "new">]
-        New : int option
+        New : int64 option
     }
 
 /// OAuth2Application represents an OAuth2 application.
@@ -1628,7 +1628,7 @@ type OAuth2Application =
         [<System.Text.Json.Serialization.JsonPropertyName "created">]
         Created : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
         Name : string option
         [<System.Text.Json.Serialization.JsonPropertyName "redirect_uris">]
@@ -1648,7 +1648,7 @@ type Organization =
         [<System.Text.Json.Serialization.JsonPropertyName "full_name">]
         FullName : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "location">]
         Location : string option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
@@ -1688,9 +1688,9 @@ type PackageFile =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "Size">]
-        Size : int option
+        Size : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "md5">]
         Md5 : string option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
@@ -1812,7 +1812,7 @@ type RepositoryMeta =
         [<System.Text.Json.Serialization.JsonPropertyName "full_name">]
         FullName : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
         Name : string option
         [<System.Text.Json.Serialization.JsonPropertyName "owner">]
@@ -1840,7 +1840,7 @@ type StopWatch =
         [<System.Text.Json.Serialization.JsonPropertyName "duration">]
         Duration : string option
         [<System.Text.Json.Serialization.JsonPropertyName "issue_index">]
-        IssueIndex : int option
+        IssueIndex : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "issue_title">]
         IssueTitle : string option
         [<System.Text.Json.Serialization.JsonPropertyName "repo_name">]
@@ -1848,7 +1848,7 @@ type StopWatch =
         [<System.Text.Json.Serialization.JsonPropertyName "repo_owner_name">]
         RepoOwnerName : string option
         [<System.Text.Json.Serialization.JsonPropertyName "seconds">]
-        Seconds : int option
+        Seconds : int64 option
     }
 
 /// SubmitPullReviewOptions are options to submit a pending pull review
@@ -1901,7 +1901,7 @@ type Team =
         [<System.Text.Json.Serialization.JsonPropertyName "description">]
         Description : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "includes_all_repositories">]
         IncludesAllRepositories : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
@@ -1935,9 +1935,9 @@ type TopicResponse =
         [<System.Text.Json.Serialization.JsonPropertyName "created">]
         Created : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "repo_count">]
-        RepoCount : int option
+        RepoCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "topic_name">]
         TopicName : string option
         [<System.Text.Json.Serialization.JsonPropertyName "updated">]
@@ -1953,7 +1953,7 @@ type TransferRepoOption =
         [<System.Text.Json.Serialization.JsonPropertyName "new_owner">]
         NewOwner : string
         [<System.Text.Json.Serialization.JsonPropertyName "team_ids">]
-        TeamIds : int list option
+        TeamIds : int64 list option
     }
 
 /// UpdateFileOptions options for updating files
@@ -2002,13 +2002,13 @@ type User =
         [<System.Text.Json.Serialization.JsonPropertyName "email">]
         Email : string option
         [<System.Text.Json.Serialization.JsonPropertyName "followers_count">]
-        FollowersCount : int option
+        FollowersCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "following_count">]
-        FollowingCount : int option
+        FollowingCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "full_name">]
         FullName : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "is_admin">]
         IsAdmin : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "language">]
@@ -2026,7 +2026,7 @@ type User =
         [<System.Text.Json.Serialization.JsonPropertyName "restricted">]
         Restricted : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "starred_repos_count">]
-        StarredReposCount : int option
+        StarredReposCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "visibility">]
         Visibility : string option
         [<System.Text.Json.Serialization.JsonPropertyName "website">]
@@ -2040,9 +2040,9 @@ type UserHeatmapData =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "contributions">]
-        Contributions : int option
+        Contributions : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "timestamp">]
-        Timestamp : int option
+        Timestamp : int64 option
     }
 
 /// UserSettings represents user settings
@@ -2142,7 +2142,7 @@ type WikiCommitList =
         [<System.Text.Json.Serialization.JsonPropertyName "commits">]
         Commits : WikiCommit list option
         [<System.Text.Json.Serialization.JsonPropertyName "count">]
-        Count : int option
+        Count : int64 option
     }
 
 /// WikiPage a wiki page
@@ -2152,7 +2152,7 @@ type WikiPage =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "commit_count">]
-        CommitCount : int option
+        CommitCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "content_base64">]
         ContentBase64 : string option
         [<System.Text.Json.Serialization.JsonPropertyName "footer">]
@@ -2200,13 +2200,13 @@ type Comment =
         [<System.Text.Json.Serialization.JsonPropertyName "html_url">]
         HtmlUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "issue_url">]
         IssueUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "original_author">]
         OriginalAuthor : string option
         [<System.Text.Json.Serialization.JsonPropertyName "original_author_id">]
-        OriginalAuthorId : int option
+        OriginalAuthorId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "pull_request_url">]
         PullRequestUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "updated_at">]
@@ -2230,7 +2230,7 @@ type CommitStatus =
         [<System.Text.Json.Serialization.JsonPropertyName "description">]
         Description : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "status">]
         Status : string option
         [<System.Text.Json.Serialization.JsonPropertyName "target_url">]
@@ -2268,7 +2268,7 @@ type ContentsResponse =
         [<System.Text.Json.Serialization.JsonPropertyName "sha">]
         Sha : string option
         [<System.Text.Json.Serialization.JsonPropertyName "size">]
-        Size : int option
+        Size : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "submodule_git_url">]
         SubmoduleGitUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "target">]
@@ -2476,7 +2476,7 @@ type Milestone =
         [<System.Text.Json.Serialization.JsonPropertyName "closed_at">]
         ClosedAt : string option
         [<System.Text.Json.Serialization.JsonPropertyName "closed_issues">]
-        ClosedIssues : int option
+        ClosedIssues : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "created_at">]
         CreatedAt : string option
         [<System.Text.Json.Serialization.JsonPropertyName "description">]
@@ -2484,9 +2484,9 @@ type Milestone =
         [<System.Text.Json.Serialization.JsonPropertyName "due_on">]
         DueOn : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "open_issues">]
-        OpenIssues : int option
+        OpenIssues : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "state">]
         State : string option
         [<System.Text.Json.Serialization.JsonPropertyName "title">]
@@ -2502,9 +2502,9 @@ type NodeInfoUsage =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "localComments">]
-        LocalComments : int option
+        LocalComments : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "localPosts">]
-        LocalPosts : int option
+        LocalPosts : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "users">]
         Users : NodeInfoUsageUsers option
     }
@@ -2560,7 +2560,7 @@ type PublicKey =
         [<System.Text.Json.Serialization.JsonPropertyName "fingerprint">]
         Fingerprint : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "key">]
         Key : string option
         [<System.Text.Json.Serialization.JsonPropertyName "key_type">]
@@ -2584,7 +2584,7 @@ type PullReview =
         [<System.Text.Json.Serialization.JsonPropertyName "body">]
         Body : string option
         [<System.Text.Json.Serialization.JsonPropertyName "comments_count">]
-        CommentsCount : int option
+        CommentsCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "commit_id">]
         CommitId : string option
         [<System.Text.Json.Serialization.JsonPropertyName "dismissed">]
@@ -2592,7 +2592,7 @@ type PullReview =
         [<System.Text.Json.Serialization.JsonPropertyName "html_url">]
         HtmlUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "official">]
         Official : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "pull_request_url">]
@@ -2628,7 +2628,7 @@ type PullReviewComment =
         [<System.Text.Json.Serialization.JsonPropertyName "html_url">]
         HtmlUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "original_commit_id">]
         OriginalCommitId : string option
         [<System.Text.Json.Serialization.JsonPropertyName "original_position">]
@@ -2638,7 +2638,7 @@ type PullReviewComment =
         [<System.Text.Json.Serialization.JsonPropertyName "position">]
         Position : int option
         [<System.Text.Json.Serialization.JsonPropertyName "pull_request_review_id">]
-        PullRequestReviewId : int option
+        PullRequestReviewId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "pull_request_url">]
         PullRequestUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "resolver">]
@@ -2682,7 +2682,7 @@ type Release =
         [<System.Text.Json.Serialization.JsonPropertyName "html_url">]
         HtmlUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
         Name : string option
         [<System.Text.Json.Serialization.JsonPropertyName "prerelease">]
@@ -2792,7 +2792,7 @@ type Repository =
         [<System.Text.Json.Serialization.JsonPropertyName "fork">]
         Fork : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "forks_count">]
-        ForksCount : int option
+        ForksCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "full_name">]
         FullName : string option
         [<System.Text.Json.Serialization.JsonPropertyName "has_issues">]
@@ -2806,7 +2806,7 @@ type Repository =
         [<System.Text.Json.Serialization.JsonPropertyName "html_url">]
         HtmlUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "ignore_whitespace_conflicts">]
         IgnoreWhitespaceConflicts : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "internal">]
@@ -2828,9 +2828,9 @@ type Repository =
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
         Name : string option
         [<System.Text.Json.Serialization.JsonPropertyName "open_issues_count">]
-        OpenIssuesCount : int option
+        OpenIssuesCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "open_pr_counter">]
-        OpenPrCounter : int option
+        OpenPrCounter : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "original_url">]
         OriginalUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "owner">]
@@ -2842,21 +2842,21 @@ type Repository =
         [<System.Text.Json.Serialization.JsonPropertyName "private">]
         Private : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "release_counter">]
-        ReleaseCounter : int option
+        ReleaseCounter : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "repo_transfer">]
         RepoTransfer : RepoTransfer option
         [<System.Text.Json.Serialization.JsonPropertyName "size">]
-        Size : int option
+        Size : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "ssh_url">]
         SshUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "stars_count">]
-        StarsCount : int option
+        StarsCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "template">]
         Template : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "updated_at">]
         UpdatedAt : string option
         [<System.Text.Json.Serialization.JsonPropertyName "watchers_count">]
-        WatchersCount : int option
+        WatchersCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "website">]
         Website : string option
     }
@@ -2912,7 +2912,7 @@ type CombinedStatus =
         [<System.Text.Json.Serialization.JsonPropertyName "statuses">]
         Statuses : CommitStatus list option
         [<System.Text.Json.Serialization.JsonPropertyName "total_count">]
-        TotalCount : int option
+        TotalCount : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "url">]
         Url : string option
     }
@@ -2956,11 +2956,11 @@ type DeployKey =
         [<System.Text.Json.Serialization.JsonPropertyName "fingerprint">]
         Fingerprint : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "key">]
         Key : string option
         [<System.Text.Json.Serialization.JsonPropertyName "key_id">]
-        KeyId : int option
+        KeyId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "read_only">]
         ReadOnly : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "repository">]
@@ -3016,7 +3016,7 @@ type Issue =
         [<System.Text.Json.Serialization.JsonPropertyName "closed_at">]
         ClosedAt : string option
         [<System.Text.Json.Serialization.JsonPropertyName "comments">]
-        Comments : int option
+        Comments : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "created_at">]
         CreatedAt : string option
         [<System.Text.Json.Serialization.JsonPropertyName "due_date">]
@@ -3024,7 +3024,7 @@ type Issue =
         [<System.Text.Json.Serialization.JsonPropertyName "html_url">]
         HtmlUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "is_locked">]
         IsLocked : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "labels">]
@@ -3032,11 +3032,11 @@ type Issue =
         [<System.Text.Json.Serialization.JsonPropertyName "milestone">]
         Milestone : Milestone option
         [<System.Text.Json.Serialization.JsonPropertyName "number">]
-        Number : int option
+        Number : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "original_author">]
         OriginalAuthor : string option
         [<System.Text.Json.Serialization.JsonPropertyName "original_author_id">]
-        OriginalAuthorId : int option
+        OriginalAuthorId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "pull_request">]
         PullRequest : PullRequestMeta option
         [<System.Text.Json.Serialization.JsonPropertyName "ref">]
@@ -3096,7 +3096,7 @@ type NotificationThread =
         [<System.Text.Json.Serialization.JsonExtensionData>]
         AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "pinned">]
         Pinned : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "repository">]
@@ -3124,7 +3124,7 @@ type PRBranchInfo =
         [<System.Text.Json.Serialization.JsonPropertyName "repo">]
         Repo : Repository option
         [<System.Text.Json.Serialization.JsonPropertyName "repo_id">]
-        RepoId : int option
+        RepoId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "sha">]
         Sha : string option
     }
@@ -3140,7 +3140,7 @@ type Package =
         [<System.Text.Json.Serialization.JsonPropertyName "creator">]
         Creator : User option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "name">]
         Name : string option
         [<System.Text.Json.Serialization.JsonPropertyName "owner">]
@@ -3200,7 +3200,7 @@ type PullRequest =
         [<System.Text.Json.Serialization.JsonPropertyName "closed_at">]
         ClosedAt : string option
         [<System.Text.Json.Serialization.JsonPropertyName "comments">]
-        Comments : int option
+        Comments : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "created_at">]
         CreatedAt : string option
         [<System.Text.Json.Serialization.JsonPropertyName "diff_url">]
@@ -3212,7 +3212,7 @@ type PullRequest =
         [<System.Text.Json.Serialization.JsonPropertyName "html_url">]
         HtmlUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "is_locked">]
         IsLocked : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "labels">]
@@ -3232,7 +3232,7 @@ type PullRequest =
         [<System.Text.Json.Serialization.JsonPropertyName "milestone">]
         Milestone : Milestone option
         [<System.Text.Json.Serialization.JsonPropertyName "number">]
-        Number : int option
+        Number : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "patch_url">]
         PatchUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "state">]
@@ -3256,15 +3256,15 @@ type TrackedTime =
         [<System.Text.Json.Serialization.JsonPropertyName "created">]
         Created : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "issue">]
         Issue : Issue option
         [<System.Text.Json.Serialization.JsonPropertyName "issue_id">]
-        IssueId : int option
+        IssueId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "time">]
-        Time : int option
+        Time : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "user_id">]
-        UserId : int option
+        UserId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "user_name">]
         UserName : string option
     }
@@ -3286,7 +3286,7 @@ type Branch =
         [<System.Text.Json.Serialization.JsonPropertyName "protected">]
         Protected : bool option
         [<System.Text.Json.Serialization.JsonPropertyName "required_approvals">]
-        RequiredApprovals : int option
+        RequiredApprovals : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "status_check_contexts">]
         StatusCheckContexts : string list option
         [<System.Text.Json.Serialization.JsonPropertyName "user_can_merge">]
@@ -3314,7 +3314,7 @@ type TimelineComment =
         [<System.Text.Json.Serialization.JsonPropertyName "html_url">]
         HtmlUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "id">]
-        Id : int option
+        Id : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "issue_url">]
         IssueUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "label">]
@@ -3328,13 +3328,13 @@ type TimelineComment =
         [<System.Text.Json.Serialization.JsonPropertyName "old_milestone">]
         OldMilestone : Milestone option
         [<System.Text.Json.Serialization.JsonPropertyName "old_project_id">]
-        OldProjectId : int option
+        OldProjectId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "old_ref">]
         OldRef : string option
         [<System.Text.Json.Serialization.JsonPropertyName "old_title">]
         OldTitle : string option
         [<System.Text.Json.Serialization.JsonPropertyName "project_id">]
-        ProjectId : int option
+        ProjectId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "pull_request_url">]
         PullRequestUrl : string option
         [<System.Text.Json.Serialization.JsonPropertyName "ref_action">]
@@ -3350,7 +3350,7 @@ type TimelineComment =
         [<System.Text.Json.Serialization.JsonPropertyName "resolve_doer">]
         ResolveDoer : User option
         [<System.Text.Json.Serialization.JsonPropertyName "review_id">]
-        ReviewId : int option
+        ReviewId : int64 option
         [<System.Text.Json.Serialization.JsonPropertyName "tracked_time">]
         TrackedTime : TrackedTime option
         [<System.Text.Json.Serialization.JsonPropertyName "type">]
@@ -3365,7 +3365,7 @@ type TimelineComment =
 type LanguageStatistics =
     {
         [<System.Text.Json.Serialization.JsonExtensionData>]
-        AdditionalProperties : System.Collections.Generic.Dictionary<string, int>
+        AdditionalProperties : System.Collections.Generic.Dictionary<string, int64>
     }
 
 [<JsonParse true ; JsonSerialize true>]
@@ -3443,13 +3443,13 @@ type IGitea =
     [<RestEase.Get "admin/hooks/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract AdminGetHook :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> Hook System.Threading.Tasks.Task
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> Hook System.Threading.Tasks.Task
 
     /// Update a hook
     [<RestEase.Patch "admin/hooks/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract AdminEditHook :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] body : EditHookOption *
         ?ct : System.Threading.CancellationToken ->
             Hook System.Threading.Tasks.Task
@@ -3539,7 +3539,7 @@ type IGitea =
     [<RestEase.Header("Content-Type", "json")>]
     abstract AdminDeleteUserPublicKey :
         [<RestEase.Path "username">] username : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -3565,7 +3565,7 @@ type IGitea =
     [<RestEase.Delete "amdin/hooks/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract AdminDeleteHook :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
     /// Render a markdown document as HTML
     [<RestEase.Post "markdown">]
@@ -3704,7 +3704,7 @@ type IGitea =
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgGetHook :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Hook System.Threading.Tasks.Task
 
@@ -3713,7 +3713,7 @@ type IGitea =
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgDeleteHook :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -3722,7 +3722,7 @@ type IGitea =
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgEditHook :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] body : EditHookOption *
         ?ct : System.Threading.CancellationToken ->
             Hook System.Threading.Tasks.Task
@@ -3751,7 +3751,7 @@ type IGitea =
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgGetLabel :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Label System.Threading.Tasks.Task
 
@@ -3760,7 +3760,7 @@ type IGitea =
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgDeleteLabel :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -3769,7 +3769,7 @@ type IGitea =
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgEditLabel :
         [<RestEase.Path "org">] org : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] body : EditLabelOption *
         ?ct : System.Threading.CancellationToken ->
             Label System.Threading.Tasks.Task
@@ -3942,7 +3942,7 @@ type IGitea =
         [<RestEase.Query "labels">] labels : string *
         [<RestEase.Query "milestones">] milestones : string *
         [<RestEase.Query "q">] q : string *
-        [<RestEase.Query "priority_repo_id">] priority_repo_id : int *
+        [<RestEase.Query "priority_repo_id">] priority_repo_id : int64 *
         [<RestEase.Query "type">] type' : string *
         [<RestEase.Query "since">] since : string *
         [<RestEase.Query "before">] before : string *
@@ -3971,10 +3971,10 @@ type IGitea =
         [<RestEase.Query "q">] q : string *
         [<RestEase.Query "topic">] topic : bool *
         [<RestEase.Query "includeDesc">] includeDesc : bool *
-        [<RestEase.Query "uid">] uid : int *
-        [<RestEase.Query "priority_owner_id">] priority_owner_id : int *
-        [<RestEase.Query "team_id">] team_id : int *
-        [<RestEase.Query "starredBy">] starredBy : int *
+        [<RestEase.Query "uid">] uid : int64 *
+        [<RestEase.Query "priority_owner_id">] priority_owner_id : int64 *
+        [<RestEase.Query "team_id">] team_id : int64 *
+        [<RestEase.Query "starredBy">] starredBy : int64 *
         [<RestEase.Query "private">] private' : bool *
         [<RestEase.Query "is_private">] is_private : bool *
         [<RestEase.Query "template">] template : bool *
@@ -4464,7 +4464,7 @@ type IGitea =
     abstract RepoGetHook :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Hook System.Threading.Tasks.Task
 
@@ -4474,7 +4474,7 @@ type IGitea =
     abstract RepoDeleteHook :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4484,7 +4484,7 @@ type IGitea =
     abstract RepoEditHook :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] body : EditHookOption *
         ?ct : System.Threading.CancellationToken ->
             Hook System.Threading.Tasks.Task
@@ -4495,7 +4495,7 @@ type IGitea =
     abstract RepoTestHook :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Query "ref">] ref : string *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -4559,7 +4559,7 @@ type IGitea =
     abstract IssueDeleteComment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4569,7 +4569,7 @@ type IGitea =
     abstract IssueListIssueCommentAttachments :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Attachment list System.Threading.Tasks.Task
 
@@ -4579,8 +4579,8 @@ type IGitea =
     abstract IssueGetIssueCommentAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
-        [<RestEase.Path "attachment_id">] attachment_id : int *
+        [<RestEase.Path "id">] id : int64 *
+        [<RestEase.Path "attachment_id">] attachment_id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Attachment System.Threading.Tasks.Task
 
@@ -4590,8 +4590,8 @@ type IGitea =
     abstract IssueDeleteIssueCommentAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
-        [<RestEase.Path "attachment_id">] attachment_id : int *
+        [<RestEase.Path "id">] id : int64 *
+        [<RestEase.Path "attachment_id">] attachment_id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4601,8 +4601,8 @@ type IGitea =
     abstract IssueEditIssueCommentAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
-        [<RestEase.Path "attachment_id">] attachment_id : int *
+        [<RestEase.Path "id">] id : int64 *
+        [<RestEase.Path "attachment_id">] attachment_id : int64 *
         [<RestEase.Body>] body : EditAttachmentOptions *
         ?ct : System.Threading.CancellationToken ->
             Attachment System.Threading.Tasks.Task
@@ -4613,7 +4613,7 @@ type IGitea =
     abstract IssueGetCommentReactions :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Reaction list System.Threading.Tasks.Task
 
@@ -4623,7 +4623,7 @@ type IGitea =
     abstract IssueDeleteCommentReaction :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] content : EditReactionOption *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -4634,7 +4634,7 @@ type IGitea =
     abstract IssueGetIssue :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             Issue System.Threading.Tasks.Task
 
@@ -4644,7 +4644,7 @@ type IGitea =
     abstract IssueDelete :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4654,7 +4654,7 @@ type IGitea =
     abstract IssueEditIssue :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : EditIssueOption *
         ?ct : System.Threading.CancellationToken ->
             Issue System.Threading.Tasks.Task
@@ -4665,7 +4665,7 @@ type IGitea =
     abstract IssueListIssueAttachments :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             Attachment list System.Threading.Tasks.Task
 
@@ -4675,8 +4675,8 @@ type IGitea =
     abstract IssueGetIssueAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "attachment_id">] attachment_id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "attachment_id">] attachment_id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Attachment System.Threading.Tasks.Task
 
@@ -4686,8 +4686,8 @@ type IGitea =
     abstract IssueDeleteIssueAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "attachment_id">] attachment_id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "attachment_id">] attachment_id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4697,8 +4697,8 @@ type IGitea =
     abstract IssueEditIssueAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "attachment_id">] attachment_id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "attachment_id">] attachment_id : int64 *
         [<RestEase.Body>] body : EditAttachmentOptions *
         ?ct : System.Threading.CancellationToken ->
             Attachment System.Threading.Tasks.Task
@@ -4709,7 +4709,7 @@ type IGitea =
     abstract IssueGetComments :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Query "since">] since : string *
         [<RestEase.Query "before">] before : string *
         ?ct : System.Threading.CancellationToken ->
@@ -4721,7 +4721,7 @@ type IGitea =
     abstract IssueCreateComment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : CreateIssueCommentOption *
         ?ct : System.Threading.CancellationToken ->
             Comment System.Threading.Tasks.Task
@@ -4733,7 +4733,7 @@ type IGitea =
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4743,7 +4743,7 @@ type IGitea =
     abstract IssueEditIssueDeadline :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : EditDeadlineOption *
         ?ct : System.Threading.CancellationToken ->
             IssueDeadline System.Threading.Tasks.Task
@@ -4754,7 +4754,7 @@ type IGitea =
     abstract IssueGetLabels :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             Label list System.Threading.Tasks.Task
 
@@ -4764,7 +4764,7 @@ type IGitea =
     abstract IssueAddLabel :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : IssueLabelsOption *
         ?ct : System.Threading.CancellationToken ->
             Label list System.Threading.Tasks.Task
@@ -4775,7 +4775,7 @@ type IGitea =
     abstract IssueClearLabels :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4785,7 +4785,7 @@ type IGitea =
     abstract IssueReplaceLabels :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : IssueLabelsOption *
         ?ct : System.Threading.CancellationToken ->
             Label list System.Threading.Tasks.Task
@@ -4796,8 +4796,8 @@ type IGitea =
     abstract IssueRemoveLabel :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4807,7 +4807,7 @@ type IGitea =
     abstract IssueGetIssueReactions :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
@@ -4819,7 +4819,7 @@ type IGitea =
     abstract IssueDeleteIssueReaction :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] content : EditReactionOption *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -4830,7 +4830,7 @@ type IGitea =
     abstract IssueDeleteStopWatch :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4840,7 +4840,7 @@ type IGitea =
     abstract IssueStartStopWatch :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4850,7 +4850,7 @@ type IGitea =
     abstract IssueStopStopWatch :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4860,7 +4860,7 @@ type IGitea =
     abstract IssueSubscriptions :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
@@ -4872,7 +4872,7 @@ type IGitea =
     abstract IssueCheckSubscription :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             WatchInfo System.Threading.Tasks.Task
 
@@ -4882,7 +4882,7 @@ type IGitea =
     abstract IssueGetCommentsAndTimeline :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Query "since">] since : string *
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
@@ -4896,7 +4896,7 @@ type IGitea =
     abstract IssueTrackedTimes :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Query "user">] user : string *
         [<RestEase.Query "since">] since : string *
         [<RestEase.Query "before">] before : string *
@@ -4911,7 +4911,7 @@ type IGitea =
     abstract IssueAddTime :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : AddTimeOption *
         ?ct : System.Threading.CancellationToken ->
             TrackedTime System.Threading.Tasks.Task
@@ -4922,7 +4922,7 @@ type IGitea =
     abstract IssueResetTime :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4932,8 +4932,8 @@ type IGitea =
     abstract IssueDeleteTime :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -4966,7 +4966,7 @@ type IGitea =
     abstract RepoGetKey :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             DeployKey System.Threading.Tasks.Task
 
@@ -4976,7 +4976,7 @@ type IGitea =
     abstract RepoDeleteKey :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5007,7 +5007,7 @@ type IGitea =
     abstract IssueGetLabel :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Label System.Threading.Tasks.Task
 
@@ -5017,7 +5017,7 @@ type IGitea =
     abstract IssueDeleteLabel :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5027,7 +5027,7 @@ type IGitea =
     abstract IssueEditLabel :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] body : EditLabelOption *
         ?ct : System.Threading.CancellationToken ->
             Label System.Threading.Tasks.Task
@@ -5152,8 +5152,8 @@ type IGitea =
         [<RestEase.Path "repo">] repo : string *
         [<RestEase.Query "state">] state : string *
         [<RestEase.Query "sort">] sort : string *
-        [<RestEase.Query "milestone">] milestone : int *
-        [<RestEase.Query "labels">] labels : int list *
+        [<RestEase.Query "milestone">] milestone : int64 *
+        [<RestEase.Query "labels">] labels : int64 list *
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
@@ -5175,7 +5175,7 @@ type IGitea =
     abstract RepoGetPullRequest :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             PullRequest System.Threading.Tasks.Task
 
@@ -5185,7 +5185,7 @@ type IGitea =
     abstract RepoEditPullRequest :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : EditPullRequestOption *
         ?ct : System.Threading.CancellationToken ->
             PullRequest System.Threading.Tasks.Task
@@ -5196,7 +5196,7 @@ type IGitea =
     abstract RepoDownloadPullDiffOrPatch :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Path "diffType">] diffType : string *
         [<RestEase.Query "binary">] binary : bool *
         ?ct : System.Threading.CancellationToken ->
@@ -5208,7 +5208,7 @@ type IGitea =
     abstract RepoGetPullRequestCommits :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
@@ -5220,7 +5220,7 @@ type IGitea =
     abstract RepoGetPullRequestFiles :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Query "skip-to">] skip_to : string *
         [<RestEase.Query "whitespace">] whitespace : string *
         [<RestEase.Query "page">] page : int *
@@ -5234,7 +5234,7 @@ type IGitea =
     abstract RepoPullRequestIsMerged :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5244,7 +5244,7 @@ type IGitea =
     abstract RepoMergePullRequest :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : MergePullRequestOption *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -5255,7 +5255,7 @@ type IGitea =
     abstract RepoCancelScheduledAutoMerge :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5265,7 +5265,7 @@ type IGitea =
     abstract RepoCreatePullReviewRequests :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : PullReviewRequestOptions *
         ?ct : System.Threading.CancellationToken ->
             PullReview list System.Threading.Tasks.Task
@@ -5276,7 +5276,7 @@ type IGitea =
     abstract RepoDeletePullReviewRequests :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : PullReviewRequestOptions *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -5287,7 +5287,7 @@ type IGitea =
     abstract RepoListPullReviews :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
@@ -5299,7 +5299,7 @@ type IGitea =
     abstract RepoCreatePullReview :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Body>] body : CreatePullReviewOptions *
         ?ct : System.Threading.CancellationToken ->
             PullReview System.Threading.Tasks.Task
@@ -5310,8 +5310,8 @@ type IGitea =
     abstract RepoGetPullReview :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             PullReview System.Threading.Tasks.Task
 
@@ -5321,8 +5321,8 @@ type IGitea =
     abstract RepoSubmitPullReview :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] body : SubmitPullReviewOptions *
         ?ct : System.Threading.CancellationToken ->
             PullReview System.Threading.Tasks.Task
@@ -5333,8 +5333,8 @@ type IGitea =
     abstract RepoDeletePullReview :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5344,8 +5344,8 @@ type IGitea =
     abstract RepoGetPullReviewComments :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             PullReviewComment list System.Threading.Tasks.Task
 
@@ -5355,8 +5355,8 @@ type IGitea =
     abstract RepoDismissPullReview :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] body : DismissPullReviewOptions *
         ?ct : System.Threading.CancellationToken ->
             PullReview System.Threading.Tasks.Task
@@ -5367,8 +5367,8 @@ type IGitea =
     abstract RepoUnDismissPullReview :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "index">] index : int64 *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             PullReview System.Threading.Tasks.Task
 
@@ -5378,7 +5378,7 @@ type IGitea =
     abstract RepoUpdatePullRequest :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "index">] index : int *
+        [<RestEase.Path "index">] index : int64 *
         [<RestEase.Query "style">] style : string *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -5503,7 +5503,7 @@ type IGitea =
     abstract RepoGetRelease :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Release System.Threading.Tasks.Task
 
@@ -5513,7 +5513,7 @@ type IGitea =
     abstract RepoDeleteRelease :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5523,7 +5523,7 @@ type IGitea =
     abstract RepoEditRelease :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] body : EditReleaseOption *
         ?ct : System.Threading.CancellationToken ->
             Release System.Threading.Tasks.Task
@@ -5534,7 +5534,7 @@ type IGitea =
     abstract RepoListReleaseAttachments :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Attachment list System.Threading.Tasks.Task
 
@@ -5544,8 +5544,8 @@ type IGitea =
     abstract RepoGetReleaseAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
-        [<RestEase.Path "attachment_id">] attachment_id : int *
+        [<RestEase.Path "id">] id : int64 *
+        [<RestEase.Path "attachment_id">] attachment_id : int64 *
         ?ct : System.Threading.CancellationToken ->
             Attachment System.Threading.Tasks.Task
 
@@ -5555,8 +5555,8 @@ type IGitea =
     abstract RepoDeleteReleaseAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
-        [<RestEase.Path "attachment_id">] attachment_id : int *
+        [<RestEase.Path "id">] id : int64 *
+        [<RestEase.Path "attachment_id">] attachment_id : int64 *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
@@ -5566,8 +5566,8 @@ type IGitea =
     abstract RepoEditReleaseAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
-        [<RestEase.Path "id">] id : int *
-        [<RestEase.Path "attachment_id">] attachment_id : int *
+        [<RestEase.Path "id">] id : int64 *
+        [<RestEase.Path "attachment_id">] attachment_id : int64 *
         [<RestEase.Body>] body : EditAttachmentOptions *
         ?ct : System.Threading.CancellationToken ->
             Attachment System.Threading.Tasks.Task
@@ -5914,7 +5914,7 @@ type IGitea =
     [<RestEase.Get "repositories/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract RepoGetByID :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken ->
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken ->
             Repository System.Threading.Tasks.Task
 
     /// Get instance's global settings for api
@@ -5950,13 +5950,13 @@ type IGitea =
     [<RestEase.Get "teams/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgGetTeam :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> Team System.Threading.Tasks.Task
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> Team System.Threading.Tasks.Task
 
     /// Delete a team
     [<RestEase.Delete "teams/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgDeleteTeam :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
     /// Edit a team
     [<RestEase.Patch "teams/{id}">]
@@ -5971,7 +5971,7 @@ type IGitea =
     [<RestEase.Get "teams/{id}/members">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgListTeamMembers :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
@@ -5981,7 +5981,7 @@ type IGitea =
     [<RestEase.Get "teams/{id}/members/{username}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgListTeamMember :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "username">] username : string *
         ?ct : System.Threading.CancellationToken ->
             User System.Threading.Tasks.Task
@@ -5990,7 +5990,7 @@ type IGitea =
     [<RestEase.Delete "teams/{id}/members/{username}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgRemoveTeamMember :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "username">] username : string *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -5999,7 +5999,7 @@ type IGitea =
     [<RestEase.Put "teams/{id}/members/{username}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgAddTeamMember :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "username">] username : string *
         ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -6008,7 +6008,7 @@ type IGitea =
     [<RestEase.Get "teams/{id}/repos">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgListTeamRepos :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
@@ -6018,7 +6018,7 @@ type IGitea =
     [<RestEase.Get "teams/{id}/repos/{org}/{repo}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgListTeamRepo :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "repo">] repo : string *
         ?ct : System.Threading.CancellationToken ->
@@ -6028,7 +6028,7 @@ type IGitea =
     [<RestEase.Delete "teams/{id}/repos/{org}/{repo}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgRemoveTeamRepository :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "repo">] repo : string *
         ?ct : System.Threading.CancellationToken ->
@@ -6038,7 +6038,7 @@ type IGitea =
     [<RestEase.Put "teams/{id}/repos/{org}/{repo}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract OrgAddTeamRepository :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "repo">] repo : string *
         ?ct : System.Threading.CancellationToken ->
@@ -6079,20 +6079,20 @@ type IGitea =
     [<RestEase.Get "user/applications/oauth2/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract UserGetOAuth2Application :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken ->
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken ->
             OAuth2Application System.Threading.Tasks.Task
 
     /// delete an OAuth2 Application
     [<RestEase.Delete "user/applications/oauth2/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract UserDeleteOAuth2Application :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
     /// update an OAuth2 Application, this includes regenerating the client secret
     [<RestEase.Patch "user/applications/oauth2/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract UserUpdateOAuth2Application :
-        [<RestEase.Path "id">] id : int *
+        [<RestEase.Path "id">] id : int64 *
         [<RestEase.Body>] body : CreateOAuth2ApplicationOptions *
         ?ct : System.Threading.CancellationToken ->
             OAuth2Application System.Threading.Tasks.Task
@@ -6164,7 +6164,7 @@ type IGitea =
     [<RestEase.Delete "user/gpg_keys/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract UserCurrentDeleteGPGKey :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
     /// List the authenticated user's public keys
     [<RestEase.Get "user/keys">]
@@ -6187,14 +6187,14 @@ type IGitea =
     [<RestEase.Get "user/keys/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract UserCurrentGetKey :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken ->
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken ->
             PublicKey System.Threading.Tasks.Task
 
     /// Delete a public key
     [<RestEase.Delete "user/keys/{id}">]
     [<RestEase.Header("Content-Type", "json")>]
     abstract UserCurrentDeleteKey :
-        [<RestEase.Path "id">] id : int * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
+        [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
     /// List the current user's organizations
     [<RestEase.Get "user/orgs">]
@@ -6312,7 +6312,7 @@ type IGitea =
     [<RestEase.Header("Content-Type", "json")>]
     abstract UserSearch :
         [<RestEase.Query "q">] q : string *
-        [<RestEase.Query "uid">] uid : int *
+        [<RestEase.Query "uid">] uid : int64 *
         [<RestEase.Query "page">] page : int *
         [<RestEase.Query "limit">] limit : int *
         ?ct : System.Threading.CancellationToken ->
