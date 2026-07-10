@@ -799,6 +799,49 @@ module OuterCollectRemainingJsonSerializeExtension =
                 node.Add ("remaining", (input.Remaining |> CollectRemaining.toJsonNode))
 
             node :> _
+namespace ConsumePlugin
+
+open System
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing methods for the CollectRemainingNullable type
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module CollectRemainingNullable =
+    /// Serialize to a JSON node
+    let toJsonNode (input : CollectRemainingNullable) : System.Text.Json.Nodes.JsonNode =
+        let node = System.Text.Json.Nodes.JsonObject ()
+
+        do
+            for KeyValue (key, value) in input.Rest do
+                node.Add (
+                    key,
+                    (fun field ->
+                        match field with
+                        | None -> None
+                        | Some field ->
+                            (field
+                             |> (fun field ->
+                                 let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+
+                                 (match field with
+                                  | null ->
+                                      raise (
+                                          System.ArgumentNullException (
+                                              "field",
+                                              "Expected type int32 to be non-null, but received a null value when serialising"
+                                          )
+                                      )
+                                  | field -> field)
+                             ))
+                            :> System.Text.Json.Nodes.JsonNode
+                            |> Some
+                    )
+                        value
+                    |> Option.toObj
+                )
+
+        node :> _
 
 namespace ConsumePlugin
 

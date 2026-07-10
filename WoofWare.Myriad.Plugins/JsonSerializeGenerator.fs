@@ -429,19 +429,22 @@ module internal JsonSerializeGenerator =
                     | DictionaryType (String, v) -> v
                     | _ -> failwith "Expected JsonExtensionData to be a Dictionary<string, something>"
 
-                let serialise =
+                let isNullable, serialise =
                     match JsonNodeWithNullability.Identify valType with
-                    | CannotBeNull -> fst (serializeNodeNonNullable valType)
-                    | Nullable -> fst (serializeNodeNullable valType)
+                    | CannotBeNull -> false, fst (serializeNodeNonNullable valType)
+                    | Nullable -> true, fst (serializeNodeNullable valType)
+
+                let serialised = SynExpr.applyFunction serialise (SynExpr.createIdent "value")
+
+                let serialised =
+                    if isNullable then
+                        serialised
+                        |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Option" ; "toObj" ])
+                    else
+                        serialised
 
                 SynExpr.createIdent "node"
-                |> SynExpr.callMethodArg
-                    "Add"
-                    (SynExpr.tuple
-                        [
-                            SynExpr.createIdent "key"
-                            SynExpr.applyFunction serialise (SynExpr.createIdent "value")
-                        ])
+                |> SynExpr.callMethodArg "Add" (SynExpr.tuple [ SynExpr.createIdent "key" ; serialised ])
                 |> SynExpr.createForEach
                     (SynPat.identWithArgs
                         [ Ident.create "KeyValue" ]
