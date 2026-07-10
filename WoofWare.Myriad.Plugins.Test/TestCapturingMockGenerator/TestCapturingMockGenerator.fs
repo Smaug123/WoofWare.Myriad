@@ -55,7 +55,8 @@ module TestCapturingMockGenerator =
         itf.Prop1 |> shouldEqual 44
         mock.Calls.Prop1.Count |> shouldEqual 2
 
-        itf.Prop2 |> Async.RunSynchronously
+        // note: we don't attempt to track async scheduling or anything
+        itf.Prop2 |> ignore<_ Async>
         mock.Calls.Prop2.Count |> shouldEqual 1
 
     [<Test>]
