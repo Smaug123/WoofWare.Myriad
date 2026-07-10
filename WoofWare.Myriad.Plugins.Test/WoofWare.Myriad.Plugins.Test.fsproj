@@ -29,6 +29,7 @@
     <Compile Include="TestHttpClient\TestListQueryParam.fs" />
     <Compile Include="TestHttpClient\TestGeneratedNameCollision.fs" />
     <Compile Include="TestHttpClient\TestFreshName.fs" />
+    <Compile Include="TestHttpClient\TestContentTypeCharset.fs" />
     <Compile Include="TestMockGenerator\TestMockGenerator.fs" />
     <Compile Include="TestMockGenerator\TestMockGeneratorNoAttr.fs" />
     <Compile Include="TestCapturingMockGenerator\TestCapturingMockGenerator.fs" />
@@ -45,6 +46,8 @@
     <Compile Include="TestSwagger\TestSwaggerParse.fs" />
     <Compile Include="TestSwagger\TestSuccessResponse.fs" />
     <Compile Include="TestSwagger\TestSwaggerTypeRender.fs" />
+    <Compile Include="TestSwagger\TestGiteaClient.fs" />
+    <Compile Include="TestSwagger\TestSwaggerMimeType.fs" />
     <Compile Include="TestSwagger\TestOpenApi3Parse.fs" />
     <EmbeddedResource Include="TestSwagger\api-with-examples.json" />
     <EmbeddedResource Include="TestSwagger\callback-example.json" />

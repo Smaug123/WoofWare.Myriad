@@ -46,5 +46,5 @@ type Type2 =
 type IAnonymousTypes =
     /// Gets a foo
     [<RestEase.Get "foo">]
-    [<RestEase.Header("Content-Type", "json")>]
+    [<RestEase.Header("Accept", "application/json")>]
     abstract GetFoo : ?ct : System.Threading.CancellationToken -> Type2 System.Threading.Tasks.Task

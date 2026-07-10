@@ -94,6 +94,40 @@ module internal HttpClientGenerator =
         elif m = HttpMethod.Trace then "Trace"
         else failwith $"Unrecognised method: %+A{m}"
 
+    /// The Content-Type header value to declare on a StringContent body, whose text the
+    /// generated code always UTF-8-encodes. When the declaration is a compile-time constant:
+    /// if it pins no charset we append the UTF-8 we actually send, if it pins UTF-8 it passes
+    /// through, and if it pins anything else we refuse to generate — relabelling UTF-8 bytes
+    /// as another charset would corrupt every non-ASCII body. An unparseable constant is also
+    /// refused: the emitted code would throw FormatException on every request. A computed
+    /// value passes through untouched (we can't inspect it).
+    let withStringContentCharset (contentType : SynExpr) : SynExpr =
+        match contentType with
+        | SynExpr.Const (SynConst.String (s, _, _), _) ->
+            // The BCL parser is quote-aware: a ';' inside a quoted parameter value (e.g.
+            // profile="a;b") must not be mistaken for a parameter separator.
+            match System.Net.Http.Headers.MediaTypeHeaderValue.TryParse s with
+            | false, _ -> failwith $"Could not parse Content-Type header value '%s{s}' as a media type."
+            | true, parsed ->
+
+            match parsed.CharSet with
+            | null
+            | "" ->
+                parsed.CharSet <- "utf-8"
+                SynExpr.CreateConst (parsed.ToString ())
+            | declared ->
+                let declared = declared.Trim '"'
+
+                if
+                    declared.Equals ("utf-8", System.StringComparison.OrdinalIgnoreCase)
+                    || declared.Equals ("utf8", System.StringComparison.OrdinalIgnoreCase)
+                then
+                    contentType
+                else
+                    failwith
+                        $"Content-Type '%s{s}' declares charset '%s{declared}', but generated string bodies are always UTF-8-encoded; refusing to mislabel them. Declare charset=utf-8 or drop the parameter."
+        | _ -> contentType
+
     /// E.g. converts `[<Get "blah">]` to (HttpMethod.Get, SynExpr.Const "blah")
     let extractHttpInformation (attrs : SynAttribute list) : HttpMethod * SynExpr =
         let matchingAttrs =
@@ -533,26 +567,29 @@ module internal HttpClientGenerator =
                 match bodyParam with
                 | Some (BodyParamMethods.Serialise _, _) -> Some (SynExpr.CreateConst "application/json")
                 | _ -> None
-            | [ _, ct ] -> Some (SynExpr.stripOptionalParen ct)
+            | [ _, ct ] ->
+                // Sigh, Gitea in particular passes "json" here
+                match SynExpr.stripOptionalParen ct with
+                | SynExpr.Const (SynConst.String ("json", _, _), _) -> Some (SynExpr.CreateConst "application/json")
+                | SynExpr.Const (SynConst.String ("html", _, _), _) -> Some (SynExpr.CreateConst "text/html")
+                | ct -> Some ct
             | _ -> failwith "Unexpectedly got multiple Content-Type headers"
 
+        // Assign the declared Content-Type to content the generated code has just constructed.
+        // StringContent's `mediaType` constructor argument throws FormatException on
+        // parameterised values like "application/json; charset=utf-8", so we parse the full
+        // header value instead.
+        let setContentType (contentType : SynExpr) : CompExprBinding =
+            SynExpr.assign
+                (SynLongIdent.createS' [ "queryParams" ; "Headers" ; "ContentType" ])
+                (SynExpr.applyFunction
+                    (SynExpr.createLongIdent
+                        [ "System" ; "Net" ; "Http" ; "Headers" ; "MediaTypeHeaderValue" ; "Parse" ])
+                    (SynExpr.paren contentType))
+            |> Do
+
         let createStringContent (contents : SynExpr) =
-            SynExpr.createNew
-                (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "StringContent" ])
-                (SynExpr.tupleNoParen
-                    [
-                        yield contents
-                        match contentTypeHeader with
-                        | None -> ()
-                        | Some ch ->
-                            yield SynExpr.createNull ()
-                            // Sigh, Gitea in particular passes "json" here
-                            match ch with
-                            | SynExpr.Const (SynConst.String ("json", _, _), _) ->
-                                yield SynExpr.CreateConst "application/json"
-                            | SynExpr.Const (SynConst.String ("html", _, _), _) -> yield SynExpr.CreateConst "text/html"
-                            | _ -> yield ch
-                    ])
+            SynExpr.createNew (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "StringContent" ]) contents
 
         let handleBodyParams =
             match bodyParam with
@@ -562,6 +599,9 @@ module internal HttpClientGenerator =
                 | BodyParamMethods.StringContent ->
                     [
                         Let ("queryParams", createStringContent (SynExpr.createIdent' bodyParamName))
+                        match contentTypeHeader with
+                        | None -> ()
+                        | Some ct -> setContentType (withStringContentCharset ct)
                         Do (
                             SynExpr.assign
                                 (SynLongIdent.createS' [ "httpMessage" ; "Content" ])
@@ -578,6 +618,10 @@ module internal HttpClientGenerator =
                                     [ "System" ; "Net" ; "Http" ; (bodyParamType : BodyParamMethods).ToString () ])
                                 (SynExpr.createIdent' bodyParamName)
                         )
+                        // No charset defaulting here: these bodies are raw bytes, not text we encoded.
+                        match contentTypeHeader with
+                        | None -> ()
+                        | Some ct -> setContentType ct
                         Do (
                             SynExpr.assign
                                 (SynLongIdent.createS' [ "httpMessage" ; "Content" ])
@@ -585,6 +629,8 @@ module internal HttpClientGenerator =
                         )
                     ]
                 | BodyParamMethods.HttpContent ->
+                    // Caller-owned content: the caller controls its headers, so we don't stamp
+                    // any declared Content-Type over theirs.
                     [
                         Do (
                             SynExpr.assign
@@ -635,6 +681,11 @@ module internal HttpClientGenerator =
                                 )
                             )
                         )
+                        // `contentTypeHeader` is always Some here: it defaults to
+                        // application/json for a serialised body.
+                        match contentTypeHeader with
+                        | None -> ()
+                        | Some ct -> setContentType (withStringContentCharset ct)
                         Do (
                             SynExpr.assign
                                 (SynLongIdent.createS' [ "httpMessage" ; "Content" ])

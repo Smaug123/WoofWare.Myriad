@@ -265,3 +265,34 @@ type IClientWithStringBody =
         [<WoofWare.Myriad.Plugins.RestEase.Body>] mem : string *
         ?ct : CancellationToken ->
             Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IClientWithParameterisedContentType =
+    // A declared Content-Type may legitimately carry parameters, which StringContent's
+    // mediaType constructor argument rejects; the generated client must cope.
+    [<Post "endpoint/{param}">]
+    [<Header("Content-Type", "application/json; charset=utf-8")>]
+    abstract WithCharset :
+        [<RestEase.Path "param">] parameter : string *
+        [<WoofWare.Myriad.Plugins.RestEase.Body>] mem : PureGym.Member *
+        ?ct : CancellationToken ->
+            Task<string>
+
+    [<Post "endpoint/{param}">]
+    [<Header("Content-Type", "application/merge-patch+json; profile=custom")>]
+    abstract WithOtherParameter :
+        [<RestEase.Path "param">] parameter : string *
+        [<WoofWare.Myriad.Plugins.RestEase.Body>] mem : PureGym.Member *
+        ?ct : CancellationToken ->
+            Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IClientWithStreamBody =
+    // A file-upload body must carry the declared Content-Type on its content.
+    [<Post "endpoint/{param}">]
+    [<Header("Content-Type", "application/octet-stream")>]
+    abstract UploadFile :
+        [<RestEase.Path "param">] parameter : string *
+        [<WoofWare.Myriad.Plugins.RestEase.Body>] file : Stream *
+        ?ct : CancellationToken ->
+            Task<string>
