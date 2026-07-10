@@ -383,10 +383,12 @@ module PureGymApi =
                                 match node with
                                 | None -> "null"
                                 | Some node -> node.ToJsonString ()
-                            ),
-                            null,
-                            "application/json"
+                            )
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -701,10 +703,12 @@ module PureGymApi =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -747,10 +751,12 @@ module PureGymApi =
                                      )
                                  | field -> field)
                             )
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -793,10 +799,12 @@ module PureGymApi =
                                      )
                                  | field -> field)
                             )
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -1903,10 +1911,12 @@ module ClientWithJsonBody =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -1963,10 +1973,12 @@ module ClientWithJsonBodyOverridden =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/ecmascript"
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/ecmascript; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -2269,6 +2281,175 @@ module ClientWithStringBody =
                         )
 
                     let queryParams = new System.Net.Http.StringContent (mem)
+                    do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ClientWithParameterisedContentType =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IClientWithParameterisedContentType =
+        { new IClientWithParameterisedContentType with
+            member _.WithCharset (parameter : string, mem : PureGym.Member, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams =
+                        new System.Net.Http.StringContent (
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                        )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+
+                    do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.WithOtherParameter (parameter : string, mem : PureGym.Member, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams =
+                        new System.Net.Http.StringContent (
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                        )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse (
+                                "application/merge-patch+json; profile=custom; charset=utf-8"
+                            )
+
+                    do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ClientWithStreamBody =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IClientWithStreamBody =
+        { new IClientWithStreamBody with
+            member _.UploadFile (parameter : string, file : Stream, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "endpoint/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    let httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams = new System.Net.Http.StreamContent (file)
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/octet-stream")
+
                     do httpMessage.Content <- queryParams
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()

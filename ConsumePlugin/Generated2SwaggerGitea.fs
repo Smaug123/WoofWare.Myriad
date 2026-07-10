@@ -42120,10 +42120,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateHookOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateHookOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -42234,10 +42236,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditHookOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditHookOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -42611,10 +42615,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateUserOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateUserOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -42727,10 +42733,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditUserOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditUserOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -42791,10 +42799,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            key |> CreateKeyOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            key |> CreateKeyOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -42897,10 +42907,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            organization |> CreateOrgOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            organization |> CreateOrgOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -42961,10 +42973,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            repository |> CreateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            repository |> CreateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -43057,10 +43071,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> MarkdownOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> MarkdownOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "text/html")
@@ -43099,7 +43115,12 @@ module Gitea =
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.StringContent (body, null, "text/plain")
+                    let queryParams = new System.Net.Http.StringContent (body)
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("text/plain; charset=utf-8")
+
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "text/html")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
@@ -43560,10 +43581,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -43694,10 +43717,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            organization |> CreateOrgOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            organization |> CreateOrgOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -43846,10 +43871,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditOrgOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditOrgOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -43991,10 +44018,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateHookOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateHookOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -44151,10 +44180,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditHookOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditHookOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -44296,10 +44327,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateLabelOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateLabelOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -44456,10 +44489,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditLabelOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditLabelOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -44972,10 +45007,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -45117,10 +45154,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateTeamOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateTeamOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -45665,10 +45704,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> MigrateRepoOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> MigrateRepoOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -45931,10 +45972,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditRepoOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditRepoOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -46180,10 +46223,12 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateBranchProtectionOption.toJsonNode
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -46355,10 +46400,12 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> EditBranchProtectionOption.toJsonNode
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -46509,10 +46556,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateBranchRepoOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateBranchRepoOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -46852,10 +46901,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> AddCollaboratorOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> AddCollaboratorOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -47398,10 +47449,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateFileOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateFileOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -47470,10 +47523,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> DeleteFileOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> DeleteFileOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -47542,10 +47597,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> UpdateFileOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> UpdateFileOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -47607,10 +47664,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> UpdateFileOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> UpdateFileOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -47818,10 +47877,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateForkOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateForkOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -48470,10 +48531,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateHookOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateHookOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -48709,10 +48772,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditGitHookOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditGitHookOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -48882,10 +48947,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditHookOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditHookOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -49183,10 +49250,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateIssueOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateIssueOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -49587,10 +49656,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditAttachmentOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditAttachmentOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -49728,10 +49799,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            content |> EditReactionOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            content |> EditReactionOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -49886,10 +49959,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditIssueOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditIssueOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -50153,10 +50228,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditAttachmentOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditAttachmentOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -50319,10 +50396,12 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateIssueCommentOption.toJsonNode
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -50435,10 +50514,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditDeadlineOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditDeadlineOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -50576,10 +50657,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> IssueLabelsOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> IssueLabelsOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -50702,10 +50785,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> IssueLabelsOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> IssueLabelsOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -50927,10 +51012,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            content |> EditReactionOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            content |> EditReactionOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -51459,10 +51546,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> AddTimeOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> AddTimeOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -51711,10 +51800,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateKeyOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateKeyOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -51961,10 +52052,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateLabelOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateLabelOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -52134,10 +52227,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditLabelOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditLabelOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -52415,10 +52510,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateMilestoneOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateMilestoneOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -52588,10 +52685,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditMilestoneOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditMilestoneOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -53011,10 +53110,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreatePullRequestOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreatePullRequestOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -53141,10 +53242,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditPullRequestOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditPullRequestOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -53509,10 +53612,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> MergePullRequestOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> MergePullRequestOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -53611,10 +53716,12 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> PullReviewRequestOptions.toJsonNode
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -53696,10 +53803,12 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> PullReviewRequestOptions.toJsonNode
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -53845,10 +53954,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreatePullReviewOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreatePullReviewOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -53984,10 +54095,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> SubmitPullReviewOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> SubmitPullReviewOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -54186,10 +54299,12 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> DismissPullReviewOptions.toJsonNode
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -54467,10 +54582,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreatePushMirrorOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreatePushMirrorOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -54838,10 +54955,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateReleaseOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateReleaseOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -55169,10 +55288,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditReleaseOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditReleaseOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -55436,10 +55557,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditAttachmentOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditAttachmentOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -55795,10 +55918,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateStatusOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateStatusOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -56184,10 +56309,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateTagOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateTagOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -56798,10 +56925,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> RepoTopicOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> RepoTopicOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -56939,10 +57068,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> TransferRepoOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> TransferRepoOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -57123,10 +57254,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateWikiPageOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateWikiPageOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -57296,10 +57429,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateWikiPageOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateWikiPageOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -57535,10 +57670,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> GenerateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> GenerateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -57976,10 +58113,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> EditTeamOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> EditTeamOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -58692,10 +58831,12 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateOAuth2ApplicationOptions.toJsonNode
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -58851,10 +58992,12 @@ module Gitea =
                         new System.Net.Http.StringContent (
                             body
                             |> CreateOAuth2ApplicationOptions.toJsonNode
-                            |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -58970,10 +59113,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateEmailOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateEmailOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -59039,10 +59184,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> DeleteEmailOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> DeleteEmailOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -59508,10 +59655,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateKeyOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateKeyOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -59809,10 +59958,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateRepoOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -59928,10 +60079,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> UserSettingsOptions.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> UserSettingsOptions.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")
@@ -61487,10 +61640,12 @@ module Gitea =
 
                     let queryParams =
                         new System.Net.Http.StringContent (
-                            body |> CreateAccessTokenOption.toJsonNode |> (fun node -> node.ToJsonString ()),
-                            null,
-                            "application/json"
+                            body |> CreateAccessTokenOption.toJsonNode |> (fun node -> node.ToJsonString ())
                         )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
                     do httpMessage.Headers.Add ("Accept", "application/json")

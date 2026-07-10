@@ -1,8 +1,10 @@
 namespace WoofWare.Myriad.Plugins.Test
 
 open System
+open System.IO
 open System.Net
 open System.Net.Http
+open System.Text
 open System.Text.Json.Nodes
 open System.Threading
 open NUnit.Framework
@@ -257,5 +259,85 @@ module TestVariableHeader =
 
         expect {
             snapshot @"Content-Type: text/plain; charset=utf-8"
+            return result
+        }
+
+    /// Reads back the request's content headers so the test can snapshot them.
+    let private echoContentHeaders (message : HttpRequestMessage) : HttpResponseMessage Async =
+        async {
+            message.Method |> shouldEqual HttpMethod.Post
+
+            message.RequestUri.ToString ()
+            |> shouldEqual "https://example.com/endpoint/param"
+
+            let headers =
+                [
+                    for h in message.Content.Headers do
+                        yield $"%s{h.Key}: %s{Seq.exactlyOne h.Value}"
+                ]
+                |> String.concat "\n"
+
+            let! ct = Async.CancellationToken
+            let! content = message.Content.ReadAsStringAsync ct |> Async.AwaitTask
+            content |> JsonNode.Parse |> Member.jsonParse |> shouldEqual pureGymMember
+
+            let content = new StringContent (headers)
+            let resp = new HttpResponseMessage (HttpStatusCode.OK)
+            resp.Content <- content
+            return resp
+        }
+
+    [<Test>]
+    let ``Content-Type header with a charset parameter is honoured`` () =
+        // StringContent's mediaType constructor argument throws FormatException on
+        // parameterised values, so these must go through MediaTypeHeaderValue instead.
+        use client = HttpClientMock.make (Uri "https://example.com") echoContentHeaders
+
+        let api = ClientWithParameterisedContentType.make client
+        let result = api.WithCharset ("param", pureGymMember) |> _.Result
+
+        expect {
+            snapshot @"Content-Type: application/json; charset=utf-8"
+            return result
+        }
+
+    [<Test>]
+    let ``Content-Type header with a non-charset parameter is honoured`` () =
+        use client = HttpClientMock.make (Uri "https://example.com") echoContentHeaders
+
+        let api = ClientWithParameterisedContentType.make client
+        let result = api.WithOtherParameter ("param", pureGymMember) |> _.Result
+
+        // The declaration pins no charset, so we declare the UTF-8 that StringContent
+        // actually encodes with.
+        expect {
+            snapshot @"Content-Type: application/merge-patch+json; profile=custom; charset=utf-8"
+            return result
+        }
+
+    [<Test>]
+    let ``Stream bodies carry the declared Content-Type`` () =
+        let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+            async {
+                message.Method |> shouldEqual HttpMethod.Post
+
+                let! ct = Async.CancellationToken
+                let! content = message.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                content |> shouldEqual "file contents"
+
+                // `string null` is "", so an absent header fails the snapshot rather than throwing.
+                let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                resp.Content <- new StringContent (string message.Content.Headers.ContentType)
+                return resp
+            }
+
+        use client = HttpClientMock.make (Uri "https://example.com") proc
+
+        let api = ClientWithStreamBody.make client
+        use stream = new MemoryStream (Encoding.UTF8.GetBytes "file contents")
+        let result = api.UploadFile ("param", stream) |> _.Result
+
+        expect {
+            snapshot @"application/octet-stream"
             return result
         }
