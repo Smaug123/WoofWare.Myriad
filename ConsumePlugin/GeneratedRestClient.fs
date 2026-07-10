@@ -843,6 +843,84 @@ module PureGymApi =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
+            member _.CreateUserSerialisedJsonNodeBody
+                (user : System.Text.Json.Nodes.JsonNode, ct : CancellationToken option)
+                =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri ("users/new", System.UriKind.Relative)
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams =
+                        new System.Net.Http.StringContent (
+                            user |> (fun node -> (node : System.Text.Json.Nodes.JsonNode).ToJsonString ())
+                        )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+
+                    do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.CreateUserSerialisedBigIntBody (user : bigint, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri ("users/new", System.UriKind.Relative)
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Post,
+                            RequestUri = uri
+                        )
+
+                    let queryParams =
+                        new System.Net.Http.StringContent (
+                            user
+                            |> (fun field ->
+                                let value = field : bigint
+                                value.ToString ("D", System.Globalization.CultureInfo.InvariantCulture)
+                            )
+                        )
+
+                    do
+                        queryParams.Headers.ContentType <-
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+
+                    do httpMessage.Content <- queryParams
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
             member _.CreateUserHttpContent (user : System.Net.Http.HttpContent, ct : CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
