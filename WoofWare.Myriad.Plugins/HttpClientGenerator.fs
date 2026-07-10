@@ -98,31 +98,34 @@ module internal HttpClientGenerator =
     /// generated code always UTF-8-encodes. When the declaration is a compile-time constant:
     /// if it pins no charset we append the UTF-8 we actually send, if it pins UTF-8 it passes
     /// through, and if it pins anything else we refuse to generate — relabelling UTF-8 bytes
-    /// as another charset would corrupt every non-ASCII body. A computed value passes through
-    /// untouched (we can't inspect it).
+    /// as another charset would corrupt every non-ASCII body. An unparseable constant is also
+    /// refused: the emitted code would throw FormatException on every request. A computed
+    /// value passes through untouched (we can't inspect it).
     let withStringContentCharset (contentType : SynExpr) : SynExpr =
         match contentType with
         | SynExpr.Const (SynConst.String (s, _, _), _) ->
-            let declaredCharset =
-                s.Split ';'
-                |> Seq.skip 1
-                |> Seq.tryPick (fun p ->
-                    match p.Split '=' with
-                    | [| name ; value |] when name.Trim().Equals ("charset", System.StringComparison.OrdinalIgnoreCase) ->
-                        Some (value.Trim().Trim '"')
-                    | _ -> None
-                )
+            // The BCL parser is quote-aware: a ';' inside a quoted parameter value (e.g.
+            // profile="a;b") must not be mistaken for a parameter separator.
+            match System.Net.Http.Headers.MediaTypeHeaderValue.TryParse s with
+            | false, _ -> failwith $"Could not parse Content-Type header value '%s{s}' as a media type."
+            | true, parsed ->
 
-            match declaredCharset with
-            | None -> SynExpr.CreateConst (s + "; charset=utf-8")
-            | Some cs when
-                cs.Equals ("utf-8", System.StringComparison.OrdinalIgnoreCase)
-                || cs.Equals ("utf8", System.StringComparison.OrdinalIgnoreCase)
-                ->
-                contentType
-            | Some cs ->
-                failwith
-                    $"Content-Type '%s{s}' declares charset '%s{cs}', but generated string bodies are always UTF-8-encoded; refusing to mislabel them. Declare charset=utf-8 or drop the parameter."
+            match parsed.CharSet with
+            | null
+            | "" ->
+                parsed.CharSet <- "utf-8"
+                SynExpr.CreateConst (parsed.ToString ())
+            | declared ->
+                let declared = declared.Trim '"'
+
+                if
+                    declared.Equals ("utf-8", System.StringComparison.OrdinalIgnoreCase)
+                    || declared.Equals ("utf8", System.StringComparison.OrdinalIgnoreCase)
+                then
+                    contentType
+                else
+                    failwith
+                        $"Content-Type '%s{s}' declares charset '%s{declared}', but generated string bodies are always UTF-8-encoded; refusing to mislabel them. Declare charset=utf-8 or drop the parameter."
         | _ -> contentType
 
     /// E.g. converts `[<Get "blah">]` to (HttpMethod.Get, SynExpr.Const "blah")

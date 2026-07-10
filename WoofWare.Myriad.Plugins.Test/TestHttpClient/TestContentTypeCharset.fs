@@ -34,6 +34,23 @@ module TestContentTypeCharset =
     let ``a UTF-8 charset declaration passes through untouched`` (declared : string) : unit =
         rewrite declared |> shouldEqual declared
 
+    [<Test>]
+    let ``a quoted parameter containing a semicolon is not mistaken for a charset`` () : unit =
+        // Naive splitting on ';' would read a charset out of the quoted profile value.
+        rewrite "text/plain; profile=\"a;charset=iso-8859-1\""
+        |> shouldEqual "text/plain; profile=\"a;charset=iso-8859-1\"; charset=utf-8"
+
+    [<TestCase "not-a-media-type">]
+    [<TestCase "utter garbage">]
+    let ``an unparseable Content-Type constant is rejected at generation time`` (declared : string) : unit =
+        // Better to fail generation than emit code whose MediaTypeHeaderValue.Parse call
+        // throws on every request.
+        Assert.Throws<exn> (fun () ->
+            HttpClientGenerator.withStringContentCharset (SynExpr.CreateConst declared)
+            |> ignore<SynExpr>
+        )
+        |> ignore<exn>
+
     [<TestCase "text/plain; charset=iso-8859-1">]
     [<TestCase "application/json; charset=UTF-16">]
     let ``a non-UTF-8 charset is refused rather than mislabelled`` (declared : string) : unit =

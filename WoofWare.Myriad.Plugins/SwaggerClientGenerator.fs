@@ -69,7 +69,8 @@ type internal MimeUsage =
 
 /// How the generated client physically carries a payload described by a schema. The client
 /// has exactly three behaviours — JSON (de)serialisation, verbatim string pass-through, and
-/// verbatim byte pass-through — and MIME compatibility is judged against this.
+/// verbatim byte pass-through — and MIME compatibility is judged against this. (A schema-less
+/// definition, e.g. a 204 No Content response, has no shape at all: see `classifyPayload`.)
 [<RequireQualifiedAccess>]
 type internal PayloadShape =
     /// (De)serialised by System.Text.Json: only a JSON MIME type can carry this correctly.
@@ -78,8 +79,8 @@ type internal PayloadShape =
     /// would be wrong in both directions (a sent body would lack its quotes; a received JSON
     /// string would keep them).
     | RawText
-    /// Raw bytes (a `file` Stream), or no schema at all: pass-through is faithful whatever
-    /// the MIME type, because the caller supplies or receives the exact wire bytes.
+    /// Raw bytes (a `file` Stream): pass-through is faithful whatever the MIME type, because
+    /// the caller supplies or receives the exact wire bytes.
     | Opaque
 
 [<RequireQualifiedAccess>]
@@ -152,37 +153,41 @@ module internal SwaggerClientGenerator =
 
     /// How the generated client would carry a payload described by `defn`: handed to the JSON
     /// (de)serialiser, passed through as verbatim text (a `string` body), or passed through as
-    /// verbatim bytes (a `Stream` file body, or no schema at all). MIME compatibility follows:
-    /// a JSON payload needs a JSON MIME type, raw text needs a non-JSON one, and raw bytes are
-    /// faithful under anything.
+    /// verbatim bytes (a `Stream` file body). MIME compatibility follows: a JSON payload needs
+    /// a JSON MIME type, raw text needs a non-JSON one, and raw bytes are faithful under
+    /// anything.
+    ///
+    /// None means no payload travels at all (a schema-less `Unspecified` definition, e.g. a
+    /// 204 No Content response, even behind a `$ref`), so there is nothing for a MIME type to
+    /// describe.
     ///
     /// `resolveHandle` looks up a `$ref` (e.g. "#/definitions/Foo") to the definition it names.
     let classifyPayload
         (resolveHandle : string -> SwaggerV2.Definition option)
         (defn : SwaggerV2.Definition)
-        : PayloadShape
+        : PayloadShape option
         =
         // Guard against `$ref` cycles: if we chase our own tail we can't prove the payload is
         // raw, so we fall back to "JSON", which is the safe, fail-loud default.
         let visited = HashSet<string> ()
 
-        let rec go (defn : SwaggerV2.Definition) : PayloadShape =
+        let rec go (defn : SwaggerV2.Definition) : PayloadShape option =
             match defn with
-            | SwaggerV2.Definition.String -> PayloadShape.RawText
-            | SwaggerV2.Definition.File
-            | SwaggerV2.Definition.Unspecified -> PayloadShape.Opaque
+            | SwaggerV2.Definition.String -> Some PayloadShape.RawText
+            | SwaggerV2.Definition.File -> Some PayloadShape.Opaque
+            | SwaggerV2.Definition.Unspecified -> None
             | SwaggerV2.Definition.Object _
             | SwaggerV2.Definition.Array _
             | SwaggerV2.Definition.Boolean
-            | SwaggerV2.Definition.Integer _ -> PayloadShape.Json
+            | SwaggerV2.Definition.Integer _ -> Some PayloadShape.Json
             | SwaggerV2.Definition.Handle h ->
                 // A `$ref` usually points at an object, but can alias a raw type; follow it so we
                 // don't reject a legitimate text/* string alias.
                 if not (visited.Add h) then
-                    PayloadShape.Json
+                    Some PayloadShape.Json
                 else
                     match resolveHandle h with
-                    | None -> PayloadShape.Json
+                    | None -> Some PayloadShape.Json
                     | Some target -> go target
 
         go defn
@@ -208,26 +213,26 @@ module internal SwaggerClientGenerator =
         | None -> ()
         | Some (SwaggerV2.MimeType producesStr as producesMime) ->
             match classifyPayload resolveHandle returnType, isJsonMimeType producesMime with
-            | PayloadShape.Json, false ->
+            | Some PayloadShape.Json, false ->
                 failwith
                     $"Endpoint %s{path} (%O{method}) declares it produces %s{producesStr}, but its success response is an object/array/scalar body that the generated client can only parse as JSON. Refusing to emit a client that would send Accept: %s{producesStr} and then parse the response as JSON."
-            | PayloadShape.RawText, true ->
+            | Some PayloadShape.RawText, true ->
                 failwith
                     $"Endpoint %s{path} (%O{method}) declares it produces %s{producesStr}, but its success response is a raw string that the generated client returns verbatim: a JSON response arrives quoted and escaped, and the client does not implement JSON string decoding. Refusing to emit a client that would hand the caller the quotes."
-            | (PayloadShape.Json | PayloadShape.RawText | PayloadShape.Opaque), _ -> ()
+            | (Some (PayloadShape.Json | PayloadShape.RawText | PayloadShape.Opaque) | None), _ -> ()
 
         match consumes, bodyType with
         | None, _
         | _, None -> ()
         | Some (SwaggerV2.MimeType consumesStr as consumesMime), Some bodyType ->
             match classifyPayload resolveHandle bodyType, isJsonMimeType consumesMime with
-            | PayloadShape.Json, false ->
+            | Some PayloadShape.Json, false ->
                 failwith
                     $"Endpoint %s{path} (%O{method}) declares it consumes %s{consumesStr}, but its request body is an object/array/scalar that the generated client can only serialise as JSON. Refusing to emit a client that would send Content-Type: %s{consumesStr} with a JSON-serialised body."
-            | PayloadShape.RawText, true ->
+            | Some PayloadShape.RawText, true ->
                 failwith
                     $"Endpoint %s{path} (%O{method}) declares it consumes %s{consumesStr}, but its request body is a raw string that the generated client sends verbatim, not JSON-encoded. Refusing to emit a client that would label an unquoted string as %s{consumesStr}."
-            | (PayloadShape.Json | PayloadShape.RawText | PayloadShape.Opaque), _ -> ()
+            | (Some (PayloadShape.Json | PayloadShape.RawText | PayloadShape.Opaque) | None), _ -> ()
 
     /// An endpoint's Consumes/Produces list overrides the spec-global one entirely.
     /// Boil the resulting list down to the single MIME type we'll use, or None if
@@ -235,8 +240,9 @@ module internal SwaggerClientGenerator =
     ///
     /// `payload` is how the generated client carries the payload this MIME type would label
     /// (see `classifyPayload`), or None when nothing travels in this direction — a Consumes
-    /// negotiation on a bodyless endpoint — in which case no MIME type is needed at all and
-    /// ambiguity in the spec's lists is irrelevant. An explicitly endpoint-declared or
+    /// negotiation on a bodyless endpoint, or a Produces negotiation for a schema-less
+    /// 204-style response — in which case no MIME type is needed at all and ambiguity in the
+    /// spec's lists is irrelevant. An explicitly endpoint-declared or
     /// unambiguous type is passed through as-is (`checkMimeCompatibility` is the validator);
     /// the payload only steers the choice out of an ambiguous global list.
     let selectMimeType
@@ -891,14 +897,15 @@ module internal SwaggerV2Generator =
                         )
 
                     // MIME selection is steered by how the generated client carries each
-                    // payload (a bodyless endpoint needs no Consumes at all)...
+                    // payload; when nothing travels (a bodyless endpoint's Consumes, or a
+                    // schema-less 204-style response's Produces), no MIME type is needed...
                     let consumes =
                         SwaggerClientGenerator.selectMimeType
                             MimeUsage.Consumes
                             path
                             method
                             (requestBodyType
-                             |> Option.map (SwaggerClientGenerator.classifyPayload resolveHandle))
+                             |> Option.bind (SwaggerClientGenerator.classifyPayload resolveHandle))
                             contents.Consumes
                             endpoint.Consumes
 
@@ -907,7 +914,7 @@ module internal SwaggerV2Generator =
                             MimeUsage.Produces
                             path
                             method
-                            (Some (SwaggerClientGenerator.classifyPayload resolveHandle returnType))
+                            (SwaggerClientGenerator.classifyPayload resolveHandle returnType)
                             contents.Produces
                             endpoint.Produces
 

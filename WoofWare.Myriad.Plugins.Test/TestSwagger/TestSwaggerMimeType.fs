@@ -28,13 +28,28 @@ module TestSwaggerMimeType =
     let private noHandles (_ : string) : Definition option = None
 
     [<Test>]
-    let ``a string payload is raw text and file or absent payloads are opaque`` () : unit =
+    let ``a string payload is raw text and a file payload is opaque`` () : unit =
         SwaggerClientGenerator.classifyPayload noHandles Definition.String
-        |> shouldEqual PayloadShape.RawText
+        |> shouldEqual (Some PayloadShape.RawText)
 
-        for defn in [ Definition.File ; Definition.Unspecified ] do
-            SwaggerClientGenerator.classifyPayload noHandles defn
-            |> shouldEqual PayloadShape.Opaque
+        SwaggerClientGenerator.classifyPayload noHandles Definition.File
+        |> shouldEqual (Some PayloadShape.Opaque)
+
+    [<Test>]
+    let ``a schema-less definition is no payload at all`` () : unit =
+        // E.g. a 204 No Content response: nothing travels, so there is nothing for a MIME
+        // type to describe.
+        SwaggerClientGenerator.classifyPayload noHandles Definition.Unspecified
+        |> shouldEqual None
+
+        // ... even behind a `$ref`.
+        let resolve =
+            function
+            | "#/responses/empty" -> Some Definition.Unspecified
+            | _ -> None
+
+        SwaggerClientGenerator.classifyPayload resolve (Definition.Handle "#/responses/empty")
+        |> shouldEqual None
 
     [<Test>]
     let ``object, array, and scalar payloads require JSON serialisation`` () : unit =
@@ -64,7 +79,7 @@ module TestSwaggerMimeType =
                 Definition.Integer (Some "int64")
             ] do
             SwaggerClientGenerator.classifyPayload noHandles defn
-            |> shouldEqual PayloadShape.Json
+            |> shouldEqual (Some PayloadShape.Json)
 
     [<Test>]
     let ``a handle is classified by what it resolves to`` () : unit =
@@ -85,15 +100,15 @@ module TestSwaggerMimeType =
             | _ -> None
 
         SwaggerClientGenerator.classifyPayload resolve (Definition.Handle "#/definitions/RawText")
-        |> shouldEqual PayloadShape.RawText
+        |> shouldEqual (Some PayloadShape.RawText)
 
         SwaggerClientGenerator.classifyPayload resolve (Definition.Handle "#/definitions/Thing")
-        |> shouldEqual PayloadShape.Json
+        |> shouldEqual (Some PayloadShape.Json)
 
     [<Test>]
     let ``an unresolvable handle is conservatively JSON`` () : unit =
         SwaggerClientGenerator.classifyPayload noHandles (Definition.Handle "#/definitions/Missing")
-        |> shouldEqual PayloadShape.Json
+        |> shouldEqual (Some PayloadShape.Json)
 
     [<Test>]
     let ``a circular handle chain terminates and is JSON`` () : unit =
@@ -106,7 +121,7 @@ module TestSwaggerMimeType =
             | _ -> None
 
         SwaggerClientGenerator.classifyPayload resolve (Definition.Handle "#/definitions/A")
-        |> shouldEqual PayloadShape.Json
+        |> shouldEqual (Some PayloadShape.Json)
 
     // ---- checkMimeCompatibility: the exact wiring used by the generator ----
 
@@ -218,6 +233,12 @@ module TestSwaggerMimeType =
     let ``consuming a JSON MIME with a file body is allowed`` () : unit =
         // Likewise a `file` body: the caller supplies the exact wire bytes.
         check (Some "application/json") None (Some Definition.File) Definition.String
+
+    [<Test>]
+    let ``a schema-less response is compatible with any produces MIME`` () : unit =
+        // A 204-style response carries nothing, so no MIME type can mislabel it.
+        check None (Some "application/xml") None Definition.Unspecified
+        check None (Some "application/json") None Definition.Unspecified
 
     // ---- selectMimeType: boiling a Consumes/Produces list down to one MIME type ----
 

@@ -3402,7 +3402,6 @@ type IGitea =
 
     /// Send to the inbox
     [<RestEase.Post "activitypub/user/{username}/inbox">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract ActivitypubPersonInbox :
         [<RestEase.Path "username">] username : string * ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -3418,7 +3417,6 @@ type IGitea =
 
     /// Run cron task
     [<RestEase.Post "admin/cron/{task}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract AdminCronRun :
         [<RestEase.Path "task">] task : string * ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -3477,7 +3475,6 @@ type IGitea =
 
     /// Adopt unadopted files as a repository
     [<RestEase.Post "admin/unadopted/{owner}/{repo}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract AdminAdoptRepository :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -3486,7 +3483,6 @@ type IGitea =
 
     /// Delete unadopted files
     [<RestEase.Delete "admin/unadopted/{owner}/{repo}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract AdminDeleteUnadoptedRepository :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -3512,7 +3508,6 @@ type IGitea =
 
     /// Delete a user
     [<RestEase.Delete "admin/users/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract AdminDeleteUser :
         [<RestEase.Path "username">] username : string *
         [<RestEase.Query "purge">] purge : bool *
@@ -3541,7 +3536,6 @@ type IGitea =
 
     /// Delete a user's public key
     [<RestEase.Delete "admin/users/{username}/keys/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract AdminDeleteUserPublicKey :
         [<RestEase.Path "username">] username : string *
         [<RestEase.Path "id">] id : int64 *
@@ -3570,7 +3564,6 @@ type IGitea =
 
     /// Delete a hook
     [<RestEase.Delete "amdin/hooks/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract AdminDeleteHook :
         [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
@@ -3677,7 +3670,6 @@ type IGitea =
 
     /// Delete an organization
     [<RestEase.Delete "orgs/{org}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgDelete :
         [<RestEase.Path "org">] org : string * ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -3723,7 +3715,6 @@ type IGitea =
 
     /// Delete a hook
     [<RestEase.Delete "orgs/{org}/hooks/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgDeleteHook :
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "id">] id : int64 *
@@ -3772,7 +3763,6 @@ type IGitea =
 
     /// Delete a label
     [<RestEase.Delete "orgs/{org}/labels/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgDeleteLabel :
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "id">] id : int64 *
@@ -3802,7 +3792,6 @@ type IGitea =
 
     /// Check if a user is a member of an organization
     [<RestEase.Get "orgs/{org}/members/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgIsMember :
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "username">] username : string *
@@ -3811,7 +3800,6 @@ type IGitea =
 
     /// Remove a member from an organization
     [<RestEase.Delete "orgs/{org}/members/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgDeleteMember :
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "username">] username : string *
@@ -3830,7 +3818,6 @@ type IGitea =
 
     /// Check if a user is a public member of an organization
     [<RestEase.Get "orgs/{org}/public_members/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgIsPublicMember :
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "username">] username : string *
@@ -3839,7 +3826,6 @@ type IGitea =
 
     /// Conceal a user's membership
     [<RestEase.Delete "orgs/{org}/public_members/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgConcealMember :
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "username">] username : string *
@@ -3848,7 +3834,6 @@ type IGitea =
 
     /// Publicize a user's membership
     [<RestEase.Put "orgs/{org}/public_members/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgPublicizeMember :
         [<RestEase.Path "org">] org : string *
         [<RestEase.Path "username">] username : string *
@@ -3932,7 +3917,6 @@ type IGitea =
 
     /// Delete a package
     [<RestEase.Delete "packages/{owner}/{type}/{name}/{version}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract DeletePackage :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "type">] type' : string *
@@ -4018,7 +4002,6 @@ type IGitea =
 
     /// Delete a repository
     [<RestEase.Delete "repos/{owner}/{repo}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDelete :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4038,7 +4021,6 @@ type IGitea =
 
     /// Get an archive of a repository
     [<RestEase.Get "repos/{owner}/{repo}/archive/{archive}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoGetArchive :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4087,7 +4069,6 @@ type IGitea =
 
     /// Delete a specific branch protection for the repository
     [<RestEase.Delete "repos/{owner}/{repo}/branch_protections/{name}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteBranchProtection :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4141,7 +4122,6 @@ type IGitea =
 
     /// Delete a specific branch from a repository
     [<RestEase.Delete "repos/{owner}/{repo}/branches/{branch}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteBranch :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4162,7 +4142,6 @@ type IGitea =
 
     /// Check if a user is a collaborator of a repository
     [<RestEase.Get "repos/{owner}/{repo}/collaborators/{collaborator}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoCheckCollaborator :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4172,7 +4151,6 @@ type IGitea =
 
     /// Delete a collaborator from a repository
     [<RestEase.Delete "repos/{owner}/{repo}/collaborators/{collaborator}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteCollaborator :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4183,7 +4161,6 @@ type IGitea =
     /// Add a collaborator to a repository
     [<RestEase.Put "repos/{owner}/{repo}/collaborators/{collaborator}">]
     [<RestEase.Header("Content-Type", "application/json")>]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoAddCollaborator :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4312,7 +4289,6 @@ type IGitea =
 
     /// Get the EditorConfig definitions of a file in a repository
     [<RestEase.Get "repos/{owner}/{repo}/editorconfig/{filepath}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoGetEditorConfig :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4469,7 +4445,6 @@ type IGitea =
 
     /// Delete a Git hook in a repository
     [<RestEase.Delete "repos/{owner}/{repo}/hooks/git/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteGitHook :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4501,7 +4476,6 @@ type IGitea =
 
     /// Delete a hook in a repository
     [<RestEase.Delete "repos/{owner}/{repo}/hooks/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteHook :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4523,7 +4497,6 @@ type IGitea =
 
     /// Test a push webhook
     [<RestEase.Post "repos/{owner}/{repo}/hooks/{id}/tests">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoTestHook :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4588,7 +4561,6 @@ type IGitea =
 
     /// Delete a comment
     [<RestEase.Delete "repos/{owner}/{repo}/issues/comments/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteComment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4619,7 +4591,6 @@ type IGitea =
 
     /// Delete a comment attachment
     [<RestEase.Delete "repos/{owner}/{repo}/issues/comments/{id}/assets/{attachment_id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteIssueCommentAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4654,7 +4625,6 @@ type IGitea =
     /// Remove a reaction from a comment of an issue
     [<RestEase.Delete "repos/{owner}/{repo}/issues/comments/{id}/reactions">]
     [<RestEase.Header("Content-Type", "application/json")>]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteCommentReaction :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4675,7 +4645,6 @@ type IGitea =
 
     /// Delete an issue
     [<RestEase.Delete "repos/{owner}/{repo}/issues/{index}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDelete :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4718,7 +4687,6 @@ type IGitea =
 
     /// Delete an issue attachment
     [<RestEase.Delete "repos/{owner}/{repo}/issues/{index}/assets/{attachment_id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteIssueAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4766,7 +4734,6 @@ type IGitea =
 
     /// Delete a comment
     [<RestEase.Delete "repos/{owner}/{repo}/issues/{index}/comments/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteCommentDeprecated :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4811,7 +4778,6 @@ type IGitea =
 
     /// Remove all labels from an issue
     [<RestEase.Delete "repos/{owner}/{repo}/issues/{index}/labels">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueClearLabels :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4833,7 +4799,6 @@ type IGitea =
 
     /// Remove a label from an issue
     [<RestEase.Delete "repos/{owner}/{repo}/issues/{index}/labels/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueRemoveLabel :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4857,7 +4822,6 @@ type IGitea =
     /// Remove a reaction from an issue
     [<RestEase.Delete "repos/{owner}/{repo}/issues/{index}/reactions">]
     [<RestEase.Header("Content-Type", "application/json")>]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteIssueReaction :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4868,7 +4832,6 @@ type IGitea =
 
     /// Delete an issue's existing stopwatch.
     [<RestEase.Delete "repos/{owner}/{repo}/issues/{index}/stopwatch/delete">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteStopWatch :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4878,7 +4841,6 @@ type IGitea =
 
     /// Start stopwatch on an issue.
     [<RestEase.Post "repos/{owner}/{repo}/issues/{index}/stopwatch/start">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueStartStopWatch :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4888,7 +4850,6 @@ type IGitea =
 
     /// Stop an issue's existing stopwatch.
     [<RestEase.Post "repos/{owner}/{repo}/issues/{index}/stopwatch/stop">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueStopStopWatch :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4961,7 +4922,6 @@ type IGitea =
 
     /// Reset a tracked time of an issue
     [<RestEase.Delete "repos/{owner}/{repo}/issues/{index}/times">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueResetTime :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -4971,7 +4931,6 @@ type IGitea =
 
     /// Delete specific tracked time
     [<RestEase.Delete "repos/{owner}/{repo}/issues/{index}/times/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteTime :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5016,7 +4975,6 @@ type IGitea =
 
     /// Delete a key from a repository
     [<RestEase.Delete "repos/{owner}/{repo}/keys/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteKey :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5058,7 +5016,6 @@ type IGitea =
 
     /// Delete a label
     [<RestEase.Delete "repos/{owner}/{repo}/labels/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteLabel :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5089,7 +5046,6 @@ type IGitea =
 
     /// Get a file or it's LFS object from a repository
     [<RestEase.Get "repos/{owner}/{repo}/media/{filepath}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoGetRawFileOrLFS :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5134,7 +5090,6 @@ type IGitea =
 
     /// Delete a milestone
     [<RestEase.Delete "repos/{owner}/{repo}/milestones/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract IssueDeleteMilestone :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5156,7 +5111,6 @@ type IGitea =
 
     /// Sync a mirrored repository
     [<RestEase.Post "repos/{owner}/{repo}/mirror-sync">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoMirrorSync :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5280,7 +5234,6 @@ type IGitea =
 
     /// Check if a pull request has been merged
     [<RestEase.Get "repos/{owner}/{repo}/pulls/{index}/merge">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoPullRequestIsMerged :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5291,7 +5244,6 @@ type IGitea =
     /// Merge a pull request
     [<RestEase.Post "repos/{owner}/{repo}/pulls/{index}/merge">]
     [<RestEase.Header("Content-Type", "application/json")>]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoMergePullRequest :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5302,7 +5254,6 @@ type IGitea =
 
     /// Cancel the scheduled auto merge for the given pull request
     [<RestEase.Delete "repos/{owner}/{repo}/pulls/{index}/merge">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoCancelScheduledAutoMerge :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5325,7 +5276,6 @@ type IGitea =
     /// cancel review requests for a pull request
     [<RestEase.Delete "repos/{owner}/{repo}/pulls/{index}/requested_reviewers">]
     [<RestEase.Header("Content-Type", "application/json")>]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeletePullReviewRequests :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5384,7 +5334,6 @@ type IGitea =
 
     /// Delete a specific review from a pull request
     [<RestEase.Delete "repos/{owner}/{repo}/pulls/{index}/reviews/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeletePullReview :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5430,7 +5379,6 @@ type IGitea =
 
     /// Merge PR's baseBranch into headBranch
     [<RestEase.Post "repos/{owner}/{repo}/pulls/{index}/update">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoUpdatePullRequest :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5463,7 +5411,6 @@ type IGitea =
 
     /// Sync all push mirrored repository
     [<RestEase.Post "repos/{owner}/{repo}/push_mirrors-sync">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoPushMirrorSync :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5482,7 +5429,6 @@ type IGitea =
 
     /// deletes a push mirror from a repository by remoteName
     [<RestEase.Delete "repos/{owner}/{repo}/push_mirrors/{name}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeletePushMirror :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5492,7 +5438,6 @@ type IGitea =
 
     /// Get a file from a repository
     [<RestEase.Get "repos/{owner}/{repo}/raw/{filepath}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoGetRawFile :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5547,7 +5492,6 @@ type IGitea =
 
     /// Delete a release by tag name
     [<RestEase.Delete "repos/{owner}/{repo}/releases/tags/{tag}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteReleaseByTag :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5567,7 +5511,6 @@ type IGitea =
 
     /// Delete a release
     [<RestEase.Delete "repos/{owner}/{repo}/releases/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteRelease :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5610,7 +5553,6 @@ type IGitea =
 
     /// Delete a release attachment
     [<RestEase.Delete "repos/{owner}/{repo}/releases/{id}/assets/{attachment_id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteReleaseAttachment :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5709,7 +5651,6 @@ type IGitea =
 
     /// Unwatch a repo
     [<RestEase.Delete "repos/{owner}/{repo}/subscription">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentDeleteSubscription :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5759,7 +5700,6 @@ type IGitea =
 
     /// Delete a repository's tag by name
     [<RestEase.Delete "repos/{owner}/{repo}/tags/{tag}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteTag :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5788,7 +5728,6 @@ type IGitea =
 
     /// Delete a team from a repository
     [<RestEase.Delete "repos/{owner}/{repo}/teams/{team}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteTeam :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5798,7 +5737,6 @@ type IGitea =
 
     /// Add a team to a repository
     [<RestEase.Put "repos/{owner}/{repo}/teams/{team}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoAddTeam :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5844,7 +5782,6 @@ type IGitea =
     /// Replace list of topics for a repository
     [<RestEase.Put "repos/{owner}/{repo}/topics">]
     [<RestEase.Header("Content-Type", "application/json")>]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoUpdateTopics :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5854,7 +5791,6 @@ type IGitea =
 
     /// Delete a topic from a repository
     [<RestEase.Delete "repos/{owner}/{repo}/topics/{topic}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteTopic :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5864,7 +5800,6 @@ type IGitea =
 
     /// Add a topic to a repository
     [<RestEase.Put "repos/{owner}/{repo}/topics/{topic}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoAddTopic :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -5924,7 +5859,6 @@ type IGitea =
 
     /// Delete a wiki page
     [<RestEase.Delete "repos/{owner}/{repo}/wiki/page/{pageName}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract RepoDeleteWikiPage :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -6021,7 +5955,6 @@ type IGitea =
 
     /// Delete a team
     [<RestEase.Delete "teams/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgDeleteTeam :
         [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
@@ -6056,7 +5989,6 @@ type IGitea =
 
     /// Remove a team member
     [<RestEase.Delete "teams/{id}/members/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgRemoveTeamMember :
         [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "username">] username : string *
@@ -6065,7 +5997,6 @@ type IGitea =
 
     /// Add a team member
     [<RestEase.Put "teams/{id}/members/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgAddTeamMember :
         [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "username">] username : string *
@@ -6094,7 +6025,6 @@ type IGitea =
 
     /// Remove a repository from a team
     [<RestEase.Delete "teams/{id}/repos/{org}/{repo}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgRemoveTeamRepository :
         [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "org">] org : string *
@@ -6104,7 +6034,6 @@ type IGitea =
 
     /// Add a repository to a team
     [<RestEase.Put "teams/{id}/repos/{org}/{repo}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract OrgAddTeamRepository :
         [<RestEase.Path "id">] id : int64 *
         [<RestEase.Path "org">] org : string *
@@ -6153,7 +6082,6 @@ type IGitea =
 
     /// delete an OAuth2 Application
     [<RestEase.Delete "user/applications/oauth2/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserDeleteOAuth2Application :
         [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
@@ -6183,7 +6111,6 @@ type IGitea =
     /// Delete email addresses
     [<RestEase.Delete "user/emails">]
     [<RestEase.Header("Content-Type", "application/json")>]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserDeleteEmail :
         [<RestEase.Body>] body : DeleteEmailOption * ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -6208,21 +6135,18 @@ type IGitea =
 
     /// Check whether a user is followed by the authenticated user
     [<RestEase.Get "user/following/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentCheckFollowing :
         [<RestEase.Path "username">] username : string * ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
     /// Unfollow a user
     [<RestEase.Delete "user/following/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentDeleteFollow :
         [<RestEase.Path "username">] username : string * ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
 
     /// Follow a user
     [<RestEase.Put "user/following/{username}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentPutFollow :
         [<RestEase.Path "username">] username : string * ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -6234,7 +6158,6 @@ type IGitea =
 
     /// Remove a GPG key
     [<RestEase.Delete "user/gpg_keys/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentDeleteGPGKey :
         [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
@@ -6265,7 +6188,6 @@ type IGitea =
 
     /// Delete a public key
     [<RestEase.Delete "user/keys/{id}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentDeleteKey :
         [<RestEase.Path "id">] id : int64 * ?ct : System.Threading.CancellationToken -> unit System.Threading.Tasks.Task
 
@@ -6319,7 +6241,6 @@ type IGitea =
 
     /// Whether the authenticated is starring the repo
     [<RestEase.Get "user/starred/{owner}/{repo}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentCheckStarring :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -6328,7 +6249,6 @@ type IGitea =
 
     /// Unstar the given repo
     [<RestEase.Delete "user/starred/{owner}/{repo}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentDeleteStar :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -6337,7 +6257,6 @@ type IGitea =
 
     /// Star the given repo
     [<RestEase.Put "user/starred/{owner}/{repo}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCurrentPutStar :
         [<RestEase.Path "owner">] owner : string *
         [<RestEase.Path "repo">] repo : string *
@@ -6422,7 +6341,6 @@ type IGitea =
 
     /// Check if one user is following another user
     [<RestEase.Get "users/{username}/following/{target}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserCheckFollowing :
         [<RestEase.Path "username">] username : string *
         [<RestEase.Path "target">] target : string *
@@ -6518,7 +6436,6 @@ type IGitea =
 
     /// delete an access token
     [<RestEase.Delete "users/{username}/tokens/{token}">]
-    [<RestEase.Header("Accept", "application/json")>]
     abstract UserDeleteAccessToken :
         [<RestEase.Path "username">] username : string *
         [<RestEase.Path "token">] token : string *
