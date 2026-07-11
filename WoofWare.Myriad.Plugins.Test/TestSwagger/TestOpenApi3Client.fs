@@ -231,3 +231,26 @@ module TestOpenApi3Client =
                 let third = Pet.toJsonNode parsed
                 JsonNode.DeepEquals (first, second) |> shouldEqual true
                 JsonNode.DeepEquals (second, third) |> shouldEqual true
+
+    [<TestCase(true)>]
+    [<TestCase(false)>]
+    let ``Optional query parameters are omitted from the URL when absent`` (supplied : bool) =
+        task {
+            let expectedUri =
+                if supplied then
+                    "https://api.example.test/v1/public/pets?limit=25"
+                else
+                    "https://api.example.test/v1/public/pets"
+
+            let handler (message : HttpRequestMessage) =
+                async {
+                    message.RequestUri.ToString () |> shouldEqual expectedUri
+                    return response HttpStatusCode.OK (Some "[]")
+                }
+
+            use httpClient = HttpClientMock.makeNoUri handler
+            let client = OpenApiPetstore.make httpClient
+
+            let! pets = client.ListPets (if supplied then Some 25 else None)
+            pets |> shouldBeEmpty
+        }

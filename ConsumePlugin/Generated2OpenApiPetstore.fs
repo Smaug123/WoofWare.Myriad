@@ -1105,7 +1105,13 @@ module OpenApiPetstore =
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [ [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [
+                            limit
+                            |> Option.map (fun queryParam ->
+                                "limit=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
                         |> List.concat
                         |> String.concat "&"
 
