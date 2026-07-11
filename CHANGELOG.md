@@ -1,5 +1,10 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.0.1
+
+The `JsonSerializeGenerator` now requires `System.Text.Json` at version at least 8, to accommodate `JsonNode.DeepClone`.
+(.NET 6 and 7 have been out of support for nearly two years, so the runtime should already be providing you with an acceptable version of this package.)
+
 # WoofWare.Myriad.Plugins 9.1.1, WoofWare.Myriad.Plugins.Attributes 3.8.1
 
 Adds the `[<ArgumentNegateWithPrefix>]` attribute, which can be placed on a boolean or flag-valued field when using the `ArgParser` generator.
