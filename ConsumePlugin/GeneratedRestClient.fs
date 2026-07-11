@@ -2362,6 +2362,119 @@ open RestEase
 
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithOptionalQuery =
+    /// Create a REST client.
+    let make (client : System.Net.Http.HttpClient) : IApiWithOptionalQuery =
+        { new IApiWithOptionalQuery with
+            member _.GetWithMixedQuery
+                (page : int option, limit : int, search : string option, ct : CancellationToken option)
+                =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            page
+                            |> Option.map (fun queryParam ->
+                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                            search
+                            |> Option.map (fun queryParam ->
+                                "search=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri (
+                                ("endpoint"
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetWithAllOptionalQuery (since : DateOnly option, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            since
+                            |> Option.map (fun queryParam ->
+                                "since=" + ((queryParam.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
+                            )
+                            |> Option.toList
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri (
+                                ("endpoint"
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module ClientWithStringBody =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IClientWithStringBody =

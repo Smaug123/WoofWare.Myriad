@@ -27,6 +27,7 @@
     <Compile Include="TestHttpClient\TestVaultClient.fs" />
     <Compile Include="TestHttpClient\TestVariableHeader.fs" />
     <Compile Include="TestHttpClient\TestListQueryParam.fs" />
+    <Compile Include="TestHttpClient\TestOptionalQueryParam.fs" />
     <Compile Include="TestHttpClient\TestGeneratedNameCollision.fs" />
     <Compile Include="TestHttpClient\TestFreshName.fs" />
     <Compile Include="TestHttpClient\TestContentTypeCharset.fs" />

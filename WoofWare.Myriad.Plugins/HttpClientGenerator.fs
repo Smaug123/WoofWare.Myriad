@@ -311,7 +311,8 @@ module internal HttpClientGenerator =
             |> freshName "queryString"
 
         // A list- or array-typed query parameter contributes one key=value pair per
-        // element ("multi" collection format, RestEase's convention), so the query
+        // element ("multi" collection format, RestEase's convention), and an option-typed
+        // one contributes zero or one pair (omitted entirely when None), so the query
         // string is a runtime computation: we emit a `queryString` binding and then
         // splice it (with a separator, if it's nonempty) onto the URL.
         let requestUriTrailer, queryStringBindings =
@@ -368,6 +369,16 @@ module internal HttpClientGenerator =
                                         (keyEqualsValue eltType (SynExpr.createIdent "queryParam")))
                             )
                             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "List" ; "ofSeq" ])
+                        | OptionType innerType ->
+                            SynExpr.createIdent' paramValueId
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.applyFunction
+                                    (SynExpr.createLongIdent [ "Option" ; "map" ])
+                                    (SynExpr.createLambda
+                                        "queryParam"
+                                        (keyEqualsValue innerType (SynExpr.createIdent "queryParam")))
+                            )
+                            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Option" ; "toList" ])
                         | ty ->
                             keyEqualsValue ty (SynExpr.createIdent' paramValueId)
                             |> List.singleton

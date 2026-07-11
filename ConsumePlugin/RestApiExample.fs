@@ -264,6 +264,22 @@ type IApiShadowingGeneratedNames =
             Task<string>
 
 [<WoofWare.Myriad.Plugins.HttpClient>]
+[<BaseAddress "https://whatnot.com">]
+type IApiWithOptionalQuery =
+    // Optional query parameters are omitted from the URL when None.
+    [<Get "endpoint">]
+    abstract GetWithMixedQuery :
+        [<Query "page">] page : int option *
+        [<Query "limit">] limit : int *
+        [<Query "search">] search : string option *
+        ?ct : CancellationToken ->
+            Task<string>
+
+    [<Get "endpoint">]
+    abstract GetWithAllOptionalQuery :
+        [<Query "since">] since : DateOnly option * ?ct : CancellationToken -> Task<string>
+
+[<WoofWare.Myriad.Plugins.HttpClient>]
 type IClientWithStringBody =
     // As a POST request of a bare string body, we don't override the Content-Type.
     [<Post "endpoint/{param}">]
