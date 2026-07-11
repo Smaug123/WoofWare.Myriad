@@ -185,6 +185,54 @@ module TestBodyParam =
         }
 
     [<Test>]
+    let ``Body param of serialised JsonNode`` () =
+        task {
+            let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+                async {
+                    message.Method |> shouldEqual HttpMethod.Post
+                    let! content = message.Content.ReadAsStringAsync () |> Async.AwaitTask
+                    let content = new StringContent ("Done! " + content)
+                    let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                    resp.Content <- content
+                    return resp
+                }
+
+            use client = HttpClientMock.make (Uri "https://example.com") proc
+            let api = PureGymApi.make client
+
+            let body = System.Text.Json.Nodes.JsonNode.Parse """{"a":1,"b":["x",true]}"""
+
+            let! result = api.CreateUserSerialisedJsonNodeBody body
+
+            // The node is serialised directly to its JSON text; no intermediate node is constructed.
+            result |> shouldEqual """Done! {"a":1,"b":["x",true]}"""
+        }
+
+    [<Test>]
+    let ``Body param of serialised bigint`` () =
+        task {
+            let proc (message : HttpRequestMessage) : HttpResponseMessage Async =
+                async {
+                    message.Method |> shouldEqual HttpMethod.Post
+                    let! content = message.Content.ReadAsStringAsync () |> Async.AwaitTask
+                    let content = new StringContent ("Done! " + content)
+                    let resp = new HttpResponseMessage (HttpStatusCode.OK)
+                    resp.Content <- content
+                    return resp
+                }
+
+            use client = HttpClientMock.make (Uri "https://example.com") proc
+            let api = PureGymApi.make client
+
+            // A value far outside Int64/UInt64, to show it is serialised as a bare JSON number without loss.
+            let body = System.Numerics.BigInteger.Parse "123456789012345678901234567890"
+
+            let! result = api.CreateUserSerialisedBigIntBody body
+
+            result |> shouldEqual "Done! 123456789012345678901234567890"
+        }
+
+    [<Test>]
     let ``Body param of primitive: Uri`` () =
         task {
             let proc (message : HttpRequestMessage) : HttpResponseMessage Async =

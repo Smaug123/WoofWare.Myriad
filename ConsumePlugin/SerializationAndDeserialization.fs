@@ -92,3 +92,10 @@ type OuterCollectRemaining =
         Others : Dictionary<string, int>
         Remaining : CollectRemaining
     }
+
+[<WoofWare.Myriad.Plugins.JsonSerialize>]
+type CollectRemainingNullable =
+    {
+        [<JsonExtensionData>]
+        Rest : Dictionary<string, int option>
+    }

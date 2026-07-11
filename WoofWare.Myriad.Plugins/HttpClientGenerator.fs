@@ -644,42 +644,46 @@ module internal HttpClientGenerator =
                         | CannotBeNull -> false
                         | Nullable -> true
 
+                    let serialiseToString (body : SynExpr) =
+                        match JsonSerializeGenerator.trySerializeNodeToJsonString ty with
+                        | Some serialise -> body |> SynExpr.pipeThroughFunction serialise
+                        | None ->
+                            body
+                            |> SynExpr.pipeThroughFunction (
+                                fst (
+                                    (if isNullable then
+                                         JsonSerializeGenerator.serializeNodeNullable
+                                     else
+                                         JsonSerializeGenerator.serializeNodeNonNullable)
+                                        ty
+                                )
+                            )
+                            |> SynExpr.pipeThroughFunction (
+                                SynExpr.createLambda
+                                    "node"
+                                    (if isNullable then
+                                         SynExpr.createMatch
+                                             (SynExpr.createIdent "node")
+                                             [
+                                                 SynMatchClause.create
+                                                     (SynPat.named "None")
+                                                     (SynExpr.CreateConst "null")
+                                                 SynMatchClause.create
+                                                     (SynPat.nameWithArgs "Some" [ SynPat.named "node" ])
+                                                     (SynExpr.applyFunction
+                                                         (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
+                                                         (SynExpr.CreateConst ()))
+                                             ]
+                                     else
+                                         (SynExpr.applyFunction
+                                             (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
+                                             (SynExpr.CreateConst ())))
+                            )
+
                     [
                         Let (
                             "queryParams",
-                            createStringContent (
-                                SynExpr.createIdent' bodyParamName
-                                |> SynExpr.pipeThroughFunction (
-                                    fst (
-                                        (if isNullable then
-                                             JsonSerializeGenerator.serializeNodeNullable
-                                         else
-                                             JsonSerializeGenerator.serializeNodeNonNullable)
-                                            ty
-                                    )
-                                )
-                                |> SynExpr.pipeThroughFunction (
-                                    SynExpr.createLambda
-                                        "node"
-                                        (if isNullable then
-                                             SynExpr.createMatch
-                                                 (SynExpr.createIdent "node")
-                                                 [
-                                                     SynMatchClause.create
-                                                         (SynPat.named "None")
-                                                         (SynExpr.CreateConst "null")
-                                                     SynMatchClause.create
-                                                         (SynPat.nameWithArgs "Some" [ SynPat.named "node" ])
-                                                         (SynExpr.applyFunction
-                                                             (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
-                                                             (SynExpr.CreateConst ()))
-                                                 ]
-                                         else
-                                             (SynExpr.applyFunction
-                                                 (SynExpr.createLongIdent [ "node" ; "ToJsonString" ])
-                                                 (SynExpr.CreateConst ())))
-                                )
-                            )
+                            createStringContent (SynExpr.createIdent' bodyParamName |> serialiseToString)
                         )
                         // `contentTypeHeader` is always Some here: it defaults to
                         // application/json for a serialised body.
