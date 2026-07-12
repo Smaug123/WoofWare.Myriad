@@ -65,3 +65,40 @@ module TestOptionalQueryParam =
         let api = ApiWithOptionalQuery.make client
 
         api.GetWithAllOptionalQuery(None).Result |> shouldEqual "response"
+
+    [<Test>]
+    let ``Optional list param present contributes one pair per element`` () =
+        use client = makeClient "https://example.com/endpoint?tag=a&tag=b&limit=10"
+        let api = ApiWithOptionalQuery.make client
+
+        api.GetWithOptionalListQuery(Some [ "a" ; "b" ], 10).Result
+        |> shouldEqual "response"
+
+    [<Test>]
+    let ``Optional list param empty contributes nothing`` () =
+        use client = makeClient "https://example.com/endpoint?limit=10"
+        let api = ApiWithOptionalQuery.make client
+
+        api.GetWithOptionalListQuery(Some [], 10).Result |> shouldEqual "response"
+
+    [<Test>]
+    let ``Optional list param missing contributes nothing`` () =
+        use client = makeClient "https://example.com/endpoint?limit=10"
+        let api = ApiWithOptionalQuery.make client
+
+        api.GetWithOptionalListQuery(None, 10).Result |> shouldEqual "response"
+
+    [<Test>]
+    let ``Optional array param present contributes one pair per element`` () =
+        use client = makeClient "https://example.com/endpoint?id=1&id=2&limit=10"
+        let api = ApiWithOptionalQuery.make client
+
+        api.GetWithOptionalArrayQuery(Some [| 1 ; 2 |], 10).Result
+        |> shouldEqual "response"
+
+    [<Test>]
+    let ``Optional array param missing contributes nothing`` () =
+        use client = makeClient "https://example.com/endpoint?limit=10"
+        let api = ApiWithOptionalQuery.make client
+
+        api.GetWithOptionalArrayQuery(None, 10).Result |> shouldEqual "response"
