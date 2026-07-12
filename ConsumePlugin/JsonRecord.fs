@@ -89,3 +89,9 @@ type ContainsABigInt =
     {
         BigNum : bigint
     }
+
+[<WoofWare.Myriad.Plugins.JsonSerialize>]
+type ContainsAJsonNode =
+    {
+        Payload : System.Text.Json.Nodes.JsonNode
+    }

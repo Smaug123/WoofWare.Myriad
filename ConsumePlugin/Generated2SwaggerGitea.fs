@@ -21,7 +21,15 @@ module APIErrorJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "message",
@@ -94,7 +102,15 @@ module AccessTokenJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "id",
@@ -258,7 +274,15 @@ module ActivityPubJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "@context",
@@ -304,7 +328,15 @@ module AddCollaboratorOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "permission",
@@ -350,7 +382,15 @@ module AddTimeOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created",
@@ -441,7 +481,15 @@ module AnnotatedTagObjectJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "sha",
@@ -541,7 +589,15 @@ module AttachmentJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "browser_download_url",
@@ -749,7 +805,15 @@ module BranchProtectionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "approvals_whitelist_teams",
@@ -1513,7 +1577,15 @@ module ChangedFileJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "additions",
@@ -1775,7 +1847,15 @@ module CommitAffectedFilesJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "filename",
@@ -1821,7 +1901,15 @@ module CommitDateOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "author",
@@ -1894,7 +1982,15 @@ module CommitMetaJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created",
@@ -1994,7 +2090,15 @@ module CommitStatsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "additions",
@@ -2094,7 +2198,15 @@ module CommitUserJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "date",
@@ -2194,7 +2306,15 @@ module CreateAccessTokenOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "name",
@@ -2268,7 +2388,15 @@ module CreateBranchProtectionOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "approvals_whitelist_teams",
@@ -2978,7 +3106,15 @@ module CreateBranchRepoOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "new_branch_name",
@@ -3042,7 +3178,15 @@ module CreateEmailOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "emails",
@@ -3098,7 +3242,15 @@ module CreateForkOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "name",
@@ -3171,7 +3323,15 @@ module CreateGPGKeyOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "armored_public_key",
@@ -3270,7 +3430,15 @@ module CreateIssueCommentOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "body",
@@ -3307,7 +3475,15 @@ module CreateIssueOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "assignee",
@@ -3580,7 +3756,15 @@ module CreateKeyOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "key",
@@ -3662,7 +3846,15 @@ module CreateLabelOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "color",
@@ -3771,7 +3963,15 @@ module CreateMilestoneOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "description",
@@ -3898,7 +4098,15 @@ module CreateOAuth2ApplicationOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "confidential_client",
@@ -4008,7 +4216,15 @@ module CreateOrgOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "description",
@@ -4207,7 +4423,15 @@ module CreatePullRequestOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "assignee",
@@ -4489,7 +4713,15 @@ module CreatePullReviewCommentJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "body",
@@ -4616,7 +4848,15 @@ module CreatePushMirrorOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "interval",
@@ -4770,7 +5010,15 @@ module CreateReleaseOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "body",
@@ -4942,7 +5190,15 @@ module CreateRepoOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "auto_init",
@@ -5249,7 +5505,15 @@ module CreateStatusOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "context",
@@ -5376,7 +5640,15 @@ module CreateTagOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "message",
@@ -5502,7 +5774,15 @@ module CreateTeamOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "can_create_org_repo",
@@ -5695,7 +5975,15 @@ module CreateUserOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created_at",
@@ -5984,7 +6272,15 @@ module CreateWikiPageOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "content_base64",
@@ -6084,7 +6380,15 @@ module CronJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "exec_times",
@@ -6238,7 +6542,15 @@ module DeleteEmailOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "emails",
@@ -6294,7 +6606,15 @@ module DismissPullReviewOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "message",
@@ -6367,7 +6687,15 @@ module EditAttachmentOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "name",
@@ -6413,7 +6741,15 @@ module EditBranchProtectionOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "approvals_whitelist_teams",
@@ -7069,7 +7405,15 @@ module EditDeadlineOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "due_date",
@@ -7106,7 +7450,15 @@ module EditGitHookOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "content",
@@ -7187,7 +7539,15 @@ module EditHookOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "active",
@@ -7335,7 +7695,15 @@ module EditIssueCommentOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "body",
@@ -7372,7 +7740,15 @@ module EditIssueOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "assignee",
@@ -7644,7 +8020,15 @@ module EditLabelOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "color",
@@ -7771,7 +8155,15 @@ module EditMilestoneOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "description",
@@ -7898,7 +8290,15 @@ module EditOrgOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "description",
@@ -8079,7 +8479,15 @@ module EditPullRequestOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "allow_maintainer_edit",
@@ -8415,7 +8823,15 @@ module EditReactionOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "content",
@@ -8461,7 +8877,15 @@ module EditReleaseOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "body",
@@ -8677,7 +9101,15 @@ module EditTeamOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "can_create_org_repo",
@@ -8870,7 +9302,15 @@ module EditUserOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "active",
@@ -9357,7 +9797,15 @@ module EmailJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "email",
@@ -9457,7 +9905,15 @@ module ExternalTrackerJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "external_tracker_format",
@@ -9584,7 +10040,15 @@ module ExternalWikiJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "external_wiki_url",
@@ -9630,7 +10094,15 @@ module FileCommitResponseJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "author",
@@ -9839,7 +10311,15 @@ module FileLinksResponseJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "git",
@@ -9939,7 +10419,15 @@ module GPGKeyEmailJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "email",
@@ -10012,7 +10500,15 @@ module GeneralAPISettingsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "default_git_trees_per_page",
@@ -10139,7 +10635,15 @@ module GeneralAttachmentSettingsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "allowed_types",
@@ -10266,7 +10770,15 @@ module GeneralRepoSettingsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "http_git_disabled",
@@ -10447,7 +10959,15 @@ module GeneralUISettingsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "allowed_reactions",
@@ -10567,7 +11087,15 @@ module GenerateRepoOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "avatar",
@@ -10865,7 +11393,15 @@ module GitBlobResponseJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "content",
@@ -11019,7 +11555,15 @@ module GitEntryJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "mode",
@@ -11200,7 +11744,15 @@ module GitHookJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "content",
@@ -11300,7 +11852,15 @@ module GitObjectJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "sha",
@@ -11400,7 +11960,15 @@ module GitTreeResponseJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "page",
@@ -11611,7 +12179,15 @@ module HookJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "active",
@@ -11840,7 +12416,15 @@ module IdentityJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "email",
@@ -11913,7 +12497,15 @@ module InternalTrackerJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "allow_only_contributors_to_track_time",
@@ -12013,7 +12605,15 @@ module IssueDeadlineJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "due_date",
@@ -12097,7 +12697,15 @@ module IssueLabelsOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "labels",
@@ -12153,7 +12761,15 @@ module LabelJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "color",
@@ -12334,7 +12950,15 @@ module MarkdownOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "Context",
@@ -12461,7 +13085,15 @@ module MergePullRequestOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "Do",
@@ -12687,7 +13319,15 @@ module MigrateRepoOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "auth_password",
@@ -13228,7 +13868,15 @@ module Type7JsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
             node :> _
 namespace Gitea
@@ -13247,7 +13895,15 @@ module NodeInfoServicesJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "inbound",
@@ -13340,7 +13996,15 @@ module NodeInfoSoftwareJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "homepage",
@@ -13467,7 +14131,15 @@ module NodeInfoUsageUsersJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "activeHalfyear",
@@ -13567,7 +14239,15 @@ module NotificationCountJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "new",
@@ -13613,7 +14293,15 @@ module OAuth2ApplicationJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "client_id",
@@ -13831,7 +14519,15 @@ module OrganizationJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "avatar_url",
@@ -14120,7 +14816,15 @@ module OrganizationPermissionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "can_create_repository",
@@ -14274,7 +14978,15 @@ module PackageFileJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "Size",
@@ -14482,7 +15194,15 @@ module PayloadUserJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "email",
@@ -14582,7 +15302,15 @@ module PermissionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "admin",
@@ -14682,7 +15410,15 @@ module PullRequestMetaJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "merged",
@@ -14755,7 +15491,15 @@ module PullReviewRequestOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "reviewers",
@@ -14848,7 +15592,15 @@ module PushMirrorJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created",
@@ -15083,7 +15835,15 @@ module ReferenceJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "object",
@@ -15167,7 +15927,15 @@ module RepoTopicOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "topics",
@@ -15223,7 +15991,15 @@ module RepositoryMetaJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "full_name",
@@ -15350,7 +16126,15 @@ module ServerVersionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "version",
@@ -15396,7 +16180,15 @@ module StopWatchJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created",
@@ -15604,7 +16396,15 @@ module SubmitPullReviewOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "body",
@@ -15677,7 +16477,15 @@ module TagJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "commit",
@@ -15877,7 +16685,15 @@ module TeamJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "can_create_org_repo",
@@ -16117,7 +16933,15 @@ module TopicNameJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "topics",
@@ -16173,7 +16997,15 @@ module TopicResponseJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created",
@@ -16327,7 +17159,15 @@ module TransferRepoOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "new_owner",
@@ -16401,7 +17241,15 @@ module UpdateFileOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "author",
@@ -16624,7 +17472,15 @@ module UserJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "active",
@@ -17183,7 +18039,15 @@ module UserHeatmapDataJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "contributions",
@@ -17256,7 +18120,15 @@ module UserSettingsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "description",
@@ -17518,7 +18390,15 @@ module UserSettingsOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "description",
@@ -17780,7 +18660,15 @@ module WatchInfoJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created_at",
@@ -17948,7 +18836,15 @@ module WikiCommitJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "author",
@@ -18043,7 +18939,15 @@ module WikiCommitListJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "commits",
@@ -18111,7 +19015,15 @@ module WikiPageJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "commit_count",
@@ -18330,7 +19242,15 @@ module WikiPageMetaDataJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "html_url",
@@ -18441,7 +19361,15 @@ module CommentJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "assets",
@@ -18736,7 +19664,15 @@ module CommitStatusJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "context",
@@ -18982,7 +19918,15 @@ module ContentsResponseJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "_links",
@@ -19390,7 +20334,15 @@ module CreateFileOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "author",
@@ -19568,7 +20520,15 @@ module CreateHookOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "active",
@@ -19725,7 +20685,15 @@ module CreatePullReviewOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "body",
@@ -19847,7 +20815,15 @@ module DeleteFileOptionsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "author",
@@ -20025,7 +21001,15 @@ module EditRepoOptionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "allow_manual_merge",
@@ -20725,7 +21709,15 @@ module IssueFormFieldJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "attributes",
@@ -20820,7 +21812,15 @@ module IssueTemplateJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "about",
@@ -21060,7 +22060,15 @@ module MilestoneJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "closed_at",
@@ -21349,7 +22357,15 @@ module NodeInfoUsageJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "localComments",
@@ -21433,7 +22449,15 @@ module NotificationSubjectJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "html_url",
@@ -21641,7 +22665,15 @@ module PayloadCommitVerificationJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "payload",
@@ -21779,7 +22811,15 @@ module PublicKeyJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created_at",
@@ -22025,7 +23065,15 @@ module PullReviewJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "body",
@@ -22390,7 +23438,15 @@ module PullReviewCommentJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "body",
@@ -22782,7 +23838,15 @@ module ReactionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "content",
@@ -22866,7 +23930,15 @@ module ReleaseJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "assets",
@@ -23269,7 +24341,15 @@ module RepoCollaboratorPermissionJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "permission",
@@ -23353,7 +24433,15 @@ module RepoCommitJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "author",
@@ -23470,7 +24558,15 @@ module RepoTransferJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "doer",
@@ -23533,7 +24629,15 @@ module RepositoryJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "allow_merge_commits",
@@ -24844,7 +25948,15 @@ module SearchResultsJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "data",
@@ -24912,7 +26024,15 @@ module AnnotatedTagJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "message",
@@ -25072,7 +26192,15 @@ module CombinedStatusJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "commit_url",
@@ -25259,7 +26387,15 @@ module CommitJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "author",
@@ -25474,7 +26610,15 @@ module DeployKeyJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created_at",
@@ -25720,7 +26864,15 @@ module FileDeleteResponseJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "commit",
@@ -25775,7 +26927,15 @@ module FileResponseJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "commit",
@@ -25827,7 +26987,15 @@ module IssueJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "assets",
@@ -26399,7 +27567,15 @@ module NodeInfoJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "metadata",
@@ -26553,7 +27729,15 @@ module NoteJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "commit",
@@ -26610,7 +27794,15 @@ module NotificationThreadJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "id",
@@ -26786,7 +27978,15 @@ module PRBranchInfoJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "label",
@@ -26924,7 +28124,15 @@ module PackageJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created_at",
@@ -27111,7 +28319,15 @@ module PayloadCommitJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "added",
@@ -27382,7 +28598,15 @@ module PullRequestJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "allow_maintainer_edit",
@@ -28078,7 +29302,15 @@ module TrackedTimeJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "created",
@@ -28270,7 +29502,15 @@ module BranchJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "commit",
@@ -28526,7 +29766,15 @@ module TimelineCommentJsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "assignee",
@@ -29187,7 +30435,15 @@ module Type9JsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "data",
@@ -29255,7 +30511,15 @@ module Type10JsonSerializeExtension =
 
             do
                 for KeyValue (key, value) in input.AdditionalProperties do
-                    node.Add (key, id value)
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                        )
+                            value
+                    )
 
                 node.Add (
                     "data",

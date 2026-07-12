@@ -112,6 +112,30 @@ module ContainsABigIntJsonSerializeExtension =
                 )
 
             node :> _
+namespace ConsumePlugin
+
+open System.Collections.Generic
+open System.Text.Json.Serialization
+
+/// Module containing JSON serializing methods for the ContainsAJsonNode type
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module ContainsAJsonNode =
+    /// Serialize to a JSON node
+    let toJsonNode (input : ContainsAJsonNode) : System.Text.Json.Nodes.JsonNode =
+        let node = System.Text.Json.Nodes.JsonObject ()
+
+        do
+            node.Add (
+                "payload",
+                (input.Payload
+                 |> (fun node ->
+                     match node |> box with
+                     | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                     | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
+                 ))
+            )
+
+        node :> _
 
 namespace ConsumePlugin
 

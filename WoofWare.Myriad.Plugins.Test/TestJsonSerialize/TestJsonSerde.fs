@@ -186,6 +186,29 @@ module TestJsonSerde =
         property |> Prop.forAll (Arb.fromGen bigIntGen) |> Check.QuickThrowOnFailure
 
     [<Test>]
+    let ``Serialising a JsonNode field clones it rather than re-parenting the input`` () =
+        let payload = JsonNode.Parse """{"x":1}"""
+
+        // The node already has a parent, and JsonObject.Add refuses to re-parent an owned node.
+        // Serialisation must clone the node instead of moving it into the output.
+        let holder = System.Text.Json.Nodes.JsonObject ()
+        holder.Add ("held", payload)
+
+        let record =
+            {
+                Payload = payload
+            }
+
+        (ContainsAJsonNode.toJsonNode record).ToJsonString ()
+        |> shouldEqual """{"payload":{"x":1}}"""
+
+        // The input node is untouched: still parented under `holder`, and serialisable again.
+        Object.ReferenceEquals (payload.Parent, holder) |> shouldEqual true
+
+        (ContainsAJsonNode.toJsonNode record).ToJsonString ()
+        |> shouldEqual """{"payload":{"x":1}}"""
+
+    [<Test>]
     let ``Single example of big record`` () =
         let guid = Guid.Parse "dfe24db5-9f8d-447b-8463-4c0bcf1166d5"
 
