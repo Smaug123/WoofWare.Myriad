@@ -2462,6 +2462,105 @@ module ApiWithOptionalQuery =
                     return responseString
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetWithOptionalListQuery (tags : string list option, limit : int, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            tags
+                            |> Option.map (fun queryParam ->
+                                queryParam
+                                |> List.map (fun queryParam ->
+                                    "tag=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                                )
+                            )
+                            |> Option.toList
+                            |> List.concat
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri (
+                                ("endpoint"
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member _.GetWithOptionalArrayQuery (ids : int array option, limit : int, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let queryString =
+                        [
+                            ids
+                            |> Option.map (fun queryParam ->
+                                queryParam
+                                |> Seq.map (fun queryParam ->
+                                    "id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
+                                )
+                                |> List.ofSeq
+                            )
+                            |> Option.toList
+                            |> List.concat
+                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
+                        ]
+                        |> List.concat
+                        |> String.concat "&"
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null -> System.Uri "https://whatnot.com/"
+                             | v -> v),
+                            System.Uri (
+                                ("endpoint"
+                                 + (if queryString = "" then
+                                        ""
+                                    else
+                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
         }
 namespace PureGym
 
