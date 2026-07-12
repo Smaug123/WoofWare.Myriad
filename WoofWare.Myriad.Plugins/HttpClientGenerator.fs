@@ -311,7 +311,8 @@ module internal HttpClientGenerator =
             |> freshName "queryString"
 
         // A list- or array-typed query parameter contributes one key=value pair per
-        // element ("multi" collection format, RestEase's convention), so the query
+        // element ("multi" collection format, RestEase's convention), and an option-typed
+        // one contributes zero or one pair (omitted entirely when None), so the query
         // string is a runtime computation: we emit a `queryString` binding and then
         // splice it (with a separator, if it's nonempty) onto the URL.
         let requestUriTrailer, queryStringBindings =
@@ -348,30 +349,62 @@ module internal HttpClientGenerator =
                             |> SynExpr.paren
                             |> SynExpr.plus (SynExpr.CreateConst (paramKey + "="))
 
-                        match paramValue.Type with
-                        | ListType eltType ->
-                            SynExpr.createIdent' paramValueId
-                            |> SynExpr.pipeThroughFunction (
-                                SynExpr.applyFunction
-                                    (SynExpr.createLongIdent [ "List" ; "map" ])
-                                    (SynExpr.createLambda
-                                        "queryParam"
-                                        (keyEqualsValue eltType (SynExpr.createIdent "queryParam")))
-                            )
-                        | ArrayType eltType ->
-                            SynExpr.createIdent' paramValueId
-                            |> SynExpr.pipeThroughFunction (
-                                SynExpr.applyFunction
-                                    (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                                    (SynExpr.createLambda
-                                        "queryParam"
-                                        (keyEqualsValue eltType (SynExpr.createIdent "queryParam")))
-                            )
-                            |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "List" ; "ofSeq" ])
-                        | ty ->
-                            keyEqualsValue ty (SynExpr.createIdent' paramValueId)
-                            |> List.singleton
-                            |> SynExpr.listLiteral
+                        // A type is "many-valued" if it contributes a variable number of key=value
+                        // pairs, so that mapping over it yields a `string list list` we must flatten.
+                        let isManyValued (ty : SynType) =
+                            match ty with
+                            | ListType _
+                            | ArrayType _
+                            | OptionType _ -> true
+                            | _ -> false
+
+                        // The `string list` of key=value pairs contributed by a value of type `ty`.
+                        // A collection contributes one pair per element and an option contributes the
+                        // pairs of its contents (none at all when None); these compose, so e.g.
+                        // `string list option` sends `Some [ "a" ; "b" ]` to [ "tag=a" ; "tag=b" ].
+                        let rec expand (ty : SynType) (value : SynExpr) : SynExpr =
+                            match ty with
+                            | ListType eltType ->
+                                value
+                                |> SynExpr.pipeThroughFunction (
+                                    mapElements [ "List" ; "map" ] [ "List" ; "collect" ] eltType
+                                )
+                            | ArrayType eltType ->
+                                value
+                                |> SynExpr.pipeThroughFunction (
+                                    mapElements [ "Seq" ; "map" ] [ "Seq" ; "collect" ] eltType
+                                )
+                                |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "List" ; "ofSeq" ])
+                            | OptionType innerType ->
+                                let mapped =
+                                    value
+                                    |> SynExpr.pipeThroughFunction (
+                                        mapElements [ "Option" ; "map" ] [ "Option" ; "map" ] innerType
+                                    )
+                                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Option" ; "toList" ])
+
+                                if isManyValued innerType then
+                                    // `Option.map` over a many-valued inner type gives a `string list option`.
+                                    mapped
+                                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "List" ; "concat" ])
+                                else
+                                    mapped
+                            | ty -> keyEqualsValue ty value |> List.singleton |> SynExpr.listLiteral
+
+                        /// Map `mapFn`/`collectFn` (as appropriate for whether the element type is
+                        /// itself many-valued) over the elements of a collection.
+                        and mapElements (mapFn : string list) (collectFn : string list) (eltType : SynType) : SynExpr =
+                            let elt = SynExpr.createIdent "queryParam"
+
+                            let fn, body =
+                                if isManyValued eltType then
+                                    collectFn, expand eltType elt
+                                else
+                                    mapFn, keyEqualsValue eltType elt
+
+                            SynExpr.applyFunction (SynExpr.createLongIdent fn) (SynExpr.createLambda "queryParam" body)
+
+                        expand paramValue.Type (SynExpr.createIdent' paramValueId)
                     )
 
                 let queryString =
