@@ -131,7 +131,19 @@ module BasicNoPositionals =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+            | "--" :: rest ->
+                match state with
+                | ParseState_BasicNoPositionals.AwaitingKey -> ()
+                | ParseState_BasicNoPositionals.AwaitingValue key ->
+                    if setFlagValue key then
+                        ()
+                    else
+                        sprintf
+                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                            key
+                        |> ArgParser_errors.Add
+
+                parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
                 | ParseState_BasicNoPositionals.AwaitingKey ->
@@ -350,7 +362,19 @@ module Basic =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> arg_3.AddRange (rest |> Seq.map (fun x -> x))
+            | "--" :: rest ->
+                match state with
+                | ParseState_Basic.AwaitingKey -> ()
+                | ParseState_Basic.AwaitingValue key ->
+                    if setFlagValue key then
+                        ()
+                    else
+                        sprintf
+                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                            key
+                        |> ArgParser_errors.Add
+
+                arg_3.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
                 | ParseState_Basic.AwaitingKey ->
@@ -553,7 +577,19 @@ module BasicWithIntPositionals =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> arg_3.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
+            | "--" :: rest ->
+                match state with
+                | ParseState_BasicWithIntPositionals.AwaitingKey -> ()
+                | ParseState_BasicWithIntPositionals.AwaitingValue key ->
+                    if setFlagValue key then
+                        ()
+                    else
+                        sprintf
+                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                            key
+                        |> ArgParser_errors.Add
+
+                arg_3.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
             | arg :: args ->
                 match state with
                 | ParseState_BasicWithIntPositionals.AwaitingKey ->
@@ -934,7 +970,19 @@ module LoadsOfTypes =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> arg_7.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
+            | "--" :: rest ->
+                match state with
+                | ParseState_LoadsOfTypes.AwaitingKey -> ()
+                | ParseState_LoadsOfTypes.AwaitingValue key ->
+                    if setFlagValue key then
+                        ()
+                    else
+                        sprintf
+                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                            key
+                        |> ArgParser_errors.Add
+
+                arg_7.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
             | arg :: args ->
                 match state with
                 | ParseState_LoadsOfTypes.AwaitingKey ->
@@ -1362,7 +1410,19 @@ module LoadsOfTypesNoPositionals =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+            | "--" :: rest ->
+                match state with
+                | ParseState_LoadsOfTypesNoPositionals.AwaitingKey -> ()
+                | ParseState_LoadsOfTypesNoPositionals.AwaitingValue key ->
+                    if setFlagValue key then
+                        ()
+                    else
+                        sprintf
+                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                            key
+                        |> ArgParser_errors.Add
+
+                parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
                 | ParseState_LoadsOfTypesNoPositionals.AwaitingKey ->
@@ -1681,7 +1741,19 @@ module DatesAndTimesArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_DatesAndTimes.AwaitingKey -> ()
+                    | ParseState_DatesAndTimes.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_DatesAndTimes.AwaitingKey ->
@@ -1917,7 +1989,19 @@ module ParentRecordArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_ParentRecord.AwaitingKey -> ()
+                    | ParseState_ParentRecord.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecord.AwaitingKey ->
@@ -2133,7 +2217,19 @@ module ParentRecordChildPosArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Uri x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_ParentRecordChildPos.AwaitingKey -> ()
+                    | ParseState_ParentRecordChildPos.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    arg_1.AddRange (rest |> Seq.map (fun x -> System.Uri x))
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecordChildPos.AwaitingKey ->
@@ -2316,7 +2412,19 @@ module ParentRecordSelfPosArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_2.AddRange (rest |> Seq.map (fun x -> System.Boolean.Parse x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_ParentRecordSelfPos.AwaitingKey -> ()
+                    | ParseState_ParentRecordSelfPos.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    arg_2.AddRange (rest |> Seq.map (fun x -> System.Boolean.Parse x))
                 | arg :: args ->
                     match state with
                     | ParseState_ParentRecordSelfPos.AwaitingKey ->
@@ -2457,7 +2565,19 @@ module ChoicePositionalsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_0.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_ChoicePositionals.AwaitingKey -> ()
+                    | ParseState_ChoicePositionals.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    arg_0.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_ChoicePositionals.AwaitingKey ->
@@ -2606,7 +2726,19 @@ module ContainsBoolEnvVarArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_ContainsBoolEnvVar.AwaitingKey -> ()
+                    | ParseState_ContainsBoolEnvVar.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ContainsBoolEnvVar.AwaitingKey ->
@@ -2792,7 +2924,19 @@ module WithFlagDuArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_WithFlagDu.AwaitingKey -> ()
+                    | ParseState_WithFlagDu.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_WithFlagDu.AwaitingKey ->
@@ -2975,7 +3119,19 @@ module ContainsFlagEnvVarArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_ContainsFlagEnvVar.AwaitingKey -> ()
+                    | ParseState_ContainsFlagEnvVar.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ContainsFlagEnvVar.AwaitingKey ->
@@ -3187,7 +3343,19 @@ module ContainsFlagDefaultValueArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_ContainsFlagDefaultValue.AwaitingKey -> ()
+                    | ParseState_ContainsFlagDefaultValue.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ContainsFlagDefaultValue.AwaitingKey ->
@@ -3434,7 +3602,19 @@ module ManyLongFormsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_ManyLongForms.AwaitingKey -> ()
+                    | ParseState_ManyLongForms.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_ManyLongForms.AwaitingKey ->
@@ -3614,7 +3794,19 @@ module FlagsIntoPositionalArgsArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgs.AwaitingKey -> ()
+                    | ParseState_FlagsIntoPositionalArgs.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    arg_1.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgs.AwaitingKey ->
@@ -3778,7 +3970,19 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey -> ()
+                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    arg_1.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey ->
@@ -3942,7 +4146,19 @@ module FlagsIntoPositionalArgsIntArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingKey -> ()
+                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgsInt.AwaitingKey ->
@@ -4106,7 +4322,19 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x) |> Seq.map Choice2Of2)
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey -> ()
+                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x) |> Seq.map Choice2Of2)
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey ->
@@ -4270,7 +4498,19 @@ module FlagsIntoPositionalArgs'ArgParse =
                                 "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                                 key
                             |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x))
+                | "--" :: rest ->
+                    match state with
+                    | ParseState_FlagsIntoPositionalArgs'.AwaitingKey -> ()
+                    | ParseState_FlagsIntoPositionalArgs'.AwaitingValue key ->
+                        if setFlagValue key then
+                            ()
+                        else
+                            sprintf
+                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                                key
+                            |> ArgParser_errors.Add
+
+                    arg_1.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_FlagsIntoPositionalArgs'.AwaitingKey ->
@@ -4473,7 +4713,19 @@ module WithTypeHelp =
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+            | "--" :: rest ->
+                match state with
+                | ParseState_WithTypeHelp.AwaitingKey -> ()
+                | ParseState_WithTypeHelp.AwaitingValue key ->
+                    if setFlagValue key then
+                        ()
+                    else
+                        sprintf
+                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                            key
+                        |> ArgParser_errors.Add
+
+                parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
                 | ParseState_WithTypeHelp.AwaitingKey ->
@@ -4690,7 +4942,19 @@ You can use this to provide detailed documentation for your argument parser."
                             "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                             key
                         |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
+            | "--" :: rest ->
+                match state with
+                | ParseState_WithMultilineTypeHelp.AwaitingKey -> ()
+                | ParseState_WithMultilineTypeHelp.AwaitingValue key ->
+                    if setFlagValue key then
+                        ()
+                    else
+                        sprintf
+                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                            key
+                        |> ArgParser_errors.Add
+
+                parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
                 | ParseState_WithMultilineTypeHelp.AwaitingKey ->

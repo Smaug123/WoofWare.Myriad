@@ -466,6 +466,44 @@ Required argument '--exact' received no value"""
                 BoolVar = Choice1Of2 true
             }
 
+    [<Test>]
+    let ``Trailing double-dash does not discard pending arity-0 flag`` () =
+        // Regression test: a bare `--` was being handled before the parser examined its pending state,
+        // so the pending `--bool-var` flag was silently discarded and the env-var default won.
+        // The `--bool-var` should be treated as an arity-0 flag exactly as if input had ended.
+        ContainsBoolEnvVar.parse' (fun _ -> Some "false") [ "--bool-var" ; "--" ]
+        |> shouldEqual
+            {
+                BoolVar = Choice1Of2 true
+            }
+
+    [<Test>]
+    let ``A bare trailing double-dash is equivalent to end of input`` () =
+        // A `--` with nothing after it introduces no positional args, so appending one to a
+        // dash-free argument list must not change the parse outcome, whatever pending state we're in.
+        let getEnvVar (_ : string) = Some "false"
+
+        let outcome (args : string list) =
+            try
+                Ok (ContainsBoolEnvVar.parse' getEnvVar args)
+            with e ->
+                Error e.Message
+
+        let tokenOf (i : int) =
+            match ((i % 5) + 5) % 5 with
+            | 0 -> "--bool-var"
+            | 1 -> "true"
+            | 2 -> "false"
+            | 3 -> "--bool-var=true"
+            | _ -> "--bool-var=false"
+
+        let property (choices : int list) =
+            // None of these tokens is itself "--", so appending a trailing "--" adds no positional args.
+            let tokens = choices |> List.map tokenOf
+            outcome tokens = outcome (tokens @ [ "--" ])
+
+        Check.QuickThrowOnFailure property
+
     [<TestCaseSource(nameof boolCases)>]
     let ``Flag DUs can be parsed from env var`` (envValue : string, boolValue : bool) =
         let getEnvVar (s : string) =
@@ -639,6 +677,25 @@ Required argument '--exact' received no value"""
                 A = "--b=false"
                 GrabEverything = [ "--c" ; "hi" ; "--help" ]
             }
+
+    [<Test>]
+    let ``Trailing double-dash does not silently drop a pending unknown key`` () =
+        // Regression test: previously `--unknown --` silently dropped `--unknown` because the `--`
+        // was handled before the parser examined its pending `AwaitingValue` state. A pending key
+        // with no value is now resolved exactly as if input had ended: it's not an arity-0 flag, so
+        // this is the "trailing argument had no value" error rather than a silent success.
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                FlagsIntoPositionalArgs.parse' getEnvVar [ "--a=present" ; "--unknown" ; "--" ]
+                |> ignore<FlagsIntoPositionalArgs>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+Trailing argument --unknown had no value. Use a double-dash to separate positional args from key-value args."""
 
     [<Test>]
     let ``Can collect non-help args into positional args with Choice`` () =
