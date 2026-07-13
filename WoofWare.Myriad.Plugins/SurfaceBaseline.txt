@@ -59,6 +59,8 @@ WoofWare.Myriad.Plugins.JsonParseGenerator inherit obj, implements Myriad.Core.I
 WoofWare.Myriad.Plugins.JsonParseGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.JsonSerializeGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.JsonSerializeGenerator..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.RecordConstructorGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
+WoofWare.Myriad.Plugins.RecordConstructorGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.RemoveOptionsGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
 WoofWare.Myriad.Plugins.RemoveOptionsGenerator..ctor [constructor]: unit
 WoofWare.Myriad.Plugins.SwaggerClientGenerator inherit obj, implements Myriad.Core.IMyriadGenerator
