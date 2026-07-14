@@ -221,8 +221,8 @@
   },
   {
     "pname": "Nerdbank.GitVersioning",
-    "version": "3.9.50",
-    "hash": "sha256-BiBfXwr8ob2HTaFk2L5TwAgtvd/EPoqudSI9nhAjQPI="
+    "version": "3.10.91",
+    "hash": "sha256-Oo0a9DIpm9JuvFa8RkP7HN5Txf0XV+IHf/9uP5+DJSg="
   },
   {
     "pname": "NETStandard.Library",
@@ -391,8 +391,8 @@
   },
   {
     "pname": "WoofWare.NUnitTestRunner",
-    "version": "0.3.14",
-    "hash": "sha256-UF3jGUi0ewGU4Bz6WoU7fcFTufcorKUkQUgxL134fIs="
+    "version": "0.3.19",
+    "hash": "sha256-hd5X2ITKejjvB+cBW98TznX3tMCphDEw6lHled43HO0="
   },
   {
     "pname": "WoofWare.Whippet.Fantomas",
