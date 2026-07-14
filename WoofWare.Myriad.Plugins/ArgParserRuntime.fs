@@ -841,3 +841,209 @@ module internal ArgParserRuntime =
         let schema (wellFormed : WellFormedSchema) : ErasedSchema =
             match wellFormed with
             | WellFormed schema -> schema
+
+    /// The outcome of a full parse, before the typed layer's final record assembly.
+    [<RequireQualifiedAccess>]
+    type ParseOutcome =
+        /// Every argument was routed, converted and defaulted without error: the typed layer's
+        /// slots are fully populated and it may assemble the result.
+        | Success
+        /// A `--help`-shaped token was seen; the typed layer should render help and stop.
+        | HelpRequested
+        /// The parse was aborted mid-scan (historically these conditions threw immediately). The
+        /// message is fully rendered.
+        | Fatal of message : string
+        /// The parse completed but there were errors; the messages are fully rendered, in order.
+        | Errors of messages : string list
+
+    /// The typed layer's callbacks: everything the erased runtime cannot do itself because it
+    /// involves the target types.
+    type TypedCallbacks =
+        {
+            /// Convert an occurrence's value and store it in the leaf's slot, returning a
+            /// conversion-error message on failure. Called in argv order. A non-repeatable leaf
+            /// which is already populated must be left alone (first occurrence wins); duplicate
+            /// errors are reported by the runtime, not by this callback.
+            StoreOccurrence : ErasedOccurrence -> string option
+            /// Convert a positional token (true = it appeared after the `--` separator) and store
+            /// it in the positional sink, returning a conversion-error message on failure. Only
+            /// called when the schema has a positional sink.
+            StorePositional : string -> bool -> string option
+            /// Render the help text (used in fatal unknown-key messages).
+            HelpText : unit -> string
+            /// Render the already-stored first value of the given leaf, for duplicate-argument
+            /// messages (historically the first value is shown via ToString and the rejected
+            /// occurrence as its raw token).
+            RenderStored : int -> string
+            /// Populate the given leaf's slot from its default source (environment variable or
+            /// user-supplied function), returning an error message on failure. Only called when
+            /// the parse is otherwise error-free.
+            ApplyDefault : int -> string option
+        }
+
+    /// Every way the argument can be spelled, for messages: e.g. "--foo / --bar / --no-foo / --no-bar".
+    let humanReadableForms (leaf : ErasedLeaf) : string =
+        let standard = leaf.Forms |> List.map (fun form -> "--" + form)
+
+        let all =
+            if leaf.AcceptsNegation then
+                standard @ (leaf.Forms |> List.map (fun form -> "--no-" + form))
+            else
+                standard
+
+        String.concat " / " all
+
+    /// Drive a full parse: scan, route occurrences into the typed layer's slots (in argv order,
+    /// so conversion errors interleave faithfully), select union cases, validate, render every
+    /// structural error, and apply defaults (only when the parse is otherwise clean).
+    let runParse (schema : ErasedSchema) (callbacks : TypedCallbacks) (args : string list) : ParseOutcome =
+        let leavesById = schema.Leaves |> List.map (fun leaf -> leaf.Id, leaf) |> Map.ofList
+
+        let events = scan schema args
+        let errors = ResizeArray<string> ()
+
+        // Leaves for which at least one occurrence was successfully converted and stored. A
+        // required leaf whose only occurrences failed conversion has an empty slot, exactly as if
+        // it had never been supplied, and is reported as missing (matching the historical parser).
+        let stored = System.Collections.Generic.HashSet<int> ()
+
+        let rec consume (events : ScanEvent list) : ParseOutcome option =
+            match events with
+            | [] -> None
+            | event :: rest ->
+
+            match event with
+            | ScanEvent.Help _ -> Some ParseOutcome.HelpRequested
+            | ScanEvent.Error (ScanError.UnknownKeyEqualsValue (key, value)) ->
+                sprintf "Unable to process argument %s=%s as key %s and value %s" key value key value
+                |> ParseOutcome.Fatal
+                |> Some
+            | ScanEvent.Error (ScanError.UnknownKey source) ->
+                sprintf "Unable to process supplied arg %s. Help text follows.\n%s" source (callbacks.HelpText ())
+                |> ParseOutcome.Fatal
+                |> Some
+            | ScanEvent.Error (ScanError.TrailingKeyNoValue source) ->
+                sprintf
+                    "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                    source
+                |> errors.Add
+
+                consume rest
+            | ScanEvent.Occurrence occurrence ->
+                let leaf = Map.find occurrence.LeafId leavesById
+
+                if stored.Contains occurrence.LeafId && not leaf.Repeatable then
+                    // A duplicate of a slot which was already *successfully* populated. (If the
+                    // first occurrence failed conversion, a later occurrence legitimately fills
+                    // the slot instead, matching the historical parser.) Reported here so that
+                    // diagnostics keep argv order.
+                    match occurrence.Value with
+                    | None ->
+                        sprintf "Flag '%s' was supplied multiple times" (humanReadableForms leaf)
+                        |> errors.Add
+                    | Some value ->
+                        sprintf
+                            "Argument '%s' was supplied multiple times: %s and %s"
+                            (humanReadableForms leaf)
+                            (callbacks.RenderStored occurrence.LeafId)
+                            value
+                        |> errors.Add
+                else
+                    match callbacks.StoreOccurrence occurrence with
+                    | Some error -> errors.Add error
+                    | None -> stored.Add occurrence.LeafId |> ignore<bool>
+
+                consume rest
+            | ScanEvent.Positional (value, afterSeparator, _) ->
+                match schema.Positional with
+                | None ->
+                    // No sink: the tokens are reported wholesale by validation below.
+                    consume rest
+                | Some _ ->
+                    match callbacks.StorePositional value afterSeparator with
+                    | Some error -> errors.Add error
+                    | None -> ()
+
+                    consume rest
+            | ScanEvent.Separator -> consume rest
+
+        match consume events with
+        | Some outcome -> outcome
+        | None ->
+
+        let observed =
+            (Map.empty, events)
+            ||> List.fold (fun observed event ->
+                match event with
+                | ScanEvent.Occurrence occurrence ->
+                    if Map.containsKey occurrence.LeafId observed then
+                        observed
+                    else
+                        Map.add occurrence.LeafId occurrence.Source observed
+                | _ -> observed
+            )
+
+        let selection = select schema observed
+        let validationErrors, needsDefault = validate schema selection events
+
+        for selectionError in selection.Errors do
+            match selectionError with
+            | SelectionError.ConflictingCases (_, witnesses) ->
+                let describe =
+                    witnesses
+                    |> List.map (fun (caseName, source) -> sprintf "%s (via %s)" caseName source)
+                    |> String.concat ", "
+
+                sprintf "Arguments select more than one alternative: %s" describe |> errors.Add
+            | SelectionError.NoCaseSelected (_, caseNames) ->
+                sprintf "No arguments were supplied to select one of: %s" (String.concat ", " caseNames)
+                |> errors.Add
+            | SelectionError.AmbiguousEmptyCases (_, caseNames) ->
+                sprintf
+                    "Arguments do not determine which of these alternatives was intended: %s"
+                    (String.concat ", " caseNames)
+                |> errors.Add
+
+        for validationError in validationErrors do
+            match validationError with
+            | ValidationError.DuplicateOccurrences _ ->
+                // Rendered inline during consumption, so that diagnostics keep argv order and
+                // reflect which occurrence actually populated the slot.
+                ()
+            | ValidationError.MissingRequired _ ->
+                // Handled below in leaf order, merged with leaves whose occurrences all failed
+                // conversion.
+                ()
+            | ValidationError.InactiveLeaf _ ->
+                // The selection conflict which caused this has already been reported.
+                ()
+            | ValidationError.NoPositionalSink tokens ->
+                sprintf "There were leftover args: %s" (String.concat " " tokens) |> errors.Add
+
+        // A required leaf is missing if nothing was successfully stored for it, whether it was
+        // never supplied or every occurrence of it failed conversion.
+        for leaf in schema.Leaves do
+            let isRequired =
+                match leaf.Requirement with
+                | ErasedRequirement.Required -> true
+                | ErasedRequirement.Optional
+                | ErasedRequirement.HasDefault -> false
+
+            if
+                isRequired
+                && Set.contains leaf.Id selection.ActiveLeaves
+                && not (stored.Contains leaf.Id)
+            then
+                sprintf "Required argument '%s' received no value" (humanReadableForms leaf)
+                |> errors.Add
+
+        if errors.Count = 0 then
+            for leafId in needsDefault do
+                match callbacks.ApplyDefault leafId with
+                | Some error -> errors.Add error
+                | None -> ()
+
+        if errors.Count = 0 then
+            ParseOutcome.Success
+        else
+            ParseOutcome.Errors (List.ofSeq errors)

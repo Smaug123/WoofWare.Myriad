@@ -259,3 +259,11 @@ type WithMultilineTypeHelp =
         OutputDir : string
         Force : bool
     }
+
+/// Regression test: the pre-rewrite generator produced uncompilable code for a non-positional
+/// list of booleans (its accumulator was a ResizeArray but the flag machinery assumed an option).
+[<ArgParser>]
+type NonPositionalBoolList =
+    {
+        Flags : bool list
+    }

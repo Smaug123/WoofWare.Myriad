@@ -43,12 +43,14 @@
     <Compile Include="HttpClientGenerator.fs"/>
     <Compile Include="CataGenerator.fs" />
     <Compile Include="ArgParserRuntime.fs" />
+    <Compile Include="ArgParserRuntimeEmbed.fs" />
     <Compile Include="ArgParserGenerator.fs" />
     <Compile Include="JsonHelpers.fs" />
     <Compile Include="HttpMethod.fs" />
     <Compile Include="SwaggerV2.fs" />
     <Compile Include="OpenApi3.fs" />
     <Compile Include="SwaggerClientGenerator.fs" />
+    <EmbeddedResource Include="ArgParserRuntime.fs" LogicalName="ArgParserRuntime.fs" />
     <EmbeddedResource Include="version.json"/>
     <EmbeddedResource Include="SurfaceBaseline.txt"/>
     <None Include="..\README.md">

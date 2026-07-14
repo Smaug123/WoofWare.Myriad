@@ -371,6 +371,275 @@ module TestArgParserRuntime =
         errors |> shouldEqual []
 
     // ----------------------------------------------------------------------------------------
+    // Unit tests: the runParse orchestrator, with callbacks which store raw strings into a map
+    // (a stand-in for the generated typed layer).
+
+    /// Callbacks which record everything and store first-wins raw values per leaf.
+    type private FakeTyped =
+        {
+            mutable Slots : Map<int, string list>
+            mutable Positionals : (string * bool) list
+            mutable Defaults : int list
+            mutable HelpTextCalls : int
+        }
+
+        static member Fresh () : FakeTyped =
+            {
+                Slots = Map.empty
+                Positionals = []
+                Defaults = []
+                HelpTextCalls = 0
+            }
+
+        member this.Callbacks (schema : ErasedSchema) : TypedCallbacks =
+            let leafById (id : int) : ErasedLeaf =
+                schema.Leaves |> List.find (fun l -> l.Id = id)
+
+            {
+                StoreOccurrence =
+                    fun occurrence ->
+                        let leaf = leafById occurrence.LeafId
+                        let existing = Map.tryFind occurrence.LeafId this.Slots |> Option.defaultValue []
+
+                        if not leaf.Repeatable && not (List.isEmpty existing) then
+                            // First occurrence wins; the runtime reports the duplicate.
+                            None
+                        elif occurrence.Value = Some "unconvertible" then
+                            Some (sprintf "cannot convert (at arg %s)" occurrence.Source)
+                        else
+                            let value =
+                                match occurrence.Value with
+                                | Some v -> (if occurrence.Negated then "negated:" + v else v)
+                                | None -> (if occurrence.Negated then "false" else "true")
+
+                            this.Slots <- Map.add occurrence.LeafId (existing @ [ value ]) this.Slots
+                            None
+                StorePositional =
+                    fun value afterSeparator ->
+                        this.Positionals <- this.Positionals @ [ value, afterSeparator ]
+                        None
+                HelpText =
+                    fun () ->
+                        this.HelpTextCalls <- this.HelpTextCalls + 1
+                        "HELP TEXT"
+                RenderStored =
+                    fun leafId ->
+                        match Map.tryFind leafId this.Slots with
+                        | Some (first :: _) -> first
+                        | _ -> "<nothing stored>"
+                ApplyDefault =
+                    fun leafId ->
+                        this.Defaults <- this.Defaults @ [ leafId ]
+                        None
+            }
+
+    [<Test>]
+    let ``runParse: clean parse stores values and applies defaults`` () =
+        let schema =
+            productSchema
+                [
+                    leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                    leaf 1 "bar" ErasedArity.One ErasedRequirement.HasDefault
+                ]
+                None
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "--foo=3" ]
+        |> shouldEqual ParseOutcome.Success
+
+        fake.Slots |> shouldEqual (Map.ofList [ 0, [ "3" ] ])
+        fake.Defaults |> shouldEqual [ 1 ]
+        fake.HelpTextCalls |> shouldEqual 0
+
+    [<Test>]
+    let ``runParse: defaults do not run when the parse has failed`` () =
+        let schema =
+            productSchema
+                [
+                    leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                    leaf 1 "bar" ErasedArity.One ErasedRequirement.HasDefault
+                ]
+                None
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "--foo=unconvertible" ]
+        |> shouldEqual (
+            ParseOutcome.Errors
+                [
+                    "cannot convert (at arg --foo=unconvertible)"
+                    "Required argument '--foo' received no value"
+                ]
+        )
+
+        fake.Defaults |> shouldEqual []
+
+    [<Test>]
+    let ``runParse: a conversion error does not stop the scan`` () =
+        let schema =
+            productSchema
+                [
+                    leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                    leaf 1 "bar" ErasedArity.One ErasedRequirement.Required
+                ]
+                None
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "--foo" ; "unconvertible" ; "--bar=ok" ]
+        |> shouldEqual (
+            ParseOutcome.Errors
+                [
+                    "cannot convert (at arg --foo)"
+                    "Required argument '--foo' received no value"
+                ]
+        )
+
+        // --bar was still parsed, despite the earlier conversion failure.
+        fake.Slots |> shouldEqual (Map.ofList [ 1, [ "ok" ] ])
+
+    [<Test>]
+    let ``runParse: help wins, lazily`` () =
+        let schema =
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] None
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "--foo=unconvertible" ; "--HELP" ]
+        |> shouldEqual ParseOutcome.HelpRequested
+
+        // The help text itself is rendered by the caller, not by runParse.
+        fake.HelpTextCalls |> shouldEqual 0
+
+    [<Test>]
+    let ``runParse: unknown keys are fatal where flag-like collection is not allowed`` () =
+        let schema =
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Optional ] None
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "--quux=3" ]
+        |> shouldEqual (ParseOutcome.Fatal "Unable to process argument --quux=3 as key --quux and value 3")
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "--quux" ; "x" ]
+        |> shouldEqual (ParseOutcome.Fatal "Unable to process supplied arg --quux. Help text follows.\nHELP TEXT")
+
+        fake.HelpTextCalls |> shouldEqual 1
+
+    [<Test>]
+    let ``runParse: duplicate messages distinguish valued and flag occurrences`` () =
+        let schema =
+            productSchema
+                [
+                    leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                    leaf 1 "flag" ErasedArity.BoolLike ErasedRequirement.Optional
+                ]
+                None
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "--foo=3" ; "--foo=4" ; "--flag" ; "--flag" ]
+        |> shouldEqual (
+            ParseOutcome.Errors
+                [
+                    "Argument '--foo' was supplied multiple times: 3 and 4"
+                    "Flag '--flag' was supplied multiple times"
+                ]
+        )
+
+        // First occurrence wins.
+        fake.Slots |> shouldEqual (Map.ofList [ 0, [ "3" ] ; 1, [ "true" ] ])
+
+    [<Test>]
+    let ``runParse: a failed first occurrence is not a duplicate of a successful second`` () =
+        let schema =
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] None
+
+        let fake = FakeTyped.Fresh ()
+
+        // The first occurrence never populated the slot, so the second legitimately fills it:
+        // no duplicate error, and no false "1 and 1" diagnostic.
+        runParse schema (fake.Callbacks schema) [ "--foo=unconvertible" ; "--foo=1" ]
+        |> shouldEqual (ParseOutcome.Errors [ "cannot convert (at arg --foo=unconvertible)" ])
+
+        fake.Slots |> shouldEqual (Map.ofList [ 0, [ "1" ] ])
+
+    [<Test>]
+    let ``runParse: duplicate errors appear in argv order among other errors`` () =
+        let schema =
+            productSchema
+                [
+                    leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                    leaf 1 "bar" ErasedArity.One ErasedRequirement.Required
+                ]
+                None
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "--foo=1" ; "--foo=2" ; "--bar=unconvertible" ]
+        |> shouldEqual (
+            ParseOutcome.Errors
+                [
+                    "Argument '--foo' was supplied multiple times: 1 and 2"
+                    "cannot convert (at arg --bar=unconvertible)"
+                    "Required argument '--bar' received no value"
+                ]
+        )
+
+    [<Test>]
+    let ``runParse: leftover positionals without a sink are an error`` () =
+        let schema =
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Optional ] None
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "stray" ; "--" ; "tail" ]
+        |> shouldEqual (ParseOutcome.Errors [ "There were leftover args: stray tail" ])
+
+        fake.Positionals |> shouldEqual []
+
+    [<Test>]
+    let ``runParse: positionals reach the sink with their separator flag`` () =
+        let sink =
+            {
+                Id = 99
+                Forms = [ "rest" ]
+                FlagLike = ErasedFlagLikeBehaviour.Reject
+                TypeDescription = "string"
+                Help = None
+            }
+
+        let schema =
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Optional ] (Some sink)
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse schema (fake.Callbacks schema) [ "pre" ; "--foo=1" ; "--" ; "post" ]
+        |> shouldEqual ParseOutcome.Success
+
+        fake.Positionals |> shouldEqual [ "pre", false ; "post", true ]
+
+    [<Test>]
+    let ``runParse: motivating example end to end`` () =
+        let fake = FakeTyped.Fresh ()
+
+        runParse motivating (fake.Callbacks motivating) [ "--bar=8" ]
+        |> shouldEqual (ParseOutcome.Errors [ "Required argument '--baz' received no value" ])
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse motivating (fake.Callbacks motivating) [ "--foo=3" ; "--bar=8" ]
+        |> shouldEqual (
+            ParseOutcome.Errors
+                [
+                    "Arguments select more than one alternative: FooCase (via --foo=3), BarCase (via --bar=8)"
+                ]
+        )
+
+    // ----------------------------------------------------------------------------------------
     // The exhaustive reference semantics: expand a schema tree into every complete alternative
     // (one case chosen for every reachable Sum), and accept precisely those alternatives whose
     // leaf set covers everything observed and whose required leaves were all observed. This is

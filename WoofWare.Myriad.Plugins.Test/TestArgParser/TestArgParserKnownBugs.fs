@@ -1,24 +1,22 @@
 namespace WoofWare.Myriad.Plugins.Test
 
-open System
 open NUnit.Framework
 open FsUnitTyped
 open ConsumePlugin
 
-/// These tests pin down current behaviour of the generated arg parser which we believe to be
-/// buggy. Each test asserts what the parser *does today*, with a comment stating the desired
-/// behaviour. They exist so that the planned rewrite of the arg parser flips them deliberately,
-/// making every observable semantic change reviewable, rather than changing behaviour silently.
+/// These tests pin behaviours which were bugs in the original arg parser and were fixed by the
+/// runtime rewrite. Each test's original (buggy) behaviour is noted in a comment, so that the
+/// deliberate semantic changes remain visible in history.
 [<TestFixture>]
 module TestArgParserKnownBugs =
 
     let noEnv (_ : string) : string option = None
 
-    // DESIRED: a malformed value in `--key value` form should record the conversion error and
-    // continue scanning, exactly as the `--key=value` form does. Instead, the scan stops dead:
-    // `--bar` and `--baz` below are never processed, so they are spuriously reported missing.
+    // Previously the scan stopped dead at a malformed `--key value` pair, so `--bar` and `--baz`
+    // were spuriously reported missing. Now the conversion error is recorded (with the offending
+    // arg's name) and scanning continues.
     [<Test>]
-    let ``BUG: a malformed space-separated value aborts the remainder of the scan`` () =
+    let ``A malformed space-separated value does not abort the remainder of the scan`` () =
         let exc =
             Assert.Throws<exn> (fun () ->
                 BasicNoPositionals.parse' noEnv [ "--foo" ; "bad" ; "--bar=present" ; "--baz=true" ]
@@ -28,14 +26,10 @@ module TestArgParserKnownBugs =
         exc.Message
         |> shouldEqual
             """Errors during parse!
-The input string 'bad' was not in a correct format.
-Required argument '--foo' received no value
-Required argument '--bar' received no value
-Required argument '--baz' received no value"""
+The input string 'bad' was not in a correct format. (at arg --foo)
+Required argument '--foo' received no value"""
 
-    // Contrast case: the same malformed value in `--key=value` form *does* continue the scan.
-    // This test is here to document the asymmetry with the test above; this behaviour (continue
-    // scanning after a conversion error) is the desired one.
+    // The equals form behaves identically.
     [<Test>]
     let ``A malformed equals-form value does not abort the scan`` () =
         let exc =
@@ -50,11 +44,11 @@ Required argument '--baz' received no value"""
 The input string 'bad' was not in a correct format. (at arg --foo=bad)
 Required argument '--foo' received no value"""
 
-    // DESIRED: a duplicated flag must not consume the next token as its "value". Here the
-    // duplicate `--baz` swallows `--foo=3`, so on top of the duplicate-arg error we get a
-    // spurious "'--foo' received no value" error, and `--foo=3` is never parsed.
+    // Previously the duplicated `--baz` consumed `--foo=3` as its alleged value, so `--foo` was
+    // spuriously reported missing as well. Now the duplicate is reported on its own and every
+    // other argument parses normally.
     [<Test>]
-    let ``BUG: a duplicated flag consumes the following option as its value`` () =
+    let ``A duplicated flag does not consume the following option as its value`` () =
         let exc =
             Assert.Throws<exn> (fun () ->
                 BasicNoPositionals.parse' noEnv [ "--baz=true" ; "--baz" ; "--foo=3" ; "--bar=present" ]
@@ -64,75 +58,84 @@ Required argument '--foo' received no value"""
         exc.Message
         |> shouldEqual
             """Errors during parse!
-Argument '--baz' was supplied multiple times: True and --foo=3
-Required argument '--foo' received no value"""
+Flag '--baz' was supplied multiple times"""
 
-    // DESIRED: a conversion failure in a list-typed (repeatable) argument should be recorded as a
-    // parse error like scalar conversion failures are, not escape as a raw FormatException with
-    // no indication of which argument was at fault.
+    // Previously a raw FormatException escaped, with no indication of which argument was at
+    // fault and no error aggregation. The same applied to positional conversions (before and
+    // after the `--` separator) and to environment-variable defaults.
     [<Test>]
-    let ``BUG: a malformed list-element value throws a raw FormatException`` () =
-        Assert.Throws<FormatException> (fun () ->
-            BasicNoPositionals.parse' noEnv [ "--foo=1" ; "--bar=x" ; "--baz=true" ; "--rest" ; "notanint" ]
-            |> ignore<BasicNoPositionals>
-        )
-        |> fun exc ->
-            exc.Message
-            |> shouldEqual "The input string 'notanint' was not in a correct format."
+    let ``A malformed list-element value is a parse error, not a raw FormatException`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                BasicNoPositionals.parse' noEnv [ "--foo=1" ; "--bar=x" ; "--baz=true" ; "--rest" ; "notanint" ]
+                |> ignore<BasicNoPositionals>
+            )
 
-    // DESIRED: as above, but for a positional argument.
-    [<Test>]
-    let ``BUG: a malformed positional value throws a raw FormatException`` () =
-        Assert.Throws<FormatException> (fun () ->
-            BasicWithIntPositionals.parse' noEnv [ "--foo=1" ; "--bar=x" ; "--baz=true" ; "notanint" ]
-            |> ignore<BasicWithIntPositionals>
-        )
-        |> fun exc ->
-            exc.Message
-            |> shouldEqual "The input string 'notanint' was not in a correct format."
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+The input string 'notanint' was not in a correct format. (at arg --rest)"""
 
-    // DESIRED: as above, but for a positional argument appearing after the `--` separator.
     [<Test>]
-    let ``BUG: a malformed positional value after the separator throws a raw FormatException`` () =
-        Assert.Throws<FormatException> (fun () ->
-            BasicWithIntPositionals.parse' noEnv [ "--foo=1" ; "--bar=x" ; "--baz=true" ; "--" ; "notanint" ]
-            |> ignore<BasicWithIntPositionals>
-        )
-        |> fun exc ->
-            exc.Message
-            |> shouldEqual "The input string 'notanint' was not in a correct format."
+    let ``A malformed positional value is a parse error, not a raw FormatException`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                BasicWithIntPositionals.parse' noEnv [ "--foo=1" ; "--bar=x" ; "--baz=true" ; "notanint" ]
+                |> ignore<BasicWithIntPositionals>
+            )
 
-    // DESIRED: a malformed environment-variable default should be reported through the parser's
-    // error channel (naming the environment variable), not escape as a raw FormatException.
-    [<Test>]
-    let ``BUG: a malformed environment-variable default throws a raw FormatException`` () =
-        Assert.Throws<FormatException> (fun () ->
-            ContainsBoolEnvVar.parse' (fun _ -> Some "notabool") []
-            |> ignore<ContainsBoolEnvVar>
-        )
-        |> fun exc ->
-            exc.Message
-            |> shouldEqual "String 'notabool' was not recognized as a valid Boolean."
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+The input string 'notanint' was not in a correct format. (at arg notanint)"""
 
-    // DESIRED: once the parse is known to have failed, no further effects should run: the
-    // environment should not be consulted for defaults. Today the env lookup runs anyway, so a
-    // throwing `getEnvironmentVariable` masks the real parse error.
     [<Test>]
-    let ``BUG: environment lookups run even after the parse has already failed`` () =
+    let ``A malformed positional value after the separator is a parse error, not a raw FormatException`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                BasicWithIntPositionals.parse' noEnv [ "--foo=1" ; "--bar=x" ; "--baz=true" ; "--" ; "notanint" ]
+                |> ignore<BasicWithIntPositionals>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+The input string 'notanint' was not in a correct format. (at arg notanint)"""
+
+    [<Test>]
+    let ``A malformed environment-variable default is a parse error naming the variable`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ContainsBoolEnvVar.parse' (fun _ -> Some "notabool") []
+                |> ignore<ContainsBoolEnvVar>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+String 'notabool' was not recognized as a valid Boolean. (from environment variable CONSUMEPLUGIN_THINGS)"""
+
+    // Previously the environment was consulted for defaults even after the parse had already
+    // failed, so a throwing `getEnvironmentVariable` masked the real parse error. Defaults now
+    // run only when the parse is otherwise clean.
+    [<Test>]
+    let ``Environment lookups do not run after the parse has failed`` () =
         let exc =
             Assert.Throws<exn> (fun () ->
                 ContainsBoolEnvVar.parse' (fun _ -> failwith "env var was consulted") [ "--bool-var=notabool" ]
                 |> ignore<ContainsBoolEnvVar>
             )
 
-        exc.Message |> shouldEqual "env var was consulted"
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+String 'notabool' was not recognized as a valid Boolean. (at arg --bool-var=notabool)"""
 
-    // DESIRED: help detection should use the same case-insensitive comparison as ordinary
-    // argument matching. Today `--FOO=1` matches the field `Foo`, but `--HELP` is not help: it
-    // falls through to ordinary (failed) key processing.
+    // Previously `--FOO=1` matched the field `Foo` but `--HELP` was not help: ordinary argument
+    // matching was case-insensitive while help detection was case-sensitive. Help now uses the
+    // same case-insensitive comparison as everything else.
     [<Test>]
-    let ``BUG: ordinary args match case-insensitively but help is case-sensitive`` () =
-        // Case-insensitive ordinary match: this parses fine.
+    let ``Help matches case-insensitively, like ordinary arguments`` () =
         BasicNoPositionals.parse' noEnv [ "--FOO=1" ; "--bar=x" ; "--baz=true" ]
         |> shouldEqual
             {
@@ -142,14 +145,35 @@ Required argument '--foo' received no value"""
                 Rest = []
             }
 
-        // ...but --HELP does not produce the help text.
         let exc =
             Assert.Throws<exn> (fun () -> BasicNoPositionals.parse' noEnv [ "--HELP" ] |> ignore<BasicNoPositionals>)
 
         exc.Message
         |> shouldEqual
-            """Errors during parse!
-Trailing argument --HELP had no value. Use a double-dash to separate positional args from key-value args.
-Required argument '--foo' received no value
-Required argument '--bar' received no value
-Required argument '--baz' received no value"""
+            """Help text requested.
+--foo  int32
+--bar  string
+--baz  bool
+--rest  int32 (can be repeated)"""
+
+    // The pre-rewrite generator emitted uncompilable code for a non-positional `bool list`
+    // (its accumulator was a ResizeArray, but the flag machinery assumed an option), so the
+    // NonPositionalBoolList type could not previously exist at all.
+    [<Test>]
+    let ``A non-positional list of booleans parses, in all three syntaxes`` () =
+        NonPositionalBoolList.parse' noEnv [ "--flags" ; "true" ; "--flags=false" ; "--flags" ]
+        |> shouldEqual
+            {
+                Flags = [ true ; false ; true ]
+            }
+
+    // The positional sink is addressable in keyed form under every one of its long forms, not
+    // just the first (Rest here has both "rest" and "others").
+    [<Test>]
+    let ``Every long form of a positional sink reaches the sink in keyed syntax`` () =
+        SameBaseNameArgs.parse' noEnv [ "--value=1" ; "--rest=a" ; "--others=b" ; "c" ]
+        |> shouldEqual
+            {
+                Value = 1
+                Rest = [ "a" ; "b" ; "c" ]
+            }
