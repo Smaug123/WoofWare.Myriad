@@ -831,8 +831,9 @@ module private ArgParserRuntime_SameBaseNameArgs =
     [<RequireQualifiedAccess>]
     type ParseOutcome =
         /// Every argument was routed, converted and defaulted without error: the typed layer's
-        /// slots are fully populated and it may assemble the result.
-        | Success
+        /// slots are fully populated and it may assemble the result. The selection records which
+        /// case was chosen for every discriminated union in the schema.
+        | Success of selection : Selection
         /// A `--help`-shaped token was seen; the typed layer should render help and stop.
         | HelpRequested
         /// The parse was aborted mid-scan (historically these conditions threw immediately). The
@@ -1011,7 +1012,7 @@ module private ArgParserRuntime_SameBaseNameArgs =
                     | None -> ()
 
             if errors.Count = 0 then
-                ParseOutcome.Success
+                ParseOutcome.Success selection
             else
                 ParseOutcome.Errors (List.ofSeq errors)
 namespace ConsumePlugin
@@ -1052,8 +1053,9 @@ module SameBaseNameArgs =
                         }
                     ]
                 Tree =
-                    (ArgParserRuntime_SameBaseNameArgs.ErasedTree.Product[ArgParserRuntime_SameBaseNameArgs.ErasedTree.Leaf
-                                                                              0])
+                    (ArgParserRuntime_SameBaseNameArgs.ErasedTree.Product (
+                        [ ArgParserRuntime_SameBaseNameArgs.ErasedTree.Leaf 0 ]
+                    ))
                 Positional =
                     ({
                         ArgParserRuntime_SameBaseNameArgs.ErasedPositional.Id = 1
@@ -1118,19 +1120,15 @@ module SameBaseNameArgs =
                 parser_callbacks
                 args
         with
-        | ArgParserRuntime_SameBaseNameArgs.ParseOutcome.Success ->
-            let arg_1 = arg_1 |> Seq.toList
-
-            let arg_0 =
-                match arg_0 with
-                | Some x -> x
-                | None ->
-                    failwith
-                        "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
-
+        | ArgParserRuntime_SameBaseNameArgs.ParseOutcome.Success parser_selection ->
             {
-                Rest = arg_1
-                Value = arg_0
+                Rest = (arg_1 |> Seq.toList)
+                Value =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
             }
         | ArgParserRuntime_SameBaseNameArgs.ParseOutcome.HelpRequested ->
             helpText () |> failwithf "Help text requested.\n%s"

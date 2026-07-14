@@ -438,6 +438,14 @@ module TestArgParserRuntime =
                         None
             }
 
+    /// The selection a product-only schema always yields on success.
+    let private productSelection (schema : ErasedSchema) : Selection =
+        {
+            Choices = Map.empty
+            ActiveLeaves = schema.Leaves |> List.map (fun l -> l.Id) |> Set.ofList
+            Errors = []
+        }
+
     [<Test>]
     let ``runParse: clean parse stores values and applies defaults`` () =
         let schema =
@@ -451,7 +459,7 @@ module TestArgParserRuntime =
         let fake = FakeTyped.Fresh ()
 
         runParse schema (fake.Callbacks schema) [ "--foo=3" ]
-        |> shouldEqual ParseOutcome.Success
+        |> shouldEqual (ParseOutcome.Success (productSelection schema))
 
         fake.Slots |> shouldEqual (Map.ofList [ 0, [ "3" ] ])
         fake.Defaults |> shouldEqual [ 1 ]
@@ -623,7 +631,7 @@ module TestArgParserRuntime =
         let fake = FakeTyped.Fresh ()
 
         runParse schema (fake.Callbacks schema) [ "pre" ; "--foo=1" ; "--" ; "post" ]
-        |> shouldEqual ParseOutcome.Success
+        |> shouldEqual (ParseOutcome.Success (productSelection schema))
 
         fake.Positionals |> shouldEqual [ "pre", false ; "post", true ]
 
