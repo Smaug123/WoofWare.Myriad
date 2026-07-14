@@ -418,11 +418,10 @@ type InterfaceMockGenerator () =
                         | ty -> Some (ns, ty)
                 )
 
-            let opens = AstHelper.extractOpens ast
-
             let modules =
                 namespaceAndInterfaces
                 |> List.collect (fun (ns, records) ->
+                    let opens = AstHelper.extractOpensForNamespace ns ast
                     records |> List.map (InterfaceMockGenerator.createRecord ns opens)
                 )
 
