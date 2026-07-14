@@ -1512,50 +1512,56 @@ module internal ArgParserGenerator =
                 )
                 |> SynExpr.applyTo (SynExpr.createIdent "key")
 
+            // Resolve any pending parser state when no (further) value is available for the current key.
+            // This fires both at end-of-input and immediately before a `--` separator: in either case the
+            // key we're `AwaitingValue` for got no value, so it must be an arity-0 flag or it's an error.
+            let resolvePendingState =
+                SynExpr.createMatch
+                    (SynExpr.createIdent "state")
+                    [
+                        SynMatchClause.create
+                            (SynPat.identWithArgs [ parseState ; Ident.create "AwaitingKey" ] (SynArgPats.create []))
+                            (SynExpr.CreateConst ())
+                        SynMatchClause.create
+                            (SynPat.identWithArgs
+                                [ parseState ; Ident.create "AwaitingValue" ]
+                                (SynArgPats.createNamed [ "key" ]))
+                            (SynExpr.ifThenElse
+                                (SynExpr.applyFunction (SynExpr.createIdent "setFlagValue") (SynExpr.createIdent "key"))
+                                (trailingArgMessage
+                                 |> SynExpr.pipeThroughFunction (SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc)))
+                                (SynExpr.CreateConst ()))
+                    ]
+
+            // `parser_LeftoverArgs.AddRange (rest |> Seq.map ...)`: everything after a `--` is positional.
+            let addRestToLeftovers =
+                SynExpr.callMethodArg
+                    "AddRange"
+                    (SynExpr.paren (
+                        SynExpr.createIdent "rest"
+                        |> SynExpr.pipeThroughFunction (
+                            SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ]) leftoverArgParser
+                        )
+                        |> fun p ->
+                            match leftoverArgAcc with
+                            | ChoicePositional.Normal _ -> p
+                            | ChoicePositional.Choice _ ->
+                                p
+                                |> SynExpr.pipeThroughFunction (
+                                    SynExpr.applyFunction
+                                        (SynExpr.createLongIdent [ "Seq" ; "map" ])
+                                        (SynExpr.createIdent "Choice2Of2")
+                                )
+                    ))
+                    (SynExpr.createIdent' leftoverArgs)
+
             [
-                SynMatchClause.create
-                    SynPat.emptyList
-                    (SynExpr.createMatch
-                        (SynExpr.createIdent "state")
-                        [
-                            SynMatchClause.create
-                                (SynPat.identWithArgs [ parseState ; Ident.create "AwaitingKey" ] (SynArgPats.create []))
-                                (SynExpr.CreateConst ())
-                            SynMatchClause.create
-                                (SynPat.identWithArgs
-                                    [ parseState ; Ident.create "AwaitingValue" ]
-                                    (SynArgPats.createNamed [ "key" ]))
-                                (SynExpr.ifThenElse
-                                    (SynExpr.applyFunction
-                                        (SynExpr.createIdent "setFlagValue")
-                                        (SynExpr.createIdent "key"))
-                                    (trailingArgMessage
-                                     |> SynExpr.pipeThroughFunction (
-                                         SynExpr.dotGet "Add" (SynExpr.createIdent' errorAcc)
-                                     ))
-                                    (SynExpr.CreateConst ()))
-                        ])
+                SynMatchClause.create SynPat.emptyList resolvePendingState
                 SynMatchClause.create
                     (SynPat.listCons (SynPat.createConst (SynConst.Create "--")) (SynPat.named "rest"))
-                    (SynExpr.callMethodArg
-                        "AddRange"
-                        (SynExpr.paren (
-                            SynExpr.createIdent "rest"
-                            |> SynExpr.pipeThroughFunction (
-                                SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ]) leftoverArgParser
-                            )
-                            |> fun p ->
-                                match leftoverArgAcc with
-                                | ChoicePositional.Normal _ -> p
-                                | ChoicePositional.Choice _ ->
-                                    p
-                                    |> SynExpr.pipeThroughFunction (
-                                        SynExpr.applyFunction
-                                            (SynExpr.createLongIdent [ "Seq" ; "map" ])
-                                            (SynExpr.createIdent "Choice2Of2")
-                                    )
-                        ))
-                        (SynExpr.createIdent' leftoverArgs))
+                    // Resolve the pending key first (a `--` must not silently discard it), *then* treat the
+                    // remainder as positional args.
+                    (SynExpr.sequential [ resolvePendingState ; addRestToLeftovers ])
                 SynMatchClause.create (SynPat.listCons (SynPat.named "arg") (SynPat.named "args")) argBody
             ]
             |> SynExpr.createMatch (SynExpr.createIdent "args")
