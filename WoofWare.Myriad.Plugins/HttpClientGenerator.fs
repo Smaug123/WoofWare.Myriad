@@ -1294,6 +1294,9 @@ type HttpClientGenerator () =
 
             let modules =
                 namespaceAndTypes
-                |> List.collect (fun (ns, types) -> types |> List.map (HttpClientGenerator.createModule opens ns))
+                |> List.collect (fun (ns, types) ->
+                    let opens = AstHelper.extractOpensForNamespace ns ast
+                    types |> List.map (HttpClientGenerator.createModule opens ns)
+                )
 
             Output.Ast modules

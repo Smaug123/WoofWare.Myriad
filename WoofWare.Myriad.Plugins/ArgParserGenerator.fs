@@ -2148,6 +2148,7 @@ type ArgParserGenerator () =
             let modules =
                 namespaceAndTypes
                 |> List.map (fun (ns, taggedType, unions, records) ->
+                    let opens = AstHelper.extractOpensForNamespace ns ast
                     ArgParserGenerator.createModule opens ns taggedType unions records
                 )
 
