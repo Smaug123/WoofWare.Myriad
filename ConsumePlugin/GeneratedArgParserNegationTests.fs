@@ -151,8 +151,7 @@ module private ArgParserRuntime_BoolNegation =
 
     [<RequireQualifiedAccess>]
     module ScanError =
-        /// True if this error means "stop the parse immediately" (historically these were
-        /// exceptions thrown mid-scan rather than accumulated).
+        /// True if this error means "stop the parse immediately".
         let isFatal (e : ScanError) : bool =
             match e with
             | ScanError.TrailingKeyNoValue _ -> false
@@ -198,7 +197,7 @@ module private ArgParserRuntime_BoolNegation =
 
     /// Scan argv into an ordered event log. Pure: performs no conversion, throws no exceptions.
     ///
-    /// The grammar (deliberately preserving the historical parser's behaviour):
+    /// The grammar:
     /// - `--` ends key processing; every subsequent token is positional. A key pending a value at
     ///   the separator is resolved exactly as at end-of-input: boolean-like keys become an
     ///   arity-0 occurrence, anything else is a trailing-key error.
