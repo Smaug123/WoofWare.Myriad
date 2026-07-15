@@ -361,6 +361,17 @@ Required argument '--exact' received no value"""
             }
 
     [<Test>]
+    let ``Every alias of a positional-args field is accepted at its own key`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        AliasedPositionals.parse' getEnvVar [ "--count=1" ; "--rest=a" ; "--remainder" ; "b" ; "bare" ; "--" ; "c" ]
+        |> shouldEqual
+            {
+                Count = 1
+                Others = [ "a" ; "b" ; "bare" ; "c" ]
+            }
+
+    [<Test>]
     let ``Default functions on nested records resolve against the declaring record`` () =
         let getEnvVar (_ : string) = failwith "should not call"
 

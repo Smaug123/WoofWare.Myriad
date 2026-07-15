@@ -4588,6 +4588,144 @@ open System
 open System.IO
 open WoofWare.Myriad.Plugins
 
+/// Methods to parse arguments for the type AliasedPositionals
+[<AutoOpen>]
+module AliasedPositionalsArgParse =
+    /// Extension methods for argument parsing
+    type AliasedPositionals with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : AliasedPositionals
+            =
+            let helpText () =
+                [
+                    (sprintf "%s  int32%s%s" (sprintf "--%s" "count") "" "")
+                    (sprintf
+                        "%s  string%s%s"
+                        (sprintf "--%s / --%s" "rest" "remainder")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
+                |> String.concat "\n"
+
+            let arg_1 : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : int option = None
+
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "count" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product[ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf
+                                                                                    0])
+                    Positional =
+                        ({
+                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 1
+                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "rest" ; "remainder" ]
+                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
+                                ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
+                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
+                        })
+                        |> Some
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (value : string) (afterSeparator : bool) : string option =
+                try
+                    arg_1.Add (value |> (fun x -> x))
+                    None
+                with _ as exc ->
+                    (sprintf "%s (at arg %s)" exc.Message value) |> Some
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success ->
+                let arg_1 = arg_1 |> Seq.toList
+
+                let arg_0 =
+                    match arg_0 with
+                    | Some x -> x
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
+
+                {
+                    Count = arg_0
+                    Others = arg_1
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : AliasedPositionals =
+            AliasedPositionals.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
 /// Methods to parse arguments for the type FlagsIntoPositionalArgs
 [<AutoOpen>]
 module FlagsIntoPositionalArgsArgParse =

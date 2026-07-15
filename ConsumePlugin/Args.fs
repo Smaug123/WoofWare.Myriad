@@ -208,6 +208,17 @@ type ManyLongForms =
         SomeFlag : bool
     }
 
+[<ArgParser true>]
+type AliasedPositionals =
+    {
+        Count : int
+
+        [<PositionalArgs>]
+        [<ArgumentLongForm "rest">]
+        [<ArgumentLongForm "remainder">]
+        Others : string list
+    }
+
 [<RequireQualifiedAccess>]
 type private IrrelevantDu =
     | Foo
