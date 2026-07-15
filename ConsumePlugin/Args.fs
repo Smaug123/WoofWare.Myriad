@@ -107,6 +107,23 @@ type ParentRecord =
         AndAnother : bool
     }
 
+type ChildRecordWithDefault =
+    {
+        [<ArgumentDefaultFunction>]
+        FromFunction : Choice<int, int>
+    }
+
+    /// The default-function convention resolves against the record which declares the field,
+    /// not against the [<ArgParser>]-tagged root.
+    static member DefaultFromFunction () = 97
+
+[<ArgParser true>]
+type ParentRecordChildDefault =
+    {
+        Child : ChildRecordWithDefault
+        AndAnother : bool
+    }
+
 type ChildRecordWithPositional =
     {
         Thing1 : int

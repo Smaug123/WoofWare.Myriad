@@ -182,6 +182,63 @@ type ComplexConflict =
             "Conflicting argument names detected (names are matched case-insensitively):\nThe argument name '--no-enable' is claimed by: the --no- variant of field 'FeatureA' (which has [<ArgumentNegateWithPrefix>]); '--no-enable' (field 'DisableAll')"
 
     [<Test>]
+    let ``Names the scanner distinguishes are not collisions`` () =
+        // "s" and "ſ" (long s) uppercase to the same string, but the scanner matches keys with
+        // OrdinalIgnoreCase, which considers them distinct: this schema is unambiguous at parse
+        // time, so generation must accept it. (A ToUpperInvariant-keyed check falsely rejects it.)
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentLongForm "s">]
+        A : int
+        [<ArgumentLongForm "ſ">]
+        B : int
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+    [<Test>]
+    let ``An empty long form is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentLongForm "">]
+        A : int
+    }
+"""
+        |> shouldRejectWith
+            "Invalid argument name for field 'A': an empty name's token would be '--', which is the positional separator."
+
+    [<Test>]
+    let ``A long form containing an equals sign is rejected`` () =
+        // The scanner splits a --key=value token at its *first* '=', so such a name can never
+        // match; a required argument under it would be permanently unsatisfiable.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentLongForm "foo=bar">]
+        A : int
+    }
+"""
+        |> shouldRejectWith
+            "Invalid argument name 'foo=bar' for field 'A': a --key=value token splits at its first '=', so this argument could never be addressed."
+
+    [<Test>]
     let ``The reserved name help cannot be claimed, in any casing`` () =
         """namespace TestMe
 

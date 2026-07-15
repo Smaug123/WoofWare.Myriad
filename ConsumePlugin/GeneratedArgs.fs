@@ -593,6 +593,13 @@ module private ArgParserRuntime_BasicNoPositionals =
         | NoForms of leafId : int
         /// A leaf accepts `--no-` negation but is not boolean-like.
         | NegationOnNonBool of leafId : int
+        /// A form is the empty string: its token would be `--`, which the scanner always
+        /// treats as the positional separator, so the argument could never be addressed.
+        | EmptyForm of claimant : string
+        /// A form contains an equals sign: the scanner splits a `--key=value` token at its
+        /// *first* `=`, so such a form can never match. An argument required under such a form
+        /// makes the schema (or a union case of it) permanently unsatisfiable.
+        | FormContainsEquals of claimant : string * form : string
         /// Two distinct claimants respond to the same `--token` under the scanner's
         /// case-insensitive matching (so e.g. forms `foo` and `FOO` collide, as do a literal
         /// form `no-foo` and the negated variant of a negatable `foo`). The token is reported
@@ -616,6 +623,13 @@ module private ArgParserRuntime_BasicNoPositionals =
             | SchemaError.NoForms leafId -> sprintf "argument id %i has no names" leafId
             | SchemaError.NegationOnNonBool leafId ->
                 sprintf "argument id %i accepts --no- negation but is not boolean-like" leafId
+            | SchemaError.EmptyForm claimant ->
+                sprintf "%s has an empty name: its token would be '--', which is the positional separator" claimant
+            | SchemaError.FormContainsEquals (claimant, form) ->
+                sprintf
+                    "%s has the name '%s', which contains '='; a --key=value token splits at its first '=', so this argument could never be addressed"
+                    claimant
+                    form
             | SchemaError.TokenCollision (token, claimants) ->
                 sprintf
                     "the token '%s' is claimed by: %s (argument names are matched case-insensitively)"
@@ -718,13 +732,60 @@ module private ArgParserRuntime_BasicNoPositionals =
                 @ [ "--help", "the built-in help flag" ]
 
             let collisions =
-                claims
-                |> List.groupBy (fun (token, _) -> token.ToUpperInvariant ())
-                |> List.choose (fun (_, group) ->
-                    match group with
-                    | []
-                    | [ _ ] -> None
-                    | (token, _) :: _ -> Some (SchemaError.TokenCollision (token, group |> List.map snd))
+                let indexOf =
+                    System.Collections.Generic.Dictionary<string, int> (StringComparer.OrdinalIgnoreCase)
+
+                let buckets = ResizeArray<ResizeArray<string * string>> ()
+
+                for token, claimant in claims do
+                    match indexOf.TryGetValue token with
+                    | true, index -> buckets.[index].Add ((token, claimant))
+                    | false, _ ->
+                        indexOf.[token] <- buckets.Count
+                        let bucket = ResizeArray ()
+                        bucket.Add ((token, claimant))
+                        buckets.Add bucket
+
+                buckets
+                |> Seq.choose (fun bucket ->
+                    if bucket.Count < 2 then
+                        None
+                    else
+                        let token, _ = bucket.[0]
+                        Some (SchemaError.TokenCollision (token, bucket |> Seq.map snd |> List.ofSeq))
+                )
+                |> List.ofSeq
+
+            let unaddressable =
+                (schema.Leaves
+                 |> List.collect (fun leaf ->
+                     let claimant = sprintf "argument id %i" leaf.Id
+
+                     leaf.Forms
+                     |> List.collect (fun form ->
+                         if form = "" then
+                             [ SchemaError.EmptyForm claimant ]
+                         elif form.Contains "=" then
+                             [ SchemaError.FormContainsEquals (claimant, form) ]
+                         else
+                             []
+                     )
+                 ))
+                @ (
+                    match schema.Positional with
+                    | None -> []
+                    | Some positional ->
+                        let claimant = "the positional-args sink"
+
+                        positional.Forms
+                        |> List.collect (fun form ->
+                            if form = "" then
+                                [ SchemaError.EmptyForm claimant ]
+                            elif form.Contains "=" then
+                                [ SchemaError.FormContainsEquals (claimant, form) ]
+                            else
+                                []
+                        )
                 )
 
             duplicateLeafIds
@@ -734,6 +795,7 @@ module private ArgParserRuntime_BasicNoPositionals =
             @ duplicateSumIds
             @ noForms
             @ negationOnNonBool
+            @ unaddressable
             @ collisions
 
         /// Check the invariants which the scanning and selection semantics rely on.
@@ -3110,6 +3172,178 @@ module ParentRecordArgParse =
 
         static member parse (args : string list) : ParentRecord =
             ParentRecord.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type ParentRecordChildDefault
+[<AutoOpen>]
+module ParentRecordChildDefaultArgParse =
+    /// Extension methods for argument parsing
+    type ParentRecordChildDefault with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : ParentRecordChildDefault
+            =
+            let helpText () =
+                [
+                    (sprintf
+                        "%s  int32%s%s"
+                        (sprintf "--%s" "from-function")
+                        (ChildRecordWithDefault.DefaultFromFunction ()
+                         |> (fun x -> x.ToString ())
+                         |> sprintf " (default value: %s)")
+                        "")
+                    (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") "" "")
+                ]
+                |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : Choice<int, int> option = None
+            let mutable arg_1 : bool option = None
+
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "from-function" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 1
+                                Forms = [ "and-another" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product[ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf
+                                                                                    0
+
+                                                                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf
+                                                                                    1])
+                    Positional = None
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (Choice1Of2 (value |> (fun x -> System.Int32.Parse x)))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 1 ->
+                    match arg_1 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                                arg_1 <- Some (parsedBool)
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            arg_1 <- Some ((if occurrence.Negated then false else true))
+                            None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (value : string) (afterSeparator : bool) : string option = None
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some (Choice1Of2 x) -> x.ToString ()
+                    | Some (Choice2Of2 x) -> x.ToString ()
+                    | None -> "<no value>"
+                | 1 ->
+                    match arg_1 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | 0 ->
+                    arg_0 <- Some (Choice2Of2 (ChildRecordWithDefault.DefaultFromFunction ()))
+                    None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success ->
+                let arg_0 =
+                    match arg_0 with
+                    | Some x -> x
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
+
+                let arg_1 =
+                    match arg_1 with
+                    | Some x -> x
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
+
+                {
+                    AndAnother = arg_1
+                    Child =
+                        {
+                            FromFunction = arg_0
+                        }
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : ParentRecordChildDefault =
+            ParentRecordChildDefault.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System

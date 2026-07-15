@@ -593,6 +593,13 @@ module private ArgParserRuntime_LeakArgs =
         | NoForms of leafId : int
         /// A leaf accepts `--no-` negation but is not boolean-like.
         | NegationOnNonBool of leafId : int
+        /// A form is the empty string: its token would be `--`, which the scanner always
+        /// treats as the positional separator, so the argument could never be addressed.
+        | EmptyForm of claimant : string
+        /// A form contains an equals sign: the scanner splits a `--key=value` token at its
+        /// *first* `=`, so such a form can never match. An argument required under such a form
+        /// makes the schema (or a union case of it) permanently unsatisfiable.
+        | FormContainsEquals of claimant : string * form : string
         /// Two distinct claimants respond to the same `--token` under the scanner's
         /// case-insensitive matching (so e.g. forms `foo` and `FOO` collide, as do a literal
         /// form `no-foo` and the negated variant of a negatable `foo`). The token is reported
@@ -616,6 +623,13 @@ module private ArgParserRuntime_LeakArgs =
             | SchemaError.NoForms leafId -> sprintf "argument id %i has no names" leafId
             | SchemaError.NegationOnNonBool leafId ->
                 sprintf "argument id %i accepts --no- negation but is not boolean-like" leafId
+            | SchemaError.EmptyForm claimant ->
+                sprintf "%s has an empty name: its token would be '--', which is the positional separator" claimant
+            | SchemaError.FormContainsEquals (claimant, form) ->
+                sprintf
+                    "%s has the name '%s', which contains '='; a --key=value token splits at its first '=', so this argument could never be addressed"
+                    claimant
+                    form
             | SchemaError.TokenCollision (token, claimants) ->
                 sprintf
                     "the token '%s' is claimed by: %s (argument names are matched case-insensitively)"
@@ -718,13 +732,60 @@ module private ArgParserRuntime_LeakArgs =
                 @ [ "--help", "the built-in help flag" ]
 
             let collisions =
-                claims
-                |> List.groupBy (fun (token, _) -> token.ToUpperInvariant ())
-                |> List.choose (fun (_, group) ->
-                    match group with
-                    | []
-                    | [ _ ] -> None
-                    | (token, _) :: _ -> Some (SchemaError.TokenCollision (token, group |> List.map snd))
+                let indexOf =
+                    System.Collections.Generic.Dictionary<string, int> (StringComparer.OrdinalIgnoreCase)
+
+                let buckets = ResizeArray<ResizeArray<string * string>> ()
+
+                for token, claimant in claims do
+                    match indexOf.TryGetValue token with
+                    | true, index -> buckets.[index].Add ((token, claimant))
+                    | false, _ ->
+                        indexOf.[token] <- buckets.Count
+                        let bucket = ResizeArray ()
+                        bucket.Add ((token, claimant))
+                        buckets.Add bucket
+
+                buckets
+                |> Seq.choose (fun bucket ->
+                    if bucket.Count < 2 then
+                        None
+                    else
+                        let token, _ = bucket.[0]
+                        Some (SchemaError.TokenCollision (token, bucket |> Seq.map snd |> List.ofSeq))
+                )
+                |> List.ofSeq
+
+            let unaddressable =
+                (schema.Leaves
+                 |> List.collect (fun leaf ->
+                     let claimant = sprintf "argument id %i" leaf.Id
+
+                     leaf.Forms
+                     |> List.collect (fun form ->
+                         if form = "" then
+                             [ SchemaError.EmptyForm claimant ]
+                         elif form.Contains "=" then
+                             [ SchemaError.FormContainsEquals (claimant, form) ]
+                         else
+                             []
+                     )
+                 ))
+                @ (
+                    match schema.Positional with
+                    | None -> []
+                    | Some positional ->
+                        let claimant = "the positional-args sink"
+
+                        positional.Forms
+                        |> List.collect (fun form ->
+                            if form = "" then
+                                [ SchemaError.EmptyForm claimant ]
+                            elif form.Contains "=" then
+                                [ SchemaError.FormContainsEquals (claimant, form) ]
+                            else
+                                []
+                        )
                 )
 
             duplicateLeafIds
@@ -734,6 +795,7 @@ module private ArgParserRuntime_LeakArgs =
             @ duplicateSumIds
             @ noForms
             @ negationOnNonBool
+            @ unaddressable
             @ collisions
 
         /// Check the invariants which the scanning and selection semantics rely on.

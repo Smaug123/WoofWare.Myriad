@@ -361,6 +361,34 @@ Required argument '--exact' received no value"""
             }
 
     [<Test>]
+    let ``Default functions on nested records resolve against the declaring record`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        // The default function lives on ChildRecordWithDefault, not on the tagged root; the
+        // generated code must call it there (this used to generate a call against the root,
+        // which did not compile).
+        ParentRecordChildDefault.parse' getEnvVar [ "--and-another=false" ]
+        |> shouldEqual
+            {
+                Child =
+                    {
+                        FromFunction = Choice2Of2 97
+                    }
+                AndAnother = false
+            }
+
+        // A supplied value still wins over the default.
+        ParentRecordChildDefault.parse' getEnvVar [ "--and-another=false" ; "--from-function=3" ]
+        |> shouldEqual
+            {
+                Child =
+                    {
+                        FromFunction = Choice1Of2 3
+                    }
+                AndAnother = false
+            }
+
+    [<Test>]
     let ``Can consume stacked record, child has positionals`` () =
         let getEnvVar (_ : string) = failwith "should not call"
 

@@ -34,11 +34,12 @@ type internal FlagDu =
 type private ArgumentDefaultSpec =
     /// From parsing the environment variable with the given name (e.g. "WOOFWARE_DISABLE_FOO" or whatever).
     | EnvironmentVariable of name : SynExpr
-    /// From calling the static member `{typeWeParseInto}.Default{name}()`
+    /// From calling the static member `{owner}.Default{name}()`, where `owner` is the record
+    /// type which declares the field (not necessarily the [<ArgParser>]-tagged root type: the
+    /// field may live in a nested record, or in a union case's payload record).
     /// For example, if `type MyArgs = { Thing : Choice<int, int> }`, then
     /// we would use `MyArgs.DefaultThing () : int`.
-    ///
-    | FunctionCall of name : Ident
+    | FunctionCall of owner : Ident * name : Ident
 
 type private Accumulation<'choice> =
     | Required
@@ -258,6 +259,42 @@ module private ParseTree =
                     | _ -> None
                 )
 
+            // Reject names no token could ever address, given how the scanner tokenises.
+            let malformed =
+                (nonPos
+                 |> List.collect (fun pf ->
+                     literalForms pf.ArgForm
+                     |> List.choose (fun form ->
+                         if form = "" then
+                             Some
+                                 $"Invalid argument name for field '%s{pf.FieldName.idText}': an empty name's token would be '--', which is the positional separator."
+                         elif form.Contains "=" then
+                             Some
+                                 $"Invalid argument name '%s{form}' for field '%s{pf.FieldName.idText}': a --key=value token splits at its first '=', so this argument could never be addressed."
+                         else
+                             None
+                     )
+                 ))
+                @ (pos
+                   |> Option.toList
+                   |> List.collect (fun pf ->
+                       literalForms pf.ArgForm
+                       |> List.choose (fun form ->
+                           if form = "" then
+                               Some
+                                   $"Invalid argument name for the positional args (field '%s{pf.FieldName.idText}'): an empty name's token would be '--', which is the positional separator."
+                           elif form.Contains "=" then
+                               Some
+                                   $"Invalid argument name '%s{form}' for the positional args (field '%s{pf.FieldName.idText}'): a --key=value token splits at its first '=', so this argument could never be addressed."
+                           else
+                               None
+                       )
+                   ))
+
+            match malformed with
+            | [] -> ()
+            | malformed -> failwith (String.concat "\n" malformed)
+
             // `--help` always means help (case-insensitively), so no argument may claim it.
             let allLiteralForms =
                 (pos |> Option.toList |> List.collect (fun pf -> literalForms pf.ArgForm))
@@ -303,20 +340,39 @@ module private ParseTree =
                        |> List.map (fun form -> form, $"'--%s{form}' (the positional args)")
                    ))
 
+            // Group under the scanner's own equality (OrdinalIgnoreCase), preserving
+            // declaration order. This is deliberately not ToUpperInvariant keying, which is a
+            // strictly coarser relation: e.g. "s" and "ſ" (long s) uppercase to the same string,
+            // but the scanner considers them distinct, so they do not collide.
             let conflicts =
-                claims
-                |> List.groupBy (fun (form, _) -> form.ToUpperInvariant ())
-                |> List.choose (fun (_, group) ->
-                    match group with
-                    | []
-                    | [ _ ] -> None
-                    | (form, _) :: _ ->
-                        group
-                        |> List.map snd
+                let indexOf =
+                    System.Collections.Generic.Dictionary<string, int> (StringComparer.OrdinalIgnoreCase)
+
+                let buckets = ResizeArray<ResizeArray<string * string>> ()
+
+                for form, claimant in claims do
+                    match indexOf.TryGetValue form with
+                    | true, index -> buckets.[index].Add ((form, claimant))
+                    | false, _ ->
+                        indexOf.[form] <- buckets.Count
+                        let bucket = ResizeArray ()
+                        bucket.Add ((form, claimant))
+                        buckets.Add bucket
+
+                buckets
+                |> Seq.choose (fun bucket ->
+                    if bucket.Count < 2 then
+                        None
+                    else
+                        let form, _ = bucket.[0]
+
+                        bucket
+                        |> Seq.map snd
                         |> String.concat "; "
                         |> sprintf "The argument name '--%s' is claimed by: %s" form
                         |> Some
                 )
+                |> List.ofSeq
 
             match conflicts with
             | [] -> ()
@@ -386,6 +442,7 @@ module internal ArgParserGenerator =
     let rec private createParseFunction<'choice>
         (choice : ArgumentDefaultSpec option -> 'choice)
         (flagDus : FlagDu list)
+        (owner : Ident)
         (fieldName : Ident)
         (attrs : SynAttribute list)
         (ty : SynType)
@@ -479,7 +536,7 @@ module internal ArgParserGenerator =
             ty
         | OptionType eltTy ->
             let parseElt, acc, childTy =
-                createParseFunction choice flagDus fieldName attrs eltTy
+                createParseFunction choice flagDus owner fieldName attrs eltTy
 
             match acc with
             | Accumulation.Optional ->
@@ -498,7 +555,8 @@ module internal ArgParserGenerator =
                     failwith
                         $"ArgParser was unable to prove types %O{elt1} and %O{elt2} to be equal in a Choice. We require them to be equal."
 
-                let parseElt, acc, childTy = createParseFunction choice flagDus fieldName attrs elt1
+                let parseElt, acc, childTy =
+                    createParseFunction choice flagDus owner fieldName attrs elt1
 
                 match acc with
                 | Accumulation.Optional ->
@@ -526,7 +584,7 @@ module internal ArgParserGenerator =
                         | [ "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunction" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultFunctionAttribute" ] ->
-                            ArgumentDefaultSpec.FunctionCall (Ident.create ("Default" + fieldName.idText))
+                            ArgumentDefaultSpec.FunctionCall (owner, Ident.create ("Default" + fieldName.idText))
                             |> Some
                         | [ "ArgumentDefaultEnvironmentVariable" ]
                         | [ "ArgumentDefaultEnvironmentVariableAttribute" ]
@@ -557,7 +615,7 @@ module internal ArgParserGenerator =
                     $"ArgParser requires Choice to be of the form Choice<'a, 'a>; that is, two arguments, both the same. For field %s{fieldName.idText}, got: %s{elts}"
         | ListType eltTy ->
             let parseElt, acc, childTy =
-                createParseFunction choice flagDus fieldName attrs eltTy
+                createParseFunction choice flagDus owner fieldName attrs eltTy
 
             parseElt, Accumulation.List acc, childTy
         | ty ->
@@ -679,7 +737,7 @@ module internal ArgParserGenerator =
                         | None -> ()
 
                     let parser, accumulation, parseTy =
-                        createParseFunction<unit> getChoice flagDus ident attrs fieldType
+                        createParseFunction<unit> getChoice flagDus finalRecord.Name ident attrs fieldType
 
                     let isBoolLike =
                         match parseTy with
@@ -732,7 +790,7 @@ module internal ArgParserGenerator =
                         | Some spec -> spec
 
                     let parser, accumulation, parseTy =
-                        createParseFunction getChoice flagDus ident attrs fieldType
+                        createParseFunction getChoice flagDus finalRecord.Name ident attrs fieldType
 
                     let isBoolLike =
                         match parseTy with
@@ -792,7 +850,6 @@ module internal ArgParserGenerator =
     /// let helpText : string = ...
     let private helpText
         (typeHelp : SynExpr option)
-        (typeName : Ident)
         (positional : ParseFunctionPositional option)
         (args : ParseFunctionNonPositional list)
         : SynBinding
@@ -815,10 +872,10 @@ module internal ArgParserGenerator =
                         (SynExpr.CreateConst " (default value populated from env var %s)")
                 )
                 |> SynExpr.paren
-            | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall var) ->
+            | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (owner, var)) ->
                 match flagCases with
-                | None -> SynExpr.callMethod var.idText (SynExpr.createIdent' typeName)
-                | Some (Choice2Of2 ()) -> SynExpr.callMethod var.idText (SynExpr.createIdent' typeName)
+                | None -> SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
+                | Some (Choice2Of2 ()) -> SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
                 | Some (Choice1Of2 flagDu) ->
                     // Care required here. The return value from the Default call is not a bool,
                     // but we should display it as such to the user!
@@ -836,7 +893,7 @@ module internal ArgParserGenerator =
                                 (SynExpr.CreateConst "false")
                                 (SynExpr.CreateConst "true"))
                     ]
-                    |> SynExpr.createMatch (SynExpr.callMethod var.idText (SynExpr.createIdent' typeName))
+                    |> SynExpr.createMatch (SynExpr.callMethod var.idText (SynExpr.createIdent' owner))
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.createLambda "x" (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
                 )
@@ -1002,7 +1059,7 @@ module internal ArgParserGenerator =
 
             bindings, bindingName, leftoverArgsParser
 
-        let helpText = helpText typeHelpText recordType.Name pos nonPos
+        let helpText = helpText typeHelpText pos nonPos
 
         let bindings = helpText :: bindings
 
@@ -1372,12 +1429,10 @@ module internal ArgParserGenerator =
 
                     let body =
                         match spec with
-                        | ArgumentDefaultSpec.FunctionCall name ->
+                        | ArgumentDefaultSpec.FunctionCall (owner, name) ->
                             SynExpr.sequential
                                 [
-                                    storeDefault (
-                                        SynExpr.callMethod name.idText (SynExpr.createIdent' recordType.Name)
-                                    )
+                                    storeDefault (SynExpr.callMethod name.idText (SynExpr.createIdent' owner))
                                     SynExpr.createIdent "None"
                                 ]
                         | ArgumentDefaultSpec.EnvironmentVariable name ->
